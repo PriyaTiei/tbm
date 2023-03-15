@@ -1,0 +1,199 @@
+import React, { useEffect, useState, Fragment } from "react";
+// import FlowSmileCard from "./FlowSmileCard";
+import { useDispatch, useSelector } from "react-redux";
+import { getCheckItem } from "../redux/checkItem/checkItemsActions";
+import { useSearchParams } from "react-router-dom";
+import Loading from "./Loading";
+import SmileCardDetails from "./SmileCardDetails";
+import SmileCardModify from "./SmileCardModify";
+import axios from "axios";
+import AbnormalityRecordModalForm from "./AbnormalityRecordModalForm";
+import { useAlert } from "react-alert";
+// const host = "localhost";
+const host= "10.82.126.73";
+const port = 5051;
+
+function SmileCard() {
+  const [modify, setModify] = useState(false);
+  const [image, setImage] = useState(null);
+  const logins = useSelector((state) => state.logins);
+  const users = useSelector((state) => state.users);
+  const level =
+    users.loading === false
+      ? users.users.success === true
+        ? users.users.user.level
+        : 0
+      : 0;
+
+  const alert = useAlert();
+
+  // get query string from link
+  const [searchParams] = useSearchParams();
+  const [showModal, setShowModal] = useState(false);
+
+  const filters = useSelector((state) => state.filters);
+  let queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}`;
+  let entryForQueryStr = `${filters.y}-${filters.m}-${filters.dt}`;
+  for (const e of searchParams.entries()) {
+    let [f, v] = e;
+    queryStr = queryStr + "&" + f + "=" + v;
+  }
+
+  //use hooks
+  const [page, setPage] = useState(1);
+
+  let disabledPrevious = page < 2 ? "disabled" : null;
+
+  const dispatch = useDispatch();
+  const checkItems = useSelector((state) => state.checkItems);
+
+  useEffect(() => {
+    dispatch(getCheckItem(queryStr, page, entryForQueryStr));
+  }, [dispatch, page, searchParams, filters, modify]);
+
+  // unpack object
+  const { loading, checkItem } = checkItems;
+
+  let list = loading
+    ? {}
+    : checkItem.success
+    ? checkItems.checkItem.headCheckList[0]
+    : {};
+
+  let totalCount = loading
+    ? 0
+    : checkItem.success
+    ? checkItems.checkItem.totalCount
+    : 0;
+  let disabledNext = page < totalCount ? null : "disabled";
+  const changePage = () => {
+    setPage(page + 1);
+  };
+  const changePageMinus = () => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  };
+
+  const modifyHandler = () => {
+    setModify(!modify);
+  };
+
+  const deleteItem = (itemId) => {
+    axios
+      .delete(`http://${host}:${port}/head/delete/${itemId}`)
+      .then((result) => {
+        console.log("deleted check item ");
+        alert.show("deleted check item ");
+      })
+      .catch((err) => {
+        console.log("error deleting check item ", err.message);
+        alert.show("error deleting check item ");
+      });
+  };
+
+  const deleteConfirmation = () => {
+    if (window.confirm("Are you sure you want to Delete this item?")) {
+      deleteItem(list._id);
+    } else {
+      // Do nothing!
+    }
+  };
+
+  return (
+    <Fragment>
+      <div className="d-flex flex-wrap my-2 ">
+        <button
+          className={`btn btn-sm btn-info mx-2 ${disabledPrevious} `}
+          onClick={changePageMinus}
+        >
+          <i
+            className="bi bi-arrow-left-circle-fill px-1"
+            style={{ fontSize: "1.1rem", color: "dark" }}
+          ></i>{" "}
+          {`Previous Page`}
+        </button>
+        <p>
+          Page {page} of {totalCount}
+        </p>
+        <button
+          className={`btn btn-sm btn-info mx-2 ${disabledNext}`}
+          onClick={changePage}
+        >
+          {`Next page`}
+          <i
+            className="bi bi-arrow-right-circle-fill px-1"
+            style={{ fontSize: "1.1rem", color: "dark" }}
+          ></i>
+        </button>
+
+        {logins.login && (
+          <button
+            className="btn btn-primary"
+            onClick={() => setShowModal(true)}
+          >
+            <i
+              className="bi bi-record-btn pe-2"
+              style={{ fontSize: "1rem", color: "dark" }}
+            ></i>
+            Record Abnormality
+          </button>
+        )}
+        {level >= 20 && (
+          <button className="btn btn-warning mx-2" onClick={modifyHandler}>
+            <i
+              className="bi bi-pencil"
+              style={{ fontSize: "1rem", color: "dark" }}
+            ></i>
+            {modify ? " Back" : " Modify"}
+          </button>
+        )}
+
+        {level >= 100 && (
+          <button
+            className="btn btn-danger"
+            onClick={deleteConfirmation}
+            // data-toggle="tooltip"
+            // data-placement="top"
+            title="Delete the entry"
+          >
+            <i
+              className="bi bi-trash"
+              style={{ fontSize: "1.3rem", color: "white" }}
+            ></i>
+            Delete
+          </button>
+        )}
+      </div>
+      {loading ? (
+        <Loading />
+      ) : (
+        <Fragment>
+          {checkItem.success ? (
+            modify ? (
+              <SmileCardModify list={list} image={image} setImage={setImage} />
+            ) : (
+              <div>
+                <SmileCardDetails
+                  list={list}
+                  image={image}
+                  setImage={setImage}
+                />
+                {showModal ? (
+                  <AbnormalityRecordModalForm
+                    showModal={showModal}
+                    setShowModal={setShowModal}
+                    workDetail={list.workDetail}
+                    itemId={list._id}
+                  />
+                ) : null}
+              </div>
+            )
+          ) : null}
+        </Fragment>
+      )}
+    </Fragment>
+  );
+}
+
+export default SmileCard;
