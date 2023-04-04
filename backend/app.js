@@ -9,6 +9,7 @@ const headRouter = require("./Router/headRouter");
 const dailyStatusRouter = require("./Router/dailyStatusRouter");
 const cardRouter = require("./Router/cardRouter");
 const abnormalityRouter = require("./Router/abnormalityRouter");
+const pendingRouter = require("./Router/pendingTaskRouter");
 
 const urlencodedBodyParser = bodyParser.urlencoded({ extended: false });
 
@@ -25,6 +26,7 @@ app.use("/head", headRouter);
 app.use("/dailyStatus", dailyStatusRouter);
 app.use("/card", cardRouter);
 app.use("/abnormality", abnormalityRouter);
+app.use("/pendingTasks", pendingRouter);
 
 app.use(error);
 module.exports = app;

@@ -4,9 +4,6 @@ import {
   DAILYSTATUS_FETCH_SUCCESS,
   DAILYSTATUS_FETCH_FAIL,
 } from "./dailyStatusTypes";
-// const host = "localhost";
-const host= "10.82.126.73";
-const port = 5051;
 
 export const dailyStatusFetchRequest = () => {
   return {
@@ -32,7 +29,9 @@ export const getDailyStatus = (queryStr) => {
   return (dispatch) => {
     dispatch(dailyStatusFetchRequest());
     axios
-      .get(`http://${host}:${port}/dailyStatus?${queryStr}`)
+      .get(
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus?${queryStr}`
+      )
       .then((result) => {
         dispatch(dailyStatusFetchSuccess(result.data));
       })

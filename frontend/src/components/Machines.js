@@ -33,6 +33,8 @@ function Machines() {
   }, [dispatch, filters]);
 
   const { loading, machineData } = machines;
+
+  console.log(machineData)
  
   return (
     <Fragment>

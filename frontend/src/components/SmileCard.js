@@ -8,10 +8,7 @@ import SmileCardDetails from "./SmileCardDetails";
 import SmileCardModify from "./SmileCardModify";
 import axios from "axios";
 import AbnormalityRecordModalForm from "./AbnormalityRecordModalForm";
-import { useAlert } from "react-alert";
-// const host = "localhost";
-const host= "10.82.126.73";
-const port = 5051;
+import { toast } from "react-toastify";
 
 function SmileCard() {
   const [modify, setModify] = useState(false);
@@ -24,8 +21,6 @@ function SmileCard() {
         ? users.users.user.level
         : 0
       : 0;
-
-  const alert = useAlert();
 
   // get query string from link
   const [searchParams] = useSearchParams();
@@ -81,14 +76,16 @@ function SmileCard() {
 
   const deleteItem = (itemId) => {
     axios
-      .delete(`http://${host}:${port}/head/delete/${itemId}`)
+      .delete(
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/delete/${itemId}`
+      )
       .then((result) => {
         console.log("deleted check item ");
-        alert.show("deleted check item ");
+        toast.success("deleted check item ");
       })
       .catch((err) => {
         console.log("error deleting check item ", err.message);
-        alert.show("error deleting check item ");
+        toast.error("error deleting check item ");
       });
   };
 

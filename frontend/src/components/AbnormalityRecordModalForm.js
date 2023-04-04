@@ -6,10 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useAlert } from "react-alert";
-// const host = "localhost";
-const host ="10.82.126.73"
-const port = 5051;
+import { toast } from "react-toastify";
 
 function ModalForm({ showModal, setShowModal, workDetail, itemId }) {
   // const [isOpen, setIsOpen] = useState(true)
@@ -26,8 +23,6 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId }) {
   };
 
   let info = {};
-
-  const alert = useAlert();
 
   const [searchParams] = useSearchParams();
   for (const e of searchParams.entries()) {
@@ -66,20 +61,24 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId }) {
     formData.append("image", selectedFile);
 
     axios
-      .post(`http://${host}:${port}/abnormality/uploadImage`, formData, {
-        headers: { "Content-Type": "Multipart/form-data" },
-      })
+      .post(
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/uploadImage`,
+        formData,
+        {
+          headers: { "Content-Type": "Multipart/form-data" },
+        }
+      )
       .then((result) => {
         setImage(result.data.file.filename);
         if (result.data.success) {
-          alert.show(
+          toast.success(
             `Image uploaded successfully, Name of file ${result.data.file.filename}`
           );
         }
       })
       .catch((err) => {
         console.log("error uploading image", err);
-        alert.show(
+        toast.error(
           `Failed to upload Image, choose correct Image file with file extension .png/.jpg`
         );
       });
@@ -89,7 +88,7 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId }) {
     e.preventDefault();
     axios
       .post(
-        `http://${host}:${port}/abnormality/create`,
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/create`,
         {
           checkItem: itemId,
           abnormality,
@@ -106,12 +105,12 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId }) {
         // , { withCredentials: true }
       )
       .then((result) => {
-        alert.show("Saved Successfully");
+        toast.success("Saved Successfully");
         setShowModal(false);
       })
       .catch((err) => {
         console.log(err);
-        alert.show("Please fill Abnormility Details");
+        toast.error("Please fill Abnormility Details");
       });
   };
 

@@ -3,16 +3,11 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./table.css";
 import Select from "react-select";
+import { toast } from "react-toastify";
 // import FlavorForm from "./MultipleOptions";
-import { useAlert } from "react-alert";
-
-// const host = "localhost";
-const host= "10.82.126.73";
-const port = 5051;
 
 function SmileCardAdd() {
   const [selectedFile, setSelectedFile] = useState("");
-  const alert = useAlert();
 
   const selectedFileHandler = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -123,20 +118,24 @@ function SmileCardAdd() {
     formData.append("image", selectedFile);
 
     axios
-      .post(`http://${host}:${port}/head/uploadImage`, formData, {
-        headers: { "Content-Type": "Multipart/form-data" },
-      })
+      .post(
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/uploadImage`,
+        formData,
+        {
+          headers: { "Content-Type": "Multipart/form-data" },
+        }
+      )
       .then((result) => {
         setImagesNew(result.data.file.filename);
         if (result.data.success) {
-          alert.show(
+          toast.success(
             `Image uploaded successfully, Name of file ${result.data.file.filename}`
           );
         }
       })
       .catch((err) => {
         console.log("error uploading image", err);
-        alert.show(
+        toast.success(
           `Failed to upload Image, choose correct Image file with file extension .png/.jpg`
         );
       });
@@ -184,16 +183,20 @@ function SmileCardAdd() {
     formData.append("y", yNew);
 
     axios
-      .post(`http://${host}:${port}/head/insertData`, formData, {
-        headers: { "Content-Type": "Multipart/form-data" },
-      })
+      .post(
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/insertData`,
+        formData,
+        {
+          headers: { "Content-Type": "Multipart/form-data" },
+        }
+      )
       .then((result) => {
-        alert.show(`Data uploaded successfully`);
+        toast.success(`Data uploaded successfully`);
       })
       .catch((err) => {
         console.log(err.message);
         console.log("error uploading Data", err);
-        alert.show(
+        toast.error(
           err.response.data.message
           // `failed to upload data, Fill all data with correct Data type`
         );

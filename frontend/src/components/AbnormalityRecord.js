@@ -3,25 +3,22 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useAlert } from "react-alert";
+import { toast } from "react-toastify";
 // const host = "localhost"
-const host ="10.82.126.73"
-const port = 5051
-
+const host = "10.82.126.73";
+const port = 5051;
 
 function AbnormalityRecord() {
   let info = {};
-
-  const alert = useAlert();
-  const navigate= useNavigate()
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   for (const e of searchParams.entries()) {
     let [f, v] = e;
     info[f] = v;
   }
-  
+
   const { line, processNo, workDetail, itemId } = info;
-  
+
   const users = useSelector((state) => state.users);
 
   const user = users.loading
@@ -29,7 +26,7 @@ function AbnormalityRecord() {
     : users.users.success
     ? users.users.user._id
     : null;
- 
+
   const [abnormality, setAbnormality] = useState("");
   const [countermeasure, setCountermeasure] = useState("");
   const [target, setTarget] = useState("");
@@ -48,7 +45,7 @@ function AbnormalityRecord() {
     e.preventDefault();
     axios
       .post(
-        `http://${host}:${port}/abnormality/create`,
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/create`,
         {
           checkItem: itemId,
           abnormality,
@@ -64,17 +61,15 @@ function AbnormalityRecord() {
         // , { withCredentials: true }
       )
       .then((result) => {
-        alert.show("Saved Successfully");
-        navigate(`/checkList?line=${line}&processNo=${processNo}`)
-        
+        toast.success("Saved Successfully");
+        navigate(`/checkList?line=${line}&processNo=${processNo}`);
       })
       .catch((err) => {
         console.log(err);
-        alert.show("Please fill Abnormility Details");
+        toast.error("Please fill Abnormility Details");
       });
   };
 
-  
   return (
     <div>
       <div>

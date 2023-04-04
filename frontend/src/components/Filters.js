@@ -3,9 +3,9 @@ import DatePicker from "react-date-picker";
 import { useDispatch, useSelector } from "react-redux";
 import { filterDate, filterDept } from "../redux/filter/filterActions";
 import Select from "react-select";
-import { Button } from "react-bootstrap";
+import { Button, Row, Col, Container } from "react-bootstrap";
 // import { getMachines } from "../redux/machine/machineActions";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const todayDate = new Date(Date.now());
 
@@ -17,7 +17,13 @@ const todayDate = new Date(Date.now());
 
 // end week no
 
+
+
 function Filters() {
+
+  const location = useLocation();
+
+  const shouldDisplay = location.pathname !== "/pendingTasks";
   const [date, setDate] = useState(todayDate);
   const logins = useSelector((state) => state.logins);
   const machines = useSelector((state) => state.machines);
@@ -29,7 +35,6 @@ function Filters() {
         ? users.users.user.level
         : 0
       : 0;
-
 
   const totalCount = machines.loading
     ? { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 }
@@ -66,19 +71,23 @@ function Filters() {
 
   return (
     <Fragment>
-      <div className="d-flex flex-wrap">
-        <DatePicker
-          value={date}
-          onChange={setDate}
-          clearIcon={null}
-          className="mx-3"
-        />
-        <Select
-          options={options}
-          onChange={selectHandler}
-          className="mx-3"
-          defaultValue={{ value: "S", label: "Production Dept" }}
-        />
+      <hr></hr>
+      <div className="d-flex justify-content-between">
+        <div className="d-flex">
+         {shouldDisplay && <DatePicker
+            value={date}
+            onChange={setDate}
+            clearIcon={null}
+            className="px-3"
+          />}
+          <Select
+            options={options}
+            onChange={selectHandler}
+            className="mx-3 secondary"
+            defaultValue={{ value: "S", label: "Production Dept" }}
+          />
+        </div>
+
         {/* {logins.login ? (
           <Button
             className="mx-3 bg-red"
@@ -93,13 +102,6 @@ function Filters() {
             <Button className="mx-3 bg-green">Login</Button>
           </Link>
         )} */}
-
-        <Link to="/">
-          <Button className="mx-3">
-            <i className="bi bi-house px-1"></i>
-            Home
-          </Button>
-        </Link>
 
         {level >= 10 && (
           <Link to="/summaryAbnormality">
@@ -123,20 +125,26 @@ function Filters() {
           </Link>
         )}
 
-        <div className="m-auto p-1 bg-info text-light border rounded-2 d-flex flex-row justify-content-center">
-          <div className="align-self-center">
-            <span className="h6 text-center">Total Check</span>
-          </div>
-          <div className="align-self-center text-dark">
-            <span className="m-1">Block : {totalCountBlock}</span>
-            <span className="m-1">
-              <span className="text-light">| </span>Crank : {totalCountCrank}
-            </span>
-            <span className="m-1">
-              <span className="text-light">| </span>Head : {totalCountHead}
-            </span>
-          </div>
-        </div>
+        <Container className="mx-3 px-3" style={{ maxWidth: "30vw" }}>
+          <Row className="bg-info text-light border rounded-2 d-flex align-items-center justify-content-center">
+            <Col xs={12} md={6} className="text-center">
+              <h6 className="my-2">Total Check</h6>
+            </Col>
+            <Col xs={12} md={6} className="text-center">
+              <h6 className="my-2">
+                Block: {totalCountBlock} | Crank: {totalCountCrank} | Head:{" "}
+                {totalCountHead}
+              </h6>
+            </Col>
+          </Row>
+        </Container>
+
+        <Link to="/pendingTasks">
+          <Button variant="secondary" className="mx-3">
+            <i className="bi bi-card-checklist px-1"></i>
+            Pending Tasks
+          </Button>
+        </Link>
       </div>
       <hr></hr>
     </Fragment>

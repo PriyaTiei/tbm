@@ -5,11 +5,8 @@ import { Button } from "react-bootstrap";
 import Select from "react-select";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { useAlert } from "react-alert";
+import { toast } from "react-toastify";
 import { getCards } from "../redux/card/cardActions";
-// const host = "localhost";
-const host ="10.82.126.73"
-const port = 5051;
 
 function ModalForm(props) {
   const {
@@ -47,8 +44,6 @@ function ModalForm(props) {
     setShowModal(false);
   };
 
-  const alert = useAlert();
-
   const users = useSelector((state) => state.users);
 
   const user = users.loading
@@ -82,7 +77,7 @@ function ModalForm(props) {
     e.preventDefault();
     axios
       .put(
-        `http://${host}:${port}/card/update/${id}`,
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/card/update/${id}`,
         {
           line,
           processNo,
@@ -100,13 +95,13 @@ function ModalForm(props) {
         // , { withCredentials: true }
       )
       .then((result) => {
-        alert.show("Saved Successfully");
+        toast.success("Saved Successfully");
         setShowModal(false);
         dispatch(getCards(fromDateSt, toDateSt));
       })
       .catch((err) => {
         console.log(err);
-        alert.show("Please fill Abnormility Details");
+        toast.error("Please fill Abnormility Details");
       });
   };
 

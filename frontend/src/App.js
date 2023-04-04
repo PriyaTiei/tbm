@@ -16,6 +16,7 @@ import SummaryAbnormality from "./components/SummaryAbnormality";
 
 import SummaryCard from "./components/SummaryCard";
 import SmileCardAdd from "./components/SmileCardAdd";
+import PendingTask from "./components/PendingTask";
 
 function App() {
   return (
@@ -26,13 +27,13 @@ function App() {
         <Routes>
           <Route path="/" element={<Machines />} />
           <Route path="/checkList" element={<SmileCard />} />
+          <Route path="/pendingTasks" element={<PendingTask />} />
           <Route path="/card" element={<Card />} />
           <Route path="/login" element={<Login />} />
           <Route path="/abnormality" element={<AbnormalityRecord />} />
-          <Route path="/summaryAbnormality" element={<SummaryAbnormality  />} />
+          <Route path="/summaryAbnormality" element={<SummaryAbnormality />} />
           <Route path="/summaryCards" element={<SummaryCard />} />
-          <Route path="/addCheckItems" element={<SmileCardAdd/>} />
-       
+          <Route path="/addCheckItems" element={<SmileCardAdd />} />
         </Routes>
       </Router>
     </Provider>

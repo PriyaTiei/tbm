@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { getAbnormality } from "../redux/abnormality/abnormalityActions";
 import { useDispatch, useSelector } from "react-redux";
 import AbnormilityDoc from "./AbnormalityDoc";
@@ -6,8 +6,6 @@ import DatePicker from "react-date-picker";
 import GraphAbnormality from "./GraphAbnormality";
 
 function SummaryAbnormality() {
-
-
   const [showGraph, setShowGraph] = useState(true);
 
   // begining of Month
@@ -32,20 +30,19 @@ function SummaryAbnormality() {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getAbnormality(fromDateSt, toDateSt));
-  }, [fromDate, toDate]);
+  }, [dispatch, fromDate, toDate]);
   const abnormalities = useSelector((state) => state.abnormalities);
   const abnormalityList = abnormalities.loading
     ? []
     : abnormalities.abnormalities.success
     ? abnormalities.abnormalities.abnormalities
     : [];
- 
+
   const list = abnormalityList.map((item) => {
     return (
       <AbnormilityDoc
         key={item._id}
         item={item}
-       
         fromDateSt={fromDateSt}
         toDateSt={toDateSt}
       />
@@ -58,18 +55,17 @@ function SummaryAbnormality() {
   var pending = 0;
   if (abnormalityList.length > 0) {
     total = abnormalityList.length;
-    abnormalityList.forEach(item=>{
-      if(item.status==="complete"){
-        complete +=1
+    abnormalityList.forEach((item) => {
+      if (item.status === "complete") {
+        complete += 1;
       }
-      if(item.status==="pending"){
-        pending +=1
+      if (item.status === "pending") {
+        pending += 1;
       }
-      if(item.status==="inprogress"){
-        inprogress +=1
+      if (item.status === "inprogress") {
+        inprogress += 1;
       }
-    })
-   
+    });
   }
 
   const labels = ["Total", "Complete", "Pending", "Inprogress"];
@@ -108,8 +104,8 @@ function SummaryAbnormality() {
 
       {showGraph ? <GraphAbnormality labels={labels} data={data} /> : null}
 
-      <div className="overflow-auto " style={{ height: "65vh" , width:"97vw"}}>
-        <table className="m-3   table table-bordered table-sm table-hover text-dark " >
+      <div className="overflow-auto " style={{ height: "65vh", width: "97vw" }}>
+        <table className="m-3   table table-bordered table-sm table-hover text-dark ">
           {/* <table className="m-5 border border-black-50 text-light"> */}
           <thead>
             <tr>

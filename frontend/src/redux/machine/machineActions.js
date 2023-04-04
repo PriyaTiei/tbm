@@ -5,10 +5,6 @@ import {
 } from "./machineTypes";
 import axios from "axios";
 
-// const host = "localhost";
-const host= "10.82.126.73";
-const port = 5051;
-
 export const machineFetchRequest = () => {
   return {
     type: MACHINE_FETCH_REQUEST,
@@ -32,8 +28,7 @@ export const machineFetchFail = (error) => {
 export const getMachines = (queryStr) => {
   return (dispatch) => {
     dispatch(machineFetchRequest());
-    let url = `http://${host}:${port}/head/headMachineList?${queryStr}`;
-    // let url = "http://3.108.56.58/trial.php";
+    let url = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/headMachineList?${queryStr}`;
     axios
       .get(url)
       .then((result) => {
