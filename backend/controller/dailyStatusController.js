@@ -1,5 +1,6 @@
 const catchAsyncError = require("../middleware/catchAsyncError");
 const DailyStatusModel = require("../mongoSchema/dailyStatusModel");
+const PendingTask = require("../mongoSchema/pendingTaskModel")
 const ErrorHandler = require("../util/errorHandling");
 const ApiFeatureDailyStatus = require("../util/apiFeatureDailyStatus");
 
@@ -28,6 +29,13 @@ exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
       entryFor,
       pS,
     });
+
+    const pendingTask = await PendingTask.findOne({ checkItem : checkItem})
+
+    if(pendingTask) {
+      pendingTask.result = result;
+      await pendingTask.save()
+    }
 
     res.status(200).json({ success: true, dailyStatus });
   }

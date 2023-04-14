@@ -5,7 +5,7 @@ import { filterDate, filterDept } from "../redux/filter/filterActions";
 import Select from "react-select";
 import { Button, Row, Col, Container } from "react-bootstrap";
 // import { getMachines } from "../redux/machine/machineActions";
-import { Link, useLocation } from "react-router-dom";
+import { Link  } from "react-router-dom";
 
 const todayDate = new Date(Date.now());
 
@@ -21,11 +21,9 @@ const todayDate = new Date(Date.now());
 
 function Filters() {
 
-  const location = useLocation();
-
-  const shouldDisplay = location.pathname !== "/pendingTasks";
+ 
   const [date, setDate] = useState(todayDate);
-  const logins = useSelector((state) => state.logins);
+  // const logins = useSelector((state) => state.logins);
   const machines = useSelector((state) => state.machines);
 
   const users = useSelector((state) => state.users);
@@ -63,7 +61,7 @@ function Filters() {
       )
     );
     // dispatch(getMachines(queryStr));
-  }, [date]);
+  }, [dispatch,date]);
 
   const selectHandler = (e) => {
     dispatch(filterDept(e.value));
@@ -74,12 +72,13 @@ function Filters() {
       <hr></hr>
       <div className="d-flex justify-content-between">
         <div className="d-flex">
-         {shouldDisplay && <DatePicker
+        
+          <DatePicker
             value={date}
             onChange={setDate}
             clearIcon={null}
             className="px-3"
-          />}
+          />
           <Select
             options={options}
             onChange={selectHandler}
@@ -102,7 +101,15 @@ function Filters() {
             <Button className="mx-3 bg-green">Login</Button>
           </Link>
         )} */}
-
+        <Link to='/'>
+         <Button
+              variant="secondary"
+              className="mx-3 bg-green px-3"
+               
+            >
+              Home
+            </Button>
+            </Link>
         {level >= 10 && (
           <Link to="/summaryAbnormality">
             <Button className="mx-3">

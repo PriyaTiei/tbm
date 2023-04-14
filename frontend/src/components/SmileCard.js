@@ -27,6 +27,7 @@ function SmileCard() {
   const [showModal, setShowModal] = useState(false);
 
   const filters = useSelector((state) => state.filters);
+
   let queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}`;
   let entryForQueryStr = `${filters.y}-${filters.m}-${filters.dt}`;
   for (const e of searchParams.entries()) {
@@ -44,7 +45,7 @@ function SmileCard() {
 
   useEffect(() => {
     dispatch(getCheckItem(queryStr, page, entryForQueryStr));
-  }, [dispatch, page, searchParams, filters, modify]);
+  }, [dispatch, page, searchParams, filters, modify,entryForQueryStr,queryStr]);
 
   // unpack object
   const { loading, checkItem } = checkItems;

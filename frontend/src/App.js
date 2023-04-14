@@ -1,7 +1,7 @@
 import React from "react";
 
 // import MachineList from "./components/MachineList";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {  Routes, Route } from "react-router-dom";
 import Title from "./components/Title";
 import SmileCard from "./components/SmileCard";
 import { Provider } from "react-redux";
@@ -17,11 +17,13 @@ import SummaryAbnormality from "./components/SummaryAbnormality";
 import SummaryCard from "./components/SummaryCard";
 import SmileCardAdd from "./components/SmileCardAdd";
 import PendingTask from "./components/PendingTask";
+import { AppSidebar } from "./components/Sidebar";
 
 function App() {
   return (
     <Provider store={store}>
-      <Router>
+      <AppSidebar>  
+       
         <Title />
         <Filters />
         <Routes>
@@ -35,7 +37,8 @@ function App() {
           <Route path="/summaryCards" element={<SummaryCard />} />
           <Route path="/addCheckItems" element={<SmileCardAdd />} />
         </Routes>
-      </Router>
+       
+      </AppSidebar>
     </Provider>
   );
 }

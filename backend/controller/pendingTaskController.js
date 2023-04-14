@@ -37,6 +37,8 @@ exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
 
   const pendingTaskList = [];
   machineTaskList.forEach((task) => {
+    let entryDates = [];
+    entryDates.push(date)
     var newTask = {
       checkItem: task._id, 
       line: task.line,
@@ -44,10 +46,14 @@ exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
       workDetail: task.workDetail,
       pS: task.pS,
       result: task.result, 
+      entryDates : entryDates
     } 
     const matchingDailyStatus = dailyStatusList.find(status => status.checkItem.toString() === task._id.toString()); 
     if (matchingDailyStatus) { 
       newTask.result = matchingDailyStatus.result;
+      if(newTask.result === 'PENDING') {
+        matchingDailyStatus.entryDates.push(date);
+      }
     }
     pendingTaskList.push(newTask)
   })

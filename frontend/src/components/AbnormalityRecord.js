@@ -3,10 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
-// const host = "localhost"
-const host = "10.82.126.73";
-const port = 5051;
+import { toast } from "react-toastify"; 
 
 function AbnormalityRecord() {
   let info = {};

@@ -1,11 +1,12 @@
 import React, { Fragment, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Button, Col, Row, Image } from "react-bootstrap";
+import { Button, Col, Row, Image, Nav } from "react-bootstrap";
 import { Link } from 'react-router-dom'
 import { getLogout } from "../redux/login/loginActions";
 import { fetchUserRequest } from "../redux/user/userActions";
 import axios from "axios";
 import LoginModal from "./LoginModal";
+import { navBarSlice } from "../redux/navbarSlice";
 
 export default function Title() {
   const [showModal, setShowModal] = useState(false);
@@ -24,9 +25,20 @@ export default function Title() {
         console.log("error", err);
       });
   };
+  
+  const handleMenuClick = () => {
+    dispatch(navBarSlice.actions.toggleVisible());
+  };
   return (
     <Fragment>
       <Row className="align-items-center bg-black m-0  py-2 px-3">
+      <Col xs={1} className="p-1">
+      <Nav className="justify-content-end">
+        <Nav.Link onClick={handleMenuClick}>
+        <i className="bi bi-list" style={{ fontSize: "30px", color: "white" }}></i>
+        </Nav.Link>
+      </Nav> 
+        </Col>
         <Col xs={2} className="p-1">
           <Link to="/">
             <Image width={"120"} src="logo.png" alt="TIEI_LOGO" fluid />

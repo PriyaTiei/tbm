@@ -33,8 +33,7 @@ export default function PendingTask() {
                       <PendingLine
                         line={item.line} 
                         processList = {item.processList} 
-                        key={item.line} 
-                        counts={item.counts}                         
+                        key={item.line}                        
                       />
                     );
                   })
