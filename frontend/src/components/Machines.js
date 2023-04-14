@@ -32,8 +32,7 @@ function Machines() {
     // dispatch(getDailyStatus());
   }, [dispatch, filters]);
 
-  const { loading, machineData } = machines;
-
+  const { loading, machineData } = machines; 
   console.log(machineData)
  
   return (

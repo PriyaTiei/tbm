@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import styles from "./styles/smilecard.module.css";
 
 function PendingCard(props) {
-  const { processNo, line , counts, result } = props;
+  const { processNo, line ,  result, processData } = props;
 
   let statusColor = "rgba(76,76,255)";
+  const counts = processData.length
    
 
   return (
@@ -32,7 +33,7 @@ function PendingCard(props) {
             height : 10
           }}></div>
           {result === 'PENDING' && <div className="text-center">
-               PENDING
+               result
             </div>}
         </div>
       </Link>

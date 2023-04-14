@@ -17,8 +17,8 @@ exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
   const dated = date.getDate(); 
  
 
-  const pendingTaskObject = new ApiFeaturePendingTask(HeadModel, {
-    pS: "P",
+  const pendingTaskObject = new ApiFeaturePendingTask(HeadModel, { 
+    
     d: day,
     m: month,
     w: week,
@@ -74,8 +74,11 @@ exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
       console.log(`Updated ${result.modifiedCount} documents and inserted ${result.upsertedCount} documents in the Pending collection`);
     }
   });
+
+
+ 
   
-  res.status(201).json({
+  res.status(200).json({
     success: true, 
     dailyStatusList,
     pendingTaskList
@@ -101,7 +104,11 @@ const deleteOkTasks = async () => {
 
 
 exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
-  const pendingTaskObject = new ApiFeaturePendingTask(PendingTask);
+  
+  const pendingTaskObject = new ApiFeaturePendingTask(PendingTask, {
+    ...req.query,
+    result : 'PENDING'
+  });
   const pendingTaskObjectWithLine = pendingTaskObject.line();
   const pendingTaskList = await pendingTaskObjectWithLine.query;
   
@@ -123,27 +130,65 @@ exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
   pendingTaskList.forEach((item) => {
     let line = item._id;
 
-    const counts = {};
-    item.processList.forEach((el) => {
-      counts[el.processNo] = counts[el.processNo] ? (counts[el.processNo] += 1) : 1;
-    });
+    
 
    let processList = item.processList;
 
+   processList.sort((a, b) => {
+    let x = a.processNo;
+    let y = b.processNo
+    if (x < y) {
+      return -1;
+    }
+    if (x > y) {
+      return 1;
+    }
+    return 0;
+  });
+
     pendingData = [
       ...pendingData,
-      { line,  processList, counts},
+      { line,  processList },
     ]; 
   });
 
   
- 
+  pendingData.sort((a, b) => {
+    let x = a.line;
+    let y = b.line;
+    if (x < y) {
+      return -1;
+    }
+    if (x > y) {
+      return 1;
+    }
+    return 0;
+  });
 
-  res.status(201).json({
+  res.status(200).json({
     success: true,  
     pendingData,
     totalCount: { totalCountBlock, totalCountCrank, totalCountHead },
   });
 })
+
+
+exports.updateResult = async (req, res) => {
+  try {
+    const { id } = req.params; 
+    const { result } = req.body;  
+
+    const data = await PendingTask.findByIdAndUpdate(id, { result : result } );  
+
+    if (!data) {
+      return res.status(404).send('Data not found');
+    }
+
+    res.send(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server Error');
+  }
+};
 
  

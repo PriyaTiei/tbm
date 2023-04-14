@@ -45,20 +45,33 @@ class ApiFeaturePendingTask {
     let newQueryStr = { ...this.queryStr }; 
 
     this.query = this.query.aggregate([
-      { $match: newQueryStr },
+      { 
+        $match: newQueryStr 
+      },
       {
         $group: {
-          _id:  "$line" ,
+          _id: { line: "$line", processNo: "$processNo" },
           processList: {
             $push: {
-              processNo: "$processNo",
+              id: "$_id", 
               checkItem: "$checkItem",
               result: "$result",
-            },
-          },
-        },
+              pS: "$pS"
+            }
+          }
+        }
       },
-     
+      {
+        $group: {
+          _id: "$_id.line",
+          processList: {
+            $push: {
+              processNo: "$_id.processNo",
+              processData: "$processList"
+            }
+          }
+        }
+      }
     ])
     return this;
   }

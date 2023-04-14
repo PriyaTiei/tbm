@@ -8,14 +8,16 @@ import Loading from "./Loading";
 export default function PendingTask() {
   const dispatch = useDispatch();
   const pendingTasks = useSelector((state) => state.pendingTasks); 
+  const filters = useSelector((state) => state.filters);
    
- 
+  let queryStr = `pS=${filters.pS}`;
 
   useEffect(() => {
-    dispatch(getPendingTasks()); 
-  }, [dispatch ]);
+    dispatch(getPendingTasks(queryStr)); 
+  }, [dispatch, filters ]);
 
-  const { loading, pendingTasksData } = pendingTasks; 
+  const { loading, pendingTasksData } = pendingTasks;  
+  console.log(pendingTasksData.pendingData)
 
   return (
     <Fragment>
