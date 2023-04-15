@@ -1,33 +1,79 @@
- 
 import { useSelector, useDispatch } from "react-redux";
-import { Offcanvas } from "react-bootstrap";
 import { navBarSlice } from "../redux/navbarSlice";
+import { Button, Offcanvas } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
+const sidebarStyle = {
+  width: "100vw",
+  backgroundColor: "#f8f9fa",
+  height: "100vh",
+  position: "fixed",
+  top: "0",
+  left: "0",
+  zIndex: "999", 
+};
 
-export   function AppSidebar({ children }) { 
+const menuTitleStyle = {
+  fontSize: "1.2rem",
+  marginTop: "0",
+};
+
+const menuItemStyle = {
+  display: "block",
+  marginTop: "10px",
+  width: "100%",
+  textAlign: "left",
+  borderRadius: "0",
+};
+
+export function AppSidebar({ children }) {
   const { visible } = useSelector((state) => state.navBar);
-// const { activeItem } = useSelector((state) => state.navBar);
-const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-// const handleItemClick = (value) => {
-//   dispatch(navBarSlice.actions.setActiveItem(value));
-// };
+  const users = useSelector((state) => state.users);
+  const level =
+    users.loading === false
+      ? users.users.success === true
+        ? users.users.user.level
+        : 0
+      : 0;
+
+  const handleClose = () => {
+    dispatch(navBarSlice.actions.setVisible(false));
+  };
+
   return (
     <>
-     
-
-      <Offcanvas show={visible} onHide={() => dispatch(navBarSlice.actions.setVisible(false))}>
+      <Offcanvas show={visible} onHide={handleClose}>
         <Offcanvas.Header closeButton>
-          <Offcanvas.Title>Menu</Offcanvas.Title>
+          <h2 style={menuTitleStyle}>Menu</h2>
         </Offcanvas.Header>
         <Offcanvas.Body>
-          
+          {level >= 10 && (
+            <Link to="/summaryAbnormality">
+              <Button variant="dark" style={menuItemStyle}>
+                <i className="bi bi-stack-overflow px-1"></i>Abnormality Summary
+              </Button>
+            </Link>
+          )}
+          {level >= 10 && (
+            <Link to="/summaryCards">
+              <Button variant="dark" style={menuItemStyle}>
+                <i className="bi bi-stack-overflow px-1"></i>Cards Summary
+              </Button>
+            </Link>
+          )}
+          {level >= 100 && (
+            <Link to="/addCheckItems">
+              <Button variant="dark" style={menuItemStyle}>
+                <i className="bi bi-plus-square"></i> CheckItems
+              </Button>
+            </Link>
+          )}
         </Offcanvas.Body>
       </Offcanvas>
 
-      <div className="sidebar-content">{children}</div>
+      <div style={sidebarStyle}>{children}</div>
     </>
   );
 }
-
- 

@@ -30,6 +30,7 @@ function SmileCardDetails({ list, image, setImage }) {
   } = list;
   const [okNg, setOkNg] = useState(dailyStatus);
   const [valueM, setValueM] = useState(value);
+  const [remarks , setRemarks] = useState(null)
 
   useEffect(() => {
     if (images !== null) {
@@ -54,6 +55,7 @@ function SmileCardDetails({ list, image, setImage }) {
         user: users.users.user._id,
         entryFor,
         pS,
+        remarks
       };
 
       if (okNg === "OK" || okNg === "NG") {
@@ -232,6 +234,13 @@ function SmileCardDetails({ list, image, setImage }) {
                 value={valueM}
                 onChange={(e) => setValueM(e.target.value)}
               ></input>
+              <br></br>
+              <textarea
+                type="text"
+                placeholder="Enter Remarks"
+                value={remarks}
+                onChange={(e) => setRemarks(e.target.value)}
+              ></textarea>
               <br></br>
               <button
                 className="btn btn-success mb-2"

@@ -1,4 +1,9 @@
-import { FILTER_DATE, FILTER_DEPT } from "./filterTypes";
+import {
+  FILTER_CHECK,
+  FILTER_DATE,
+  FILTER_DEPT,
+  FILTER_LINE,
+} from "./filterTypes";
 const todayDate = new Date(Date.now());
 const dt = todayDate.getDate();
 const d = todayDate.getDay();
@@ -6,6 +11,8 @@ const m = todayDate.getMonth() + 1;
 const y = todayDate.getFullYear();
 const w = Math.floor(dt / 7.1) + 1;
 const pS = "S";
+const line = null;
+const rS = null;
 const initialFilterState = {
   d,
   m,
@@ -13,6 +20,8 @@ const initialFilterState = {
   w,
   pS,
   dt,
+  line,
+  rS
 };
 
 const filterReducer = (state = initialFilterState, action) => {
@@ -26,6 +35,16 @@ const filterReducer = (state = initialFilterState, action) => {
       return {
         ...state,
         pS: action.payload,
+      };
+    case FILTER_LINE:
+      return {
+        ...state,
+        line: action.payload,
+      };
+    case FILTER_CHECK:
+      return {
+        ...state,
+        rs: action.payload,
       };
     default:
       return state;

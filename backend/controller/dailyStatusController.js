@@ -5,7 +5,7 @@ const ErrorHandler = require("../util/errorHandling");
 const ApiFeatureDailyStatus = require("../util/apiFeatureDailyStatus");
 
 exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
-  const { checkItem, result, value, user, entryFor, pS } = req.body;
+  const { checkItem, result, value, user, entryFor, pS, remarks } = req.body;
 
   const dailystatusAvailable = await DailyStatusModel.findOne({
     checkItem,
@@ -28,6 +28,7 @@ exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
       user,
       entryFor,
       pS,
+      remarks
     });
 
     const pendingTask = await PendingTask.findOne({ checkItem : checkItem})
@@ -43,7 +44,7 @@ exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
 
 exports.updateDailyStatus = catchAsyncError(async (req, res, next) => {
   const id = req.params.id;
-  const { checkItem, result, value, user, entryFor, pS } = req.body;
+  const { checkItem, result, value, user, entryFor, pS, remarks } = req.body;
 
   let dailyStatus = await DailyStatusModel.findById(id);
   if (!dailyStatus) {
@@ -56,6 +57,7 @@ exports.updateDailyStatus = catchAsyncError(async (req, res, next) => {
   dailyStatus.user = user;
   dailyStatus.entryFor = entryFor;
   dailyStatus.pS = pS;
+  dailyStatus.remarks = remarks;
   await dailyStatus.save({ validateBeforeSave: false });
 
   res.status(201).json({ success: true, message: "Updated Successfully" });

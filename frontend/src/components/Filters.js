@@ -1,11 +1,16 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
 import DatePicker from "react-date-picker";
 import { useDispatch, useSelector } from "react-redux";
-import { filterDate, filterDept } from "../redux/filter/filterActions";
+import {
+  filterDate,
+  filterDept,
+  filterLine,
+  filterCheck,
+} from "../redux/filter/filterActions";
 import Select from "react-select";
 import { Button, Row, Col, Container } from "react-bootstrap";
 // import { getMachines } from "../redux/machine/machineActions";
-import { Link  } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const todayDate = new Date(Date.now());
 
@@ -17,11 +22,9 @@ const todayDate = new Date(Date.now());
 
 // end week no
 
-
-
 function Filters() {
+  const selectLineRef = useRef(null);
 
- 
   const [date, setDate] = useState(todayDate);
   // const logins = useSelector((state) => state.logins);
   const machines = useSelector((state) => state.machines);
@@ -45,9 +48,31 @@ function Filters() {
   const dispatch = useDispatch();
   // const filters = useSelector((state) => state.filters);
   // let queryStr = `d=${filters.d}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}`;
-  const options = [
+  const deptOptions = [
     { value: "S", label: "Production Dept" },
     { value: "P", label: "Maint Dept" },
+  ];
+
+  const checkOptions = [
+    { value: null, label: "All" },
+    { value: "S", label: "Stop Check" },
+    { value: "R", label: "Run Check" },
+  ];
+
+  const lineOptions = [
+    { value: null, label: "All" },
+    { value: "Head", label: "Head" },
+    { value: "Block", label: "Block" },
+    { value: "Crank", label: "Crank" },
+    {
+      value: "Assembly (Head Sub-assembly)",
+      label: "Assembly (Head Sub-assembly)",
+    },
+    {
+      value: "Assembly (Block Sub-assembly)",
+      label: "Assembly (Block Sub-assembly)",
+    },
+    { value: "Assembly (MK-1)", label: "Assembly (MK-1)" },
   ];
 
   useEffect(() => {
@@ -61,10 +86,18 @@ function Filters() {
       )
     );
     // dispatch(getMachines(queryStr));
-  }, [dispatch,date]);
+  }, [dispatch, date]);
 
-  const selectHandler = (e) => {
+  const selectDeptHandler = (e) => {
     dispatch(filterDept(e.value));
+  };
+
+  const selectLineHandler = (e) => {
+    dispatch(filterLine(e.value));
+  };
+
+  const selectCheckHandler = (e) => {
+    dispatch(filterCheck(e.value));
   };
 
   return (
@@ -72,7 +105,6 @@ function Filters() {
       <hr></hr>
       <div className="d-flex justify-content-between">
         <div className="d-flex">
-        
           <DatePicker
             value={date}
             onChange={setDate}
@@ -80,8 +112,8 @@ function Filters() {
             className="px-3"
           />
           <Select
-            options={options}
-            onChange={selectHandler}
+            options={deptOptions}
+            onChange={selectDeptHandler}
             className="mx-3 secondary"
             defaultValue={{ value: "S", label: "Production Dept" }}
           />
@@ -101,36 +133,12 @@ function Filters() {
             <Button className="mx-3 bg-green">Login</Button>
           </Link>
         )} */}
-        <Link to='/'>
-         <Button
-              variant="secondary"
-              className="mx-3 bg-green px-3"
-               
-            >
-              Home
-            </Button>
-            </Link>
-        {level >= 10 && (
-          <Link to="/summaryAbnormality">
-            <Button className="mx-3">
-              <i className="bi bi-stack-overflow px-1"></i>Abnormality Summary
-            </Button>
-          </Link>
-        )}
-        {level >= 10 && (
-          <Link to="/summaryCards">
-            <Button className="mx-3">
-              <i className="bi bi-stack-overflow px-1"></i>Cards Summary
-            </Button>
-          </Link>
-        )}
-        {level >= 100 && (
-          <Link to="/addCheckItems">
-            <Button className="mx-3">
-              <i className="bi bi-plus-square"></i> CheckItems
-            </Button>
-          </Link>
-        )}
+        <Link to="/">
+          <Button variant="secondary" className="mx-3 bg-green px-3">
+            Home
+          </Button>
+        </Link>
+       
 
         <Container className="mx-3 px-3" style={{ maxWidth: "30vw" }}>
           <Row className="bg-info text-light border rounded-2 d-flex align-items-center justify-content-center">
@@ -145,6 +153,21 @@ function Filters() {
             </Col>
           </Row>
         </Container>
+
+        <Select
+          ref={selectLineRef}
+          options={lineOptions}
+          onChange={selectLineHandler}
+          className="mx-3 secondary"
+          defaultValue={lineOptions[0]}
+        />
+
+        <Select
+          options={checkOptions}
+          onChange={selectCheckHandler}
+          className="mx-3 secondary"
+          defaultValue={checkOptions[0]}
+        />
 
         <Link to="/pendingTasks">
           <Button variant="secondary" className="mx-3">
