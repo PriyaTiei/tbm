@@ -29,13 +29,7 @@ function Filters() {
   // const logins = useSelector((state) => state.logins);
   const machines = useSelector((state) => state.machines);
 
-  const users = useSelector((state) => state.users);
-  const level =
-    users.loading === false
-      ? users.users.success === true
-        ? users.users.user.level
-        : 0
-      : 0;
+ 
 
   const totalCount = machines.loading
     ? { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 }

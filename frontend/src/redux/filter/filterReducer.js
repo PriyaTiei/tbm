@@ -44,7 +44,7 @@ const filterReducer = (state = initialFilterState, action) => {
     case FILTER_CHECK:
       return {
         ...state,
-        rs: action.payload,
+        rS: action.payload,
       };
     default:
       return state;
