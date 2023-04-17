@@ -13,7 +13,7 @@ import Card from "./components/RaiseCard";
 import Login from "./components/Login";
 import AbnormalityRecord from "./components/AbnormalityRecord";
 import SummaryAbnormality from "./components/SummaryAbnormality";
-
+import AllCard from "./components/AllCard"
 import SummaryCard from "./components/SummaryCard";
 import SmileCardAdd from "./components/SmileCardAdd";
 import PendingTask from "./components/PendingTask";
@@ -36,6 +36,7 @@ function App() {
           <Route path="/summaryAbnormality" element={<SummaryAbnormality />} />
           <Route path="/summaryCards" element={<SummaryCard />} />
           <Route path="/addCheckItems" element={<SmileCardAdd />} />
+          <Route path="/allCards" element={<AllCard />} />
         </Routes>
        
       </AppSidebar>

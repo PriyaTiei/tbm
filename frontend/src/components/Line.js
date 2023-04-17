@@ -11,7 +11,8 @@ function Line({ line, processNos, counts, dailyStatusDataLinewise }) {
       OK: element.result.OK,
       NG: element.result.NG,
     };
-  });
+  }); 
+ 
 
   return (
     <Fragment>

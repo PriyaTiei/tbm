@@ -105,28 +105,9 @@ function Filters() {
             clearIcon={null}
             className="px-3"
           />
-          <Select
-            options={deptOptions}
-            onChange={selectDeptHandler}
-            className="mx-3 secondary"
-            defaultValue={{ value: "S", label: "Production Dept" }}
-          />
+         
         </div>
-
-        {/* {logins.login ? (
-          <Button
-            className="mx-3 bg-red"
-            onClick={() => {
-              logout();
-            }}
-          >
-            Logout
-          </Button>
-        ) : (
-          <Link to="/login">
-            <Button className="mx-3 bg-green">Login</Button>
-          </Link>
-        )} */}
+ 
         <Link to="/">
           <Button variant="secondary" className="mx-3 bg-green px-3">
             Home
@@ -147,6 +128,13 @@ function Filters() {
             </Col>
           </Row>
         </Container>
+
+        <Select
+            options={deptOptions}
+            onChange={selectDeptHandler}
+            className="mx-3 secondary"
+            defaultValue={{ value: "S", label: "Production Dept" }}
+          />
 
         <Select
           ref={selectLineRef}

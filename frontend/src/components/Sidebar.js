@@ -10,7 +10,7 @@ const sidebarStyle = {
   position: "fixed",
   top: "0",
   left: "0",
-  zIndex: "999", 
+  zIndex: "999",
 };
 
 const menuTitleStyle = {
@@ -19,11 +19,13 @@ const menuTitleStyle = {
 };
 
 const menuItemStyle = {
-  display: "block",
-  marginTop: "10px",
+  textDecoration: "none",
+  color: "inherit",
+  border: "none",
+  outline: "none",
+  cursor: "pointer",
+  color: "white",
   width: "100%",
-  textAlign: "left",
-  borderRadius: "0",
 };
 
 export function AppSidebar({ children }) {
@@ -70,6 +72,11 @@ export function AppSidebar({ children }) {
               </Button>
             </Link>
           )}
+          <Link to="/allCards">
+            <Button variant="dark" style={menuItemStyle}>
+               All CheckItems
+            </Button>
+          </Link>
         </Offcanvas.Body>
       </Offcanvas>
 
