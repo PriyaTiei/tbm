@@ -8,7 +8,9 @@ import TrendGraphModal from "../TrendGraphModal";
 
 export default function SmileCardDetails() {
 
-    const { checkItem } = useParams();
+    const { data } = useParams();
+
+    
 
     let {
         cardNo,
