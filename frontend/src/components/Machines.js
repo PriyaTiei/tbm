@@ -34,10 +34,9 @@ function Machines() {
 
     dispatch(getDailyStatus(DailyStatusQueryStr));
     // dispatch(getDailyStatus());
-  }, [dispatch, filters]);
+  }, [dispatch, filters,queryStr, DailyStatusQueryStr]);
 
-  const { loading, machineData } = machines; 
-  console.log(machineData)
+  const { loading, machineData } = machines;  
  
   return (
     <Fragment>

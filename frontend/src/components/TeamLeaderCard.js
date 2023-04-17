@@ -2,12 +2,17 @@ import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 import styles from "./styles/smilecard.module.css";
 
-function PendingCard(props) {
-  const { processNo, line ,  result, processData } = props;
+export default function TeamLeaderCard(props) {
+  const { processNo, line, count, OK, NG } = props;
 
-  let statusColor = "rgba(76,76,255)";
-  const counts = processData.length
-   
+  let statusColor = "";
+  if (NG > 0) {
+    statusColor = "rgba(255,0,0,.7)";
+  } else if (OK === count) {
+    statusColor = "rgba(0,255,0,.7)";
+  } else {
+    statusColor = "rgba(76,76,255)";
+  }
 
   return (
     <Fragment>
@@ -28,17 +33,15 @@ function PendingCard(props) {
               style={{ fontSize: "3rem", color: "white" }}
             ></i>
           </div>
-          <div className="text-center">Total {counts} </div>
-          <div style={{
-            height : 10
-          }}></div>
-          {result === 'PENDING' && <div className="text-center">
-               result
-            </div>}
+          <div className="card-footer">
+            <div className="text-center">Total {count} </div>
+            <div className="text-center">
+              {" "}
+              OK {OK} NG {NG}
+            </div>
+          </div>
         </div>
       </Link>
     </Fragment>
   );
-}
-
-export default PendingCard;
+} 

@@ -98,8 +98,7 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
 
 //testing upload
 
-exports.saveData = catchAsyncError(async (req, res, next) => {
-  console.log(req.body);
+exports.saveData = catchAsyncError(async (req, res, next) => { 
 
   const {
     action,
@@ -134,8 +133,7 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
     workTime,
     y,
     _id,
-  } = req.body;
-  console.log("Id :", _id);
+  } = req.body; 
   //conver to int
   function converToInt(y) {
     const splitY = y.split(",");

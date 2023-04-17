@@ -1,6 +1,5 @@
 import React, { Fragment, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getDailyStatus } from "../redux/dailyStatus/dailyStatusActions";
+import { useDispatch, useSelector } from "react-redux"; 
 import { getMachines } from "../redux/machine/machineActions";
 import Line from "./Line";
 import Loading from "./Loading";
@@ -20,11 +19,9 @@ export default function AllCard() {
 
   useEffect(() => {
     dispatch(getMachines(queryStr)); 
-  }, [dispatch , filters ]);
+  }, [dispatch , filters , queryStr]);
 
-  const { loading, machineData } = machines; 
-  console.log(machineData)
- 
+  const { loading, machineData } = machines;  
   return (
     <Fragment>
       {loading ? (

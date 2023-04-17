@@ -8,7 +8,6 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import Machines from "./components/Machines";
 import Filters from "./components/Filters";
-
 import Card from "./components/RaiseCard";
 import Login from "./components/Login";
 import AbnormalityRecord from "./components/AbnormalityRecord";
@@ -16,7 +15,9 @@ import SummaryAbnormality from "./components/SummaryAbnormality";
 import AllCard from "./components/AllCard"
 import SummaryCard from "./components/SummaryCard";
 import SmileCardAdd from "./components/SmileCardAdd";
-import PendingTask from "./components/PendingTask";
+import PendingTask from "./components/PendingTask/PendingTask";
+import TeamLeader from "./components/TeamLeader"
+import PendingSmileCard from "./components/PendingTask/PendingSmileCard"
 import { AppSidebar } from "./components/Sidebar";
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Route path="/" element={<Machines />} />
           <Route path="/checkList" element={<SmileCard />} />
           <Route path="/pendingTasks" element={<PendingTask />} />
+          <Route path="/pendingTasks/cardDetails:data" element={PendingSmileCard}></Route>
           <Route path="/card" element={<Card />} />
           <Route path="/login" element={<Login />} />
           <Route path="/abnormality" element={<AbnormalityRecord />} />
@@ -37,6 +39,7 @@ function App() {
           <Route path="/summaryCards" element={<SummaryCard />} />
           <Route path="/addCheckItems" element={<SmileCardAdd />} />
           <Route path="/allCards" element={<AllCard />} />
+          <Route path="/teamleader" element={<TeamLeader />} />
         </Routes>
        
       </AppSidebar>

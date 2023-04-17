@@ -1,9 +1,9 @@
 import React, { Fragment, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getPendingTasks } from "../redux/pendingTasks/pendingActions";
+import { getPendingTasks } from "../../redux/pendingTasks/pendingActions";
 
 import PendingLine from "./PendingLine";
-import Loading from "./Loading";
+import Loading from "../Loading";
 
 export default function PendingTask() {
   const dispatch = useDispatch();
@@ -17,7 +17,7 @@ export default function PendingTask() {
 
   useEffect(() => {
     dispatch(getPendingTasks(queryStr));
-  }, [dispatch, filters]);
+  }, [dispatch, filters, queryStr]);
 
   const { loading, pendingTasksData } = pendingTasks;
   console.log(pendingTasksData.pendingData);

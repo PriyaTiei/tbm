@@ -19,6 +19,7 @@ function PendingLine({ line, processList  }) {
               key={processNo.processNo}
               line={line}  
               processData={processNo.processData}
+             
             />
           );
         })}

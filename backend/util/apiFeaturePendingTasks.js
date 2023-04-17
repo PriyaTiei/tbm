@@ -56,7 +56,8 @@ class ApiFeaturePendingTask {
               id: "$_id", 
               checkItem: "$checkItem",
               result: "$result",
-              pS: "$pS"
+              pS: "$pS",
+              entryDates : "$entryDates"
             }
           }
         }
