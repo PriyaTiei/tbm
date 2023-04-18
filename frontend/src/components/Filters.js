@@ -109,8 +109,8 @@ function Filters() {
         </div>
  
         <Link to="/">
-          <Button variant="secondary" className="mx-3 bg-green px-3">
-            Home
+          <Button  className="mx-3 bg-blue px-3">
+          <i className="bi bi-house"></i>  Home
           </Button>
         </Link>
 
@@ -158,8 +158,8 @@ function Filters() {
         />
 
         <Link to="/pendingTasks">
-          <Button variant="secondary" className="mx-3">
-            <i className="bi bi-card-checklist px-1"></i>
+          <Button  color="blue" className="mx-3">
+            <i className="bi bi-card-list px-1"></i> 
             Pending Tasks
           </Button>
         </Link>
