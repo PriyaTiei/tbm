@@ -1,9 +1,18 @@
 import React, { Fragment } from "react"; 
 import PendingCard from "./PendingCard";
+import { useDispatch } from 'react-redux';
+import { setProcessData } from '../../redux/processData/processActions';
 
 function PendingLine({ line, processList  }) { 
  
   
+  const dispatch = useDispatch();
+
+  const handleClick = (processData) => {
+    dispatch(setProcessData(processData));
+    console.log(processData)
+  };
+
   
 
   return (
@@ -12,12 +21,12 @@ function PendingLine({ line, processList  }) {
       <div className="d-flex flex-wrap">
         {processList
         .map((processNo) => {
-           
+             
           return (
             <PendingCard
+              onClick={() => handleClick(processNo.processData)}
               processNo={processNo.processNo}
-              key={processNo.processNo}
-              line={line}  
+              key={processNo.processNo} 
               processData={processNo.processData}
              
             />

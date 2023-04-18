@@ -19,8 +19,7 @@ export default function PendingTask() {
     dispatch(getPendingTasks(queryStr));
   }, [dispatch, filters, queryStr]);
 
-  const { loading, pendingTasksData } = pendingTasks;
-  console.log(pendingTasksData.pendingData);
+  const { loading, pendingTasksData } = pendingTasks; 
 
   return (
     <Fragment>

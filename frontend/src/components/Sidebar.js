@@ -26,6 +26,7 @@ const menuItemStyle = {
   cursor: "pointer",
   color: "white",
   width: "100%",
+  padding : "12px 0px"
 };
 
 export function AppSidebar({ children }) {

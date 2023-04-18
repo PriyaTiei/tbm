@@ -48,13 +48,13 @@ function Filters() {
   ];
 
   const checkOptions = [
-    { value: null, label: "All" },
+    { value: null, label: "All Check" },
     { value: "S", label: "Stop Check" },
     { value: "R", label: "Run Check" },
   ];
 
   const lineOptions = [
-    { value: null, label: "All" },
+    { value: null, label: "All Lines" },
     { value: "Head", label: "Head" },
     { value: "Block", label: "Block" },
     { value: "Crank", label: "Crank" },

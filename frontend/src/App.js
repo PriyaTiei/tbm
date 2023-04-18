@@ -31,7 +31,7 @@ function App() {
           <Route path="/" element={<Machines />} />
           <Route path="/checkList" element={<SmileCard />} />
           <Route path="/pendingTasks" element={<PendingTask />} />
-          {/* <Route path="/pendingTasks/cardDetails:data" element={PendingSmileCard}></Route> */}
+          <Route path="/pendingTasks/cardDetails" element={<PendingSmileCard/>}></Route>
           <Route path="/card" element={<Card />} />
           <Route path="/login" element={<Login />} />
           <Route path="/abnormality" element={<AbnormalityRecord />} />
