@@ -8,6 +8,9 @@ import loginReducer from "./redux/login/loginReducer";
 import dailyStatusReducer from "./redux/dailyStatus/dailyStatusReducer";
 import abnormalityReducer from "./redux/abnormality/abnormalityReducer";
 import cardReducer from "./redux/card/cardReducer";
+import pendingTaskReducer from "./redux/pendingTasks/pendingReducer";
+import navBarReducer from "./redux/navbarSlice"
+import processDataReducer from "./redux/processData/processReducer";
 
 const rootReducer = combineReducers({
   users: userReducer,
@@ -18,6 +21,9 @@ const rootReducer = combineReducers({
   dailyStatuses: dailyStatusReducer,
   abnormalities: abnormalityReducer,
   cards: cardReducer,
+  pendingTasks: pendingTaskReducer,
+  navBar : navBarReducer,
+  processData : processDataReducer
 });
 
 export default rootReducer;

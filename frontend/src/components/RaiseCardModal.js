@@ -5,11 +5,8 @@ import { Button } from "react-bootstrap";
 import Select from "react-select";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useAlert } from "react-alert";
+import { toast } from "react-toastify";
 import "./raiseCard.css";
-// const host = "localhost";
-const host ="10.82.126.73"
-const port = 5051;
 
 function ModalForm({
   showModal,
@@ -47,8 +44,6 @@ function ModalForm({
   // const handleSubmit = () => {};
 
   // let info = {};
-
-  const alert = useAlert();
 
   // const [searchParams] = useSearchParams();
   // for (const e of searchParams.entries()) {
@@ -94,7 +89,7 @@ function ModalForm({
     e.preventDefault();
     axios
       .post(
-        `http://${host}:${port}/card/create`,
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/card/create`,
         {
           checkItem,
           user,
@@ -108,12 +103,12 @@ function ModalForm({
         // , { withCredentials: true }
       )
       .then((result) => {
-        alert.show("Saved Successfully");
+        toast.success("Saved Successfully");
         setShowModal(false);
       })
       .catch((err) => {
         console.log(err);
-        alert.show("Please fill Abnormility Details");
+        toast.error("Please fill Abnormility Details");
       });
   };
 

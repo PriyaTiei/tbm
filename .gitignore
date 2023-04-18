@@ -5,4 +5,5 @@ card_status.xlsx
 frontend_test/
 frontend/build/
 frontend/package\ copy.json
+.env
 

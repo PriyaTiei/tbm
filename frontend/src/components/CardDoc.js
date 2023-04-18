@@ -4,9 +4,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { getCards } from "../redux/card/cardActions";
 import CardRecordUpdate from "./CardRecordUpdate";
 import AbnormalityImageModal from "./AbnormalityImageModal";
-// const host = "localhost";
-const host ="10.82.126.73"
-const port = 5051;
 
 function CardDoc({ item, fromDateSt, toDateSt }) {
   const {
@@ -41,7 +38,9 @@ function CardDoc({ item, fromDateSt, toDateSt }) {
   const dispatch = useDispatch();
   const deleteItem = (itemId) => {
     axios
-      .delete(`http://${host}:${port}/card/update/${itemId}`)
+      .delete(
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/card/update/${itemId}`
+      )
       .then((result) => {
         console.log("Card item deleted successfully");
         dispatch(getCards(fromDateSt, toDateSt));

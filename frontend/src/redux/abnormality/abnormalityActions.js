@@ -5,10 +5,6 @@ import {
   ABNORMALITY_FETCH_FAIL,
 } from "./abnormalityTypes";
 
-// const host = "localhost";
-const host = "10.82.126.73"
-const port = 5051;
-
 export const abnormalityFetchRequest = () => {
   return {
     type: ABNORMALITY_FETCH_REQUEST,
@@ -28,16 +24,16 @@ export const abnormalityFetchFail = (error) => {
   };
 };
 
-export const getAbnormality = ( fromDateSt, toDateSt) => {
-  
-
+export const getAbnormality = (fromDateSt, toDateSt) => {
   return (dispatch) => {
     dispatch(abnormalityFetchRequest());
     axios
-      .get(`http://${host}:${port}/abnormality/find/fromDate/${fromDateSt}/toDate/${toDateSt}`)
+      .get(
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/find/fromDate/${fromDateSt}/toDate/${toDateSt}`
+      )
       .then((result) => {
-        console.log("results ab",result.data)
-        dispatch(abnormalityFetchSuccess(result.data));        
+        console.log("results ab", result.data);
+        dispatch(abnormalityFetchSuccess(result.data));
       })
       .catch((error) => {
         dispatch(abnormalityFetchFail(error.message));

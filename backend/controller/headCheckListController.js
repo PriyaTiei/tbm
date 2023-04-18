@@ -1,7 +1,8 @@
 const catchAsyncError = require("../middleware/catchAsyncError");
 const HeadModel = require("../mongoSchema/chekItemModel");
 const ApiFeatureHead = require("../util/apiFeatureHead");
-const ErrorHandler = require("../util/errorHandling");
+const ErrorHandler = require("../util/errorHandling"); 
+
 
 exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
   const headObject = new ApiFeatureHead(HeadModel, req.query)
@@ -89,18 +90,28 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   });
 
   // return results
-  res.status(201).json({
+  res.status(200).json({
     success: true,
     machineData,
     totalCount: { totalCountBlock, totalCountCrank, totalCountHead },
   });
 });
 
-//testing upload
+exports.getHeadMachineById = catchAsyncError(async (req, res, next) => {
+  const id = req.params.id;
+  const machine = await HeadModel.findById(id);
+
+  if (!machine) {
+    return next(new ErrorHandler("could not find Machine", 404));  }
+ 
+  
+  res.status(200).json({
+    success: true,
+    data: machine,
+  });
+});
 
 exports.saveData = catchAsyncError(async (req, res, next) => {
-  console.log(req.body);
-
   const {
     action,
     cardNo,
@@ -135,7 +146,6 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
     y,
     _id,
   } = req.body;
-  console.log("Id :", _id);
   //conver to int
   function converToInt(y) {
     const splitY = y.split(",");
@@ -344,7 +354,7 @@ exports.deleteCheckItem = catchAsyncError(async (req, res, next) => {
   const id = req.params.id;
   console.log("Id :", id);
   const checkItem = await HeadModel.findById(id);
-  console.log("checkItem  :", checkItem );
+  console.log("checkItem  :", checkItem);
   if (!checkItem) {
     return next(new ErrorHandler("check item not found", 404));
   }

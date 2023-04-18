@@ -2,16 +2,11 @@ import React, { useState, useEffect } from "react";
 import styles from "./styles/smilecard.module.css";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { useAlert } from "react-alert";
+import { toast } from "react-toastify";
 import TrendGraphModal from "./TrendGraphModal";
-// const host = "localhost";
-const host= "10.82.126.73";
-const port = 5051;
 
 function SmileCardDetails({ list, image, setImage }) {
   const [showModal, setShowModal] = useState(false);
- 
-  const alert = useAlert();
 
   const users = useSelector((state) => state.users);
   const filters = useSelector((state) => state.filters);
@@ -35,7 +30,7 @@ function SmileCardDetails({ list, image, setImage }) {
   } = list;
   const [okNg, setOkNg] = useState(dailyStatus);
   const [valueM, setValueM] = useState(value);
-  
+  const [remarks , setRemarks] = useState(null)
 
   useEffect(() => {
     if (images !== null) {
@@ -51,7 +46,7 @@ function SmileCardDetails({ list, image, setImage }) {
 
   const dailyEntry = (e) => {
     if (users.users.length === 0) {
-      alert.show("Login required");
+      toast.warning("Login required");
     } else {
       let data = {
         checkItem: _id,
@@ -60,23 +55,26 @@ function SmileCardDetails({ list, image, setImage }) {
         user: users.users.user._id,
         entryFor,
         pS,
+        remarks
       };
-      
+
       if (okNg === "OK" || okNg === "NG") {
         axios
-          .post(`http://${host}:${port}/dailyStatus/entry`, data)
+          .post(
+            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
+            data
+          )
           .then((result) => {
-           
             if (result.data.success) {
-              alert.show("saved data");
+              toast.success("saved data");
             }
           })
           .catch((err) => {
             // console.log("error ", err);
-            alert.show(`Data could not be saved , ${err.message}`);
+            toast.error(`Data could not be saved , ${err.message}`);
           });
       } else {
-        alert.show("Please judge OK or NG");
+        toast.warning("Please judge OK or NG");
       }
     }
   };
@@ -201,15 +199,12 @@ function SmileCardDetails({ list, image, setImage }) {
             src={
               image === null || image === undefined
                 ? "/noImageAdded.png"
-                : `http://${host}:${port}/assets/images/${image}`
+                : `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/images/${image}`
             }
             alt="Details_Photo"
             style={{ width: "auto", height: "50vh" }}
           ></img>
-          <div>
-          {image}
-          </div>
-          
+          <div>{image}</div>
         </div>
 
         <div className="col-sm-4 bg-secondary">
@@ -223,14 +218,15 @@ function SmileCardDetails({ list, image, setImage }) {
               style={{ width: "18vw" }}
               className="d-flex flex-column justify-content"
             >
-
               <div className="d-flex justify-content-between align-items-center">
-              <h6 className="text-center text-light mx-3" >
-                Judgement
-              </h6>
-              
-              <button className= "btn btn-primary mr-1" onClick={()=>setShowModal(true)}><i className="bi bi-graph-up-arrow h4" ></i></button>  
-              
+                <h6 className="text-center text-light mx-3">Judgement</h6>
+
+                <button
+                  className="btn btn-primary mr-1"
+                  onClick={() => setShowModal(true)}
+                >
+                  <i className="bi bi-graph-up-arrow h4"></i>
+                </button>
               </div>
               <input
                 type="text"
@@ -238,6 +234,13 @@ function SmileCardDetails({ list, image, setImage }) {
                 value={valueM}
                 onChange={(e) => setValueM(e.target.value)}
               ></input>
+              <br></br>
+              <textarea
+                type="text"
+                placeholder="Enter Remarks"
+                value={remarks}
+                onChange={(e) => setRemarks(e.target.value)}
+              ></textarea>
               <br></br>
               <button
                 className="btn btn-success mb-2"
@@ -260,34 +263,30 @@ function SmileCardDetails({ list, image, setImage }) {
           </div>
         </div>
       </div>
-    
-{/* // trend graph in modal */}
-{showModal ? (
-  <TrendGraphModal  
-    showModal={showModal}
-    setShowModal={setShowModal}
-    id={_id}
-    // checkItem={checkItem._id}
-    // line={line}
-    // processNo={processNo}
-    // workDetail={checkItem.workDetail}
-    // abnormality={abnormality}
-    // cardType={cardType}
-    // // countermeasure={countermeasure}
-    // // spare={spare}
-    // // pic={pic}
-    // // targetDate={targetDate}
-    // status={status}
-    // fromDateSt={fromDateSt}
-    //  toDateSt={toDateSt}
 
-   
-  />
-) : null}
-</div>
- 
-)
-
+      {/* // trend graph in modal */}
+      {showModal ? (
+        <TrendGraphModal
+          showModal={showModal}
+          setShowModal={setShowModal}
+          id={_id}
+          // checkItem={checkItem._id}
+          // line={line}
+          // processNo={processNo}
+          // workDetail={checkItem.workDetail}
+          // abnormality={abnormality}
+          // cardType={cardType}
+          // // countermeasure={countermeasure}
+          // // spare={spare}
+          // // pic={pic}
+          // // targetDate={targetDate}
+          // status={status}
+          // fromDateSt={fromDateSt}
+          //  toDateSt={toDateSt}
+        />
+      ) : null}
+    </div>
+  );
 }
 
 export default SmileCardDetails;

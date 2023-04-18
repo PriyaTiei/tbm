@@ -5,9 +5,6 @@ import { getAbnormality } from "../redux/abnormality/abnormalityActions";
 import AbnormalityRecordUpdate from "./AbnormalityRecordUpdate";
 import RaiseCardModal from "./RaiseCardModal";
 import AbnormalityImageModal from "./AbnormalityImageModal";
-// const host = "localhost";
-const host ="10.82.126.73"
-const port = 5051;
 
 function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
   const {
@@ -41,7 +38,9 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
   const dispatch = useDispatch();
   const deleteItem = (itemId) => {
     axios
-      .delete(`http://${host}:${port}/abnormality/update/${itemId}`)
+      .delete(
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/update/${itemId}`
+      )
       .then((result) => {
         dispatch(getAbnormality(fromDateSt, toDateSt));
       })
@@ -98,36 +97,36 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
       </td>
 
       {level >= 40 && (
-      <td>
-        <button
-          className="btn btn-danger"
-          onClick={deleteConfirmation}
-          // data-toggle="tooltip"
-          // data-placement="top"
-          title="Delete the entry"
-        >
-          <i
-            className="bi bi-trash"
-            style={{ fontSize: "1.5rem", color: "white" }}
-          ></i>
-          Delete
-        </button>
-      </td>
+        <td>
+          <button
+            className="btn btn-danger"
+            onClick={deleteConfirmation}
+            // data-toggle="tooltip"
+            // data-placement="top"
+            title="Delete the entry"
+          >
+            <i
+              className="bi bi-trash"
+              style={{ fontSize: "1.5rem", color: "white" }}
+            ></i>
+            Delete
+          </button>
+        </td>
       )}
       {level >= 20 && (
-      <td>
-        <button
-          className="btn btn-warning"
-          title="Update the entry"
-          onClick={() => setShowModal(true)}
-        >
-          <i
-            className="bi bi-pencil-square"
-            style={{ fontSize: "1.5rem", color: "white" }}
-          ></i>
-          Update
-        </button>
-      </td>
+        <td>
+          <button
+            className="btn btn-warning"
+            title="Update the entry"
+            onClick={() => setShowModal(true)}
+          >
+            <i
+              className="bi bi-pencil-square"
+              style={{ fontSize: "1.5rem", color: "white" }}
+            ></i>
+            Update
+          </button>
+        </td>
       )}
 
       {level >= 100 && (

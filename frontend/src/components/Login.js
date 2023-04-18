@@ -4,23 +4,22 @@ import { useDispatch } from "react-redux";
 import axios from "axios";
 import "./login.css";
 import { getLogin } from "../redux/login/loginActions";
-import { useAlert } from "react-alert";
+import { toast } from "react-toastify";
 import { fetchUserSuccess, fetchUserFail } from "../redux/user/userActions";
-import {useCookies} from "react-cookie"
+import { useCookies } from "react-cookie";
 
-// const host = "localhost";
-const host= "10.82.126.73";
-const port = 5051;
-
-function Login() {  const formHandler = (e) => {
+function Login() {
+  const formHandler = (e) => {
     e.preventDefault();
     axios
-      .post(`http://${host}:${port}/user/login`, { name: userName, password })
+      .post(
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/user/login`,
+        { name: userName, password }
+      )
       .then((result) => {
-        
-        if (result.data.success) {         
-          setCookie("token", "test")
-         
+        if (result.data.success) {
+          setCookie("token", "test");
+
           dispatch(getLogin(result.data.user.name, result.data.user.role));
           dispatch(fetchUserSuccess(result.data));
           navigate("/");
@@ -28,14 +27,13 @@ function Login() {  const formHandler = (e) => {
       })
       .catch((err) => {
         // console.log("err", err.message);
-        alert.show("Enter correct user Name & Password");
+        toast.show("Enter correct user Name & Password");
         dispatch(fetchUserFail("User cannot be found"));
       });
   };
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const alert = useAlert();
-  const [cookies, setCookie]= useCookies(["token"])
+  const [cookies, setCookie] = useCookies(["token"]);
 
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -74,7 +72,7 @@ function Login() {  const formHandler = (e) => {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button className="btn btn-primary" type="submit">
+          <button className="btn btn-secondary" type="submit">
             Login
           </button>
         </form>

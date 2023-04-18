@@ -1,7 +1,8 @@
 import {
   FILTER_DATE,
-
+  FILTER_LINE,
   FILTER_DEPT,
+  FILTER_CHECK
 } from "./filterTypes";
 
 export const filterDate = (d,w, m, y, dt) => {
@@ -17,3 +18,19 @@ export const filterDept = (dept) => {
     payload: dept,
   };
 };
+
+
+export const filterLine = (line) => {
+  return {
+    type: FILTER_LINE,
+    payload: line,
+  };
+};
+
+export const filterCheck = (check) => {
+  return {
+    type: FILTER_CHECK,
+    payload: check,
+  };
+};
+

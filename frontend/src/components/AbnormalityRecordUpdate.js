@@ -5,11 +5,8 @@ import { Button } from "react-bootstrap";
 import Select from "react-select";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { useAlert } from "react-alert";
 import { getAbnormality } from "../redux/abnormality/abnormalityActions";
-// const host = "localhost";
-const host ="10.82.126.73"
-const port = 5051;
+import { toast } from "react-toastify";
 
 function ModalForm(props) {
   const {
@@ -43,8 +40,6 @@ function ModalForm(props) {
     setSelectedFile(e.target.files[0]);
   };
 
-  const alert = useAlert();
-
   const users = useSelector((state) => state.users);
 
   const user = users.loading
@@ -73,20 +68,24 @@ function ModalForm(props) {
     formData.append("image", selectedFile);
 
     axios
-      .post(`http://${host}:${port}/abnormality/uploadImage`, formData, {
-        headers: { "Content-Type": "Multipart/form-data" },
-      })
+      .post(
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/uploadImage`,
+        formData,
+        {
+          headers: { "Content-Type": "Multipart/form-data" },
+        }
+      )
       .then((result) => {
         setImageM(result.data.file.filename);
         if (result.data.success) {
-          alert.show(
+          toast.success(
             `Image uploaded successfully, Name of file ${result.data.file.filename}`
           );
         }
       })
       .catch((err) => {
         console.log("error uploading image", err);
-        alert.show(
+        toast.error(
           `Failed to upload Image, choose correct Image file with file extension .png/.jpg`
         );
       });
@@ -96,7 +95,7 @@ function ModalForm(props) {
     e.preventDefault();
     axios
       .put(
-        `http://${host}:${port}/abnormality/update/${id}`,
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/update/${id}`,
         {
           line,
           processNo,
@@ -113,14 +112,14 @@ function ModalForm(props) {
         // , { withCredentials: true }
       )
       .then((result) => {
-        alert.show("Saved Successfully");
+        toast.success("Saved Successfully");
         console.log(result.data);
         setShowModal(false);
         dispatch(getAbnormality(fromDateSt, toDateSt));
       })
       .catch((err) => {
         console.log(err);
-        alert.show("Please fill Abnormility Details");
+        toast.error("Please fill Abnormility Details");
       });
   };
 
@@ -207,7 +206,6 @@ function ModalForm(props) {
             </div>
 
             <div className="d-flex justify-content-between mt-2">
-            
               {/* <div className="imgTagCol mx-1">Image :</div> */}
               <div className="secondCol ms-0">
                 <div className="form-group">
@@ -227,16 +225,16 @@ function ModalForm(props) {
               </button>
             </div>
             {/* <div className="d-flex"> */}
-              {/* <div className="me-2">Image Name:</div> */}
-              <div className="my-2">
-                <input
-                  className="form-control"
-                  value={imageM}
-                  onChange={(e) => setImageM(e.target.value)}
-                  placeholder="Image Name"
-                  disabled
-                />
-              </div>
+            {/* <div className="me-2">Image Name:</div> */}
+            <div className="my-2">
+              <input
+                className="form-control"
+                value={imageM}
+                onChange={(e) => setImageM(e.target.value)}
+                placeholder="Image Name"
+                disabled
+              />
+            </div>
             {/* </div> */}
           </form>
         </div>

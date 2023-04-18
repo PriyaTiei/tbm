@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
-import { Button } from "react-bootstrap";
 import { useSearchParams } from "react-router-dom";
-
-import Select from "react-select";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useAlert } from "react-alert";
 import TrendGraph from "./TrendGraph";
 import DatePicker from "react-date-picker";
 import "./trend.css";
-
-// const host = "localhost";
-const host = "10.82.126.73";
-const port = 5051;
 
 function TrendGraphModal({ showModal, setShowModal, id }) {
   const handleClose = () => {
@@ -23,8 +15,6 @@ function TrendGraphModal({ showModal, setShowModal, id }) {
 
   let info = {};
 
-  const alert = useAlert();
-
   const [data, setData] = useState([]);
   const [labels, setLabels] = useState([]);
   const [searchParams] = useSearchParams();
@@ -33,9 +23,9 @@ function TrendGraphModal({ showModal, setShowModal, id }) {
     info[f] = v;
   }
 
-  const { line, processNo } = info;
+  // const { line, processNo } = info;
 
-  const users = useSelector((state) => state.users);
+  // const users = useSelector((state) => state.users);
 
   // begining of Month
   var beginingDate = new Date(Date.now());
@@ -48,7 +38,6 @@ function TrendGraphModal({ showModal, setShowModal, id }) {
   const fromYear = fromDate.getFullYear();
   const fromDateSt = `${fromYear}-${fromMonth}-${fromDt}`;
 
-  //to next date
   const [toDate, setToDate] = useState(new Date(Date.now()));
   var toNextDate = new Date(toDate);
   toNextDate.setDate(toNextDate.getDate() + 1);
@@ -57,11 +46,11 @@ function TrendGraphModal({ showModal, setShowModal, id }) {
   const toYear = toNextDate.getFullYear();
   const toDateSt = `${toYear}-${toMonth}-${toDt}`;
 
-  const user = users.loading
-    ? null
-    : users.users.success
-    ? users.users.user._id
-    : null;
+  // const user = users.loading
+  //   ? null
+  //   : users.users.success
+  //   ? users.users.user._id
+  //   : null;
 
   var dataList = [];
   var labelsList = [];
@@ -69,7 +58,7 @@ function TrendGraphModal({ showModal, setShowModal, id }) {
   useEffect(() => {
     axios
       .get(
-        `http://${host}:${port}/dailyStatus/find/${id}/fromDate/${fromDateSt}/toDate/${toDateSt}`
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/find/${id}/fromDate/${fromDateSt}/toDate/${toDateSt}`
       )
       .then((result) => {
         result.data.dailyStatus.forEach((item) => {
@@ -92,7 +81,7 @@ function TrendGraphModal({ showModal, setShowModal, id }) {
   //   e.preventDefault();
   //   axios
   //     .post(
-  //       `http://${host}:${port}/abnormality/create`,
+  //       `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/create`,
   //       {
   //         checkItem: itemId,
   //         abnormality,
@@ -108,12 +97,12 @@ function TrendGraphModal({ showModal, setShowModal, id }) {
   //       // , { withCredentials: true }
   //     )
   //     .then((result) => {
-  //       alert.show("Saved Successfully");
+  //       toast.success("Saved Successfully");
   //       setShowModal(false);
   //     })
   //     .catch((err) => {
   //       console.log(err);
-  //       alert.show("Please fill Abnormility Details");
+  //       toast.error("Please fill Abnormility Details");
   //     });
   // };
 

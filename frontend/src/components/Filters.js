@@ -1,9 +1,14 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
 import DatePicker from "react-date-picker";
 import { useDispatch, useSelector } from "react-redux";
-import { filterDate, filterDept } from "../redux/filter/filterActions";
+import {
+  filterDate,
+  filterDept,
+  filterLine,
+  filterCheck,
+} from "../redux/filter/filterActions";
 import Select from "react-select";
-import { Button } from "react-bootstrap";
+import { Button, Row, Col, Container } from "react-bootstrap";
 // import { getMachines } from "../redux/machine/machineActions";
 import { Link } from "react-router-dom";
 
@@ -18,18 +23,13 @@ const todayDate = new Date(Date.now());
 // end week no
 
 function Filters() {
+  const selectLineRef = useRef(null);
+
   const [date, setDate] = useState(todayDate);
-  const logins = useSelector((state) => state.logins);
+  // const logins = useSelector((state) => state.logins);
   const machines = useSelector((state) => state.machines);
 
-  const users = useSelector((state) => state.users);
-  const level =
-    users.loading === false
-      ? users.users.success === true
-        ? users.users.user.level
-        : 0
-      : 0;
-
+ 
 
   const totalCount = machines.loading
     ? { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 }
@@ -42,9 +42,31 @@ function Filters() {
   const dispatch = useDispatch();
   // const filters = useSelector((state) => state.filters);
   // let queryStr = `d=${filters.d}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}`;
-  const options = [
+  const deptOptions = [
     { value: "S", label: "Production Dept" },
     { value: "P", label: "Maint Dept" },
+  ];
+
+  const checkOptions = [
+    { value: null, label: "All Check" },
+    { value: "S", label: "Stop Check" },
+    { value: "R", label: "Run Check" },
+  ];
+
+  const lineOptions = [
+    { value: null, label: "All Lines" },
+    { value: "Head", label: "Head" },
+    { value: "Block", label: "Block" },
+    { value: "Crank", label: "Crank" },
+    {
+      value: "Assembly (Head Sub-assembly)",
+      label: "Assembly (Head Sub-assembly)",
+    },
+    {
+      value: "Assembly (Block Sub-assembly)",
+      label: "Assembly (Block Sub-assembly)",
+    },
+    { value: "Assembly (MK-1)", label: "Assembly (MK-1)" },
   ];
 
   useEffect(() => {
@@ -58,85 +80,89 @@ function Filters() {
       )
     );
     // dispatch(getMachines(queryStr));
-  }, [date]);
+  }, [dispatch, date]);
 
-  const selectHandler = (e) => {
+  const selectDeptHandler = (e) => {
     dispatch(filterDept(e.value));
+  };
+
+  const selectLineHandler = (e) => {
+    dispatch(filterLine(e.value));
+  };
+
+  const selectCheckHandler = (e) => {
+    dispatch(filterCheck(e.value));
   };
 
   return (
     <Fragment>
-      <div className="d-flex flex-wrap">
-        <DatePicker
-          value={date}
-          onChange={setDate}
-          clearIcon={null}
-          className="mx-3"
-        />
-        <Select
-          options={options}
-          onChange={selectHandler}
-          className="mx-3"
-          defaultValue={{ value: "S", label: "Production Dept" }}
-        />
-        {/* {logins.login ? (
-          <Button
-            className="mx-3 bg-red"
-            onClick={() => {
-              logout();
-            }}
-          >
-            Logout
-          </Button>
-        ) : (
-          <Link to="/login">
-            <Button className="mx-3 bg-green">Login</Button>
-          </Link>
-        )} */}
-
+      <hr></hr>
+      <div className="d-flex justify-content-between">
+        <div className="d-flex">
+          <DatePicker
+            value={date}
+            onChange={setDate}
+            clearIcon={null}
+            className="px-3"
+          />
+         
+        </div>
+ 
         <Link to="/">
-          <Button className="mx-3">
-            <i className="bi bi-house px-1"></i>
-            Home
+          <Button  className="mx-3 bg-blue px-3">
+          <i className="bi bi-house"></i>  Home
           </Button>
         </Link>
 
-        {level >= 10 && (
-          <Link to="/summaryAbnormality">
-            <Button className="mx-3">
-              <i className="bi bi-stack-overflow px-1"></i>Abnormality Summary
-            </Button>
-          </Link>
-        )}
-        {level >= 10 && (
-          <Link to="/summaryCards">
-            <Button className="mx-3">
-              <i className="bi bi-stack-overflow px-1"></i>Cards Summary
-            </Button>
-          </Link>
-        )}
-        {level >= 100 && (
-          <Link to="/addCheckItems">
-            <Button className="mx-3">
-              <i className="bi bi-plus-square"></i> CheckItems
-            </Button>
-          </Link>
-        )}
+        {/* <Link to="/teamleader">
+          <Button variant="secondary" className="mx-3 bg-green px-3">
+            Team Leader
+          </Button>
+        </Link> */}
+       
 
-        <div className="m-auto p-1 bg-info text-light border rounded-2 d-flex flex-row justify-content-center">
-          <div className="align-self-center">
-            <span className="h6 text-center">Total Check</span>
-          </div>
-          <div className="align-self-center text-dark">
-            <span className="m-1">Block : {totalCountBlock}</span>
-            <span className="m-1">
-              <span className="text-light">| </span>Crank : {totalCountCrank}
-            </span>
-            <span className="m-1">
-              <span className="text-light">| </span>Head : {totalCountHead}
-            </span>
-          </div>
-        </div>
+        <Container className="mx-3 px-3" style={{ maxWidth: "30vw" }}>
+          <Row className="bg-info text-light border rounded-2 d-flex align-items-center justify-content-center">
+            <Col xs={12} md={6} className="text-center">
+              <h6 className="my-2">Total Check</h6>
+            </Col>
+            <Col xs={12} md={6} className="text-center">
+              <h6 className="my-2">
+                Block: {totalCountBlock} | Crank: {totalCountCrank} | Head:{" "}
+                {totalCountHead}
+              </h6>
+            </Col>
+          </Row>
+        </Container>
+
+        <Select
+            options={deptOptions}
+            onChange={selectDeptHandler}
+            className="mx-3 secondary"
+            defaultValue={{ value: "S", label: "Production Dept" }}
+          />
+
+        <Select
+          ref={selectLineRef}
+          options={lineOptions}
+          onChange={selectLineHandler}
+          className="mx-3 secondary"
+          defaultValue={lineOptions[0]}
+        />
+
+        <Select
+          options={checkOptions}
+          onChange={selectCheckHandler}
+          className="mx-3 secondary"
+          defaultValue={checkOptions[0]}
+        />
+
+        <Link to="/pendingTasks">
+          <Button  color="blue" className="mx-3">
+            <i className="bi bi-card-list px-1"></i> 
+            Pending Tasks
+          </Button>
+        </Link>
       </div>
       <hr></hr>
     </Fragment>

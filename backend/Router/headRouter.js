@@ -8,6 +8,7 @@ const {
   saveData,
   insertData,
   deleteCheckItem,
+  getHeadMachineById,
 } = require("../controller/headCheckListController");
 const headRouter = express.Router();
 
@@ -31,6 +32,7 @@ const upload = multer({ storage: storage });
 //routes
 headRouter.route("/headCheckList").get(getHeadCheckList);
 headRouter.route("/headMachineList").get(getHeadMachineList);
+headRouter.route("/machine/:id").get(getHeadMachineById);
 headRouter.route("/uploadImage").post(upload.single("image"), uploadImage);
 headRouter.route("/saveData").post(upload.none(), saveData);
 headRouter.route("/insertData").post(upload.none(), insertData);

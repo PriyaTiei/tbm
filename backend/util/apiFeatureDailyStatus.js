@@ -2,6 +2,7 @@ class ApiFeatureDailyStatus {
   constructor(query, queryStr) {
     this.query = query;
     this.queryStr = queryStr;
+    this.newQueryStr = queryStr;
   }
 
   search() {
@@ -23,22 +24,6 @@ class ApiFeatureDailyStatus {
     const removeItems = ["dept", "page", "limit"];
     removeItems.forEach((item) => delete newQueryStr[item]);
 
-    newQueryStr = newQueryStr.d
-      ? { ...newQueryStr, d: { $in: [9999, Number(newQueryStr.d)] } }
-      : { ...newQueryStr };
-
-    newQueryStr = newQueryStr.w
-      ? { ...newQueryStr, w: { $in: [9999, Number(newQueryStr.w)] } }
-      : { ...newQueryStr };
-
-    newQueryStr = newQueryStr.m
-      ? { ...newQueryStr, m: { $in: [9999, Number(newQueryStr.m)] } }
-      : { ...newQueryStr };
-
-    newQueryStr = newQueryStr.y
-      ? { ...newQueryStr, y: { $in: [9999, Number(newQueryStr.y)] } }
-      : { ...newQueryStr };
-
     this.query = this.query.find(newQueryStr);
 
     return this;
@@ -55,34 +40,11 @@ class ApiFeatureDailyStatus {
     const removeItems = ["dept", "page", "limit"];
     removeItems.forEach((item) => delete newQueryStr[item]);
 
-
-    newQueryStr = newQueryStr.d
-      ? { ...newQueryStr, d: { $in: [9999, Number(newQueryStr.d)] } }
-      : { ...newQueryStr };
-
-    newQueryStr = newQueryStr.w
-      ? { ...newQueryStr, w: { $in: [9999, Number(newQueryStr.w)] } }
-      : { ...newQueryStr };
-
-    newQueryStr = newQueryStr.m
-      ? { ...newQueryStr, m: { $in: [9999, Number(newQueryStr.m)] } }
-      : { ...newQueryStr };
-
-    newQueryStr = newQueryStr.y
-      ? { ...newQueryStr, y: { $in: [9999, Number(newQueryStr.y)] } }
-      : { ...newQueryStr };
-
-    this.query = this.query.aggregate([{ $match: newQueryStr }]);
-
-    // this.query = this.query.aggregate([
-    //   { $match: newQueryStr },
-    //   {
-    //     $group: {
-    //       _id: { line: "$line" },
-    //       processList: { $push: "$processNo" },
-    //     },
-    //   },
-    // ]);
+    this.query = this.query.aggregate([
+      { $match: newQueryStr },
+      { $project : { _id : 1, checkItem : 1, result : 1}}
+      
+    ]);
     return this;
   }
 }
