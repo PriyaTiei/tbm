@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from "react";
-import styles from "../styles/smilecard.module.css";
+import styles from "./styles/smilecard.module.css";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify"; 
-import moment from "moment"
 
-export default function PendingSmileCardDetails({ list  ,   entryFor}) { 
+export default function Test({ list  , image}) { 
 
   const users = useSelector((state) => state.users); 
 
-  const entryForStr = moment(entryFor).format('YYYY-M-DD');  
-
   let {
-    cardNo,
+    // cardNo/,
     // d,
     line,
     model,
@@ -24,10 +21,11 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
     criterion, 
     images,
     _id,
-    pS, 
+    pS,
+    dailyStatus,
     value,
   } = list;
-  const [okNg, setOkNg] = useState("decisionPending");
+  const [okNg, setOkNg] = useState(dailyStatus);
   const [valueM, setValueM] = useState(value);
   const [remarks , setRemarks] = useState(null) 
 
@@ -40,7 +38,6 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
         result: okNg === "OK" ? "OK" : okNg === "NG" ? "NG" : "not judge",
         value: valueM,
         user: users.users.user._id, 
-        entryFor : entryForStr,
         pS,
         remarks
       };
@@ -87,14 +84,14 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
           </div>
         </div>
 
-        <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
+        {/* <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
           <div>
             <h6 className={`${styles.scTh}`}>Legend No</h6>
           </div>
           <div className={styles.brT}>
             <p className={`${styles.scTd}`}>{cardNo }</p>
           </div>
-        </div>
+        </div> */}
 
         {/* <div className={`col-md-1 col-sm-3  align-self-stretch  ${styles.brA}`}>
           <div>
@@ -184,20 +181,20 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
         <div className="col-sm-8">
           <img
             src={
-              images[0] === null || images[0] === undefined
+              image === null || image === undefined
                 ? "/noImageAdded.png"
-                : `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/images/${images[0]}`
+                : `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/images/${image}`
             }
             alt="Details_Photo"
             style={{ width: "auto", height: "50vh" }}
           ></img>
-          <div>{images[0]}</div>
+          <div>{image}</div>
         </div>
 
         <div className="col-sm-4 bg-secondary">
           <div className="d-flex ">
             <img
-              src={`../../${okNg}.png`}
+              src={`${okNg}.png`}
               alt="Not Evaluated"
               style={{ width: "17vw", height: "17vw" }}
             ></img>

@@ -19,6 +19,7 @@ import PendingTask from "./components/PendingTask/PendingTask";
 import TeamLeader from "./components/TeamLeader"
 import PendingSmileCard from "./components/PendingTask/PendingSmileCard"
 import { AppSidebar } from "./components/Sidebar";
+import Test from "./components/Test";
 
 function App() {
   return (

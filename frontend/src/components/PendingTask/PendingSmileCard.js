@@ -2,27 +2,29 @@ import React, { useEffect, useState, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";  
 import PendingSmileCardDetails from "./PendingSmileCardDetails";  
 import axios from "axios";
+import Test from "../Test";
 
 export default function PendingSmileCard() { 
   const processData = useSelector((state) => state.processData.processData);
   const [page, setPage] = useState(1);
-  const [list, setList] = useState([]);
+  const [list, setList] = useState();
 
   const idIndex = page - 1;
 
   const getMachineById = async () => {
     try {
-      const response = await axios.get(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/machine/${processData[idIndex].checkItem}`);
-      console.log(response.data)
+      const response = await axios.get(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/machine/${processData[idIndex].checkItem}`); 
       let data =  response.data;
-      return data.data;
+      console.log(data)
+      await setList(data.data)
+      console.log(list)
     } catch (error) {
       console.error(error);
     }
   }; 
 
   useEffect(() => {
-    getMachineById().then(data => setList(data));
+    getMachineById();
   } , [page]);
 
   
@@ -69,8 +71,8 @@ export default function PendingSmileCard() {
           ></i>
         </button>
       </div>
-      {list !==[] ? (
-        <PendingSmileCardDetails list={list} />
+      {list ? (
+        <PendingSmileCardDetails list={list}  entryFor={processData[idIndex].entryDates[0]}  />
       ) : (
         <div>No data found</div>
       )}
