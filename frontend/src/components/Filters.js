@@ -109,7 +109,7 @@ function Filters() {
         </div>
  
         <Link to="/">
-          <Button  className="mx-3 bg-blue px-3">
+          <Button  className="mx-1 bg-blue px-3">
           <i className="bi bi-house"></i>  Home
           </Button>
         </Link>
@@ -138,27 +138,29 @@ function Filters() {
         <Select
             options={deptOptions}
             onChange={selectDeptHandler}
-            className="mx-3 secondary"
+            className="mx-1 secondary"
             defaultValue={{ value: "S", label: "Production Dept" }}
+            isSearchable={false}
           />
 
         <Select
           ref={selectLineRef}
           options={lineOptions}
           onChange={selectLineHandler}
-          className="mx-3 secondary"
+          className="mx-1 secondary"
           defaultValue={lineOptions[0]}
         />
 
         <Select
           options={checkOptions}
           onChange={selectCheckHandler}
-          className="mx-3 secondary"
+          className="mx-1 secondary"
           defaultValue={checkOptions[0]}
+          isSearchable={false}
         />
 
         <Link to="/pendingTasks">
-          <Button  color="blue" className="mx-3">
+          <Button  color="blue" className="mx-1">
             <i className="bi bi-card-list px-1"></i> 
             Pending Tasks
           </Button>
