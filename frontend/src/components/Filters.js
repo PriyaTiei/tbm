@@ -96,7 +96,7 @@ function Filters() {
 
   return (
     <Fragment>
-      <hr></hr>
+      <hr className="my-2"></hr>
       <div className="d-flex justify-content-between">
         <div className="d-flex">
           <DatePicker
@@ -167,7 +167,7 @@ function Filters() {
           </Button>
         </Link>
       </div>
-      <hr></hr>
+      <hr className="my-2"></hr>
     </Fragment>
   );
 }
