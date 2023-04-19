@@ -8,7 +8,7 @@ import {
   filterCheck,
 } from "../redux/filter/filterActions";
 import Select from "react-select";
-import { Button, Row, Col, Container } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 // import { getMachines } from "../redux/machine/machineActions";
 import { Link } from "react-router-dom";
 
@@ -149,6 +149,7 @@ function Filters() {
           onChange={selectLineHandler}
           className="mx-1 secondary"
           defaultValue={lineOptions[0]}
+          isSearchable={false}
         />
 
         <Select
