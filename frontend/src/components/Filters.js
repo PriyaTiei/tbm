@@ -120,7 +120,7 @@ function Filters() {
           </Button>
         </Link> */}
        
-
+{/* 
         <Container className="mx-3 px-3" style={{ maxWidth: "30vw" }}>
           <Row className="bg-info text-light border rounded-2 d-flex align-items-center justify-content-center">
             <Col xs={12} md={6} className="text-center">
@@ -133,7 +133,7 @@ function Filters() {
               </h6>
             </Col>
           </Row>
-        </Container>
+        </Container> */}
 
         <Select
             options={deptOptions}

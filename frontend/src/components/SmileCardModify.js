@@ -6,6 +6,7 @@ import Select from "react-select";
 // import FlavorForm from "./MultipleOptions";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import DatePicker from "react-date-picker";
 
 function SmileCardDetails({ list, image, setImage }) {
   const [selectedFile, setSelectedFile] = useState("");
@@ -298,16 +299,24 @@ function SmileCardDetails({ list, image, setImage }) {
       </div>
 
       <hr />
-      <button className="btn btn-outline-primary" onClick={saveData}>
-        Save Data
-      </button>
+      <div className="d-flex">
+        <button className="btn btn-outline-primary" onClick={saveData}>
+          Save Data
+        </button>
+
+        <span className="text-danger mx-3"> *</span>
+        <h6>- Mandatory Fields</h6>
+      </div>
 
       <ol className="d-flex flex-wrap justify-content-around">
         {/* <FlavorForm /> */}
 
         <li>
           <div className="d-flex">
-            <div className="firstCol">Line :</div>
+            <div className="firstCol">
+              Line
+              <span className="text-danger">* </span>:
+            </div>
             <div className="secondCol">
               <Select
                 options={optionsLine}
@@ -321,13 +330,16 @@ function SmileCardDetails({ list, image, setImage }) {
 
         <li>
           <div className="d-flex">
-            <div className="firstCol">Process NO :</div>
+            <div className="firstCol">
+              Process NO<span className="text-danger">* </span> :
+            </div>
             <div className="secondCol">
               <input
                 className="form-control"
                 value={processNoNew}
                 onChange={(e) => setProcessNoNew(e.target.value)}
                 disabled={level >= 100 ? false : true}
+                required
               />
             </div>
           </div>
@@ -335,12 +347,15 @@ function SmileCardDetails({ list, image, setImage }) {
 
         <li>
           <div className="d-flex">
-            <div className="firstCol">Work Details :</div>
+            <div className="firstCol">
+              Work Details<span className="text-danger">* </span> :
+            </div>
             <div className="secondCol">
               <input
                 className="form-control"
                 value={workDetailNew}
                 onChange={(e) => setWorkDetailNew(e.target.value)}
+                required
               />
             </div>
           </div>
@@ -386,7 +401,7 @@ function SmileCardDetails({ list, image, setImage }) {
         </li>
         <li>
           <div className="d-flex">
-            <div className="firstCol">card No:</div>
+            <div className="firstCol">Card No:</div>
             <div className="secondCol">
               <input
                 className="form-control"
@@ -398,31 +413,39 @@ function SmileCardDetails({ list, image, setImage }) {
         </li>
         <li>
           <div className="d-flex">
-            <div className="firstCol">Criterion :</div>
+            <div className="firstCol">
+              Criterion<span className="text-danger">* </span> :
+            </div>
             <div className="secondCol">
               <input
                 className="form-control"
                 value={criterionNew}
                 onChange={(e) => setCriterionNew(e.target.value)}
+                required
               />
             </div>
           </div>
         </li>
         <li>
           <div className="d-flex">
-            <div className="firstCol">cycle :</div>
+            <div className="firstCol">
+              Cycle<span className="text-danger">* </span> :
+            </div>
             <div className="secondCol">
               <input
                 className="form-control"
                 value={cycleNew}
                 onChange={(e) => setCycleNew(e.target.value)}
+                required
               />
             </div>
           </div>
         </li>
         <li>
           <div className="d-flex">
-            <div className="firstCol">Day :</div>
+            <div className="firstCol">
+              Day<span className="text-danger">* </span> :
+            </div>
             <div className="secondCol">
               <Select
                 options={optionsDay}
@@ -451,7 +474,9 @@ function SmileCardDetails({ list, image, setImage }) {
 
         <li>
           <div className="d-flex">
-            <div className="firstCol">Week :</div>
+            <div className="firstCol">
+              Week<span className="text-danger">* </span> :
+            </div>
             <div className="secondCol">
               <Select
                 options={optionsWeek}
@@ -480,7 +505,9 @@ function SmileCardDetails({ list, image, setImage }) {
 
         <li>
           <div className="d-flex">
-            <div className="firstCol">Month :</div>
+            <div className="firstCol">
+              Month<span className="text-danger">* </span> :
+            </div>
             <div className="secondCol">
               <Select
                 options={optionsMonth}
@@ -509,7 +536,9 @@ function SmileCardDetails({ list, image, setImage }) {
 
         <li>
           <div className="d-flex">
-            <div className="firstCol">Year:</div>
+            <div className="firstCol">
+              Year<span className="text-danger">* </span> :
+            </div>
             <div className="secondCol">
               <Select
                 options={optionsYear}
@@ -590,10 +619,13 @@ function SmileCardDetails({ list, image, setImage }) {
           <div className="d-flex">
             <div className="firstCol">Entry Date :</div>
             <div className="secondCol">
-              <input
-                className="form-control"
+              <DatePicker
+              
                 value={entryDateNew}
-                onChange={(e) => setEntryDateNew(e.target.value)}
+                onChange={setEntryDateNew}
+                dateFormat="dd/MM/yyyy"
+                className="form-control"
+                
               />
             </div>
           </div>
@@ -625,7 +657,10 @@ function SmileCardDetails({ list, image, setImage }) {
         </li>
         <li>
           <div className="d-flex">
-            <div className="firstCol">Maintenance/Production Check :</div>
+            <div className="firstCol">
+              Maintenance/Production Check
+              <span className="text-danger">* </span> :
+            </div>
             <div className="secondCol">
               <Select
                 options={optionsPS}
@@ -666,7 +701,9 @@ function SmileCardDetails({ list, image, setImage }) {
         </li>
         <li>
           <div className="d-flex">
-            <div className="firstCol">Running/Stop Check :</div>
+            <div className="firstCol">
+              Running/Stop Check<span className="text-danger">* </span> :
+            </div>
             <div className="secondCol">
               <Select
                 options={optionsRS}

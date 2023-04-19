@@ -16,10 +16,9 @@ import AllCard from "./components/AllCard"
 import SummaryCard from "./components/SummaryCard";
 import SmileCardAdd from "./components/SmileCardAdd";
 import PendingTask from "./components/PendingTask/PendingTask";
-import TeamLeader from "./components/TeamLeader"
+import TeamLeader from "./components/TeamLeader/TeamLeader"
 import PendingSmileCard from "./components/PendingTask/PendingSmileCard"
-import { AppSidebar } from "./components/Sidebar";
-import Test from "./components/Test";
+import { AppSidebar } from "./components/Sidebar"; 
 
 function App() {
   return (

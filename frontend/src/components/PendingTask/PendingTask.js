@@ -35,6 +35,7 @@ export default function PendingTask() {
                       line={item.line}
                       processList={item.processList}
                       key={item.line}
+                      counts = {item.counts}
                     />
                   );
                 })

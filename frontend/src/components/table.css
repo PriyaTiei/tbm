@@ -19,3 +19,8 @@ ol > li {
 align-self: center;
 
 }
+
+
+.datepicker-borderless {
+  border: none;
+}

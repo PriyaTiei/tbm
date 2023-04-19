@@ -12,11 +12,13 @@ function Line({ line, processNos, counts, dailyStatusDataLinewise }) {
       NG: element.result.NG,
     };
   }); 
+
+  let totalSum = Object.values(counts).reduce((acc, curr) => acc + curr, 0);
  
 
   return (
     <Fragment>
-      <h3 className="mx-3 p-1 bg-info text-center ">{line}</h3>
+      <h3 className="mx-3 p-1 bg-info text-center ">{`${line} - ${totalSum}`}</h3>
       <div className="d-flex flex-wrap">
         {processNos.map((processNo) => {
           return (
