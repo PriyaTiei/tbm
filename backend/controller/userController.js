@@ -26,7 +26,7 @@ exports.createUser = catchAsyncError(async (req, res, next) => {
     );
   }
   res
-    .status(200)
+    .status(201)
     .json({ success: true, message: `user ${user.name} created successfully` });
 });
 

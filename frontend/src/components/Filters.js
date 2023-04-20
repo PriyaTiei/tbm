@@ -8,8 +8,7 @@ import {
   filterCheck,
 } from "../redux/filter/filterActions";
 import Select from "react-select";
-import { Button, Row, Col, Container } from "react-bootstrap";
-// import { getMachines } from "../redux/machine/machineActions";
+import { Button } from "react-bootstrap"; 
 import { Link } from "react-router-dom";
 
 const todayDate = new Date(Date.now());
@@ -31,13 +30,13 @@ function Filters() {
 
  
 
-  const totalCount = machines.loading
-    ? { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 }
-    : machines.machineData.success
-    ? machines.machineData.totalCount
-    : { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 };
+  // const totalCount = machines.loading
+  //   ? { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 }
+  //   : machines.machineData.success
+  //   ? machines.machineData.totalCount
+  //   : { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 };
 
-  const { totalCountBlock, totalCountCrank, totalCountHead } = totalCount;
+  // const { totalCountBlock, totalCountCrank, totalCountHead } = totalCount;
 
   const dispatch = useDispatch();
   // const filters = useSelector((state) => state.filters);
@@ -78,8 +77,7 @@ function Filters() {
         date.getFullYear(),
         date.getDate()
       )
-    );
-    // dispatch(getMachines(queryStr));
+    ); 
   }, [dispatch, date]);
 
   const selectDeptHandler = (e) => {
@@ -96,7 +94,7 @@ function Filters() {
 
   return (
     <Fragment>
-      <hr></hr>
+      <hr className="my-2"></hr>
       <div className="d-flex justify-content-between">
         <div className="d-flex">
           <DatePicker
@@ -109,7 +107,7 @@ function Filters() {
         </div>
  
         <Link to="/">
-          <Button  className="mx-3 bg-blue px-3">
+          <Button  className="mx-1 bg-blue px-3">
           <i className="bi bi-house"></i>  Home
           </Button>
         </Link>
@@ -120,7 +118,7 @@ function Filters() {
           </Button>
         </Link> */}
        
-
+{/* 
         <Container className="mx-3 px-3" style={{ maxWidth: "30vw" }}>
           <Row className="bg-info text-light border rounded-2 d-flex align-items-center justify-content-center">
             <Col xs={12} md={6} className="text-center">
@@ -133,38 +131,41 @@ function Filters() {
               </h6>
             </Col>
           </Row>
-        </Container>
+        </Container> */}
 
         <Select
             options={deptOptions}
             onChange={selectDeptHandler}
-            className="mx-3 secondary"
+            className="mx-1 secondary"
             defaultValue={{ value: "S", label: "Production Dept" }}
+            isSearchable={false}
           />
 
         <Select
           ref={selectLineRef}
           options={lineOptions}
           onChange={selectLineHandler}
-          className="mx-3 secondary"
+          className="mx-1 secondary"
           defaultValue={lineOptions[0]}
+          isSearchable={false}
         />
 
         <Select
           options={checkOptions}
           onChange={selectCheckHandler}
-          className="mx-3 secondary"
+          className="mx-1 secondary"
           defaultValue={checkOptions[0]}
+          isSearchable={false}
         />
 
         <Link to="/pendingTasks">
-          <Button  color="blue" className="mx-3">
+          <Button  color="blue" className="mx-1">
             <i className="bi bi-card-list px-1"></i> 
             Pending Tasks
           </Button>
         </Link>
       </div>
-      <hr></hr>
+      <hr className="my-2"></hr>
     </Fragment>
   );
 }

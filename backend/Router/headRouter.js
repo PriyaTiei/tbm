@@ -4,6 +4,7 @@ const {
   getHeadCheckList,
   getHeadMachineList,
   uploadImage,
+  getAllMachineList,
   getUploadImage,
   saveData,
   insertData,
@@ -32,6 +33,7 @@ const upload = multer({ storage: storage });
 //routes
 headRouter.route("/headCheckList").get(getHeadCheckList);
 headRouter.route("/headMachineList").get(getHeadMachineList);
+headRouter.route("/allMachineList").get(getAllMachineList);
 headRouter.route("/machine/:id").get(getHeadMachineById);
 headRouter.route("/uploadImage").post(upload.single("image"), uploadImage);
 headRouter.route("/saveData").post(upload.none(), saveData);

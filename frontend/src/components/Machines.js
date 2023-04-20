@@ -44,7 +44,7 @@ function Machines() {
         <Loading />
       ) : (
         <Fragment >
-         <div className="overflow-auto" style={{height:"75vh"}}>
+         <div className="overflow-auto" style={{height:"85vh"}}>
           {machineData.success
             ? machineData.machineData.map((item, i) => {
                 return (

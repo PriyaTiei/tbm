@@ -136,7 +136,10 @@ exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
   pendingTaskList.forEach((item) => {
     let line = item._id;
 
-    
+    const counts = {};
+    item.processList.forEach((el) => {
+      counts[el.processNo] = el.processData.length;
+    });
 
    let processList = item.processList;
 
@@ -154,7 +157,7 @@ exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
 
     pendingData = [
       ...pendingData,
-      { line,  processList },
+      { line,  processList, counts },
     ]; 
   });
 

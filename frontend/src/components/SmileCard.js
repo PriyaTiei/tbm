@@ -101,6 +101,7 @@ function SmileCard() {
   return (
     <Fragment>
       <div className="d-flex flex-wrap my-2 ">
+        <div className="d-flex allign-middle">
         <button
           className={`btn btn-sm btn-info mx-2 ${disabledPrevious} `}
           onClick={changePageMinus}
@@ -124,6 +125,8 @@ function SmileCard() {
             style={{ fontSize: "1.1rem", color: "dark" }}
           ></i>
         </button>
+        </div>
+        
 
         {logins.login && (
           <button

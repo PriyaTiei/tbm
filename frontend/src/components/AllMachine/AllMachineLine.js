@@ -1,10 +1,10 @@
 import React, { Fragment } from "react"; 
-import PendingCard from "./PendingCard";
+import AllMachineCard from "./AllMachineCard";
 import { useDispatch } from 'react-redux';
 import { setProcessData } from '../../redux/processData/processActions';
 import Loading from "../Loading";
 
-function PendingLine({ line, processList , counts  }) { 
+export default function AllMachineLine({ line, processList , counts  }) { 
  
   
   const dispatch = useDispatch();
@@ -19,11 +19,11 @@ function PendingLine({ line, processList , counts  }) {
     <Fragment>
       <h3 className="mx-3 p-1 bg-info text-center ">{`${line} - ${totalSum}`}</h3>
       <div className="d-flex flex-wrap">
-        {processList ? processList
+        {processList ?  processList
         .map((processNo) => {
              
           return (
-            <PendingCard
+            <AllMachineCard
               onClick={() => handleClick(processNo.processData)}
               processNo={processNo.processNo}
               key={processNo.processNo} 
@@ -36,5 +36,4 @@ function PendingLine({ line, processList , counts  }) {
     </Fragment>
   );
 }
-
-export default PendingLine;
+ 

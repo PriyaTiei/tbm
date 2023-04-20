@@ -1,8 +1,8 @@
 import React, { Fragment, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getDailyStatus } from "../redux/dailyStatus/dailyStatusActions"; 
-import Line from "./Line";
-import Loading from "./Loading";
+import { getDailyStatus } from "../../redux/dailyStatus/dailyStatusActions"; 
+import Line from "../Line";
+import Loading from "../Loading";
 
 export default function TeamLeader() {
   const dispatch = useDispatch(); 
