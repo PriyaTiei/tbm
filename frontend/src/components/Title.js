@@ -1,15 +1,20 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState  } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Col, Row, Image, Nav } from "react-bootstrap";
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { getLogout } from "../redux/login/loginActions";
 import { fetchUserRequest } from "../redux/user/userActions";
 import axios from "axios";
 import LoginModal from "./LoginModal";
 import { navBarSlice } from "../redux/navbarSlice";
+import { getTitle, getSection } from "../services/title";
+import { useCookies } from "react-cookie";
 
 export default function Title() {
+  const location = useLocation();
+  const [cookie , setCookie] = useCookies(["token" ])
   const [showModal, setShowModal] = useState(false);
+  const filters = useSelector(state => state.filters)
   const logins = useSelector((state) => state.logins);
   const dispatch = useDispatch();
   const logout = () => {
@@ -19,6 +24,8 @@ export default function Title() {
       )
       .then((result) => {
         dispatch(getLogout());
+        setCookie("token",null)
+        
         dispatch(fetchUserRequest());
       })
       .catch((err) => {
@@ -29,6 +36,10 @@ export default function Title() {
   const handleMenuClick = () => {
     dispatch(navBarSlice.actions.toggleVisible());
   };
+
+  let title = getTitle(location.pathname);
+  let section = getSection(filters.pS)
+ 
   return (
     <Fragment>
       <Row className="align-items-center bg-black m-0  py-1 px-1">
@@ -49,7 +60,9 @@ export default function Title() {
           className="text-center text-light flex-grow-1"
           style={{ fontFamily: "verdana" }}
         >
-          <h3>TBM / Autonomous Maintenance</h3>
+          <h3>{`${section} - ${title}`}</h3>
+
+          
         </Col>
 
         <Col xs={2} className="d-flex align-items-center justify-content-end">

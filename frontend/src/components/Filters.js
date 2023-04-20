@@ -8,8 +8,7 @@ import {
   filterCheck,
 } from "../redux/filter/filterActions";
 import Select from "react-select";
-import { Button } from "react-bootstrap";
-// import { getMachines } from "../redux/machine/machineActions";
+import { Button } from "react-bootstrap"; 
 import { Link } from "react-router-dom";
 
 const todayDate = new Date(Date.now());
@@ -31,13 +30,13 @@ function Filters() {
 
  
 
-  const totalCount = machines.loading
-    ? { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 }
-    : machines.machineData.success
-    ? machines.machineData.totalCount
-    : { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 };
+  // const totalCount = machines.loading
+  //   ? { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 }
+  //   : machines.machineData.success
+  //   ? machines.machineData.totalCount
+  //   : { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 };
 
-  const { totalCountBlock, totalCountCrank, totalCountHead } = totalCount;
+  // const { totalCountBlock, totalCountCrank, totalCountHead } = totalCount;
 
   const dispatch = useDispatch();
   // const filters = useSelector((state) => state.filters);
@@ -78,8 +77,7 @@ function Filters() {
         date.getFullYear(),
         date.getDate()
       )
-    );
-    // dispatch(getMachines(queryStr));
+    ); 
   }, [dispatch, date]);
 
   const selectDeptHandler = (e) => {

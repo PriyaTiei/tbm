@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 import MachineCard from "./MachineCard";
+import Loading from "./Loading";
 
 function Line({ line, processNos, counts, dailyStatusDataLinewise }) {
   const resultData = {};
@@ -20,7 +21,7 @@ function Line({ line, processNos, counts, dailyStatusDataLinewise }) {
     <Fragment>
       <h3 className="mx-3 p-1 bg-info text-center ">{`${line} - ${totalSum}`}</h3>
       <div className="d-flex flex-wrap">
-        {processNos.map((processNo) => {
+        { processNos ? processNos.map((processNo) => {
           return (
             <MachineCard
               processNo={processNo}
@@ -32,7 +33,7 @@ function Line({ line, processNos, counts, dailyStatusDataLinewise }) {
               NG={resultData[processNo] ? resultData[processNo].NG : 0}
             />
           );
-        })}
+        }) : <Loading/>}
       </div>
     </Fragment>
   );

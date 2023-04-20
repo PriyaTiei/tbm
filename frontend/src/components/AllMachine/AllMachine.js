@@ -1,10 +1,11 @@
 import React, { Fragment, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux"; 
-import { getMachines } from "../redux/machine/machineActions";
-import Line from "./Line";
-import Loading from "./Loading";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllMachines } from "../../redux/machine/machineActions";
 
-export default function AllCard() {
+import AllMachineLine from "./AllMachineLine";
+import Loading from "../Loading";
+
+export default function AllMachine() {
   const dispatch = useDispatch();
   const machines = useSelector((state) => state.machines); 
  
@@ -18,23 +19,24 @@ export default function AllCard() {
   let queryStr = `&pS=${filters.pS}` + lineStr + rSStr;
 
   useEffect(() => {
-    dispatch(getMachines(queryStr)); 
+    dispatch(getAllMachines(queryStr)); 
   }, [dispatch , filters , queryStr]);
 
   const { loading, machineData } = machines;  
+  console.log(machineData)
   return (
     <Fragment>
       {loading ? (
         <Loading />
       ) : (
         <Fragment >
-         <div className="overflow-auto" style={{height:"75vh"}}>
+         <div className="overflow-auto" style={{height:"85vh"}}>
           {machineData.success
             ? machineData.machineData.map((item, i) => {
                 return (
-                  <Line                    
+                  <AllMachineLine                    
                     line={item.line}
-                    processNos={item.processNos}
+                    processList={item.processList}
                     counts={item.counts}
                     key={item.line} 
                   />
@@ -48,4 +50,3 @@ export default function AllCard() {
     </Fragment>
   );
 }
- 

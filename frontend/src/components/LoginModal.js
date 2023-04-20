@@ -26,16 +26,13 @@ function LoginModal({ showModal, setShowModal }) {
       )
       .then((result) => {
         if (result.data.success) {
-          setCookie("token", "test");
-
+          setCookie("token", result.data.token);
           dispatch(getLogin(result.data.user.name, result.data.user.role));
           dispatch(fetchUserSuccess(result.data));
-          setShowModal(false);
-          // navigate("/");
+          setShowModal(false); 
         }
       })
-      .catch((err) => {
-        // console.log("err", err.message);
+      .catch((err) => { 
         toast.error("Enter correct user Name & Password");
         dispatch(fetchUserFail("User cannot be found"));
       });

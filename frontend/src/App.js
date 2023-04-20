@@ -8,17 +8,17 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import Machines from "./components/Machines";
 import Filters from "./components/Filters";
-import Card from "./components/RaiseCard";
-import Login from "./components/Login";
+import Card from "./components/RaiseCard"; 
 import AbnormalityRecord from "./components/AbnormalityRecord";
-import SummaryAbnormality from "./components/SummaryAbnormality";
-import AllCard from "./components/AllCard"
+import SummaryAbnormality from "./components/SummaryAbnormality"; 
 import SummaryCard from "./components/SummaryCard";
 import SmileCardAdd from "./components/SmileCardAdd";
 import PendingTask from "./components/PendingTask/PendingTask";
 import TeamLeader from "./components/TeamLeader/TeamLeader"
 import PendingSmileCard from "./components/PendingTask/PendingSmileCard"
+import AllMachineSmileCard from "./components/AllMachine/AllMachineSmileCard"
 import { AppSidebar } from "./components/Sidebar"; 
+import AllMachine from "./components/AllMachine/AllMachine";
 
 function App() {
   return (
@@ -32,13 +32,13 @@ function App() {
           <Route path="/checkList" element={<SmileCard />} />
           <Route path="/pendingTasks" element={<PendingTask />} />
           <Route path="/pendingTasks/cardDetails" element={<PendingSmileCard/>}></Route>
-          <Route path="/card" element={<Card />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/allMachine/cardDetails" element={<AllMachineSmileCard/>}></Route>
+          <Route path="/card" element={<Card />} /> 
           <Route path="/abnormality" element={<AbnormalityRecord />} />
           <Route path="/summaryAbnormality" element={<SummaryAbnormality />} />
           <Route path="/summaryCards" element={<SummaryCard />} />
           <Route path="/addCheckItems" element={<SmileCardAdd />} />
-          <Route path="/allCards" element={<AllCard />} />
+          <Route path="/allMachine" element={<AllMachine />} />
           <Route path="/teamleader" element={<TeamLeader />} />
         </Routes>
        

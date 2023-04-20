@@ -73,7 +73,7 @@ export function AppSidebar({ children }) {
               </Button>
             </Link>
           )}
-          <Link to="/allCards">
+          <Link to="/allMachine">
             <Button variant="dark" style={menuItemStyle}>
                All CheckItems
             </Button>

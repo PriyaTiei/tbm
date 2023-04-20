@@ -97,6 +97,92 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   });
 });
 
+
+exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
+  req.query = { ...req.query };
+   
+  const headCheckList = await HeadModel.aggregate([
+    { $match: req.query },
+    {
+      $group: {
+        _id: { line: "$line", processNo: "$processNo" },
+        processList: {
+          $push: {
+            id: "$_id", 
+            checkItem: "$checkItem", 
+            pS: "$pS", 
+          }
+        }
+      }
+    },
+    {
+      $group: {
+        _id: "$_id.line",
+        processList: {
+          $push: {
+            processNo: "$_id.processNo",
+            processData: "$processList"
+          }
+        }
+      }
+    }
+  ]);;
+
+  if (headCheckList.length === 0) {
+    return next(new ErrorHandler("could not find check list", 404));
+  }
+ 
+  
+  let machineData = [];
+  // let processCount=[]
+
+  headCheckList.forEach((item) => {
+    let line = item._id;
+
+    const counts = {};
+    item.processList.forEach((el) => {
+      counts[el.processNo] = el.processData.length;
+    });
+
+    let processList = item.processList;
+    processList.sort((a, b) => {
+      let x = a.processNo;
+      let y = b.processNo
+      if (x < y) {
+        return -1;
+      }
+      if (x > y) {
+        return 1;
+      }
+      return 0;
+    });
+
+    machineData = [
+      ...machineData,
+      { line, processList, counts },
+    ]; 
+  });
+
+  //Sorting with respect to line
+  machineData.sort((a, b) => {
+    let x = a.line;
+    let y = b.line;
+    if (x < y) {
+      return -1;
+    }
+    if (x > y) {
+      return 1;
+    }
+    return 0;
+  });
+
+  // return results
+  res.status(200).json({
+    success: true,
+    machineData
+  });
+});
+
 exports.getHeadMachineById = catchAsyncError(async (req, res, next) => {
   const id = req.params.id;
   const machine = await HeadModel.findById(id);
