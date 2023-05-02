@@ -278,7 +278,7 @@ function SmileCardDetails({ list, image, setImage }) {
   };
 
   return (
-    <div className="mx-3">
+    <div className="mx-3  " >
       <hr />
 
       <div className="d-flex">
@@ -299,7 +299,7 @@ function SmileCardDetails({ list, image, setImage }) {
       </div>
 
       <hr />
-      <div className="d-flex">
+      <div className="d-flex ">
         <button className="btn btn-outline-primary" onClick={saveData}>
           Save Data
         </button>
@@ -308,7 +308,7 @@ function SmileCardDetails({ list, image, setImage }) {
         <h6>- Mandatory Fields</h6>
       </div>
 
-      <ol className="d-flex flex-wrap justify-content-around">
+      <ol className="d-flex flex-wrap justify-content-around overflow-auto "  style={{height:"40vh"}}>
         {/* <FlavorForm /> */}
 
         <li>
@@ -620,12 +620,10 @@ function SmileCardDetails({ list, image, setImage }) {
             <div className="firstCol">Entry Date :</div>
             <div className="secondCol">
               <DatePicker
-              
                 value={entryDateNew}
                 onChange={setEntryDateNew}
                 dateFormat="dd/MM/yyyy"
                 className="form-control"
-                
               />
             </div>
           </div>

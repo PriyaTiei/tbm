@@ -27,10 +27,14 @@ function SmileCardDetails({ list, image, setImage }) {
     pS,
     dailyStatus,
     value,
+    methodWssNo,
+    reason,
+    rS,
   } = list;
   const [okNg, setOkNg] = useState(dailyStatus);
   const [valueM, setValueM] = useState(value);
-  const [remarks , setRemarks] = useState(null)
+  const [remarks, setRemarks] = useState(null);
+  var bgColor = rS == "R" ? "red" : "green";
 
   useEffect(() => {
     if (images !== null) {
@@ -55,7 +59,7 @@ function SmileCardDetails({ list, image, setImage }) {
         user: users.users.user._id,
         entryFor,
         pS,
-        remarks
+        remarks,
       };
 
       if (okNg === "OK" || okNg === "NG") {
@@ -80,15 +84,17 @@ function SmileCardDetails({ list, image, setImage }) {
   };
 
   return (
-    <div style={{ height: "65vh" }}>
+    <div style={{ height: "65vh" }} className="overflow-auto">
       <div className="d-sm-flex flex-wrap">
         <div
-          className={`${styles.brA} ${styles.center} col-sm-3 align-self-stretch bg-warning `}
+          className={`${styles.brA} ${styles.center} col-sm-3 align-self-stretch `}
+          style={{ backgroundColor: `${bgColor}` }}
         >
-          <h3 className={`${styles.scTh}`}>
+          <h2 className={`${styles.scTh}`}>
             {" "}
-            {pS === "P" ? "TBM Card" : "Smile Card"}
-          </h3>
+            {pS === "P" ? "TBM Card" : `Smile Card `}
+          </h2>
+          <h4 className={`${styles.scTh}`}> {rS === "R" ? "RMI" : "OM"}</h4>
         </div>
 
         <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
@@ -96,7 +102,7 @@ function SmileCardDetails({ list, image, setImage }) {
             <h6 className={`${styles.scTh}`}>Matrix Card No</h6>
           </div>
           <div className={styles.brT}>
-            <p className={`${styles.scTd}`}>{}</p>
+            <p className={`${styles.scTd}`}>{cardNo}</p>
           </div>
         </div>
 
@@ -105,7 +111,7 @@ function SmileCardDetails({ list, image, setImage }) {
             <h6 className={`${styles.scTh}`}>Legend No</h6>
           </div>
           <div className={styles.brT}>
-            <p className={`${styles.scTd}`}>{cardNo}</p>
+            <p className={`${styles.scTd}`}>{methodWssNo}</p>
           </div>
         </div>
 
@@ -152,7 +158,7 @@ function SmileCardDetails({ list, image, setImage }) {
             <h6 className={`${styles.scTh}`}>Inspection Item</h6>
           </div>
           <div className={styles.brT}>
-            <p className={`${styles.scTd}`}>{workDetail}</p>
+            <p className={`${styles.scTd}`}>{reason}</p>
           </div>
         </div>
 
@@ -170,7 +176,7 @@ function SmileCardDetails({ list, image, setImage }) {
             <h6 className={`${styles.scTh}`}>Area to inspect</h6>
           </div>
           <div className={styles.brT}>
-            <p className={`${styles.scTd}`}>{workOnePoint}</p>
+            <p className={`${styles.scTd}`}>{workDetail}</p>
           </div>
         </div>
 
@@ -194,7 +200,7 @@ function SmileCardDetails({ list, image, setImage }) {
       </div>
 
       <div className="d-sm-flex   " style={{ height: "55vh" }}>
-        <div className="col-sm-8">
+        <div className="col-sm-7 ">
           <img
             src={
               image === null || image === undefined
@@ -202,58 +208,64 @@ function SmileCardDetails({ list, image, setImage }) {
                 : `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/images/${image}`
             }
             alt="Details_Photo"
-            style={{ width: "auto", height: "50vh" }}
+            style={{ width: "58.33vw", height: "auto" }}
           ></img>
           <div>{image}</div>
         </div>
 
-        <div className="col-sm-4 bg-secondary">
+        <div className="col-sm-5 bg-secondary">
           <div className="d-flex ">
-            <img
-              src={`${okNg}.png`}
-              alt="Not Evaluated"
-              style={{ width: "17vw", height: "17vw" }}
-            ></img>
+            <div className="d-flex flex-column">
+              <button
+                className="btn btn-primary mr-1"
+                onClick={() => setShowModal(true)}
+              >
+                <i className="bi bi-graph-up-arrow h4"> Graph</i>
+              </button>
+              <img
+                src={`${okNg}.png`}
+                alt="Not Evaluated"
+                style={{ width: "17vw", height: "17vw" }}
+              ></img>
+            </div>
             <div
-              style={{ width: "18vw" }}
-              className="d-flex flex-column justify-content"
+              style={{ width: "24.5vw" }}
+              className="d-flex flex-column justify-content "
             >
               <div className="d-flex justify-content-between align-items-center">
                 <h6 className="text-center text-light mx-3">Judgement</h6>
-
-                <button
-                  className="btn btn-primary mr-1"
-                  onClick={() => setShowModal(true)}
-                >
-                  <i className="bi bi-graph-up-arrow h4"></i>
-                </button>
               </div>
               <input
-                type="text"
+                className="bg-light my-1"
+                type="number"
                 placeholder="Enter actual value"
                 value={valueM}
                 onChange={(e) => setValueM(e.target.value)}
               ></input>
-              <br></br>
+
               <textarea
                 type="text"
+                className="bg-light my-1"
                 placeholder="Enter Remarks"
                 value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
               ></textarea>
-              <br></br>
+
               <button
-                className="btn btn-success mb-2"
+                className="btn btn-success  my-1"
                 onClick={() => setOkNg("OK")}
               >
                 <i className="bi bi-circle"></i>
               </button>
-              <button className="btn btn-danger " onClick={() => setOkNg("NG")}>
+              <button
+                className="btn btn-danger  my-1 "
+                onClick={() => setOkNg("NG")}
+              >
                 <i className="bi bi-x-lg"></i>
               </button>
-              <br></br>
+
               <button
-                className="btn  btn-primary"
+                className="btn  btn-primary  my-1"
                 style={{ width: "100%" }}
                 onClick={dailyEntry}
               >

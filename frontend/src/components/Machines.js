@@ -4,6 +4,7 @@ import { getDailyStatus } from "../redux/dailyStatus/dailyStatusActions";
 import { getMachines } from "../redux/machine/machineActions";
 import Line from "./Line";
 import Loading from "./Loading";
+import {getLoginCookie} from "../services/getLoginCookie.js"
 
 function Machines() {
   const dispatch = useDispatch();
@@ -37,6 +38,7 @@ function Machines() {
   }, [dispatch, filters,queryStr, DailyStatusQueryStr]);
 
   const { loading, machineData } = machines;  
+  console.log(`token : ${getLoginCookie()}`)
  
   return (
     <Fragment>

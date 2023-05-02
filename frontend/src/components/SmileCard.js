@@ -45,7 +45,15 @@ function SmileCard() {
 
   useEffect(() => {
     dispatch(getCheckItem(queryStr, page, entryForQueryStr));
-  }, [dispatch, page, searchParams, filters, modify,entryForQueryStr,queryStr]);
+  }, [
+    dispatch,
+    page,
+    searchParams,
+    filters,
+    modify,
+    entryForQueryStr,
+    queryStr,
+  ]);
 
   // unpack object
   const { loading, checkItem } = checkItems;
@@ -100,33 +108,32 @@ function SmileCard() {
 
   return (
     <Fragment>
-      <div className="d-flex flex-wrap my-2 ">
+      <div className="d-flex flex-wrap my-2">
         <div className="d-flex allign-middle">
-        <button
-          className={`btn btn-sm btn-info mx-2 ${disabledPrevious} `}
-          onClick={changePageMinus}
-        >
-          <i
-            className="bi bi-arrow-left-circle-fill px-1"
-            style={{ fontSize: "1.1rem", color: "dark" }}
-          ></i>{" "}
-          {`Previous Page`}
-        </button>
-        <p>
-          Page {page} of {totalCount}
-        </p>
-        <button
-          className={`btn btn-sm btn-info mx-2 ${disabledNext}`}
-          onClick={changePage}
-        >
-          {`Next page`}
-          <i
-            className="bi bi-arrow-right-circle-fill px-1"
-            style={{ fontSize: "1.1rem", color: "dark" }}
-          ></i>
-        </button>
+          <button
+            className={`btn btn-sm btn-info mx-2 ${disabledPrevious} `}
+            onClick={changePageMinus}
+          >
+            <i
+              className="bi bi-arrow-left-circle-fill px-1"
+              style={{ fontSize: "1.1rem", color: "dark" }}
+            ></i>{" "}
+            {`Previous Page`}
+          </button>
+          <p>
+            Page {page} of {totalCount}
+          </p>
+          <button
+            className={`btn btn-sm btn-info mx-2 ${disabledNext}`}
+            onClick={changePage}
+          >
+            {`Next page`}
+            <i
+              className="bi bi-arrow-right-circle-fill px-1"
+              style={{ fontSize: "1.1rem", color: "dark" }}
+            ></i>
+          </button>
         </div>
-        
 
         {logins.login && (
           <button
@@ -169,7 +176,7 @@ function SmileCard() {
       {loading ? (
         <Loading />
       ) : (
-        <Fragment>
+        <Fragment  >
           {checkItem.success ? (
             modify ? (
               <SmileCardModify list={list} image={image} setImage={setImage} />
