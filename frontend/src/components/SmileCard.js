@@ -27,8 +27,15 @@ function SmileCard() {
   const [showModal, setShowModal] = useState(false);
 
   const filters = useSelector((state) => state.filters);
+  let queryStr
+  if(filters.rS==null){
+    queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}`;
+  }
+  else{
+    queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}&rS=${filters.rS}`;
+  }
 
-  let queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}`;
+  
   let entryForQueryStr = `${filters.y}-${filters.m}-${filters.dt}`;
   for (const e of searchParams.entries()) {
     let [f, v] = e;

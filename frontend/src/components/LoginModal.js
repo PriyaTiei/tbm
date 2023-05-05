@@ -29,10 +29,10 @@ function LoginModal({ showModal, setShowModal }) {
           setCookie("token", result.data.token);
           dispatch(getLogin(result.data.user.name, result.data.user.role));
           dispatch(fetchUserSuccess(result.data));
-          setShowModal(false); 
+          setShowModal(false);
         }
       })
-      .catch((err) => { 
+      .catch((err) => {
         toast.error("Enter correct user Name & Password");
         dispatch(fetchUserFail("User cannot be found"));
       });

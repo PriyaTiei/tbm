@@ -30,6 +30,9 @@ function SmileCardDetails({ list, image, setImage }) {
     methodWssNo,
     reason,
     rS,
+    workManpower,
+    areaToInspect,
+    workTime
   } = list;
   const [okNg, setOkNg] = useState(dailyStatus);
   const [valueM, setValueM] = useState(value);
@@ -90,28 +93,27 @@ function SmileCardDetails({ list, image, setImage }) {
           className={`${styles.brA} ${styles.center} col-sm-3 align-self-stretch `}
           style={{ backgroundColor: `${bgColor}` }}
         >
-          <h2 className={`${styles.scTh}`}>
-            {" "}
+          <h6 className={`${styles.scTh} h2`}>            
             {pS === "P" ? "TBM Card" : `Smile Card `}
-          </h2>
-          <h4 className={`${styles.scTh}`}> {rS === "R" ? "RMI" : "OM"}</h4>
+            <spam className = {"h3"}> - {rS === "R" ? "RMI" : "OM"}</spam>
+          </h6>          
         </div>
 
         <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>Matrix Card No</h6>
+            <h6 className={`${styles.scTh}`}> {pS=="S" ? "Matrix Card No." : "Control No"}</h6>
           </div>
           <div className={styles.brT}>
-            <p className={`${styles.scTd}`}>{cardNo}</p>
+            <h6 className={`${styles.scTd}`}>{cardNo}</h6>
           </div>
         </div>
 
         <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>Legend No</h6>
+            <h6 className={`${styles.scTh}`}> {pS=="S" ? "Ledger No." : "WSS No."}</h6>
           </div>
           <div className={styles.brT}>
-            <p className={`${styles.scTd}`}>{methodWssNo}</p>
+            <h6 className={`${styles.scTd}`}>{methodWssNo}</h6>
           </div>
         </div>
 
@@ -120,18 +122,18 @@ function SmileCardDetails({ list, image, setImage }) {
             <h6 className={`${styles.scTh}`}>Day</h6>
           </div>
           <div className={styles.brT}>
-            <p className={`${styles.scTd}`}>
+            <h6 className={`${styles.scTd}`}>
               {d[0] === 9999 ? "All days" : d[0]}
-            </p>
+            </h6>
           </div>
         </div>
 
         <div className={`col-md-2 col-sm-2  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>Line</h6>
+            <h6 className={`${styles.scTh}`}>{pS=="S" ? "Line/Group" : "Line"}</h6>
           </div>
           <div className={styles.brT}>
-            <p className={`${styles.scTd}`}>{line}</p>
+            <h6 className={`${styles.scTd}`}>{line}</h6>
           </div>
         </div>
 
@@ -140,25 +142,25 @@ function SmileCardDetails({ list, image, setImage }) {
             <h6 className={`${styles.scTh}`}>Machine no</h6>
           </div>
           <div className={styles.brT}>
-            <p className={`${styles.scTd}`}>{model}</p>
+            <h6 className={`${styles.scTd}`}>{model}</h6>
           </div>
         </div>
 
         <div className={`col-md-1 col-sm-2  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>OP no</h6>
+            <h6 className={`${styles.scTh}`}> {pS=="S" ? "Station / Line" : "OP no"} </h6>
           </div>
           <div className={styles.brT}>
-            <p className={`${styles.scTd}`}>{processNo}</p>
+            <h6 className={`${styles.scTd}`}>{processNo}</h6>
           </div>
         </div>
 
-        <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
+        <div className={`col-md-3 col-sm-4  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>Inspection Item</h6>
+            <h6 className={`${styles.scTh}`}>{pS=="S" ? "Inspection Item" : "Work Detail"} </h6>
           </div>
           <div className={styles.brT}>
-            <p className={`${styles.scTd}`}>{reason}</p>
+            <h6 className={`${styles.scTd}`}>{workDetail}</h6>
           </div>
         </div>
 
@@ -167,25 +169,33 @@ function SmileCardDetails({ list, image, setImage }) {
             <h6 className={`${styles.scTh}`}>Frequency</h6>
           </div>
           <div className={styles.brT}>
-            <p className={`${styles.scTd}`}>{cycle}</p>
+            <h6 className={`${styles.scTd}`}>{cycle}</h6>
           </div>
         </div>
 
-        <div className={`col-md-4 col-sm-6  align-self-stretch  ${styles.brA}`}>
+        <div className={`col-md-2 col-sm-2  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>Area to inspect</h6>
+            <h6 className={`${styles.scTh}`}>{pS=="S" ? "Area to inspect" : "No. of members"}</h6>
           </div>
           <div className={styles.brT}>
-            <p className={`${styles.scTd}`}>{workDetail}</p>
+            <h6 className={`${styles.scTd}`}>{pS=="S" ? areaToInspect : workManpower}</h6>
+          </div>
+        </div>
+        <div className={`col-md-1 col-sm-1  align-self-stretch  ${styles.brA}`}>
+          <div>
+            <h6 className={`${styles.scTh}`}>{pS=="S" ? "Time" : "Total Manhours"}</h6>
+          </div>
+          <div className={styles.brT}>
+            <h6 className={`${styles.scTd}`}>{workTime}</h6>
           </div>
         </div>
 
         <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>Inspection Method</h6>
+            <h6 className={`${styles.scTh}`}>{pS=="S" ? "Inspection Method" : "Tools"}</h6>
           </div>
           <div className={`${styles.brT} align-self-stretch`}>
-            <p className={`${styles.scTd}`}>{tool}</p>
+            <h6 className={`${styles.scTd}`}>{tool}</h6>
           </div>
         </div>
 
@@ -194,7 +204,7 @@ function SmileCardDetails({ list, image, setImage }) {
             <h6 className={`${styles.scTh}`}>Criteria</h6>
           </div>
           <div className={styles.brT}>
-            <p className={`${styles.scTd}`}>{criterion}</p>
+            <h6 className={`${styles.scTd}`}>{criterion}</h6>
           </div>
         </div>
       </div>
@@ -208,7 +218,7 @@ function SmileCardDetails({ list, image, setImage }) {
                 : `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/images/${image}`
             }
             alt="Details_Photo"
-            style={{ width: "58.33vw", height: "auto" }}
+            style={{ width: image === null || image === undefined ?"20vW" :"58.33vw", height: "auto" }}
           ></img>
           <div>{image}</div>
         </div>

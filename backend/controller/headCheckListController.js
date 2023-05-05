@@ -22,6 +22,7 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
+  console.log(req.cookie)
   req.query = { ...req.query };
   const headObject = new ApiFeatureHead(HeadModel, req.query).match();
   const headCheckList = await headObject.query;

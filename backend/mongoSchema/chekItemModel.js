@@ -72,7 +72,7 @@ const checkItemSchema = new mongoose.Schema({
   },
   entryDate: {
     type: Date,
-    // required: [false, "please enter Entry date"],
+    required: [false, "please enter Entry/Modification date"],
   },
   y: [
     {
@@ -124,7 +124,6 @@ const checkItemSchema = new mongoose.Schema({
   },
   remark: {
     type: String,
- 
   },
   images: [{ type: String }],
   createdAt: {

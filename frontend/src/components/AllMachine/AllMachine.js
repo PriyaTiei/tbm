@@ -5,6 +5,7 @@ import { getAllMachines } from "../../redux/machine/machineActions";
 import AllMachineLine from "./AllMachineLine";
 import Loading from "../Loading";
 
+
 export default function AllMachine() {
   const dispatch = useDispatch();
   const machines = useSelector((state) => state.machines); 
@@ -24,6 +25,7 @@ export default function AllMachine() {
 
   const { loading, machineData } = machines;  
   console.log(machineData)
+  
   return (
     <Fragment>
       {loading ? (
