@@ -6,4 +6,5 @@ frontend_test/
 frontend/build/
 frontend/package\ copy.json
 .env
+backend/public/abnormalityImage
 
