@@ -4,9 +4,12 @@ import axios from "axios";
 import "./table.css";
 import Select from "react-select";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 // import FlavorForm from "./MultipleOptions";
 
 function SmileCardAdd() {
+  const { pS } = useSelector((state) => state.filters);
+
   const [selectedFile, setSelectedFile] = useState("");
 
   const selectedFileHandler = (e) => {
@@ -23,13 +26,13 @@ function SmileCardAdd() {
   const [entryDateNew, setEntryDateNew] = useState(new Date(Date.now()));
   const [holidayOperationNew, setHolidayOperationNew] = useState("");
   const [imagesNew, setImagesNew] = useState("");
-  const [lineNew, setLineNew] = useState("Block");
+  const [lineNew, setLineNew] = useState("");
   const [mNew, setMNew] = useState([9999]);
   const [methodWssNoNew, setMethodWssNoNew] = useState("");
   const [modelNew, setModelNew] = useState("");
   const [pSNew, setPSNew] = useState("S");
   const [prepManHrNew, setPrepManHrNew] = useState("");
-  const [processNoNew, setProcessNoNew] = useState("OP99");
+  const [processNoNew, setProcessNoNew] = useState("");
   const [qualityOnePointNew, setQualityOnePointNew] = useState("");
   const [rSNew, setRSNew] = useState("R");
   const [reasonNew, setReasonNew] = useState("");
@@ -43,17 +46,18 @@ function SmileCardAdd() {
   const [workOnePointNew, setWorkOnePointNew] = useState("");
   const [workTimeNew, setWorkTimeNew] = useState("");
   const [yNew, setYNew] = useState([9999]);
+  const [areaToInspectNew, setAreaToInspectNew] = useState("");
 
-  const optionsLine = [
-    { value: "Block", label: "Block Line" },
-    { value: "Head", label: "Head Line" },
-    { value: "Crank", label: "Crank Line" },
-    { value: "Assembly", label: "Assembly Line" },
-  ];
-  const optionsPS = [
-    { value: "P", label: "Maintenace dept." },
-    { value: "S", label: "Production dept." },
-  ];
+  // const optionsLine = [
+  //   { value: "Block", label: "Block Line" },
+  //   { value: "Head", label: "Head Line" },
+  //   { value: "Crank", label: "Crank Line" },
+  //   { value: "Assembly", label: "Assembly Line" },
+  // ];
+  // const optionsPS = [
+  //   { value: "P", label: "Maintenace dept." },
+  //   { value: "S", label: "Production dept." },
+  // ];
   const optionsRS = [
     { value: "R", label: "Running Check" },
     { value: "S", label: "Stop Check" },
@@ -165,7 +169,7 @@ function SmileCardAdd() {
     formData.append("workOnePoint", workOnePointNew);
     formData.append("categoryCtrl", categoryCtrlNew);
     formData.append("commonItem", commonItemNew);
-    formData.append("entryDate", entryDateNew);
+    formData.append("entryDate", new Date(Date.now()));
     formData.append("holidayOperation", holidayOperationNew);
     formData.append("m", mNew);
     formData.append("methodWssNo", methodWssNoNew);
@@ -229,295 +233,352 @@ function SmileCardAdd() {
         Save Data
       </button>
 
-      <ol className="d-flex flex-wrap justify-content-around">
-        {/* <FlavorForm /> */}
+      <h6 className="d-inline">
+        {" "}
+        <span className="text-danger mx-3"> * </span>Mandatory Fields
+      </h6>
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">
-              {/* <span className="text-danger">* </span> */}
-              Line :
-            </div>
-            <div className="secondCol">
-              <Select
-                options={optionsLine}
-                defaultValue={{ value: "Block", label: `Block line` }}
-                onChange={(e) => setLineNew(e.value)}
-                isDisabled={false}
-              />
-            </div>
-          </div>
-        </li>
+      <div className="overflow-auto" style={{ height: "55vh" }}>
+        <ol className="d-flex flex-wrap justify-content-around">
+          {/* <FlavorForm /> */}
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Process NO :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={processNoNew}
-                onChange={(e) => setProcessNoNew(e.target.value)}
-                placeholder="Please enter OP No., Example OP10"
-                // disabled
-              />
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">
+                {/* <span className="text-danger">* </span> */}
+                Line
+                <span className="text-danger">* </span>:
+              </div>
+              <div className="secondCol">
+                <input
+                  className="form-control"
+                  value={lineNew}
+                  onChange={(e) => setLineNew(e.target.value)}
+                  placeholder="Please enter line Name, Example Block"
+                />
+              </div>
             </div>
-          </div>
-        </li>
+          </li>
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Work Details :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={workDetailNew}
-                onChange={(e) => setWorkDetailNew(e.target.value)}
-              />
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">
+                {pS === "S" ? "Station / Line" : "OP no."}
+                <span className="text-danger">* </span> :
+              </div>
+              <div className="secondCol">
+                <input
+                  className="form-control"
+                  value={processNoNew}
+                  onChange={(e) => setProcessNoNew(e.target.value)}
+                  placeholder="Please enter OP No., Example OP10"
+                  // disabled
+                />
+              </div>
             </div>
-          </div>
-        </li>
+          </li>
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Tool :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={toolNew}
-                onChange={(e) => setToolNew(e.target.value)}
-              />
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">
+                {pS === "S" ? "Inspection Item " : "Work Detail "}
+                <span className="text-danger">* </span> :
+              </div>
+              <div className="secondCol">
+                <input
+                  className="form-control"
+                  value={workDetailNew}
+                  onChange={(e) => setWorkDetailNew(e.target.value)}
+                />
+              </div>
             </div>
-          </div>
-        </li>
+          </li>
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Work One Point :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={workOnePointNew}
-                onChange={(e) => setWorkOnePointNew(e.target.value)}
-              />
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">
+                {pS === "S" ? "Inspection Method :" : "Tools :"}
+              </div>
+              <div className="secondCol">
+                <input
+                  className="form-control"
+                  value={toolNew}
+                  onChange={(e) => setToolNew(e.target.value)}
+                />
+              </div>
             </div>
-          </div>
-        </li>
+          </li>
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Action :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={actionNew}
-                onChange={(e) => setActionNew(e.target.value)}
-              />
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">
+                Running/Stop Check<span className="text-danger">* </span> :
+              </div>
+              <div className="secondCol">
+                <Select
+                  options={optionsRS}
+                  defaultValue={{
+                    value: rSNew,
+                    label: rSNew === "R" ? "Running Check" : "Stop Check",
+                  }}
+                  onChange={(e) => setRSNew(e.value)}
+                />
+              </div>
             </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">card No:</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={cardNoNew}
-                onChange={(e) => setCardNoNew(e.target.value)}
-              />
+          </li>
+          {/* <li>
+            <div className="d-flex">
+              <div className="firstCol">Maintenance/Production Check :</div>
+              <div className="secondCol">
+                <Select
+                  options={optionsPS}
+                  defaultValue={{
+                    value: pSNew,
+                    label:
+                      pSNew === "P" ? "Maintenance dept." : "Production dept.",
+                  }}
+                  isDisabled={false}
+                  onChange={(e) => setPSNew(e.value)}
+                />
+              </div>
             </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Criterion :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={criterionNew}
-                onChange={(e) => setCriterionNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">cycle :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={cycleNew}
-                onChange={(e) => setCycleNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Day :</div>
-            <div className="secondCol">
-              <Select
-                options={optionsDay}
-                isMulti={true}
-                defaultValue={{
-                  value: dNew,
-                  label: dNew[0] === 9999 ? "Every Day" : dNew,
-                }}
-                onChange={(e) => {
-                  let newArray = [];
-                  e.forEach((item) => {
-                    if (typeof item.value === "object") {
-                      item.value.forEach((subitem) => {
-                        newArray.push(item.value[0]);
-                      });
-                    } else {
-                      newArray.push(item.value);
-                    }
-                  });
-                  setDNew(newArray);
-                }}
-              />
-            </div>
-          </div>
-        </li>
+          </li> */}
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Week :</div>
-            <div className="secondCol">
-              <Select
-                options={optionsWeek}
-                isMulti={true}
-                defaultValue={{
-                  value: wNew,
-                  label: wNew[0] === 9999 ? "Every Week" : wNew,
-                }}
-                onChange={(e) => {
-                  let newArray = [];
-                  e.forEach((item) => {
-                    if (typeof item.value === "object") {
-                      item.value.forEach((subitem) => {
-                        newArray.push(item.value[0]);
-                      });
-                    } else {
-                      newArray.push(item.value);
-                    }
-                  });
-                  setWNew(newArray);
-                }}
-              />
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">cycle :</div>
+              <div className="secondCol">
+                <input
+                  className="form-control"
+                  value={cycleNew}
+                  onChange={(e) => setCycleNew(e.target.value)}
+                />
+              </div>
             </div>
-          </div>
-        </li>
+          </li>
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Month :</div>
-            <div className="secondCol">
-              <Select
-                options={optionsMonth}
-                isMulti={true}
-                defaultValue={{
-                  value: mNew,
-                  label: mNew[0] === 9999 ? "Every Month" : mNew,
-                }}
-                onChange={(e) => {
-                  let newArray = [];
-                  e.forEach((item) => {
-                    if (typeof item.value === "object") {
-                      item.value.forEach((subitem) => {
-                        newArray.push(item.value[0]);
-                      });
-                    } else {
-                      newArray.push(item.value);
-                    }
-                  });
-                  setMNew(newArray);
-                }}
-              />
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">
+                {" "}
+                {pS === "S" ? "Time :" : "Total Manhours :"}
+              </div>
+              <div className="secondCol">
+                <input
+                  className="form-control"
+                  value={workTimeNew}
+                  onChange={(e) => setWorkTimeNew(e.target.value)}
+                />
+              </div>
             </div>
-          </div>
-        </li>
+          </li>
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Year:</div>
-            <div className="secondCol">
-              <Select
-                options={optionsYear}
-                isMulti={true}
-                defaultValue={{
-                  value: yNew,
-                  label: yNew[0] === 9999 ? "Every Year" : yNew,
-                }}
-                onChange={(e) => {
-                  let newArray = [];
-                  e.forEach((item) => {
-                    if (typeof item.value === "object") {
-                      item.value.forEach((subitem) => {
-                        newArray.push(parseInt(item.value[0]));
-                      });
-                    } else {
-                      newArray.push(parseInt(item.value));
-                    }
-                  });
-                  setYNew(newArray);
-                }}
-              />
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">Day
+              <span className="text-danger">* </span>:
+              </div>
+              
+              <div className="secondCol">
+                <Select
+                  options={optionsDay}
+                  isMulti={true}
+                  defaultValue={{
+                    value: dNew,
+                    label: dNew[0] === 9999 ? "Every Day" : dNew,
+                  }}
+                  onChange={(e) => {
+                    let newArray = [];
+                    e.forEach((item) => {
+                      if (typeof item.value === "object") {
+                        item.value.forEach((subitem) => {
+                          newArray.push(item.value[0]);
+                        });
+                      } else {
+                        newArray.push(item.value);
+                      }
+                    });
+                    setDNew(newArray);
+                  }}
+                />
+              </div>
             </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Images :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={imagesNew}
-                onChange={(e) => setImagesNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
+          </li>
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Model :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={modelNew}
-                onChange={(e) => setModelNew(e.target.value)}
-              />
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">Week
+              <span className="text-danger">* </span>:
+              </div>
+              <div className="secondCol">
+                <Select
+                  options={optionsWeek}
+                  isMulti={true}
+                  defaultValue={{
+                    value: wNew,
+                    label: wNew[0] === 9999 ? "Every Week" : wNew,
+                  }}
+                  onChange={(e) => {
+                    let newArray = [];
+                    e.forEach((item) => {
+                      if (typeof item.value === "object") {
+                        item.value.forEach((subitem) => {
+                          newArray.push(item.value[0]);
+                        });
+                      } else {
+                        newArray.push(item.value);
+                      }
+                    });
+                    setWNew(newArray);
+                  }}
+                />
+              </div>
             </div>
-          </div>
-        </li>
+          </li>
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Category Control :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={categoryCtrlNew}
-                onChange={(e) => setCategoryCtrlNew(e.target.value)}
-              />
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">optionsMonth
+              <span className="text-danger">* </span>:
+              </div>
+              <div className="secondCol">
+                <Select
+                  options={optionsMonth}
+                  isMulti={true}
+                  defaultValue={{
+                    value: mNew,
+                    label: mNew[0] === 9999 ? "Every Month" : mNew,
+                  }}
+                  onChange={(e) => {
+                    let newArray = [];
+                    e.forEach((item) => {
+                      if (typeof item.value === "object") {
+                        item.value.forEach((subitem) => {
+                          newArray.push(item.value[0]);
+                        });
+                      } else {
+                        newArray.push(item.value);
+                      }
+                    });
+                    setMNew(newArray);
+                  }}
+                />
+              </div>
             </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Common Item:</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={commonItemNew}
-                onChange={(e) => setCommonItemNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
+          </li>
 
-        {/* <li>
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">optionsYear
+              <span className="text-danger">* </span>:
+              </div>
+              <div className="secondCol">
+                <Select
+                  options={optionsYear}
+                  isMulti={true}
+                  defaultValue={{
+                    value: yNew,
+                    label: yNew[0] === 9999 ? "Every Year" : yNew,
+                  }}
+                  onChange={(e) => {
+                    let newArray = [];
+                    e.forEach((item) => {
+                      if (typeof item.value === "object") {
+                        item.value.forEach((subitem) => {
+                          newArray.push(parseInt(item.value[0]));
+                        });
+                      } else {
+                        newArray.push(parseInt(item.value));
+                      }
+                    });
+                    setYNew(newArray);
+                  }}
+                />
+              </div>
+            </div>
+          </li>
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">Images :</div>
+              <div className="secondCol">
+                <input
+                  className="form-control"
+                  value={imagesNew}
+                  onChange={(e) => setImagesNew(e.target.value)}
+                />
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">Model :</div>
+              <div className="secondCol">
+                <input
+                  className="form-control"
+                  value={modelNew}
+                  onChange={(e) => setModelNew(e.target.value)}
+                />
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">
+                {" "}
+                {pS === "S" ? "Matrix Card No. :" : "Control No :"}
+              </div>
+              <div className="secondCol">
+                <input
+                  className="form-control"
+                  value={cardNoNew}
+                  onChange={(e) => setCardNoNew(e.target.value)}
+                />
+              </div>
+            </div>
+          </li>
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">
+                {" "}
+                {pS === "S" ? "Ledger No." : "WSS No."}
+              </div>
+              <div className="secondCol">
+                <input
+                  className="form-control"
+                  value={methodWssNoNew}
+                  onChange={(e) => setMethodWssNoNew(e.target.value)}
+                />
+              </div>
+            </div>
+          </li>
+          {/* Either "area to inspect" or "work Man power" will be displayed in the front end */}
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">
+                {" "}
+                {pS === "S" ? "Area to inspect" : "No. of members"}
+              </div>
+              <div className="secondCol">
+                {pS === "S" ? (
+                  <input
+                    className="form-control"
+                    value={areaToInspectNew}
+                    onChange={(e) => setAreaToInspectNew(e.target.value)}
+                  />
+                ) : (
+                  <input
+                    className="form-control"
+                    value={workManpowerNew}
+                    onChange={(e) => setWorkManpowerNew(e.target.value)}
+                  />
+                )}
+              </div>
+            </div>
+          </li>
+
+          {/* <li>
           <div className="d-flex">
             <div className="firstCol">Entry Date :</div>
             <div className="secondCol">
@@ -529,167 +590,164 @@ function SmileCardAdd() {
             </div>
           </div>
         </li> */}
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Holiday Operation :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={holidayOperationNew}
-                onChange={(e) => setHolidayOperationNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Method Wss No :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={methodWssNoNew}
-                onChange={(e) => setMethodWssNoNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Maintenance/Production Check :</div>
-            <div className="secondCol">
-              <Select
-                options={optionsPS}
-                defaultValue={{
-                  value: pSNew,
-                  label:
-                    pSNew === "P" ? "Maintenance dept." : "Production dept.",
-                }}
-                isDisabled={false}
-                onChange={(e) => setPSNew(e.value)}
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Prep ManHr :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={prepManHrNew}
-                onChange={(e) => setPrepManHrNew(e.target.value)}
-                placeholder="Number only"
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Quality One Point :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={qualityOnePointNew}
-                onChange={(e) => setQualityOnePointNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Running/Stop Check :</div>
-            <div className="secondCol">
-              <Select
-                options={optionsRS}
-                defaultValue={{
-                  value: rSNew,
-                  label: rSNew === "R" ? "Running Check" : "Stop Check",
-                }}
-                onChange={(e) => setRSNew(e.value)}
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Reason :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={reasonNew}
-                onChange={(e) => setReasonNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
+          {/*  below items not to be displayed for production dept*/}
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Safety One Point:</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={safetyOnePointNew}
-                onChange={(e) => setSafetyOnePointNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
+          {pS === "S" ? null : (
+            <>
+              <li>
+                <div className="d-flex">
+                  <div className="firstCol">Holiday Operation :</div>
+                  <div className="secondCol">
+                    <input
+                      className="form-control"
+                      value={holidayOperationNew}
+                      onChange={(e) => setHolidayOperationNew(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </li>
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">w Hr :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={wHrNew}
-                onChange={(e) => setWHrNew(e.target.value)}
-                placeholder="Number only"
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Work Manpower :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={workManpowerNew}
-                onChange={(e) => setWorkManpowerNew(e.target.value)}
-                placeholder="Number only"
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Work Time :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={workTimeNew}
-                onChange={(e) => setWorkTimeNew(e.target.value)}
-                placeholder="Number only"
-              />
-            </div>
-          </div>
-        </li>
+              <li>
+                <div className="d-flex">
+                  <div className="firstCol">Reason :</div>
+                  <div className="secondCol">
+                    <input
+                      className="form-control"
+                      value={reasonNew}
+                      onChange={(e) => setReasonNew(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </li>
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Remark :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={remarkNew}
-                onChange={(e) => setRemarkNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
-      </ol>
+              <li>
+                <div className="d-flex">
+                  <div className="firstCol">Remark :</div>
+                  <div className="secondCol">
+                    <input
+                      className="form-control"
+                      value={remarkNew}
+                      onChange={(e) => setRemarkNew(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </li>
+
+              <li>
+                <div className="d-flex">
+                  <div className="firstCol">Action :</div>
+                  <div className="secondCol">
+                    <input
+                      className="form-control"
+                      value={actionNew}
+                      onChange={(e) => setActionNew(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div className="d-flex">
+                  <div className="firstCol">Prep ManHr :</div>
+                  <div className="secondCol">
+                    <input
+                      className="form-control"
+                      value={prepManHrNew}
+                      onChange={(e) => setPrepManHrNew(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div className="d-flex">
+                  <div className="firstCol">w Hr :</div>
+                  <div className="secondCol">
+                    <input
+                      className="form-control"
+                      value={wHrNew}
+                      onChange={(e) => setWHrNew(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div className="d-flex">
+                  <div className="firstCol">Work One Point :</div>
+                  <div className="secondCol">
+                    <input
+                      className="form-control"
+                      value={workOnePointNew}
+                      onChange={(e) => setWorkOnePointNew(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </li>
+
+              <li>
+                <div className="d-flex">
+                  <div className="firstCol">Quality One Point :</div>
+                  <div className="secondCol">
+                    <input
+                      className="form-control"
+                      value={qualityOnePointNew}
+                      onChange={(e) => setQualityOnePointNew(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div className="d-flex">
+                  <div className="firstCol">Safety One Point:</div>
+                  <div className="secondCol">
+                    <input
+                      className="form-control"
+                      value={safetyOnePointNew}
+                      onChange={(e) => setSafetyOnePointNew(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </li>
+
+              <li>
+                <div className="d-flex">
+                  <div className="firstCol">Category Control :</div>
+                  <div className="secondCol">
+                    <input
+                      className="form-control"
+                      value={categoryCtrlNew}
+                      onChange={(e) => setCategoryCtrlNew(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div className="d-flex">
+                  <div className="firstCol">Common Item:</div>
+                  <div className="secondCol">
+                    <input
+                      className="form-control"
+                      value={commonItemNew}
+                      onChange={(e) => setCommonItemNew(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div className="d-flex">
+                  <div className="firstCol">Criterion :</div>
+                  <div className="secondCol">
+                    <input
+                      className="form-control"
+                      value={criterionNew}
+                      onChange={(e) => setCriterionNew(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </li>
+            </>
+          )}
+        </ol>
+      </div>
     </div>
   );
 }

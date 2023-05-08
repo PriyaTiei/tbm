@@ -8,7 +8,7 @@ import {
   filterCheck,
 } from "../redux/filter/filterActions";
 import Select from "react-select";
-import { Button } from "react-bootstrap"; 
+import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 const todayDate = new Date(Date.now());
@@ -26,9 +26,18 @@ function Filters() {
 
   const [date, setDate] = useState(todayDate);
   // const logins = useSelector((state) => state.logins);
-  const machines = useSelector((state) => state.machines);
+  // const machines = useSelector((state) => state.machines);
 
- 
+  // generate options for selecting line
+  var lineOptions = [{ value: null, label: "All Lines" }];
+  var lineOptions2 = [];
+  const { machineData } = useSelector((state) => state.machines);
+  if (machineData.machineData != undefined) {
+    lineOptions2 = machineData.machineData.map((element) => {
+      return { value: element.line, label: element.line };
+    });
+    lineOptions = [...lineOptions, ...lineOptions2];
+  }
 
   // const totalCount = machines.loading
   //   ? { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 }
@@ -52,21 +61,21 @@ function Filters() {
     { value: "R", label: "Run Check" },
   ];
 
-  const lineOptions = [
-    { value: null, label: "All Lines" },
-    { value: "Head", label: "Head" },
-    { value: "Block", label: "Block" },
-    { value: "Crank", label: "Crank" },
-    {
-      value: "Assembly (Head Sub-assembly)",
-      label: "Assembly (Head Sub-assembly)",
-    },
-    {
-      value: "Assembly (Block Sub-assembly)",
-      label: "Assembly (Block Sub-assembly)",
-    },
-    { value: "Assembly (MK-1)", label: "Assembly (MK-1)" },
-  ];
+  // const lineOptions = [
+  //   { value: null, label: "All Lines" },
+  //   { value: "Head", label: "Head" },
+  //   { value: "Block", label: "Block" },
+  //   { value: "Crank", label: "Crank" },
+  //   {
+  //     value: "Assembly (Head Sub-assembly)",
+  //     label: "Assembly (Head Sub-assembly)",
+  //   },
+  //   {
+  //     value: "Assembly (Block Sub-assembly)",
+  //     label: "Assembly (Block Sub-assembly)",
+  //   },
+  //   { value: "Assembly (MK-1)", label: "Assembly (MK-1)" },
+  // ];
 
   useEffect(() => {
     dispatch(
@@ -77,7 +86,7 @@ function Filters() {
         date.getFullYear(),
         date.getDate()
       )
-    ); 
+    );
   }, [dispatch, date]);
 
   const selectDeptHandler = (e) => {
@@ -103,12 +112,11 @@ function Filters() {
             clearIcon={null}
             className="px-3"
           />
-         
         </div>
- 
+
         <Link to="/">
-          <Button  className="mx-1 bg-blue px-3">
-          <i className="bi bi-house"></i>  Home
+          <Button className="mx-1 bg-blue px-3">
+            <i className="bi bi-house"></i> Home
           </Button>
         </Link>
 
@@ -117,8 +125,8 @@ function Filters() {
             Team Leader
           </Button>
         </Link> */}
-       
-{/* 
+
+        {/* 
         <Container className="mx-3 px-3" style={{ maxWidth: "30vw" }}>
           <Row className="bg-info text-light border rounded-2 d-flex align-items-center justify-content-center">
             <Col xs={12} md={6} className="text-center">
@@ -134,12 +142,12 @@ function Filters() {
         </Container> */}
 
         <Select
-            options={deptOptions}
-            onChange={selectDeptHandler}
-            className="mx-1 secondary"
-            defaultValue={{ value: "S", label: "Production Dept" }}
-            isSearchable={false}
-          />
+          options={deptOptions}
+          onChange={selectDeptHandler}
+          className="mx-1 secondary"
+          defaultValue={{ value: "S", label: "Production Dept" }}
+          isSearchable={false}
+        />
 
         <Select
           ref={selectLineRef}
@@ -159,8 +167,8 @@ function Filters() {
         />
 
         <Link to="/pendingTasks">
-          <Button  color="blue" className="mx-1">
-            <i className="bi bi-card-list px-1"></i> 
+          <Button color="blue" className="mx-1">
+            <i className="bi bi-card-list px-1"></i>
             Pending Tasks
           </Button>
         </Link>

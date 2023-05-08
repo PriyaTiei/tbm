@@ -12,52 +12,36 @@ const checkItemSchema = new mongoose.Schema({
   },
   model: {
     type: String,
-    required: [false, "please enter Model"],
-  },
-  reason: {
-    type: String,
-    required: [false, "please enter Reason (category)"],
   },
   workDetail: {
     type: String,
     required: [true, "please enter Work detail"],
   },
-  criterion: {
-    type: String,
-    required: [true, "please enter Criterion"],
-  },
+  
   methodWssNo: {
     type: String,
-    required: [false, "please enter Method WSS No"],
   },
-  action: {
-    type: String,
-    required: [false, "please enter Action"],
-  },
+
   cycle: {
-    type: String,
-    required: [true, "please enter Cycle"],
+    type: String,   
   },
   tool: {
-    type: String,
-    required: [false, "please enter Tool"],
+    type: String,  
   },
-  prepManHr: {
-    type: Number,
-    required: [false, "please enter Prep man-hr（m)"],
-  },
-  workTime: {
-    type: Number,
-    required: [false, "please enter Work time （m/times)"],
-  },
+
+ 
   workManpower: {
-    type: Number,
-    required: [false, "please enter Work manpower"],
+    type: String,
   },
-  wHr: {
-    type: Number,
-    required: [false, "please enter W- hr （m/times"],
+  areaToInspect:{
+    type:String,
   },
+
+  workTime: {
+    type: String,
+
+  },
+
   pS: {
     type: String,
     required: [true, "please enter P/S"],
@@ -66,13 +50,10 @@ const checkItemSchema = new mongoose.Schema({
     type: String,
     required: [true, "please enter R/S"],
   },
-  holidayOperation: {
-    type: String,
-    required: [false, "please enter Holiday operation"],
-  },
+ 
   entryDate: {
     type: Date,
-    required: [false, "please enter Entry/Modification date"],
+
   },
   y: [
     {
@@ -98,37 +79,52 @@ const checkItemSchema = new mongoose.Schema({
       required: [true, "please enter Day"],
     },
   ],
-  categoryCtrl: {
-    type: String,
-    required: [false, "please enter Category Ctrl"],
-  },
-  commonItem: {
-    type: String,
-    required: [false, "please enter Common Item"],
-  },
   cardNo: {
-    type: String,
-    required: [false, "please enter Card No"],
-  },
-  workOnePoint: {
-    type: String,
-    required: [false, "please enter Work one point"],
-  },
-  safetyOnePoint: {
-    type: String,
-    required: [false, "please enter Safety one point"],
-  },
-  qualityOnePoint: {
-    type: String,
-    required: [false, "please enter Quality one point"],
-  },
-  remark: {
     type: String,
   },
   images: [{ type: String }],
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+
+  holidayOperation: {
+    type: String,
+    required: [false, "please enter Holiday operation"],
+  },
+  workOnePoint: {
+    type: String,
+  },
+  safetyOnePoint: {
+    type: String,
+  },
+  qualityOnePoint: {
+    type: String,
+  },
+  remark: {
+    type: String,
+  },
+  reason: {
+    type: String,
+  },
+  action: {
+    type: String,
+  },
+  prepManHr: {
+    type: String,
+  },
+  wHr: {
+    type: String,
+  },
+  criterion: {
+    type: String,
+  
+  },
+  categoryCtrl: {
+    type: String,
+  },
+  commonItem: {
+    type: String,
   },
 });
 

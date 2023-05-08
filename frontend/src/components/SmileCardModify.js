@@ -12,6 +12,11 @@ function SmileCardDetails({ list, image, setImage }) {
   const [selectedFile, setSelectedFile] = useState("");
 
   const users = useSelector((state) => state.users);
+  const { machineData } = useSelector((state) => state.machines);
+  const optionsLine = machineData.machineData.map((element) => {
+    return { value: element.line, label: element.line };
+  });
+
   const level =
     users.loading === false
       ? users.users.success === true
@@ -56,10 +61,15 @@ function SmileCardDetails({ list, image, setImage }) {
     workTime,
     y,
     _id,
+    areaToInspect,
   } = list;
 
   const [actionNew, setActionNew] = useState(action === null ? "" : action);
   const [cardNoNew, setCardNoNew] = useState(cardNo === null ? "" : cardNo);
+  const [areaToInspectNew, setAreaToInspectNew] = useState(
+    areaToInspect === null ? "" : areaToInspect
+  );
+
   const [categoryCtrlNew, setCategoryCtrlNew] = useState(
     categoryCtrl === null ? "" : categoryCtrl
   );
@@ -75,9 +85,14 @@ function SmileCardDetails({ list, image, setImage }) {
   const [cycleNew, setCycleNew] = useState(cycle === null ? "" : cycle);
   const [dNew, setDNew] = useState(d === null ? "" : d);
   const [entryDateNew, setEntryDateNew] = useState(
-    entryDate === null ? "" : entryDate
+    entryDate == null
+      ? new Date(Date.now())
+      : typeof entryDate == "object"
+      ? entryDate
+      : new Date(entryDate)
     //  entryDate
   );
+  console.log(typeof new Date());
   const [holidayOperationNew, setHolidayOperationNew] = useState(
     holidayOperation === null ? "" : holidayOperation
   );
@@ -121,11 +136,6 @@ function SmileCardDetails({ list, image, setImage }) {
   );
   const [yNew, setYNew] = useState(y === null ? "" : y);
 
-  const optionsLine = [
-    { value: "Block", label: "Block Line" },
-    { value: "Head", label: "Head Line" },
-    { value: "Crank", label: "Crank Line" },
-  ];
   const optionsPS = [
     { value: "P", label: "Maintenace dept." },
     { value: "S", label: "Production dept." },
@@ -278,7 +288,7 @@ function SmileCardDetails({ list, image, setImage }) {
   };
 
   return (
-    <div className="mx-3  " >
+    <div className="mx-3  ">
       <hr />
 
       <div className="d-flex">
@@ -303,12 +313,13 @@ function SmileCardDetails({ list, image, setImage }) {
         <button className="btn btn-outline-primary" onClick={saveData}>
           Save Data
         </button>
-
-        <span className="text-danger mx-3"> *</span>
-        <h6>- Mandatory Fields</h6>
+        <h6 className="d-inline"> <span className="text-danger mx-3"> * </span>Mandatory Fields</h6>
       </div>
 
-      <ol className="d-flex flex-wrap justify-content-around overflow-auto "  style={{height:"40vh"}}>
+      <ol
+        className="d-flex flex-wrap justify-content-around overflow-auto "
+        style={{ height: "40vh" }}
+      >
         {/* <FlavorForm /> */}
 
         <li>
@@ -331,7 +342,8 @@ function SmileCardDetails({ list, image, setImage }) {
         <li>
           <div className="d-flex">
             <div className="firstCol">
-              Process NO<span className="text-danger">* </span> :
+              {pS === "S" ? "Station / Line" : "OP no."}
+              <span className="text-danger">* </span> :
             </div>
             <div className="secondCol">
               <input
@@ -348,7 +360,8 @@ function SmileCardDetails({ list, image, setImage }) {
         <li>
           <div className="d-flex">
             <div className="firstCol">
-              Work Details<span className="text-danger">* </span> :
+              {pS === "S" ? "Inspection Item " : "Work Detail "}
+              <span className="text-danger">* </span> :
             </div>
             <div className="secondCol">
               <input
@@ -363,7 +376,9 @@ function SmileCardDetails({ list, image, setImage }) {
 
         <li>
           <div className="d-flex">
-            <div className="firstCol">Tool :</div>
+            <div className="firstCol">
+              {pS === "S" ? "Inspection Method :" : "Tools :"}
+            </div>
             <div className="secondCol">
               <input
                 className="form-control"
@@ -373,40 +388,19 @@ function SmileCardDetails({ list, image, setImage }) {
             </div>
           </div>
         </li>
-
         <li>
           <div className="d-flex">
-            <div className="firstCol">Work One Point :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={workOnePointNew}
-                onChange={(e) => setWorkOnePointNew(e.target.value)}
-              />
+            <div className="firstCol">
+              Running/Stop Check<span className="text-danger">* </span> :
             </div>
-          </div>
-        </li>
-
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Action :</div>
             <div className="secondCol">
-              <input
-                className="form-control"
-                value={actionNew}
-                onChange={(e) => setActionNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Card No:</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={cardNoNew}
-                onChange={(e) => setCardNoNew(e.target.value)}
+              <Select
+                options={optionsRS}
+                defaultValue={{
+                  value: rSNew,
+                  label: rSNew === "R" ? "Running Check" : "Stop Check",
+                }}
+                onChange={(e) => setRSNew(e.value)}
               />
             </div>
           </div>
@@ -414,29 +408,46 @@ function SmileCardDetails({ list, image, setImage }) {
         <li>
           <div className="d-flex">
             <div className="firstCol">
-              Criterion<span className="text-danger">* </span> :
+              Maintenance/Production Check
+              <span className="text-danger">* </span> :
             </div>
             <div className="secondCol">
-              <input
-                className="form-control"
-                value={criterionNew}
-                onChange={(e) => setCriterionNew(e.target.value)}
-                required
+              <Select
+                options={optionsPS}
+                defaultValue={{
+                  value: pSNew,
+                  label:
+                    pSNew === "P" ? "Maintenance dept." : "Production dept.",
+                }}
+                isDisabled={level >= 100 ? false : true}
+                onChange={(e) => setPSNew(e.value)}
               />
             </div>
           </div>
         </li>
         <li>
           <div className="d-flex">
-            <div className="firstCol">
-              Cycle<span className="text-danger">* </span> :
-            </div>
+            <div className="firstCol">Cycle :</div>
             <div className="secondCol">
               <input
                 className="form-control"
                 value={cycleNew}
                 onChange={(e) => setCycleNew(e.target.value)}
                 required
+              />
+            </div>
+          </div>
+        </li>
+        <li>
+          <div className="d-flex">
+            <div className="firstCol">
+              {pS === "S" ? "Time :" : "Total Manhours :"}
+            </div>
+            <div className="secondCol">
+              <input
+                className="form-control"
+                value={workTimeNew}
+                onChange={(e) => setWorkTimeNew(e.target.value)}
               />
             </div>
           </div>
@@ -592,50 +603,14 @@ function SmileCardDetails({ list, image, setImage }) {
 
         <li>
           <div className="d-flex">
-            <div className="firstCol">Category Control :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={categoryCtrlNew}
-                onChange={(e) => setCategoryCtrlNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Common Item:</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={commonItemNew}
-                onChange={(e) => setCommonItemNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
-
-        <li>
-          <div className="d-flex">
             <div className="firstCol">Entry Date :</div>
-            <div className="secondCol">
+            <div className=" secondCol  ">
               <DatePicker
                 value={entryDateNew}
                 onChange={setEntryDateNew}
                 dateFormat="dd/MM/yyyy"
                 className="form-control"
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Holiday Operation :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={holidayOperationNew}
-                onChange={(e) => setHolidayOperationNew(e.target.value)}
+                clearIcon={null}
               />
             </div>
           </div>
@@ -643,7 +618,25 @@ function SmileCardDetails({ list, image, setImage }) {
 
         <li>
           <div className="d-flex">
-            <div className="firstCol">Method Wss No :</div>
+            <div className="firstCol">
+              {pS === "S" ? "Matrix Card No. :" : "Control No :"}
+            </div>
+            <div className="secondCol">
+              <input
+                className="form-control"
+                value={cardNoNew}
+                onChange={(e) => setCardNoNew(e.target.value)}
+              />
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <div className="d-flex">
+            <div className="firstCol">
+              {" "}
+              {pS === "S" ? "Ledger No." : "WSS No."}
+            </div>
             <div className="secondCol">
               <input
                 className="form-control"
@@ -653,142 +646,185 @@ function SmileCardDetails({ list, image, setImage }) {
             </div>
           </div>
         </li>
+        {/* Either "area to inspect" or "work Man power" will be displayed in the front end */}
         <li>
           <div className="d-flex">
             <div className="firstCol">
-              Maintenance/Production Check
-              <span className="text-danger">* </span> :
+              {pS === "S" ? "Area to inspect" : "No. of members"}
             </div>
             <div className="secondCol">
-              <Select
-                options={optionsPS}
-                defaultValue={{
-                  value: pSNew,
-                  label:
-                    pSNew === "P" ? "Maintenance dept." : "Production dept.",
-                }}
-                isDisabled={level >= 100 ? false : true}
-                onChange={(e) => setPSNew(e.value)}
-              />
+              {pS === "S" ? (
+                <input
+                  className="form-control"
+                  value={areaToInspectNew}
+                  onChange={(e) => setAreaToInspectNew(e.target.value)}
+                />
+              ) : (
+                <input
+                  className="form-control"
+                  value={workManpowerNew}
+                  onChange={(e) => setWorkManpowerNew(e.target.value)}
+                />
+              )}
             </div>
           </div>
         </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Prep ManHr :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={prepManHrNew}
-                onChange={(e) => setPrepManHrNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Quality One Point :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={qualityOnePointNew}
-                onChange={(e) => setQualityOnePointNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">
-              Running/Stop Check<span className="text-danger">* </span> :
-            </div>
-            <div className="secondCol">
-              <Select
-                options={optionsRS}
-                defaultValue={{
-                  value: rSNew,
-                  label: rSNew === "R" ? "Running Check" : "Stop Check",
-                }}
-                onChange={(e) => setRSNew(e.value)}
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Reason :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={reasonNew}
-                onChange={(e) => setReasonNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
+        {/* below items not required to be displayed for production  */}
+        {pS === "S" ? null : (
+          <>
+            <li>
+              <div className="d-flex">
+                <div className="firstCol">Holiday Operation :</div>
+                <div className="secondCol">
+                  <input
+                    className="form-control"
+                    value={holidayOperationNew}
+                    onChange={(e) => setHolidayOperationNew(e.target.value)}
+                  />
+                </div>
+              </div>
+            </li>
+            <li>
+              <div className="d-flex">
+                <div className="firstCol">Category Control :</div>
+                <div className="secondCol">
+                  <input
+                    className="form-control"
+                    value={categoryCtrlNew}
+                    onChange={(e) => setCategoryCtrlNew(e.target.value)}
+                  />
+                </div>
+              </div>
+            </li>
+            <li>
+              <div className="d-flex">
+                <div className="firstCol">Prep ManHr :</div>
+                <div className="secondCol">
+                  <input
+                    className="form-control"
+                    value={prepManHrNew}
+                    onChange={(e) => setPrepManHrNew(e.target.value)}
+                  />
+                </div>
+              </div>
+            </li>
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Safety One Point:</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={safetyOnePointNew}
-                onChange={(e) => setSafetyOnePointNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
+            <li>
+              <div className="d-flex">
+                <div className="firstCol">Common Item:</div>
+                <div className="secondCol">
+                  <input
+                    className="form-control"
+                    value={commonItemNew}
+                    onChange={(e) => setCommonItemNew(e.target.value)}
+                  />
+                </div>
+              </div>
+            </li>
+            <li>
+              <div className="d-flex">
+                <div className="firstCol">criterion :</div>
+                <div className="secondCol">
+                  <input
+                    className="form-control"
+                    value={criterionNew}
+                    onChange={(e) => setCriterionNew(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+            </li>
+            <li>
+              <div className="d-flex">
+                <div className="firstCol">Reason :</div>
+                <div className="secondCol">
+                  <input
+                    className="form-control"
+                    value={reasonNew}
+                    onChange={(e) => setReasonNew(e.target.value)}
+                  />
+                </div>
+              </div>
+            </li>
+            <li>
+              <div className="d-flex">
+                <div className="firstCol">Quality One Point :</div>
+                <div className="secondCol">
+                  <input
+                    className="form-control"
+                    value={qualityOnePointNew}
+                    onChange={(e) => setQualityOnePointNew(e.target.value)}
+                  />
+                </div>
+              </div>
+            </li>
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">w Hr :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={wHrNew}
-                onChange={(e) => setWHrNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Work Manpower :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={workManpowerNew}
-                onChange={(e) => setWorkManpowerNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Work Time :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={workTimeNew}
-                onChange={(e) => setWorkTimeNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
+            <li>
+              <div className="d-flex">
+                <div className="firstCol">Safety One Point:</div>
+                <div className="secondCol">
+                  <input
+                    className="form-control"
+                    value={safetyOnePointNew}
+                    onChange={(e) => setSafetyOnePointNew(e.target.value)}
+                  />
+                </div>
+              </div>
+            </li>
 
-        <li>
-          <div className="d-flex">
-            <div className="firstCol">Remark :</div>
-            <div className="secondCol">
-              <input
-                className="form-control"
-                value={remarkNew}
-                onChange={(e) => setRemarkNew(e.target.value)}
-              />
-            </div>
-          </div>
-        </li>
+            <li>
+              <div className="d-flex">
+                <div className="firstCol">w Hr :</div>
+                <div className="secondCol">
+                  <input
+                    className="form-control"
+                    value={wHrNew}
+                    onChange={(e) => setWHrNew(e.target.value)}
+                  />
+                </div>
+              </div>
+            </li>
+
+            <li>
+              <div className="d-flex">
+                <div className="firstCol">Work One Point :</div>
+                <div className="secondCol">
+                  <input
+                    className="form-control"
+                    value={workOnePointNew}
+                    onChange={(e) => setWorkOnePointNew(e.target.value)}
+                  />
+                </div>
+              </div>
+            </li>
+
+            <li>
+              <div className="d-flex">
+                <div className="firstCol">Action :</div>
+                <div className="secondCol">
+                  <input
+                    className="form-control"
+                    value={actionNew}
+                    onChange={(e) => setActionNew(e.target.value)}
+                  />
+                </div>
+              </div>
+            </li>
+
+            <li>
+              <div className="d-flex">
+                <div className="firstCol">Remark :</div>
+                <div className="secondCol">
+                  <input
+                    className="form-control"
+                    value={remarkNew}
+                    onChange={(e) => setRemarkNew(e.target.value)}
+                  />
+                </div>
+              </div>
+            </li>
+          </>
+        )}
       </ol>
     </div>
   );

@@ -32,6 +32,7 @@ daily_status_url = f"http://{host}:{port}/dailyStatus?entryFor=" + \
 
 
 machines = []
+data={}
 
 # Make a GET request to the machine list API endpoint with the specified query parameters
 response = requests.get(machine_list_url, params={})
@@ -44,6 +45,7 @@ if response.status_code == 201:
     for datum in data:
         machines.extend(datum['processNos'])
     # Do something with the list of machines, for example print them
+    
     print(len(machines))
 else:
     # Handle error response
@@ -54,6 +56,7 @@ response = requests.get(daily_status_url, params={})
 # Check if the daily status request was successful (status code 200)
 if response.status_code == 201:
     # Parse the response JSON to retrieve the daily status data
+   
     data == response.json()
 
 

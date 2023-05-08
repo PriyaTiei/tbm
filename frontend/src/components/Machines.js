@@ -38,7 +38,7 @@ function Machines() {
   }, [dispatch, filters,queryStr, DailyStatusQueryStr]);
 
   const { loading, machineData } = machines;  
-  console.log(`token : ${getLoginCookie()}`)
+  // console.log(`token : ${getLoginCookie()}`)
  
   return (
     <Fragment>
