@@ -5,9 +5,6 @@ class ApiFeaturePendingTask {
     this.newQueryStr = queryStr;
   }
 
-
- 
-
   match() {
     let newQueryStr = { ...this.queryStr };
     const removeItems = ["dept", "page", "limit"];
@@ -33,34 +30,43 @@ class ApiFeaturePendingTask {
 
     this.query = this.query.aggregate([
       { $match: newQueryStr },
-      { $project: { _id: 1, line: 1, processNo: 1, workDetail: 1, pS: 1 } },
+      {
+        $project: {
+          _id: 1,
+          line: 1,
+          processNo: 1,
+          workDetail: 1,
+          pS: 1,
+          rS: 1,
+          cardNo:1,
+        },
+      },
       { $addFields: { result: "PENDING" } },
     ]);
     return this;
   }
 
-  
-
   line() {
-    let newQueryStr = { ...this.queryStr }; 
+    let newQueryStr = { ...this.queryStr };
 
     this.query = this.query.aggregate([
-      { 
-        $match: newQueryStr 
+      {
+        $match: newQueryStr,
       },
       {
         $group: {
           _id: { line: "$line", processNo: "$processNo" },
           processList: {
             $push: {
-              id: "$_id", 
+              id: "$_id",
               checkItem: "$checkItem",
               result: "$result",
               pS: "$pS",
-              entryDates : "$entryDates"
-            }
-          }
-        }
+              entryDates: "$entryDates",
+              rS: "$rS",
+            },
+          },
+        },
       },
       {
         $group: {
@@ -68,12 +74,12 @@ class ApiFeaturePendingTask {
           processList: {
             $push: {
               processNo: "$_id.processNo",
-              processData: "$processList"
-            }
-          }
-        }
-      }
-    ])
+              processData: "$processList",
+            },
+          },
+        },
+      },
+    ]);
     return this;
   }
 }
