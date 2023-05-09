@@ -1,8 +1,7 @@
 const catchAsyncError = require("../middleware/catchAsyncError");
 const HeadModel = require("../mongoSchema/chekItemModel");
 const ApiFeatureHead = require("../util/apiFeatureHead");
-const ErrorHandler = require("../util/errorHandling"); 
-
+const ErrorHandler = require("../util/errorHandling");
 
 exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
   const headObject = new ApiFeatureHead(HeadModel, req.query)
@@ -22,7 +21,9 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
-  console.log(req.cookie)
+  console.log("cookies are: ");
+  console.log(req.cookie);
+
   req.query = { ...req.query };
   const headObject = new ApiFeatureHead(HeadModel, req.query).match();
   const headCheckList = await headObject.query;
@@ -98,10 +99,9 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   });
 });
 
-
 exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
   req.query = { ...req.query };
-   
+
   const headCheckList = await HeadModel.aggregate([
     { $match: req.query },
     {
@@ -109,12 +109,12 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
         _id: { line: "$line", processNo: "$processNo" },
         processList: {
           $push: {
-            id: "$_id", 
-            checkItem: "$checkItem", 
-            pS: "$pS", 
-          }
-        }
-      }
+            id: "$_id",
+            checkItem: "$checkItem",
+            pS: "$pS",
+          },
+        },
+      },
     },
     {
       $group: {
@@ -122,18 +122,17 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
         processList: {
           $push: {
             processNo: "$_id.processNo",
-            processData: "$processList"
-          }
-        }
-      }
-    }
-  ]);;
+            processData: "$processList",
+          },
+        },
+      },
+    },
+  ]);
 
   if (headCheckList.length === 0) {
     return next(new ErrorHandler("could not find check list", 404));
   }
- 
-  
+
   let machineData = [];
   // let processCount=[]
 
@@ -148,7 +147,7 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
     let processList = item.processList;
     processList.sort((a, b) => {
       let x = a.processNo;
-      let y = b.processNo
+      let y = b.processNo;
       if (x < y) {
         return -1;
       }
@@ -158,10 +157,7 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
       return 0;
     });
 
-    machineData = [
-      ...machineData,
-      { line, processList, counts },
-    ]; 
+    machineData = [...machineData, { line, processList, counts }];
   });
 
   //Sorting with respect to line
@@ -180,18 +176,20 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
   // return results
   res.status(200).json({
     success: true,
-    machineData
+    machineData,
   });
 });
 
 exports.getHeadMachineById = catchAsyncError(async (req, res, next) => {
+  console.log("cookies are: ");
+  console.log(req.cookie);
   const id = req.params.id;
   const machine = await HeadModel.findById(id);
 
   if (!machine) {
-    return next(new ErrorHandler("could not find Machine", 404));  }
- 
-  
+    return next(new ErrorHandler("could not find Machine", 404));
+  }
+
   res.status(200).json({
     success: true,
     data: machine,

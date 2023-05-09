@@ -40,6 +40,8 @@ export const getCheckItem = (queryStr, page, entryForQueryStr) => {
           .then((result2) => {
             result.data.headCheckList[0].dailyStatus =
               result2.data.dailyStatus.result;
+              result.data.headCheckList[0].judgementRemarks=
+              result2.data.dailyStatus.remarks;
             result.data.headCheckList[0].value = result2.data.dailyStatus.value;
             dispatch(checkItemFetchSuccess(result.data));
           })

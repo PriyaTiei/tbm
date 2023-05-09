@@ -30,7 +30,7 @@ export const getMachines = (queryStr) => {
     dispatch(machineFetchRequest());
     let url = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/headMachineList?${queryStr}`;
     axios
-      .get(url )
+      .get(url)
       .then((result) => {
         dispatch(machineFetchSuccess(result.data));
       })

@@ -15,6 +15,7 @@ exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
   if (dailystatusAvailable) {
     dailystatusAvailable.result = result;
     dailystatusAvailable.value = value;
+    dailystatusAvailable.remarks = remarks;
     const dailyStatus = await dailystatusAvailable.save({
       validateBeforeSave: false,
     });

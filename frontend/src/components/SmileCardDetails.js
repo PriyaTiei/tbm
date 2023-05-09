@@ -31,10 +31,11 @@ function SmileCardDetails({ list, image, setImage }) {
     workManpower,
     areaToInspect,
     workTime,
+    judgementRemarks
   } = list;
   const [okNg, setOkNg] = useState(dailyStatus);
   const [valueM, setValueM] = useState(value);
-  const [remarks, setRemarks] = useState(null);
+  const [remarks, setRemarks] = useState(judgementRemarks);
   var bgColor = rS == "R" ? "red" : "green";
 
   useEffect(() => {
@@ -52,7 +53,8 @@ function SmileCardDetails({ list, image, setImage }) {
   const dailyEntry = (e) => {
     if (users.users.length === 0) {
       toast.warning("Login required");
-    } else {
+    } else {     
+
       let data = {
         checkItem: _id,
         result: okNg === "OK" ? "OK" : okNg === "NG" ? "NG" : "not judge",
@@ -62,8 +64,8 @@ function SmileCardDetails({ list, image, setImage }) {
         pS,
         remarks,
       };
-
-      if (okNg === "OK" || okNg === "NG") {
+      
+      if (okNg === "OK" || okNg === "NG") {        
         axios
           .post(
             `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
@@ -71,7 +73,7 @@ function SmileCardDetails({ list, image, setImage }) {
           )
           .then((result) => {
             if (result.data.success) {
-              toast.success("saved data");
+              toast.success("saved data");            
             }
           })
           .catch((err) => {

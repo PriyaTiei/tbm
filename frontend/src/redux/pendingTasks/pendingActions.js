@@ -26,12 +26,14 @@ export const pendingTaskFetchFail = (error) => {
 };
 
 export const getPendingTasks = (queryStr) => {
+  console.log(queryStr)
   return (dispatch) => {
     dispatch(pendingTaskFetchRequest());
     let url = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/pendingTasks?${queryStr}`;
     axios
       .get(url)
       .then((result) => {
+    
         dispatch(pendingTaskFetchSuccess(result.data));
       })
       .catch((err) => {
