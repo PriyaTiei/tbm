@@ -20,7 +20,7 @@ export const pendingTaskFetchSuccess = (tasks) => {
 
 export const pendingTaskFetchFail = (error) => {
   return {
-    type: PENDING_TASK_FETCH_FAIL,
+     type: PENDING_TASK_FETCH_FAIL,
     error: error,
   };
 };

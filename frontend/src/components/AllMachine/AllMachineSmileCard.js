@@ -1,11 +1,13 @@
-import React, { useEffect, useState, Fragment } from "react"; 
-import {  useSelector } from "react-redux";  
-import AllMachineSmileCardDetails from "./AllMachineCardDetails";  
-import axios from "axios"; 
+import React, { useEffect, useState, Fragment } from "react";
+import { useSelector } from "react-redux";
+import AllMachineSmileCardDetails from "./AllMachineCardDetails";
+import axios from "axios";
 import { toast } from "react-toastify";
+import SmileCardModify from "../SmileCardModify";
 
-export default function AllMachineSmileCard() { 
+export default function AllMachineSmileCard() {
   const [modify, setModify] = useState(false);
+  const [image, setImage] = useState(null);
   const processData = useSelector((state) => state.processData.processData);
   const [page, setPage] = useState(1);
   const [list, setList] = useState();
@@ -14,21 +16,23 @@ export default function AllMachineSmileCard() {
 
   const getMachineById = async () => {
     try {
-      const response = await axios.get(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/machine/${processData[idIndex].id}`); 
-      let data =  response.data;
-      console.log(data)
-      await setList(data.data)
-      console.log(list)
+      const response = await axios.get(
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/machine/${processData[idIndex].id}`
+      );
+      let data = response.data;
+      console.log(data);
+      await setList(data.data);
+      console.log(list);
     } catch (error) {
       console.error(error);
     }
-  }; 
+  };
+
+ 
 
   useEffect(() => {
     getMachineById();
-  } , [page]);
-
-  
+  }, [page, modify]);
 
   const changePage = () => {
     setPage(page + 1);
@@ -48,10 +52,10 @@ export default function AllMachineSmileCard() {
         : 0
       : 0;
 
-  const counts = processData.length; 
+  const counts = processData.length;
 
   let disabledPrevious = page < 2 ? "disabled" : null;
-  let disabledNext = page < counts ? null : "disabled"; 
+  let disabledNext = page < counts ? null : "disabled";
 
   const modifyHandler = () => {
     setModify(!modify);
@@ -82,30 +86,34 @@ export default function AllMachineSmileCard() {
 
   return (
     <Fragment>
-      <div className="d-flex flex-wrap my-2 ">
-        <button
-          className={`btn btn-sm btn-info mx-2 ${disabledPrevious} `}
-          onClick={changePageMinus}
-        >
-          <i
-            className="bi bi-arrow-left-circle-fill px-1"
-            style={{ fontSize: "1.1rem", color: "dark" }}
-          ></i>{" "}
-          {`Previous Page`}
-        </button>
-        <p>
-          Page {page} of {counts}
-        </p>
-        <button
-          className={`btn btn-sm btn-info mx-2 ${disabledNext}`}
-          onClick={changePage}
-        >
-          {`Next page`}
-          <i
-            className="bi bi-arrow-right-circle-fill px-1"
-            style={{ fontSize: "1.1rem", color: "dark" }}
-          ></i>
-        </button>
+      <div className="d-flex flex-wrap my-2">
+        <div className="d-flex allign-middle">
+          <button
+            className={`btn btn-sm btn-info mx-2 ${disabledPrevious} `}
+            onClick={changePageMinus}
+          >
+            <i
+              className="bi bi-arrow-left-circle-fill px-1"
+              style={{ fontSize: "1.1rem", color: "dark" }}
+            ></i>{" "}
+            {`Previous Page`}
+          </button>
+          <p>
+            Page {page} of {counts}
+          </p>
+          <button
+            className={`btn btn-sm btn-info mx-2 ${disabledNext}`}
+            onClick={changePage}
+          >
+            {`Next page`}
+            <i
+              className="bi bi-arrow-right-circle-fill px-1"
+              style={{ fontSize: "1.1rem", color: "dark" }}
+            ></i>
+          </button>
+        </div>
+
+     
         {level >= 20 && (
           <button className="btn btn-warning mx-2" onClick={modifyHandler}>
             <i
@@ -132,8 +140,10 @@ export default function AllMachineSmileCard() {
           </button>
         )}
       </div>
-      {list ? (
-        <AllMachineSmileCardDetails list={list}      />
+      {modify ? (
+        <SmileCardModify list={list} image={image} setImage={setImage} />
+      ) : list ? (
+        <AllMachineSmileCardDetails list={list} />
       ) : (
         <div>No data found</div>
       )}

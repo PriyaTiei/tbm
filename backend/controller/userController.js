@@ -4,6 +4,7 @@ const ErrorHandler = require("../util/errorHandling");
 const { sendToken } = require("../util/sendToken");
 
 exports.createUser = catchAsyncError(async (req, res, next) => {
+  
   const { name, password, confirmPassword } = req.body;
   if (!name || !password) {
     return next(new ErrorHandler("Please enter user Name & Password", 400));

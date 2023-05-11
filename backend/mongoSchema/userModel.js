@@ -35,7 +35,7 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 
 userSchema.methods.getJsonWebToken = async function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE,
+    expiresIn: process.env.JWT_EXPIRE * 24 * 60 * 60 * 1000,
   });
 };
 
