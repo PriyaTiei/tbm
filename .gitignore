@@ -9,3 +9,5 @@ frontend/package\ copy.json
 backend/public/abnormalityImage
 backend/public/images
 backend/public/images\
+backend/config/config.env
+config.env
