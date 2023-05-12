@@ -4,12 +4,15 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
 import TrendGraphModal from "./TrendGraphModal";
+import { useCookies } from "react-cookie";
 
 function SmileCardDetails({ list, image, setImage }) {
   const [showModal, setShowModal] = useState(false);
-
-  const users = useSelector((state) => state.users);
+  const [cookies] = useCookies([ 'userId']);
+  const authenticated = useSelector((state) => state.logins.login);
   const filters = useSelector((state) => state.filters);
+  const { userId } = cookies;
+  console.log(userId)
 
   let {
     cardNo,
@@ -51,7 +54,7 @@ function SmileCardDetails({ list, image, setImage }) {
   const entryFor = `${filters.y}-${filters.m}-${filters.dt}`;
 
   const dailyEntry = (e) => {
-    if (users.users.length === 0) {
+    if (!authenticated) {
       toast.warning("Login required");
     } else {     
 
@@ -59,7 +62,7 @@ function SmileCardDetails({ list, image, setImage }) {
         checkItem: _id,
         result: okNg === "OK" ? "OK" : okNg === "NG" ? "NG" : "not judge",
         value: valueM,
-        user: users.users.user._id,
+        user: userId,
         entryFor,
         pS,
         remarks,
