@@ -2,6 +2,9 @@ import { LOGIN, LOGOUT } from "./loginTypes";
 
 const inititalLoginState = {
   login: false,
+  token: null,
+  role : null,
+  name : null
 };
 
 const loginReducer = (state = inititalLoginState, action) => {
@@ -9,12 +12,16 @@ const loginReducer = (state = inititalLoginState, action) => {
     case LOGIN:
       return {
         login: true,
-        name:action.name,
-        role:action.role
+        name: action.name,
+        role: action.role,
+        token: action.token,
       };
     case LOGOUT:
       return {
         login: false,
+        token: null,
+        name: action.name,
+        role: action.role,
       };
     default:
       return state;

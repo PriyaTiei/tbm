@@ -10,7 +10,7 @@ import { fetchUserSuccess, fetchUserFail } from "../redux/user/userActions";
 function LoginModal({ showModal, setShowModal }) {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const [cookies, setCookie] = useCookies(["token"]);
+  const [cookies, setCookie] = useCookies(['token', 'role', 'name', 'userId']);
   const dispatch = useDispatch();
 
   const handleClose = () => {
@@ -27,7 +27,16 @@ function LoginModal({ showModal, setShowModal }) {
       .then((result) => {
         if (result.data.success) {
           setCookie("token", result.data.token);
-          dispatch(getLogin(result.data.user.name, result.data.user.role));
+          setCookie("role", result.data.user.role);
+          setCookie("name", result.data.user.name);
+          setCookie("userId", result.data.user._id);
+          dispatch(
+            getLogin(
+              result.data.user.name,
+              result.data.user.role,
+              result.data.token
+            )
+          );
           dispatch(fetchUserSuccess(result.data));
           setShowModal(false);
         }
