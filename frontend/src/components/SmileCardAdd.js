@@ -561,19 +561,13 @@ function SmileCardAdd() {
                 {pS === "S" ? "Area to inspect" : "No. of members"}
               </div>
               <div className="secondCol">
-                {pS === "S" ? (
-                  <input
-                    className="form-control"
-                    value={areaToInspectNew}
-                    onChange={(e) => setAreaToInspectNew(e.target.value)}
-                  />
-                ) : (
+                
                   <input
                     className="form-control"
                     value={workManpowerNew}
                     onChange={(e) => setWorkManpowerNew(e.target.value)}
                   />
-                )}
+                
               </div>
             </div>
           </li>

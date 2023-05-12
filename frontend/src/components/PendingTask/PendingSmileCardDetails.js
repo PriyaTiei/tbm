@@ -174,7 +174,7 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
             <h6 className={`${styles.scTh}`}>{pS=="S" ? "Area to inspect" : "No. of members"}</h6>
           </div>
           <div className={styles.brT}>
-            <h6 className={`${styles.scTd}`}>{pS=="S" ? areaToInspect : workManpower}</h6>
+            <h6 className={`${styles.scTd}`}>{ workManpower}</h6>
           </div>
         </div>
         <div className={`col-md-1 col-sm-1  align-self-stretch  ${styles.brA}`}>

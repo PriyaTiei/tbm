@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "../styles/smilecard.module.css";
 import { useSelector } from "react-redux";
 
-export default function AllMachineSmileCardDetails({ list,image, setImage }) {
+export default function AllMachineSmileCardDetails({ list }) {
   const users = useSelector((state) => state.users);
 
   let {
@@ -30,6 +30,9 @@ export default function AllMachineSmileCardDetails({ list,image, setImage }) {
   const [valueM, setValueM] = useState(value);
   const [remarks, setRemarks] = useState(null);
   var bgColor = rS == "R" ? "red" : "green";
+  
+
+  const image= images[0]
   return (
     // <div style={{ height: "65vh" }} className="overflow-auto">
     //   <div className="d-sm-flex flex-wrap">
@@ -269,7 +272,7 @@ export default function AllMachineSmileCardDetails({ list,image, setImage }) {
         </div>
         <div className={styles.brT}>
           <h6 className={`${styles.scTd}`}>
-            {pS == "S" ? areaToInspect : workManpower}
+            {workManpower}
           </h6>
         </div>
       </div>

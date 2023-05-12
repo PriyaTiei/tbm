@@ -61,14 +61,12 @@ function SmileCardDetails({ list, image, setImage }) {
     workTime,
     y,
     _id,
-    areaToInspect,
+   
   } = list;
 
   const [actionNew, setActionNew] = useState(action === null ? "" : action);
   const [cardNoNew, setCardNoNew] = useState(cardNo === null ? "" : cardNo);
-  const [areaToInspectNew, setAreaToInspectNew] = useState(
-    areaToInspect === null ? "" : areaToInspect
-  );
+ 
 
   const [categoryCtrlNew, setCategoryCtrlNew] = useState(
     categoryCtrl === null ? "" : categoryCtrl
@@ -268,6 +266,7 @@ function SmileCardDetails({ list, image, setImage }) {
     formData.append("workTime", workTimeNew);
     formData.append("y", yNew);
     formData.append("_id", _id);
+    
 
     axios
       .post(
@@ -313,7 +312,10 @@ function SmileCardDetails({ list, image, setImage }) {
         <button className="btn btn-outline-primary" onClick={saveData}>
           Save Data
         </button>
-        <h6 className="d-inline"> <span className="text-danger mx-3"> * </span>Mandatory Fields</h6>
+        <h6 className="d-inline">
+          {" "}
+          <span className="text-danger mx-3"> * </span>Mandatory Fields
+        </h6>
       </div>
 
       <ol
@@ -653,19 +655,13 @@ function SmileCardDetails({ list, image, setImage }) {
               {pS === "S" ? "Area to inspect" : "No. of members"}
             </div>
             <div className="secondCol">
-              {pS === "S" ? (
-                <input
-                  className="form-control"
-                  value={areaToInspectNew}
-                  onChange={(e) => setAreaToInspectNew(e.target.value)}
-                />
-              ) : (
+             
                 <input
                   className="form-control"
                   value={workManpowerNew}
                   onChange={(e) => setWorkManpowerNew(e.target.value)}
                 />
-              )}
+              
             </div>
           </div>
         </li>

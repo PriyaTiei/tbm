@@ -194,7 +194,7 @@ function SmileCardDetails({ list, image, setImage }) {
           </div>
           <div className={styles.brT}>
             <h6 className={`${styles.scTd}`}>
-              {pS == "S" ? areaToInspect : workManpower}
+              { workManpower}
             </h6>
           </div>
         </div>

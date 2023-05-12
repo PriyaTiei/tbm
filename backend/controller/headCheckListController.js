@@ -4,9 +4,9 @@ const ApiFeatureHead = require("../util/apiFeatureHead");
 const ErrorHandler = require("../util/errorHandling");
 
 exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
-  const {token} =req.cookies
+  const { token } = req.cookies;
   console.log("cookie form getHeadChecklist");
-  console.log("token :", token)
+  console.log("token :", token);
   const headObject = new ApiFeatureHead(HeadModel, req.query)
     .search()
     .filter()
@@ -26,8 +26,8 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
 exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   console.log("cookie form getHeadMachinelist ");
   const { token } = req.cookies;
-  console.log(req.cookies );  
-  console.log("token :", token)
+  console.log(req.cookies);
+  console.log("token :", token);
 
   req.query = { ...req.query };
   const headObject = new ApiFeatureHead(HeadModel, req.query).match();
@@ -105,9 +105,9 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
-  const {token} =req.cookies
+  const { token } = req.cookies;
   console.log("cookie form getAllMachinelist");
-  console.log(token)
+  console.log(token);
   req.query = { ...req.query };
 
   const headCheckList = await HeadModel.aggregate([
@@ -189,8 +189,6 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getHeadMachineById = catchAsyncError(async (req, res, next) => {
- 
-
   const id = req.params.id;
   const machine = await HeadModel.findById(id);
 
@@ -292,6 +290,7 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
       workManpower,
       workTime,
       y: intY,
+
       // images: [req.file.filename],
     },
     (err, doc) => {
