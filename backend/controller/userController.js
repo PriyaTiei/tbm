@@ -52,7 +52,6 @@ exports.logout = catchAsyncError((req, res, next) => {
   };
   res
     .status(200)
-    .cookie("token", null, options)
     .json({ success: true, message: "Logout successfully" });
 });
 

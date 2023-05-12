@@ -1,7 +1,7 @@
-import React, { Fragment, useState  } from "react";
+import React, { Fragment, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Col, Row, Image, Nav } from "react-bootstrap";
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation } from "react-router-dom";
 import { getLogout } from "../redux/login/loginActions";
 import { fetchUserRequest } from "../redux/user/userActions";
 import axios from "axios";
@@ -12,9 +12,9 @@ import { useCookies } from "react-cookie";
 
 export default function Title() {
   const location = useLocation();
-  const [cookie , setCookie] = useCookies(["token" ])
+  const [cookies, ,removeCookie] = useCookies(['token', 'role', 'name', 'userId']);
   const [showModal, setShowModal] = useState(false);
-  const filters = useSelector(state => state.filters)
+  const filters = useSelector((state) => state.filters);
   const logins = useSelector((state) => state.logins);
   const dispatch = useDispatch();
   const logout = () => {
@@ -24,31 +24,36 @@ export default function Title() {
       )
       .then((result) => {
         dispatch(getLogout());
-        setCookie("token",null)
-        
+        removeCookie("token");
+        removeCookie("role");
+        removeCookie("name");
+        removeCookie("userId");
         dispatch(fetchUserRequest());
       })
       .catch((err) => {
         console.log("error", err);
       });
   };
-  
+
   const handleMenuClick = () => {
     dispatch(navBarSlice.actions.toggleVisible());
   };
 
   let title = getTitle(location.pathname);
-  let section = getSection(filters.pS)
- 
+  let section = getSection(filters.pS);
+
   return (
     <Fragment>
       <Row className="align-items-center bg-black m-0  py-1 px-1">
-      <Col xs={1} className="px-1">
-      <Nav className="justify-content-end">
-        <Nav.Link onClick={handleMenuClick}>
-        <i className="bi bi-list" style={{ fontSize: "30px", color: "white" }}></i>
-        </Nav.Link>
-      </Nav> 
+        <Col xs={1} className="px-1">
+          <Nav className="justify-content-end">
+            <Nav.Link onClick={handleMenuClick}>
+              <i
+                className="bi bi-list"
+                style={{ fontSize: "30px", color: "white" }}
+              ></i>
+            </Nav.Link>
+          </Nav>
         </Col>
         <Col xs={2} className="px-1">
           <Link to="/">
@@ -61,13 +66,11 @@ export default function Title() {
           style={{ fontFamily: "verdana" }}
         >
           <h3>{`${section} - ${title}`}</h3>
-
-          
         </Col>
 
         <Col xs={2} className="d-flex align-items-center justify-content-end">
           {logins.login ? (
-            <Button variant="danger"   onClick={() => logout()}>
+            <Button variant="danger" onClick={() => logout()}>
               Logout
             </Button>
           ) : (
