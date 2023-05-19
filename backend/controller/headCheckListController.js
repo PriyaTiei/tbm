@@ -4,9 +4,9 @@ const ApiFeatureHead = require("../util/apiFeatureHead");
 const ErrorHandler = require("../util/errorHandling");
 
 exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
-  const { token } = req.cookies;
-  console.log("cookie form getHeadChecklist");
-  console.log("token :", token);
+  // const { token } = req.cookies;
+  // console.log("cookie form getHeadChecklist");
+  // console.log("token :", token);
   const headObject = new ApiFeatureHead(HeadModel, req.query)
     .search()
     .filter()

@@ -1,7 +1,10 @@
 const axios = require("axios");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 axios
-  .get("http://localhost:5051/pendingTasks/generate")
+  .get(`http://${process.env.host}:${process.env.port}/pendingTasks/generate`)
   .then(() => {
     console.log("pending card generated");
   })
