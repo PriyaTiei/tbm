@@ -1,13 +1,9 @@
-frontend/node_modules/
-backend/node_modules/
+node_modules/
 card2.py
 card_status.xlsx
 frontend_test/
-frontend/build/
-frontend/package\ copy.json
+build/
 .env
-backend/public/abnormalityImage
-backend/public/images
-backend/public/images\
-backend/config/config.env
-config.env
+backend/public/
+backend\public/
+
