@@ -24,9 +24,7 @@ const todayDate = new Date(Date.now());
 function Filters() {
   const selectLineRef = useRef(null);
 
-  const [date, setDate] = useState(todayDate);
-  // const logins = useSelector((state) => state.logins);
-  // const machines = useSelector((state) => state.machines);
+  const [date, setDate] = useState(todayDate); 
 
   // generate options for selecting line
   var lineOptions = [{ value: null, label: "All Lines" }];

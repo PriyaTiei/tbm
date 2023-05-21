@@ -27,13 +27,10 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
   const [showModalRaiseCard, setShowModalRaiseCard] = useState(false);
   const [showModalImage, setShowModalImage] = useState(false);
 
-  const users = useSelector((state) => state.users);
-  const level =
-    users.loading === false
-      ? users.users.success === true
-        ? users.users.user.level
-        : 0
-      : 0;
+  const auth = useSelector((state) => state.auth);
+  const level =  auth.user.level;
+        
+     
 
   const dispatch = useDispatch();
   const deleteItem = (itemId) => {

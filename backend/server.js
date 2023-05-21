@@ -1,12 +1,10 @@
 const app = require("./app");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-
-// const envPath = `${__dirname}/config/config.env`;
-// dotenv.config({path:envPath});
+ 
 dotenv.config();
 
-const mongoPath = process.env.MONGO_PATH || "10.82.126.73";
+const mongoPath = process.env.MONGO_PATH ;
 mongoose.connect(`mongodb://${mongoPath}:27017/${process.env.DB_NAME}`);
 
 process.on("uncaughtException", (err) => {

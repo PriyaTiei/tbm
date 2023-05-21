@@ -16,13 +16,9 @@ function AbnormalityRecord() {
 
   const { line, processNo, workDetail, itemId } = info;
 
-  const users = useSelector((state) => state.users);
+  const auth = useSelector((state) => state.auth);
 
-  const user = users.loading
-    ? null
-    : users.users.success
-    ? users.users.user._id
-    : null;
+  const user =  auth.user._id;
 
   const [abnormality, setAbnormality] = useState("");
   const [countermeasure, setCountermeasure] = useState("");

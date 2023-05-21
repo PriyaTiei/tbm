@@ -15,18 +15,47 @@ import TeamLeader from "./components/TeamLeader/TeamLeader"
 import PendingSmileCard from "./components/PendingTask/PendingSmileCard"
 import AllMachineSmileCard from "./components/AllMachine/AllMachineSmileCard"
 import { AppSidebar } from "./components/Sidebar"; 
-import AllMachine from "./components/AllMachine/AllMachine";
-import { getLogin } from "./redux/login/loginActions";
+import AllMachine from "./components/AllMachine/AllMachine"; 
 import { useCookies } from "react-cookie";
+import { login } from "./redux/auth/AuthSlice";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 function App() { 
   const dispatch = useDispatch(); 
-  const [cookies] = useCookies(['token', 'role', 'name']);
-  const { token, role, name } = cookies;
-  console.log(token)
+  const [cookies] = useCookies(['token', 'userId']);
+  const {  token, userId } = cookies; 
+ 
+
+  const loginWithToken = async ()  => { 
+   await axios
+      .post(
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/user/tokenlogin`,
+        { token, userId }
+      )
+      .then((result) => {
+        if (result.data.success) {
+         
+          dispatch(
+            login({
+              user: result.data.user,
+              token: result.data.token,
+            })
+          ); 
+        }
+      })
+      .catch((err) => {
+        toast.error("Enter correct user Name & Password"); 
+      });
+  };
+
+
   useEffect(() => {     
     if (token) { 
-      dispatch(getLogin(name, role, token));
+      loginWithToken().then((result) => {
+
+        dispatch(login(result.user, token));
+      })
     }
   }, [dispatch]);
 

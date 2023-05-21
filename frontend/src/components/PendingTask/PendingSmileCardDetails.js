@@ -8,7 +8,7 @@ import TrendGraphModal from "./../TrendGraphModal";
 
 export default function PendingSmileCardDetails({ list  ,   entryFor}) { 
 
-  const users = useSelector((state) => state.users); 
+  const auth = useSelector((state) => state.auth); 
   const [image, setImage] = useState(null);
 
   const entryForStr = moment(entryFor).format('YYYY-M-DD');  
@@ -48,14 +48,14 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
   const [showModal, setShowModal] = useState(false);
 
   const dailyEntry = (e) => {
-    if (users.users.length === 0) {
+    if (!auth.isAuthenticated) {
       toast.warning("Login required");
     } else {
       let data = {
         checkItem: _id,
         result: okNg === "OK" ? "OK" : okNg === "NG" ? "NG" : "not judge",
         value: valueM,
-        user: users.users.user._id, 
+        user: auth.user._id, 
         entryFor : entryForStr,
         pS,
         remarks

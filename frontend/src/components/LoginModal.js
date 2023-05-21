@@ -3,14 +3,13 @@ import { Modal, Button, Form } from "react-bootstrap";
 import axios from "axios";
 import { useCookies } from "react-cookie";
 import { useDispatch } from "react-redux";
-import { getLogin } from "../redux/login/loginActions";
-import { toast } from "react-toastify";
-import { fetchUserSuccess, fetchUserFail } from "../redux/user/userActions";
+import { toast } from "react-toastify"; 
+import { login } from "../redux/auth/AuthSlice";
 
 function LoginModal({ showModal, setShowModal }) {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const [cookies, setCookie] = useCookies(['token', 'role', 'name', 'userId']);
+  const [cookies, setCookie] = useCookies(["token", "userId"]);
   const dispatch = useDispatch();
 
   const handleClose = () => {
@@ -27,23 +26,18 @@ function LoginModal({ showModal, setShowModal }) {
       .then((result) => {
         if (result.data.success) {
           setCookie("token", result.data.token);
-          setCookie("role", result.data.user.role);
-          setCookie("name", result.data.user.name);
           setCookie("userId", result.data.user._id);
           dispatch(
-            getLogin(
-              result.data.user.name,
-              result.data.user.role,
-              result.data.token
-            )
+            login({
+              user: result.data.user,
+              token: result.data.token,
+            })
           );
-          dispatch(fetchUserSuccess(result.data));
           setShowModal(false);
         }
       })
       .catch((err) => {
-        toast.error("Enter correct user Name & Password");
-        dispatch(fetchUserFail("User cannot be found"));
+        toast.error("Enter correct user Name & Password"); 
       });
   };
   return (

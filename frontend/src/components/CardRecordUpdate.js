@@ -44,13 +44,9 @@ function ModalForm(props) {
     setShowModal(false);
   };
 
-  const users = useSelector((state) => state.users);
+  const auth = useSelector((state) => state.auth);
 
-  const user = users.loading
-    ? null
-    : users.users.success
-    ? users.users.user._id
-    : null;
+  const user = auth.user._id;
 
   const [abnormalityM, setAbnormalityM] = useState(abnormality);
   // const [countermeasureM, setCountermeasureM] = useState(countermeasure);
