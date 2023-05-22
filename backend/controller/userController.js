@@ -56,7 +56,6 @@ exports.loginWithToken = catchAsyncError(async (req, res, next) => {
   try { 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
  
-    console.log(decoded.id)
     if (decoded.id !== userId) {
       return next(new ErrorHandler("Invalid token", 401));
     }

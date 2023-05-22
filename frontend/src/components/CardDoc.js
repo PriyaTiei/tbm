@@ -28,7 +28,7 @@ function CardDoc({ item, fromDateSt, toDateSt }) {
   const [showModalImage, setShowModalImage] = useState(false);
 
   const auth = useSelector((state) => state.auth);
-  const level = auth.loading === false ? auth.user.level : 0;
+  const level = auth.user ? auth.user.level : 0;
 
   const dispatch = useDispatch();
   const deleteItem = (itemId) => {

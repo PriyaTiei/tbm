@@ -28,7 +28,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
   const [showModalImage, setShowModalImage] = useState(false);
 
   const auth = useSelector((state) => state.auth);
-  const level =  auth.user.level;
+  const level = auth.user ? auth.user.level : 0;
         
      
 
