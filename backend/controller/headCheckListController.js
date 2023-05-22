@@ -7,6 +7,7 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
   // const { token } = req.cookies;
   // console.log("cookie form getHeadChecklist");
   // console.log("token :", token);
+  
   const headObject = new ApiFeatureHead(HeadModel, req.query)
     .search()
     .filter()
@@ -24,10 +25,10 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
-  console.log("cookie form getHeadMachinelist ");
-  const { token } = req.cookies;
-  console.log(req.cookies);
-  console.log("token :", token);
+  // console.log("cookie form getHeadMachinelist ");
+  // const { token } = req.cookies;
+  // console.log(req.cookies);
+  // console.log("token :", token);
 
   req.query = { ...req.query };
   const headObject = new ApiFeatureHead(HeadModel, req.query).match();
