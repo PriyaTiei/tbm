@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "../styles/smilecard.module.css";
 import { useSelector } from "react-redux";
 
-export default function AllMachineSmileCardDetails({ list }) {
-  const users = useSelector((state) => state.users);
+export default function AllMachineSmileCardDetails({ list }) { 
 
   let {
     cardNo,

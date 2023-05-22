@@ -32,12 +32,10 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId }) {
 
   const { line, processNo } = info;
 
-  const users = useSelector((state) => state.users);
+  const auth = useSelector((state) => state.auth);
 
-  const user = users.loading
-    ? null
-    : users.users.success
-    ? users.users.user._id
+  const user = auth.loading === false    
+    ? auth.user._id
     : null;
 
   const [abnormality, setAbnormality] = useState("");

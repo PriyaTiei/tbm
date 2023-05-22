@@ -13,8 +13,7 @@ const pendingRouter = require("./Router/pendingTaskRouter");
 
 const urlencodedBodyParser = bodyParser.urlencoded({ extended: false });
 
-const app = express();
-console.log("test1");
+const app = express(); 
 
 app.use(express.json());
 app.use(cookieParser());

@@ -11,18 +11,13 @@ import DatePicker from "react-date-picker";
 function SmileCardDetails({ list, image, setImage }) {
   const [selectedFile, setSelectedFile] = useState("");
 
-  const users = useSelector((state) => state.users);
+  const auth = useSelector((state) => state.auth);
   const { machineData } = useSelector((state) => state.machines);
   const optionsLine = machineData.machineData.map((element) => {
     return { value: element.line, label: element.line };
   });
 
-  const level =
-    users.loading === false
-      ? users.users.success === true
-        ? users.users.user.level
-        : 0
-      : 0;
+  const level = auth.user ? auth.user.level : 0;
 
   const selectedFileHandler = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -61,12 +56,10 @@ function SmileCardDetails({ list, image, setImage }) {
     workTime,
     y,
     _id,
-   
   } = list;
 
   const [actionNew, setActionNew] = useState(action === null ? "" : action);
   const [cardNoNew, setCardNoNew] = useState(cardNo === null ? "" : cardNo);
- 
 
   const [categoryCtrlNew, setCategoryCtrlNew] = useState(
     categoryCtrl === null ? "" : categoryCtrl
@@ -266,7 +259,6 @@ function SmileCardDetails({ list, image, setImage }) {
     formData.append("workTime", workTimeNew);
     formData.append("y", yNew);
     formData.append("_id", _id);
-    
 
     axios
       .post(
@@ -655,13 +647,11 @@ function SmileCardDetails({ list, image, setImage }) {
               {pS === "S" ? "Area to inspect" : "No. of members"}
             </div>
             <div className="secondCol">
-             
-                <input
-                  className="form-control"
-                  value={workManpowerNew}
-                  onChange={(e) => setWorkManpowerNew(e.target.value)}
-                />
-              
+              <input
+                className="form-control"
+                value={workManpowerNew}
+                onChange={(e) => setWorkManpowerNew(e.target.value)}
+              />
             </div>
           </div>
         </li>

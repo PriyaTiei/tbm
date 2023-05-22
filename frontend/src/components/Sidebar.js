@@ -34,13 +34,8 @@ export function AppSidebar({ children }) {
   const { visible } = useSelector((state) => state.navBar);
   const dispatch = useDispatch();
 
-  const users = useSelector((state) => state.users);
-  const level =
-    users.loading === false
-      ? users.users.success === true
-        ? users.users.user.level
-        : 0
-      : 0;
+  const auth = useSelector((state) => state.auth);
+  const level =  auth.user ? auth.user.level : 0 ;
 
   const handleClose = () => {
     dispatch(navBarSlice.actions.setVisible(false));

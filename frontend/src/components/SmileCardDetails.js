@@ -9,7 +9,7 @@ import { useCookies } from "react-cookie";
 function SmileCardDetails({ list, image, setImage }) {
   const [showModal, setShowModal] = useState(false);
   const [cookies] = useCookies([ 'userId']);
-  const authenticated = useSelector((state) => state.logins.login);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const filters = useSelector((state) => state.filters);
   const { userId } = cookies;
   console.log(userId)
@@ -54,7 +54,7 @@ function SmileCardDetails({ list, image, setImage }) {
   const entryFor = `${filters.y}-${filters.m}-${filters.dt}`;
 
   const dailyEntry = (e) => {
-    if (!authenticated) {
+    if (!isAuthenticated) {
       toast.warning("Login required");
     } else {     
 

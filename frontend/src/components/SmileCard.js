@@ -13,29 +13,21 @@ import { toast } from "react-toastify";
 function SmileCard() {
   const [modify, setModify] = useState(false);
   const [image, setImage] = useState(null);
-  const logins = useSelector((state) => state.logins);
-  const users = useSelector((state) => state.users);
-  const level =
-    users.loading === false
-      ? users.users.success === true
-        ? users.users.user.level
-        : 0
-      : 0;
+  const auth = useSelector((state) => state.auth);
+  const level = auth.user ? auth.user.level : 0;
 
   // get query string from link
   const [searchParams] = useSearchParams();
   const [showModal, setShowModal] = useState(false);
 
   const filters = useSelector((state) => state.filters);
-  let queryStr
-  if(filters.rS==null){
+  let queryStr;
+  if (filters.rS == null) {
     queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}`;
-  }
-  else{
+  } else {
     queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}&rS=${filters.rS}`;
   }
 
-  
   let entryForQueryStr = `${filters.y}-${filters.m}-${filters.dt}`;
   for (const e of searchParams.entries()) {
     let [f, v] = e;
@@ -142,7 +134,7 @@ function SmileCard() {
           </button>
         </div>
 
-        {logins.login && (
+        {auth.isAuthenticated && (
           <button
             className="btn btn-primary"
             onClick={() => setShowModal(true)}
@@ -183,7 +175,7 @@ function SmileCard() {
       {loading ? (
         <Loading />
       ) : (
-        <Fragment  >
+        <Fragment>
           {checkItem.success ? (
             modify ? (
               <SmileCardModify list={list} image={image} setImage={setImage} />

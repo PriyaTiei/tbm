@@ -5,6 +5,7 @@ const {
   logout,
   getUsers,
   deleteUser,
+  loginWithToken,
 } = require("../controller/userController");
 const userRouter = express.Router();
 
@@ -14,6 +15,7 @@ const {
 } = require("../middleware/isAuthenticated");
 
 userRouter.route("/login").post(login);
+userRouter.route("/tokenlogin").post(loginWithToken);
 userRouter.route("/logout").get(logout);
 
 //admin routes

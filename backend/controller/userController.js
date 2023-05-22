@@ -2,6 +2,7 @@ const catchAsyncError = require("../middleware/catchAsyncError");
 const UserModel = require("../mongoSchema/userModel");
 const ErrorHandler = require("../util/errorHandling");
 const { sendToken } = require("../util/sendToken");
+const jwt = require("jsonwebtoken")
 
 exports.createUser = catchAsyncError(async (req, res, next) => {
   
@@ -43,6 +44,26 @@ exports.login = catchAsyncError(async (req, res, next) => {
   }
 
   sendToken(user, res, 200);
+});
+
+exports.loginWithToken = catchAsyncError(async (req, res, next) => {
+  const { userId, token } = req.body;
+  const user = await UserModel.findById(userId);
+  if (!user) {
+    return next(new ErrorHandler("User not found", 404));
+  }
+
+  try { 
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+ 
+    if (decoded.id !== userId) {
+      return next(new ErrorHandler("Invalid token", 401));
+    }
+
+    res.status(200).json({ success: true, message: "Authentication successful", user });
+  } catch (error) {
+    return next(new ErrorHandler(error, 401));
+  }
 });
 
 exports.logout = catchAsyncError((req, res, next) => {

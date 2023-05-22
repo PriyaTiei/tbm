@@ -1,8 +1,7 @@
 import React, { useEffect, useState, Fragment } from "react"; 
 import { useDispatch, useSelector } from "react-redux";  
 import PendingSmileCardDetails from "./PendingSmileCardDetails";  
-import axios from "axios";
-import Test from "../Test";
+import axios from "axios"; 
 
 export default function PendingSmileCard() { 
   const processData = useSelector((state) => state.processData.processData);

@@ -1,34 +1,30 @@
 import React, { Fragment, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Col, Row, Image, Nav } from "react-bootstrap";
-import { Link, useLocation } from "react-router-dom";
-import { getLogout } from "../redux/login/loginActions";
-import { fetchUserRequest } from "../redux/user/userActions";
+import { Link, useLocation } from "react-router-dom";  
 import axios from "axios";
 import LoginModal from "./LoginModal";
 import { navBarSlice } from "../redux/navbarSlice";
 import { getTitle, getSection } from "../services/title";
 import { useCookies } from "react-cookie";
+import { logout } from "../redux/auth/AuthSlice";
 
 export default function Title() {
   const location = useLocation();
-  const [cookies, ,removeCookie] = useCookies(['token', 'role', 'name', 'userId']);
+  const [cookies, ,removeCookie] = useCookies(['token',  'userId']);
   const [showModal, setShowModal] = useState(false);
   const filters = useSelector((state) => state.filters);
-  const logins = useSelector((state) => state.logins);
+  const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const logout = () => {
+  const handleLogout = () => {
     axios
       .get(
         `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/user/logout`
       )
       .then((result) => {
-        dispatch(getLogout());
-        removeCookie("token");
-        removeCookie("role");
-        removeCookie("name");
-        removeCookie("userId");
-        dispatch(fetchUserRequest());
+        dispatch(logout());
+        removeCookie("token"); 
+        removeCookie("userId"); 
       })
       .catch((err) => {
         console.log("error", err);
@@ -71,8 +67,8 @@ export default function Title() {
         </Col>
 
         <Col xs={2} className="d-flex align-items-center justify-content-end">
-          {logins.login ? (
-            <Button variant="danger" onClick={() => logout()}>
+          {auth.isAuthenticated ? (
+            <Button variant="danger" onClick={() => handleLogout()}>
               Logout
             </Button>
           ) : (
@@ -91,7 +87,7 @@ export default function Title() {
                 <i className="bi bi-person"></i>:
               </span>
               <span className="h6 px-1">
-                {logins.login ? logins.name : "Guest"}
+                {auth.isAuthenticated ? auth.user.name : "Guest"}
               </span>
             </div>
           </div>
