@@ -21,13 +21,13 @@ function ModalForm({ showModal, setShowModal, image }) {
       </Modal.Header>
       <Modal.Body>
         <div
-          style={{ height: "80vh", width: "80vw" }}
+          style={{ height: "100%", width: "100%" }}
           className="d-flex justify-content-center align-item-center"
         >
           <img
             src={`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${image}`}
             alt="Photo Not loaded"
-            style={{ height: "65vh", width: "auto" }}
+            style={{ maxHeight: "65vh", maxWidth: "auto" }}
           />
         </div>
       </Modal.Body>

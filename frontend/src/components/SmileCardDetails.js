@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import TrendGraphModal from "./TrendGraphModal";
 import { useCookies } from "react-cookie";
+import ImageModal from "./ImageModal";
 
 function SmileCardDetails({ list, image, setImage }) {
   const [showModal, setShowModal] = useState(false);
@@ -13,6 +14,7 @@ function SmileCardDetails({ list, image, setImage }) {
   const filters = useSelector((state) => state.filters);
   const { userId } = cookies;
 
+  const [showModalImage, setShowModalImage] = useState(false);
   const checkedByNew = useSelector((state) => state.checkedBy);
 
   let {
@@ -249,9 +251,11 @@ function SmileCardDetails({ list, image, setImage }) {
             }
             alt="Details_Photo"
             style={{
-              width: image === null || image === undefined ? "20vW" : "58.33vw",
-              height: "auto",
+              maxWidth: image === null || image === undefined ? "20vW" : "55vw",
+              maxHeight: "auto",
             }}
+            className="mx-2 my-1"
+            onClick={() => setShowModalImage(true)}
           ></img>
           <div>{image}</div>
         </div>
@@ -350,6 +354,14 @@ function SmileCardDetails({ list, image, setImage }) {
           // status={status}
           // fromDateSt={fromDateSt}
           //  toDateSt={toDateSt}
+        />
+      ) : null}
+
+{showModalImage ? (
+        <ImageModal
+          showModal={showModalImage}
+          setShowModal={setShowModalImage}
+          image={image}
         />
       ) : null}
     </div>

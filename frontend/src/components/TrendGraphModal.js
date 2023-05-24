@@ -112,15 +112,16 @@ function TrendGraphModal({ showModal, setShowModal, id }) {
       onHide={handleClose}
       dialogClassName="my-modal"
       contentClassName="modal-height"
+     
     >
       <Modal.Header closeButton>
         <Modal.Title>Trend Graphs</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body >
         <TrendGraph data={data} labels={labels} />
       </Modal.Body>
       <Modal.Footer>
-        <div className="ms-4 my-2">
+        <div className="ms-4 my-2 ">
           <span>From</span>
           <DatePicker
             value={fromDate}
