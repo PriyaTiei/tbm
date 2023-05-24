@@ -110,6 +110,7 @@ function SummaryAbnormality() {
           <thead>
             <tr>
               <th>Entry Date</th>
+              <th>Dept.</th>
               <th>Line</th>
               <th>OP</th>
               <th>Item</th>

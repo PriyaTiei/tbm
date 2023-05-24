@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState, Fragment, useReducer } from "react";
 // import FlowSmileCard from "./FlowSmileCard";
 import { useDispatch, useSelector } from "react-redux";
 import { getCheckItem } from "../redux/checkItem/checkItemsActions";
@@ -9,12 +9,15 @@ import SmileCardModify from "./SmileCardModify";
 import axios from "axios";
 import AbnormalityRecordModalForm from "./AbnormalityRecordModalForm";
 import { toast } from "react-toastify";
+import {setCheckedBy} from "../redux/checkedBy"
 
 function SmileCard() {
   const [modify, setModify] = useState(false);
   const [image, setImage] = useState(null);
   const auth = useSelector((state) => state.auth);
   const level = auth.user ? auth.user.level : 0;
+
+  
 
   // get query string from link
   const [searchParams] = useSearchParams();
@@ -41,6 +44,11 @@ function SmileCard() {
 
   const dispatch = useDispatch();
   const checkItems = useSelector((state) => state.checkItems);
+  
+
+  // const {checkedBy} = checkItems.checkItem.headCheckList[0] ? checkItems.checkItem.headCheckList[0] :""
+
+
 
   useEffect(() => {
     dispatch(getCheckItem(queryStr, page, entryForQueryStr));
@@ -56,6 +64,11 @@ function SmileCard() {
 
   // unpack object
   const { loading, checkItem } = checkItems;
+
+
+const checkedBy= useSelector(state=>state.checkedBy)
+  const [checkedByCurrent, setCheckedByCurrent] = useState(checkedBy);
+
 
   let list = loading
     ? {}
@@ -104,6 +117,17 @@ function SmileCard() {
       // Do nothing!
     }
   };
+
+  const checkedByHandler = (e) => {
+  setCheckedByCurrent(e.target.value,
+   
+   );
+
+  };
+
+  useEffect(()=>{
+    dispatch( setCheckedBy(checkedByCurrent))
+  },[checkedByCurrent])
 
   return (
     <Fragment>
@@ -171,6 +195,16 @@ function SmileCard() {
             Delete
           </button>
         )}
+
+        {level >= 10 && (
+          <input
+            type="text"
+            className="mx-2"
+            placeholder="Checked by"
+            value={checkedByCurrent}
+            onChange={checkedByHandler}
+          />
+        )}
       </div>
       {loading ? (
         <Loading />
@@ -185,6 +219,7 @@ function SmileCard() {
                   list={list}
                   image={image}
                   setImage={setImage}
+                  
                 />
                 {showModal ? (
                   <AbnormalityRecordModalForm

@@ -15,6 +15,8 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId }) {
     setShowModal(false);
   };
 
+  const {pS} = useSelector(state=>state.filters)
+
   const [selectedFile, setSelectedFile] = useState("");
   const [image, setImage] = useState("");
 
@@ -99,6 +101,7 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId }) {
           spare,
           status,
           image,
+          pS
         }
         // , { withCredentials: true }
       )

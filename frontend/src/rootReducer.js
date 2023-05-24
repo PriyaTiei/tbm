@@ -9,6 +9,7 @@ import pendingTaskReducer from "./redux/pendingTasks/pendingReducer";
 import navBarReducer from "./redux/navbarSlice"
 import processDataReducer from "./redux/processData/processReducer";
 import authReducer from "./redux/auth/AuthSlice";
+import checkedByReducer from "./redux/checkedBy";
 
 const rootReducer = combineReducers({ 
   machines: machineReducer,
@@ -20,7 +21,8 @@ const rootReducer = combineReducers({
   pendingTasks: pendingTaskReducer,
   navBar : navBarReducer,
   processData : processDataReducer,
-  auth : authReducer
+  auth : authReducer,
+  checkedBy: checkedByReducer
 });
 
 export default rootReducer;

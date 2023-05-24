@@ -17,7 +17,8 @@ exports.createAbnormality = catchAsyncError(async (req, res, next) => {
     spare,
     status,
     user,
-    image
+    image,
+    pS
   } = req.body;
   const abnormalityItem = await AbnormalityModel.create({
     checkItem,
@@ -31,7 +32,8 @@ exports.createAbnormality = catchAsyncError(async (req, res, next) => {
     processNo,
     spare,
     status,
-    image
+    image,
+    pS
   });
   res.status(200).json({ success: true, abnormalityItem });
 });
@@ -83,6 +85,7 @@ exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
   abnormalityItem.user = user;
   abnormalityItem.checkItem = checkItem;
   abnormalityItem.image =image;
+  
   await abnormalityItem.save({ validateBeforeSave: false });
   res.status(201).json({ success: true, abnormalityItem });
 });

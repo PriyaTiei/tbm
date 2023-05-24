@@ -45,6 +45,9 @@ const abnormalityListSchema = new mongoose.Schema({
   image: {
     type: String,
   },
+  pS: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model("abnormalities", abnormalityListSchema);

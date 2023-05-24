@@ -27,7 +27,7 @@ const menuItemStyle = {
   cursor: "pointer",
   color: "white",
   width: "100%",
-  padding : "12px 0px"
+  padding: "12px 0px",
 };
 
 export function AppSidebar({ children }) {
@@ -35,7 +35,7 @@ export function AppSidebar({ children }) {
   const dispatch = useDispatch();
 
   const auth = useSelector((state) => state.auth);
-  const level =  auth.user ? auth.user.level : 0 ;
+  const level = auth.user ? auth.user.level : 0;
 
   const handleClose = () => {
     dispatch(navBarSlice.actions.setVisible(false));
@@ -48,21 +48,21 @@ export function AppSidebar({ children }) {
           <h2 style={menuTitleStyle}>Menu</h2>
         </Offcanvas.Header>
         <Offcanvas.Body>
-          {level >= 10 && (
+          {level >= 0 && (
             <Link to="/summaryAbnormality">
               <Button variant="dark" style={menuItemStyle}>
                 <i className="bi bi-stack-overflow px-1"></i>Abnormality Summary
               </Button>
             </Link>
           )}
-          {level >= 10 && (
+          {level >= 0 && (
             <Link to="/summaryCards">
               <Button variant="dark" style={menuItemStyle}>
                 <i className="bi bi-stack-overflow px-1"></i>Cards Summary
               </Button>
             </Link>
           )}
-          {level >= 100 && (
+          {level >= 20 && (
             <Link to="/addCheckItems">
               <Button variant="dark" style={menuItemStyle}>
                 <i className="bi bi-plus-square"></i> CheckItems
@@ -71,7 +71,7 @@ export function AppSidebar({ children }) {
           )}
           <Link to="/allMachine">
             <Button variant="dark" style={menuItemStyle}>
-               All CheckItems
+              All CheckItems
             </Button>
           </Link>
         </Offcanvas.Body>

@@ -12,6 +12,7 @@ exports.createCard = catchAsyncError(async (req, res, next) => {
     processNo,
     status,
     image,
+    pS
   } = req.body;
   const card = await CardRaisedModel.create({
     cardType,
@@ -22,6 +23,7 @@ exports.createCard = catchAsyncError(async (req, res, next) => {
     processNo,
     status,
     image,
+    pS
   });
   res.status(200).json({ success: true, card });
 });

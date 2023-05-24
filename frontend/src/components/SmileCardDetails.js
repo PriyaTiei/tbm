@@ -8,11 +8,12 @@ import { useCookies } from "react-cookie";
 
 function SmileCardDetails({ list, image, setImage }) {
   const [showModal, setShowModal] = useState(false);
-  const [cookies] = useCookies([ 'userId']);
+  const [cookies] = useCookies(["userId"]);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const filters = useSelector((state) => state.filters);
   const { userId } = cookies;
-  console.log(userId)
+
+  const checkedByNew = useSelector((state) => state.checkedBy);
 
   let {
     cardNo,
@@ -34,11 +35,13 @@ function SmileCardDetails({ list, image, setImage }) {
     workManpower,
     areaToInspect,
     workTime,
-    judgementRemarks
+    judgementRemarks,
+    checkedBy,
   } = list;
   const [okNg, setOkNg] = useState(dailyStatus);
   const [valueM, setValueM] = useState(value);
   const [remarks, setRemarks] = useState(judgementRemarks);
+
   var bgColor = rS == "R" ? "red" : "green";
 
   useEffect(() => {
@@ -56,8 +59,7 @@ function SmileCardDetails({ list, image, setImage }) {
   const dailyEntry = (e) => {
     if (!isAuthenticated) {
       toast.warning("Login required");
-    } else {     
-
+    } else {
       let data = {
         checkItem: _id,
         result: okNg === "OK" ? "OK" : okNg === "NG" ? "NG" : "not judge",
@@ -66,9 +68,10 @@ function SmileCardDetails({ list, image, setImage }) {
         entryFor,
         pS,
         remarks,
+        checkedBy: checkedByNew,
       };
-      
-      if (okNg === "OK" || okNg === "NG") {        
+
+      if (okNg === "OK" || okNg === "NG") {
         axios
           .post(
             `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
@@ -76,7 +79,7 @@ function SmileCardDetails({ list, image, setImage }) {
           )
           .then((result) => {
             if (result.data.success) {
-              toast.success("saved data");            
+              toast.success("saved data");
             }
           })
           .catch((err) => {
@@ -87,6 +90,11 @@ function SmileCardDetails({ list, image, setImage }) {
         toast.warning("Please judge OK or NG");
       }
     }
+  };
+  const resetHandler = () => {
+    setOkNg(null);
+    setValueM(null);
+    setRemarks(null);
   };
 
   return (
@@ -196,9 +204,7 @@ function SmileCardDetails({ list, image, setImage }) {
             </h6>
           </div>
           <div className={styles.brT}>
-            <h6 className={`${styles.scTd}`}>
-              { workManpower}
-            </h6>
+            <h6 className={`${styles.scTd}`}>{workManpower}</h6>
           </div>
         </div>
         <div className={`col-md-1 col-sm-1  align-self-stretch  ${styles.brA}`}>
@@ -270,8 +276,20 @@ function SmileCardDetails({ list, image, setImage }) {
               className="d-flex flex-column justify-content "
             >
               <div className="d-flex justify-content-between align-items-center">
-                <h6 className="text-center text-light mx-3">Judgement</h6>
+                <h6 className="text-center text-light mx-3">
+                  Judgement -{" "}
+                  <spam style={{ fontSize: "0.7rem" }}>
+                    Done by : {checkedBy}
+                  </spam>
+                </h6>
+                <button
+                  className="btn btn-sm btn-primary"
+                  onClick={resetHandler}
+                >
+                  Reset
+                </button>
               </div>
+
               <input
                 className="bg-light my-1"
                 type="number"

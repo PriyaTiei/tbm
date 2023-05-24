@@ -21,6 +21,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
     image,
 
     _id,
+    pS
   } = item;
 
   const [showModal, setShowModal] = useState(false);
@@ -69,6 +70,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
       }
     >
       <td>{createdAt.slice(0, 10)}</td>
+      <td>{pS =="P"? "Maint.":"Prod."}</td>
       <td>{line}</td>
       <td>{processNo}</td>
       <td>{checkItem.workDetail}</td>

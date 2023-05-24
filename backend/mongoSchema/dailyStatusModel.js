@@ -23,7 +23,7 @@ const dailyStatusSchema = new mongoose.Schema({
     required: [true, "please enter the result judgment"],
   },
   remarks: {
-    type: String, 
+    type: String,
   },
   value: {
     type: String,
@@ -33,14 +33,17 @@ const dailyStatusSchema = new mongoose.Schema({
     ref: "users",
     required: true,
   },
-  tl : {
+  tl: {
     type: Boolean,
     default: false,
   },
-  gl : {
+  gl: {
     type: Boolean,
     default: false,
-  }
+  },
+  checkedBy: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model("dailystatus", dailyStatusSchema);
