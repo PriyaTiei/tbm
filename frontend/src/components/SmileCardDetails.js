@@ -241,7 +241,7 @@ function SmileCardDetails({ list, image, setImage }) {
         </div>
       </div>
 
-      <div className="d-sm-flex   " style={{ height: "55vh" }}>
+      <div className="d-sm-flex  " style={{ maxHeight: "35vh" }}>
         <div className="col-sm-7 ">
           <img
             src={
@@ -251,10 +251,13 @@ function SmileCardDetails({ list, image, setImage }) {
             }
             alt="Details_Photo"
             style={{
-              maxWidth: image === null || image === undefined ? "20vW" : "55vw",
-              maxHeight: "auto",
+              // maxWidth: image === null || image === undefined ? "20vW" : "55vw",
+              // maxHeight: "auto",
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
             }}
-            className="mx-2 my-1"
+            className="mx-2 my-1 object-fit-contain"
             onClick={() => setShowModalImage(true)}
           ></img>
           <div>{image}</div>
@@ -357,7 +360,7 @@ function SmileCardDetails({ list, image, setImage }) {
         />
       ) : null}
 
-{showModalImage ? (
+      {showModalImage ? (
         <ImageModal
           showModal={showModalImage}
           setShowModal={setShowModalImage}

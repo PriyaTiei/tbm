@@ -1,5 +1,6 @@
 const catchAsyncError = require("../middleware/catchAsyncError");
 const CardRaisedModel = require("../mongoSchema/cardRaisedModel");
+const ApiFeatureCard = require("../util/apiFeatureCard");
 const ErrorHandler = require("../util/errorHandling");
 
 exports.createCard = catchAsyncError(async (req, res, next) => {
@@ -12,7 +13,7 @@ exports.createCard = catchAsyncError(async (req, res, next) => {
     processNo,
     status,
     image,
-    pS
+    pS,
   } = req.body;
   const card = await CardRaisedModel.create({
     cardType,
@@ -23,7 +24,7 @@ exports.createCard = catchAsyncError(async (req, res, next) => {
     processNo,
     status,
     image,
-    pS
+    pS,
   });
   res.status(200).json({ success: true, card });
 });
@@ -71,13 +72,18 @@ exports.deleteCard = catchAsyncError(async (req, res, next) => {
 exports.getCardAll = catchAsyncError(async (req, res, next) => {
   const fromDate = req.params.fromDate;
   var toDate = req.params.toDate;
-  // console.log(`createdAt:{$gte:${fromDate}, $lt:${toDate}}`)
-  const cards = await CardRaisedModel.find({
-    createdAt: { $gte: fromDate, $lt: toDate },
-  })
-    .populate("user", "name")
-    .populate("checkItem", "line workDetail processNo")
-    .sort({ createdAt: -1 });
+
+  var queryStr = req.query;
+  var createdAt = { $gte: fromDate, $lt: toDate };
+  const cardFeature = new ApiFeatureCard(
+    CardRaisedModel.find(),
+    queryStr,
+    createdAt
+  ).filter();
+
+  //test comp
+  const cards = await cardFeature.query.find({});
+
   if (cards.length === 0) {
     return next(new ErrorHandler("Cards not found", 404));
   }

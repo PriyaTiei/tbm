@@ -17,6 +17,7 @@ function ModalForm({
   processNo,
   abnormality,
   image,
+  pS
 }) {
   const optionsCard = [
     { value: "white", label: "White Card" },
@@ -95,6 +96,7 @@ function ModalForm({
           processNo,
           status,
           image,
+          pS
         }
         // , { withCredentials: true }
       )

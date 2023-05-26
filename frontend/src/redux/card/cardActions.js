@@ -25,12 +25,12 @@ export const cardFetchFail = (error) => {
   };
 };
 
-export const getCards = (fromDateSt, toDateSt) => {
+export const getCards = (fromDateSt, toDateSt, queryStr) => {
   return (dispatch) => {
     dispatch(cardFetchRequest());
     axios
       .get(
-        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/card/find/fromDate/${fromDateSt}/toDate/${toDateSt}`
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/card/find/fromDate/${fromDateSt}/toDate/${toDateSt}?${queryStr}`
       )
       .then((result) => {
         dispatch(cardFetchSuccess(result.data));

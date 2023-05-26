@@ -24,12 +24,12 @@ export const abnormalityFetchFail = (error) => {
   };
 };
 
-export const getAbnormality = (fromDateSt, toDateSt) => {
+export const getAbnormality = (fromDateSt, toDateSt, queryStr) => {
   return (dispatch) => {
     dispatch(abnormalityFetchRequest());
     axios
       .get(
-        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/find/fromDate/${fromDateSt}/toDate/${toDateSt}`
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/find/fromDate/${fromDateSt}/toDate/${toDateSt}?${queryStr}`
       )
       .then((result) => {
         console.log("results ab", result.data);

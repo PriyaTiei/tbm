@@ -1,11 +1,9 @@
 const catchAsyncError = require("../middleware/catchAsyncError");
 const AbnormalityModel = require("../mongoSchema/abnormalityModel");
+const  ApiFeatureAbnormality = require("../util/apiFeatureAbnormality");
 const ErrorHandler = require("../util/errorHandling");
 
-
-
 exports.createAbnormality = catchAsyncError(async (req, res, next) => {
-
   const {
     checkItem,
     abnormality,
@@ -18,7 +16,7 @@ exports.createAbnormality = catchAsyncError(async (req, res, next) => {
     status,
     user,
     image,
-    pS
+    pS,
   } = req.body;
   const abnormalityItem = await AbnormalityModel.create({
     checkItem,
@@ -33,14 +31,14 @@ exports.createAbnormality = catchAsyncError(async (req, res, next) => {
     spare,
     status,
     image,
-    pS
+    pS,
   });
   res.status(200).json({ success: true, abnormalityItem });
 });
 
 exports.uploadAbnormalityImage = catchAsyncError(async (req, res, next) => {
   const { _id } = req.body;
-  console.log("Id is :", _id);
+  
   // save in mongo db
 
   AbnormalityModel.findByIdAndUpdate(
@@ -73,19 +71,28 @@ exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("cannot find this Abnormality item", 404));
   }
 
-  const { abnormality, countermeasure, targetDate, spare,pic, status, checkItem , user, image} =
-    req.body;
-    
+  const {
+    abnormality,
+    countermeasure,
+    targetDate,
+    spare,
+    pic,
+    status,
+    checkItem,
+    user,
+    image,
+  } = req.body;
+
   abnormalityItem.abnormality = abnormality;
   abnormalityItem.countermeasure = countermeasure;
-  abnormalityItem.spare= spare;
+  abnormalityItem.spare = spare;
   abnormalityItem.targetDate = targetDate;
   abnormalityItem.pic = pic;
   abnormalityItem.status = status;
   abnormalityItem.user = user;
   abnormalityItem.checkItem = checkItem;
-  abnormalityItem.image =image;
-  
+  abnormalityItem.image = image;
+
   await abnormalityItem.save({ validateBeforeSave: false });
   res.status(201).json({ success: true, abnormalityItem });
 });
@@ -105,20 +112,24 @@ exports.deleteAbnormality = catchAsyncError(async (req, res, next) => {
 
 exports.getAbnormalityAll = catchAsyncError(async (req, res, next) => {
   //test
-  
-  const fromDate=req.params.fromDate
-  var toDate = req.params.toDate
-  
 
- //test comp
-  const abnormalities = await AbnormalityModel.find({createdAt:{$gte:fromDate, $lt:toDate}})
-    .populate("user", "name")
-    .populate("checkItem", "workDetail")
-    .sort({createdAt:-1});
+  const fromDate = req.params.fromDate;
+  var toDate = req.params.toDate;
+  var queryStr = req.query;
+  var createdAt= { $gte: fromDate, $lt: toDate }
+  const abnormailityFeature = new ApiFeatureAbnormality(AbnormalityModel.find(), queryStr, createdAt).filter()
+
+  //test comp
+  const abnormalities = await abnormailityFeature.query.find({
+    
+    
+  })
+ 
   if (abnormalities.length === 0) {
     return next(new ErrorHandler("Abnormalities list not found", 404));
   }
   const totalAbnormalities = abnormalities.length;
+  // console.log(abnormalities)
   res.status(201).json({ success: true, totalAbnormalities, abnormalities });
 });
 

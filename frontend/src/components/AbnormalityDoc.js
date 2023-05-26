@@ -70,7 +70,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
       }
     >
       <td>{createdAt.slice(0, 10)}</td>
-      <td>{pS =="P"? "Maint.":"Prod."}</td>
+      <td>{pS ==="P"? "Maint.":(pS==="S"?"Prod.":"")}</td>
       <td>{line}</td>
       <td>{processNo}</td>
       <td>{checkItem.workDetail}</td>
@@ -180,6 +180,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
           targetDate={targetDate}
           status={status}
           image={image}
+          pS={pS}
         />
       ) : null}
 

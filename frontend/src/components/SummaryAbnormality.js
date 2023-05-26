@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import AbnormilityDoc from "./AbnormalityDoc";
 import DatePicker from "react-date-picker";
 import GraphAbnormality from "./GraphAbnormality";
+import Select from "react-select";
 
 function SummaryAbnormality() {
   const [showGraph, setShowGraph] = useState(true);
@@ -26,11 +27,41 @@ function SummaryAbnormality() {
   const toMonth = toNextDate.getMonth() + 1;
   const toYear = toNextDate.getFullYear();
   const toDateSt = `${toYear}-${toMonth}-${toDt}`;
+  const [filterObject, setFilterObject] = useState({
+    entryDate: "",
+    pS: "",
+    line: "",
+    processNo: "",
+    item: "",
+    abnormality: "",
+    countermeasure: "",
+    spare: "",
+    pic: "",
+    target: "",
+    status: "",
+  });
 
   const dispatch = useDispatch();
+  let queryStr = "";
+  for (let key in filterObject) {
+    let value = filterObject[key];
+
+    if (value != "") {
+      if (queryStr == "") {
+        queryStr = `${key}=${value}`;
+      } else {
+        queryStr = `${queryStr}&${key}=${value}`;
+      }
+    }
+  }
+  
   useEffect(() => {
-    dispatch(getAbnormality(fromDateSt, toDateSt));
-  }, [dispatch, fromDate, toDate]);
+    dispatch(getAbnormality(fromDateSt, toDateSt, queryStr));
+  }, [dispatch, fromDate, toDate, filterObject]);
+
+  useEffect(() => {
+    console.log(filterObject);
+  }, [filterObject]);
   const abnormalities = useSelector((state) => state.abnormalities);
   const abnormalityList = abnormalities.loading
     ? []
@@ -70,7 +101,78 @@ function SummaryAbnormality() {
 
   const labels = ["Total", "Complete", "Pending", "Inprogress"];
   const data = [total, complete, pending, inprogress];
+ 
 
+  const filterHandler = (e) => {
+    setFilterObject((filterObject) => {
+      filterObject[e.target.name] = e.target.value;
+      return {
+        ...filterObject,
+      };
+    });
+  };
+
+  const deptOptions = [
+    { value: "S", label: "Production." },
+    { value: "P", label: "Maintenance" },
+  ];
+
+  const deptHandler = (e) => {
+    setFilterObject((filterObject) => {
+      filterObject["pS"] = e.value;
+      return {
+        ...filterObject,
+      };
+    });
+  };
+
+  const options = [
+    { value: "pending", label: "Pending" },
+    { value: "inprogress", label: "Inprogress" },
+    { value: "complete", label: "Complete" },
+  ];
+
+  const statusHandler = (e) => {
+    setFilterObject((filterObject) => {
+      filterObject["status"] = e.value;
+      return {
+        ...filterObject,
+      };
+    });
+  };
+
+  const entryDateHandler = (date) => {
+    setFilterObject((filterObject) => {
+      filterObject["entryDate"] = date;
+      return {
+        ...filterObject,
+      };
+    });
+  };
+
+  const targetHandler = (date) => {
+    setFilterObject((filterObject) => {
+      filterObject["target"] = date;
+      return {
+        ...filterObject,
+      };
+    });
+  };
+  const clearFilterHandler = () => {
+    setFilterObject({
+      entryDate: "",
+      pS: "",
+      line: "",
+      processNo: "",
+      item: "",
+      abnormality: "",
+      countermeasure: "",
+      spare: "",
+      pic: "",
+      target: "",
+      status: "",
+    });
+  };
   return (
     <div>
       <div className="d-flex align-items-center bg-info ">
@@ -90,6 +192,8 @@ function SummaryAbnormality() {
             Show Graph
           </button>
         )}
+
+   
         <div className="ms-auto me-3">
           <span>From</span>
           <DatePicker
@@ -102,9 +206,19 @@ function SummaryAbnormality() {
         </div>
       </div>
 
+          <div className="d-flex justify-content-between " >
       {showGraph ? <GraphAbnormality labels={labels} data={data} /> : null}
+      <button
+          className="btn btn-primary d-block mx-5 d-inline-block "
+          style={{"height":"40px", "marginBottom":"16px", "marginTop":"auto" , "marginLeft":"auto", "marginRight":"16px" }}
+          onClick={clearFilterHandler}
+        > Clear Filters
+        </button>
+        </div>
 
       <div className="overflow-auto " style={{ height: "65vh", width: "97vw" }}>
+      
+         
         <table className="m-3   table table-bordered table-sm table-hover text-dark ">
           {/* <table className="m-5 border border-black-50 text-light"> */}
           <thead>
@@ -123,6 +237,119 @@ function SummaryAbnormality() {
               <th></th>
               <th></th>
               <th></th>
+            </tr>
+            <tr>
+              <td>
+                {/* <DatePicker
+                  value={filterObject.entryDate}
+                  onChange={entryDateHandler}
+                  clearIcon={null}
+                  // className="px-3"
+                /> */}
+              </td>
+
+              <td>
+                <Select
+                  className="d-inline"
+                  options={deptOptions}
+                  // defaultValue={{ value: "", label: "" }}
+                  menuPlacement="bottom"
+                  onChange={deptHandler}
+                />
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  name="line"
+                  onChange={filterHandler}
+                  value={filterObject["line"]}
+                  className="w-100"
+                />
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  name="processNo"
+                  onChange={filterHandler}
+                  value={filterObject["processNo"]}
+                  className="w-100"
+                />
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  name="item"
+                  onChange={filterHandler}
+                  value={filterObject["item"]}
+                  className="w-100"
+                />
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  name="abnormality"
+                  onChange={filterHandler}
+                  value={filterObject["abnormality"]}
+                  className="w-100"
+                />
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  name="countermeasure"
+                  onChange={filterHandler}
+                  value={filterObject["countermeasure"]}
+                  className="w-100"
+                />
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  name="spare"
+                  onChange={filterHandler}
+                  value={filterObject["spare"]}
+                  className="w-100"
+                />
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  name="pic"
+                  onChange={filterHandler}
+                  value={filterObject["pic"]}
+                  className="w-100"
+                />
+              </td>
+
+              <td>
+                {/* <DatePicker
+                  value={filterObject.target}
+                  onChange={targetHandler}
+                  clearIcon={null}
+                  // className="px-3"
+                /> */}
+              </td>
+
+              <td>
+                <Select
+                  className="d-inline"
+                  options={options}
+                  // defaultValue={{ value: "pending", label: "Pending" }}
+                  menuPlacement="bottom"
+                  onChange={statusHandler}
+                />
+              </td>
+
+              <td></td>
+              <td></td>
+              <td></td>
             </tr>
           </thead>
 
