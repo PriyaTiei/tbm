@@ -52,6 +52,7 @@ function SmileCardDetails({ list, image, setImage }) {
     }
   }, []);
 
+  console.log(okNg);
   // const selectedDate = new Date(Date.now());
   // const entryForYear = selectedDate.getFullYear();
   // const entryForMonth = selectedDate.getMonth() + 1;
@@ -89,6 +90,20 @@ function SmileCardDetails({ list, image, setImage }) {
             toast.error(`Data could not be saved , ${err.message}`);
           });
       } else {
+        axios
+          .post(
+            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/removeEntry`,
+            data
+          )
+          .then((result) => {
+            if (result.data.success) {
+              toast.success("saved data");
+            }
+          })
+          .catch((err) => {
+            // console.log("error ", err);
+            toast.error(`Data could not be saved , ${err.message}`);
+          });
         toast.warning("Please judge OK or NG");
       }
     }
@@ -324,6 +339,13 @@ function SmileCardDetails({ list, image, setImage }) {
                 onClick={() => setOkNg("NG")}
               >
                 <i className="bi bi-x-lg"></i>
+              </button>
+
+              <button
+                className="btn btn-warning  my-1 "
+                onClick={() => setOkNg("decisionPending")}
+              >
+                Pending
               </button>
 
               <button
