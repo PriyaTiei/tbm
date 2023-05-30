@@ -1,6 +1,7 @@
 const catchAsyncError = require("../middleware/catchAsyncError");
 const AbnormalityModel = require("../mongoSchema/abnormalityModel");
-const  ApiFeatureAbnormality = require("../util/apiFeatureAbnormality");
+const HeadModel = require("../mongoSchema/chekItemModel");
+const ApiFeatureAbnormality = require("../util/apiFeatureAbnormality");
 const ErrorHandler = require("../util/errorHandling");
 
 exports.createAbnormality = catchAsyncError(async (req, res, next) => {
@@ -38,7 +39,7 @@ exports.createAbnormality = catchAsyncError(async (req, res, next) => {
 
 exports.uploadAbnormalityImage = catchAsyncError(async (req, res, next) => {
   const { _id } = req.body;
-  
+
   // save in mongo db
 
   AbnormalityModel.findByIdAndUpdate(
@@ -116,15 +117,29 @@ exports.getAbnormalityAll = catchAsyncError(async (req, res, next) => {
   const fromDate = req.params.fromDate;
   var toDate = req.params.toDate;
   var queryStr = req.query;
-  var createdAt= { $gte: fromDate, $lt: toDate }
-  const abnormailityFeature = new ApiFeatureAbnormality(AbnormalityModel.find(), queryStr, createdAt).filter()
+  var createdAt = { $gte: fromDate, $lt: toDate }
+  let checkItemArray = [""]
+  if (queryStr?.item){
+    checkItemArray = []
+    let checkItems = await HeadModel.find({
+      workDetail: {
+        $regex: queryStr.item,
+        $options: "i"
+      }
+    })
+    checkItems.map(item=>{
+      checkItemArray.push(item._id.toString())
+    })
+  }
+    
+  const abnormailityFeature = new ApiFeatureAbnormality(AbnormalityModel.find(), queryStr, createdAt, checkItemArray).filter()
 
   //test comp
   const abnormalities = await abnormailityFeature.query.find({
-    
-    
+
+
   })
- 
+
   if (abnormalities.length === 0) {
     return next(new ErrorHandler("Abnormalities list not found", 404));
   }

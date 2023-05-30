@@ -1,9 +1,10 @@
 class ApiFeatureAbnormality {
-  constructor(query, queryStr, createdAt) {
+  constructor(query, queryStr, createdAt, checkItemArray) {
     this.query = query;
     this.queryStr = queryStr;
     this.newQueryStr = {};
     this.createdAt = createdAt;
+    this.checkItemArray = checkItemArray
   }
 
   filter() {
@@ -13,13 +14,21 @@ class ApiFeatureAbnormality {
     const deleteObj = ["entryDate", "target", "item"];
     deleteObj.forEach((item) => delete newQueryStr[item]);
 
+    console.log(this.checkItemArray);
+    if(this.checkItemArray.length>0 && this.checkItemArray[0]!=""){
+      console.log("here");
+      this.newQueryStr.checkItem = {
+        $in:this.checkItemArray
+      }
+    }
+    console.log(this.newQueryStr);
     // add keys with regex in this.newQueryStr
     for (let key in newQueryStr) {
       this.newQueryStr[key] = { $regex: newQueryStr[key], $options: "i" };
     }
-    console.log({ ...this.newQueryStr, createdAt: { ...this.createdAt } });
+    // console.log({ ...this.newQueryStr, createdAt: { ...this.createdAt } });
     this.query = this.query
-      .find({ ...this.newQueryStr, createdAt: { ...this.createdAt } })
+      .find({ ...this.newQueryStr, createdAt: { ...this.createdAt }})
       .populate("user", "name")
       .populate("checkItem", "workDetail")
       .sort({ createdAt: -1 });
