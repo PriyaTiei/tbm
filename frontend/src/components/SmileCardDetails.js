@@ -7,7 +7,7 @@ import TrendGraphModal from "./TrendGraphModal";
 import { useCookies } from "react-cookie";
 import ImageModal from "./ImageModal";
 
-function SmileCardDetails({ list, image, setImage }) {
+function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal }) {
   const [showModal, setShowModal] = useState(false);
   const [cookies] = useCookies(["userId"]);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -52,7 +52,7 @@ function SmileCardDetails({ list, image, setImage }) {
     }
   }, []);
 
-  console.log(okNg);
+  console.log(list);
   // const selectedDate = new Date(Date.now());
   // const entryForYear = selectedDate.getFullYear();
   // const entryForMonth = selectedDate.getMonth() + 1;
@@ -74,7 +74,46 @@ function SmileCardDetails({ list, image, setImage }) {
         checkedBy: checkedByNew,
       };
 
-      if (okNg === "OK" || okNg === "NG") {
+      if(okNg=="NG"){
+        axios
+        .get(
+          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/findByIdAndDate`,{
+            params:{
+              id:_id,
+              date:new Date().toISOString().split('T')[0]
+            }
+          }
+        )
+        .then((result) => {
+          console.log(result.data);
+          if (result.data.success) {
+            toast.success("Abnormality found");
+            axios
+          .post(
+            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
+            data
+          )
+          .then((result) => {
+            if (result.data.success) {
+              toast.success("saved data");
+            }
+          })
+          .catch((err) => {
+            // console.log("error ", err);
+            toast.error(`Data could not be saved , ${err.message}`);
+          });
+          }else{
+            setRecordAbnormalityShowModal(true)
+            toast.warn("Abnormality required before marking NG");
+          }
+        })
+        .catch((err) => {
+          // console.log("error ", err);
+          toast.error(`Data could not be saved , ${err.message}`);
+        });
+      }
+      if (okNg === "OK") {
+        
         axios
           .post(
             `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
@@ -89,12 +128,16 @@ function SmileCardDetails({ list, image, setImage }) {
             // console.log("error ", err);
             toast.error(`Data could not be saved , ${err.message}`);
           });
-      } else {
+      } 
+      if (okNg !== "OK" && okNg !== "NG") {
         axios
-          .post(
-            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/removeEntry`,
-            data
-          )
+        .post(
+          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/removeEntry`,
+          {
+            checkItem:data.checkItem,
+            entryFor:data.entryFor
+          }
+        )
           .then((result) => {
             if (result.data.success) {
               toast.success("saved data");
@@ -104,7 +147,7 @@ function SmileCardDetails({ list, image, setImage }) {
             // console.log("error ", err);
             toast.error(`Data could not be saved , ${err.message}`);
           });
-        toast.warning("Please judge OK or NG");
+        // toast.warning("Please judge OK or NG");
       }
     }
   };

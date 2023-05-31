@@ -10,6 +10,7 @@ import axios from "axios";
 import AbnormalityRecordModalForm from "./AbnormalityRecordModalForm";
 import { toast } from "react-toastify";
 import {setCheckedBy} from "../redux/checkedBy"
+import JudgementHistoryModel from "./JudgementHistoryModel";
 
 function SmileCard() {
   const [modify, setModify] = useState(false);
@@ -22,6 +23,7 @@ function SmileCard() {
   // get query string from link
   const [searchParams] = useSearchParams();
   const [showModal, setShowModal] = useState(false);
+  const [showJudgementHistoryModel, setShowJudgementHistoryModel] = useState(false)
 
   const filters = useSelector((state) => state.filters);
   let queryStr;
@@ -118,11 +120,14 @@ const checkedBy= useSelector(state=>state.checkedBy)
     }
   };
 
-  const checkedByHandler = (e) => {
-  setCheckedByCurrent(e.target.value,
-   
-   );
+  const judgementHistory = () => {
 
+  }
+
+  console.log(list._id);
+
+  const checkedByHandler = (e) => {
+    setCheckedByCurrent(e.target.value);
   };
 
   useEffect(()=>{
@@ -205,6 +210,18 @@ const checkedBy= useSelector(state=>state.checkedBy)
             onChange={checkedByHandler}
           />
         )}
+
+        {level >= 20 && (
+          <button
+            className="btn btn-success"
+            onClick={() => setShowJudgementHistoryModel(true)}
+            // data-toggle="tooltip"
+            // data-placement="top"
+            title="History"
+          >
+            Judgement History
+          </button>
+        )}
       </div>
       {loading ? (
         <Loading />
@@ -219,7 +236,7 @@ const checkedBy= useSelector(state=>state.checkedBy)
                   list={list}
                   image={image}
                   setImage={setImage}
-                  
+                  setRecordAbnormalityShowModal={setShowModal}
                 />
                 {showModal ? (
                   <AbnormalityRecordModalForm
@@ -229,6 +246,11 @@ const checkedBy= useSelector(state=>state.checkedBy)
                     itemId={list._id}
                   />
                 ) : null}
+                {
+                  showJudgementHistoryModel && (
+                    <JudgementHistoryModel showModal={showJudgementHistoryModel} setShowModal={setShowJudgementHistoryModel} checkItem={list._id}/>
+                  )
+                }
               </div>
             )
           ) : null}
