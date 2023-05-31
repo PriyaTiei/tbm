@@ -3,6 +3,8 @@ const AbnormalityModel = require("../mongoSchema/abnormalityModel");
 const HeadModel = require("../mongoSchema/chekItemModel");
 const ApiFeatureAbnormality = require("../util/apiFeatureAbnormality");
 const ErrorHandler = require("../util/errorHandling");
+const { getStartDate, getEndDate } = require("../util/getISODate");
+const { ObjectId } = require("../util/getObjectType");
 
 exports.createAbnormality = catchAsyncError(async (req, res, next) => {
   const {
@@ -155,6 +157,31 @@ exports.getAbnormality = catchAsyncError(async (req, res, next) => {
     .populate("user", "name");
   if (!abnormalityItem) {
     return next(new ErrorHandler("cannot find this abnormalityItem", 404));
+  }
+
+  res.status(201).json({ success: true, abnormalityItem });
+});
+
+exports.getAbnormalityByIdAndDate = catchAsyncError(async (req, res, next) => {
+  const id = req.query.id;
+  const date = req.query.date;
+  console.log(date);
+  var newQueryStr = {}
+
+  if (id != "" && date != "") {
+    newQueryStr["createdAt"] = {
+      $lte:new Date(getEndDate(date)),
+      $gte:new Date(getStartDate(date)),
+    }
+  }
+
+  newQueryStr['checkItem']=ObjectId(id)
+
+  console.log(newQueryStr);
+  const abnormalityItem = await AbnormalityModel.findOne(newQueryStr)
+  
+  if (abnormalityItem==null) {
+    res.status(201).json({ success: false });
   }
 
   res.status(201).json({ success: true, abnormalityItem });
