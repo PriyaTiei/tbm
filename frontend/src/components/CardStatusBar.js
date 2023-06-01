@@ -1,44 +1,64 @@
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 
-const CardStatusGraph = ({ data }) => {
+const CardStatusGraph = ({ unFilteredData }) => {
 
-    console.log(data);
-    const [datasets, setDatasets] = useState([
-        {
-            label: "Late",
-            backgroundColor: "rgba(54, 162, 235)",
-            data: [30],
-            grouped:false,
-            stack: '1'
-        },
-        {
-            label: "OK",
-            backgroundColor: "rgba(75, 192, 192)",
-            data: [10],
-            grouped: false,
-            stack: '1'
-        },
-        {
-            label: "Total",
-            backgroundColor: "rgba(255, 99, 132)",
-            data: [50],
-            grouped:false
-        }
-    ])
+    const [data, setData] = useState({})
 
     const [chartData, setChartData] = useState({
-        labels: ["31-05-2023"],
-        datasets: datasets
+        labels: [],
+        datasets: []
     });
 
     useEffect(() => {
-        // console.log(data);
-        // dailyStatusDataLinewise.map((dat=>{
+        var tempDataSet = [
+            {
+                label: "OK",
+                backgroundColor: "rgba(75, 192, 192)",
+                data: data.okData,
+                grouped: false,
+                stack: '1'
+            },
+            {
+                label: "NG",
+                backgroundColor: "rgba(54, 162, 235)",
+                data: data.ngData,
+                grouped:false,
+                stack: '1'
+            },
+            {
+                label: "Total",
+                backgroundColor: "rgba(255, 99, 132)",
+                data: data.totalData,
+                grouped:false
+            }
+        ]
+        setChartData(({
+            datasets:tempDataSet,
+            labels:data.dates
+        }))
+    }, [data]);
 
-        // }))
+    useEffect(() => {
+        var dates = []
+        var ngData = []
+        var okData = []
+        var totalData = []
         
-    }, []);
+        Object.keys(unFilteredData).sort().map((val,i)=>{
+            dates.push(unFilteredData[val].date)
+            totalData.push(unFilteredData[val].total)
+            okData.push(unFilteredData[val].totalOK)
+            ngData.push(unFilteredData[val].totalNG)
+        })
+
+        setData({
+            dates:dates,
+            ngData:ngData,
+            okData:okData,
+            totalData:totalData
+        })
+    }, [unFilteredData])
 
     const options = {
         responsive: true,
@@ -49,7 +69,7 @@ const CardStatusGraph = ({ data }) => {
             },
             y: {
                 // stacked: true,
-                beginAtZero: false,
+                beginAtZero: true,
                 // max: 100,
                 ticks: {
                     callback: (value) => `${value}`

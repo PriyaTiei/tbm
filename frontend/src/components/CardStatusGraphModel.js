@@ -16,7 +16,7 @@ function CardStatusGraphModel({ showModal, setShowModal, line }) {
 
   let info = {};
 
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({});
   const [labels, setLabels] = useState([]);
   const [searchParams] = useSearchParams();
   for (const e of searchParams.entries()) {
@@ -28,7 +28,7 @@ function CardStatusGraphModel({ showModal, setShowModal, line }) {
 
   // begining of Month
   var beginingDate = new Date(Date.now());
-  beginingDate.setDate(-30);
+  beginingDate.setDate(-1);
 
   //from date
   const [fromDate, setFromDate] = useState(beginingDate);
@@ -45,31 +45,18 @@ function CardStatusGraphModel({ showModal, setShowModal, line }) {
   const toYear = toNextDate.getFullYear();
   const toDateSt = `${toYear}-${toMonth}-${toDt}`;
 
-  var dataList = [];
-  var labelsList = [];
-
-  const [temp, setTemp] = useState({})
-
   useEffect(() => {
     axios
-      .get(
+      .post(
         `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/getGraphData`, {
         "line": line,
-        "daily": {
-          "entryFor": "2023-5-31",
-          "pS": "S"
-        },
-        "machine": {
-          "d": 3,
-          "w": 5,
-          "m": 5,
-          "y": 2023,
-          "pS": "S"
-        }
+        "startDate": fromDate.toLocaleDateString(),
+        "endDate": toDate.toLocaleDateString(),
+        "pS": "S"
       }
       )
       .then((result) => {
-        setTemp(result.data)
+        setData(result.data.totalData)
         // result.data.dailyStatus.forEach((item) => {
         //   labelsList.push(item.entryFor);
         //   // if (parseFloat(item.value) === NaN) {
@@ -97,7 +84,7 @@ function CardStatusGraphModel({ showModal, setShowModal, line }) {
         <Modal.Title>Line Status Graphs</Modal.Title>
       </Modal.Header>
       <Modal.Body >
-        <CardStatusGraph data={temp} />
+        <CardStatusGraph unFilteredData={data} />
       </Modal.Body>
       <Modal.Footer>
         <div className="ms-4 my-2 ">

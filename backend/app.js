@@ -28,5 +28,5 @@ app.use("/card", cardRouter);
 app.use("/abnormality", abnormalityRouter);
 app.use("/pendingTasks", pendingRouter);
 
-// app.use(error);
+app.use(error);
 module.exports = app;

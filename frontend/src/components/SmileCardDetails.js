@@ -17,6 +17,9 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
   const [showModalImage, setShowModalImage] = useState(false);
   const checkedByNew = useSelector((state) => state.checkedBy);
 
+  const auth = useSelector((state) => state.auth);
+  const level = auth.user ? auth.user.level : 0;
+
   let {
     cardNo,
     d,
@@ -347,12 +350,15 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
                     Done by : {checkedBy}
                   </spam>
                 </h6>
-                <button
-                  className="btn btn-sm btn-primary"
-                  onClick={resetHandler}
-                >
-                  Reset
-                </button>
+                {level >= 20 && (
+          <button
+          className="btn btn-sm btn-primary"
+          onClick={resetHandler}
+        >
+          Reset
+        </button>
+        )}
+                
               </div>
 
               <input

@@ -76,6 +76,7 @@ function Filters() {
   // ];
 
   useEffect(() => {
+    console.log(date);
     dispatch(
       filterDate(
         date.getDay(),

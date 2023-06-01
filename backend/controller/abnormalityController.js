@@ -133,6 +133,10 @@ exports.getAbnormalityAll = catchAsyncError(async (req, res, next) => {
       checkItemArray.push(item._id.toString())
     })
   }
+
+  if(queryStr.item  && !checkItemArray.length){
+    return []
+  }
     
   const abnormailityFeature = new ApiFeatureAbnormality(AbnormalityModel.find(), queryStr, createdAt, checkItemArray).filter()
 

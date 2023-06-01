@@ -2,6 +2,7 @@ const catchAsyncError = require("../middleware/catchAsyncError");
 const CardRaisedModel = require("../mongoSchema/cardRaisedModel");
 const ApiFeatureCard = require("../util/apiFeatureCard");
 const ErrorHandler = require("../util/errorHandling");
+const HeadModel = require("../mongoSchema/chekItemModel");
 
 exports.createCard = catchAsyncError(async (req, res, next) => {
   const {
@@ -75,10 +76,30 @@ exports.getCardAll = catchAsyncError(async (req, res, next) => {
 
   var queryStr = req.query;
   var createdAt = { $gte: fromDate, $lt: toDate };
+
+  let checkItemArray = [""]
+  if (queryStr?.item){
+    checkItemArray = []
+    let checkItems = await HeadModel.find({
+      workDetail: {
+        $regex: queryStr.item,
+        $options: "i"
+      }
+    })
+    checkItems.map(item=>{
+      checkItemArray.push(item._id.toString())
+    })
+  }
+
+  if(queryStr.item  && !checkItemArray.length){
+    return []
+  }
+
   const cardFeature = new ApiFeatureCard(
     CardRaisedModel.find(),
     queryStr,
-    createdAt
+    createdAt,
+    checkItemArray
   ).filter();
 
   //test comp

@@ -1,5 +1,4 @@
 module.exports.getStartDate = (val) => {
-    console.log(val);
     var date = val.split("T")[0]
     var time = "T00:00:00.000Z"
     return val+time
