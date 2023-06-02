@@ -324,7 +324,7 @@ function getDatesInRange(startDate, endDate) {
   return dates;
 }
 
-exports.changeVerified = async (req, res, next) => {
+exports.changeVerified = catchAsyncError(async (req, res, next) => {
   console.log(req.query);
   const dailyStatus = await DailyStatusModel.findOneAndUpdate({
     _id: ObjectId(req.query.id),
@@ -342,9 +342,9 @@ exports.changeVerified = async (req, res, next) => {
     success: true,
     dailyStatus: dailyStatus
   });
-}
+})
 
-exports.getGraphData = async (req, res, next) => {
+exports.getGraphData = catchAsyncError(async (req, res, next) => {
 
   console.log(req.body.startDate);
   var start = req.body.startDate.split("/")
@@ -462,4 +462,4 @@ exports.getGraphData = async (req, res, next) => {
   })
   
   
-}
+})
