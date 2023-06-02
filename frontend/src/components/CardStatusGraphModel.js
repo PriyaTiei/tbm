@@ -10,21 +10,19 @@ import CardStatusGraph from "./CardStatusBar";
 
 function CardStatusGraphModel({ showModal, setShowModal, line }) {
   const handleClose = () => {
-    // setIsOpen(false)
     setShowModal(false);
   };
+
+  const filters = useSelector((state) => state.filters);
 
   let info = {};
 
   const [data, setData] = useState({});
-  const [labels, setLabels] = useState([]);
   const [searchParams] = useSearchParams();
   for (const e of searchParams.entries()) {
     let [f, v] = e;
     info[f] = v;
   }
-
-  const users = useSelector((state) => state.users);
 
   // begining of Month
   var beginingDate = new Date(Date.now());
@@ -52,21 +50,11 @@ function CardStatusGraphModel({ showModal, setShowModal, line }) {
         "line": line,
         "startDate": fromDate.toLocaleDateString(),
         "endDate": toDate.toLocaleDateString(),
-        "pS": "S"
+        "pS": filters.pS
       }
       )
       .then((result) => {
         setData(result.data.totalData)
-        // result.data.dailyStatus.forEach((item) => {
-        //   labelsList.push(item.entryFor);
-        //   // if (parseFloat(item.value) === NaN) {
-        //   //   dataList.push(0);
-        //   // } else {
-        //   dataList.push(parseFloat(item.value));
-        //   // }
-        // });
-        // setData(dataList);
-        // setLabels(labelsList);
       })
       .catch((err) => {
         console.log("error : ", err);
