@@ -3,10 +3,14 @@ const DailyStatusModel = require("../mongoSchema/dailyStatusModel");
 const PendingTask = require("../mongoSchema/pendingTaskModel");
 const ErrorHandler = require("../util/errorHandling");
 const ApiFeatureDailyStatus = require("../util/apiFeatureDailyStatus");
+const { ObjectId } = require("../util/getObjectType");
+const ApiFeatureHead = require("../util/apiFeatureHead");
+const HeadModel = require("../mongoSchema/chekItemModel");
 
 exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
   const { checkItem, result, value, user, entryFor, pS, remarks, checkedBy } =
     req.body;
+  console.log(req.body);
 
   const dailystatusAvailable = await DailyStatusModel.findOne({
     checkItem,
@@ -46,6 +50,30 @@ exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
   }
 });
 
+
+exports.removeDailyStatus = async (req, res, next) => {
+  const id = req.params.id;
+  const { checkItem, result, value, user, entryFor, pS, remarks, checkedBy } =
+    req.body;
+
+  let dailyStatus = await DailyStatusModel.findById(id);
+  if (!dailyStatus) {
+    return next(new ErrorHandler("No such daily status check ", 404));
+  }
+
+  dailyStatus.checkItem = checkItem;
+  dailyStatus.result = result;
+  dailyStatus.value = value;
+  dailyStatus.user = user;
+  dailyStatus.entryFor = entryFor;
+  dailyStatus.pS = pS;
+  dailyStatus.remarks = remarks;
+  dailyStatus.checkedBy = checkedBy;
+  await dailyStatus.save({ validateBeforeSave: false });
+
+  res.status(201).json({ success: true, message: "Updated Successfully" });
+}
+
 exports.updateDailyStatus = catchAsyncError(async (req, res, next) => {
   const id = req.params.id;
   const { checkItem, result, value, user, entryFor, pS, remarks, checkedBy } =
@@ -70,13 +98,20 @@ exports.updateDailyStatus = catchAsyncError(async (req, res, next) => {
 });
 
 exports.deleteDailyStatus = catchAsyncError(async (req, res, next) => {
-  const id = req.params.id;
+  const { checkItem, entryFor } = req.body;
 
-  let dailyStatus = await DailyStatusModel.findById(id);
+  console.log(checkItem, entryFor);
+
+  const dailyStatus = await DailyStatusModel.findOne({
+    checkItem: checkItem,
+    entryFor: entryFor,
+  });
+
+  console.log(dailyStatus);
   if (!dailyStatus) {
     return next(new ErrorHandler("No such daily status check ", 404));
   }
-
+  console.log(dailyStatus);
   await dailyStatus.remove();
   res.status(201).json({ success: true, message: "Deleted Successfully" });
 });
@@ -194,6 +229,28 @@ exports.getDailyStatusAll = catchAsyncError(async (req, res, next) => {
   // });
 });
 
+exports.getDailyStatusByCheckItem = catchAsyncError(async (req, res, next) => {
+
+  console.log(req.query);
+  const dailyStatusAll = await DailyStatusModel.find({
+    checkItem: ObjectId(req.query.checkItem)
+  });
+
+  console.log(dailyStatusAll);
+
+  if (!dailyStatusAll) {
+    res.status(201).json({
+      success: false,
+      dailyStatusAll: []
+    });
+  }
+
+  res.status(201).json({
+    success: true,
+    dailyStatusAll: dailyStatusAll
+  });
+});
+
 // Aggregare method not used yet
 exports.getDailyStatusAggregated = catchAsyncError(async (req, res, next) => {
   req.query = { ...req.query };
@@ -249,3 +306,160 @@ exports.getTrendDailyStatus = catchAsyncError(async (req, res, next) => {
     .status(201)
     .json({ success: true, total: dailyStatus.length, dailyStatus });
 });
+
+
+function getDatesInRange(startDate, endDate) {
+  const date = new Date(startDate.getTime());
+
+  const dates = [];
+
+  while (date <= endDate) {
+    var cdate = new Date(date).toLocaleDateString()
+    var fdate = cdate.split("/")
+    fdate = fdate[2] + "-" + fdate[0] + "-" + fdate[1]
+    dates.push([fdate, cdate]);
+    date.setDate(date.getDate() + 1);
+  }
+
+  return dates;
+}
+
+exports.changeVerified = async (req, res, next) => {
+  console.log(req.query);
+  const dailyStatus = await DailyStatusModel.findOneAndUpdate({
+    _id: ObjectId(req.query.id),
+  },{
+    [req.query.role]:req.query.status=="false"?false:true
+  });
+
+  if(!dailyStatus){
+    res.status(201).json({
+      success: false,
+    });
+  }
+
+  res.status(201).json({
+    success: true,
+    dailyStatus: dailyStatus
+  });
+}
+
+exports.getGraphData = async (req, res, next) => {
+
+  console.log(req.body.startDate);
+  var start = req.body.startDate.split("/")
+  start = start[2] + "-" + start[1] + "-" + start[0]
+  var end = req.body.endDate.split("/")
+  end = end[2] + "-" + end[1] + "-" + end[0]
+  const d1 = new Date(start);
+  const d2 = new Date(end);
+
+  var dates = getDatesInRange(d1, d2)
+
+  var totalData = {}
+
+  dates.map(async (date,i) => {
+
+    const dateType = new Date(date[1]);
+
+    const headVal = {
+      "d": dateType.getDate(),
+      "w": Math.floor(dateType.getDate() / 7.1) + 1,
+      "m": dateType.getMonth() + 1,
+      "y": dateType.getFullYear(),
+      "pS": req.body.pS
+    }
+
+    const headObject = new ApiFeatureHead(HeadModel, headVal).match();
+    const headCheckList = await headObject.query;
+
+    if (headCheckList.length === 0) {
+      return next(new ErrorHandler("could not find check list", 404));
+    }
+
+    // unique machne
+    let processNosUnique = [];
+    let machineData = [];
+    // let processCount=[]
+
+    headCheckList.forEach((item) => {
+      let line = item._id.line;
+
+      const counts = {};
+      item.processList.forEach((el) => {
+        counts[el] = counts[el] ? (counts[el] += 1) : 1;
+      });
+
+      item.processList.forEach((e) => {
+        let ind = processNosUnique.indexOf(e);
+        if (ind === -1) {
+          processNosUnique.push(e);
+        }
+      });
+
+      machineData = [
+        ...machineData,
+        { line, processNos: processNosUnique, counts },
+      ];
+      processNosUnique = [];
+    });
+
+    //done here
+    var total = 0;
+    machineData = machineData.filter(data => data.line == req.body.line)
+
+    Object.values(machineData[0]?.counts).forEach(val => {
+      if (val) {
+        total += val
+      }
+    });
+
+    var statusVal = {
+      "entryFor": date[0],
+      "pS": req.body.pS
+    }
+
+    const dailyStatusAll = await DailyStatusModel.find(statusVal)
+      .populate("checkItem", "line method processNo pS")
+      .populate("user", "name");
+    if (!dailyStatusAll) {
+      return next(new ErrorHandler("No such Daily status check", 404));
+    }
+
+    const sortedDailyStatus = sortData(dailyStatusAll);
+
+    const filteresSortedDailyStatus = sortedDailyStatus.filter(data => data.line == req.body.line)
+
+    const totalDailyStatus = dailyStatusAll.length;
+
+    var totalOK = 0;
+    var totalNG = 0;
+    filteresSortedDailyStatus.length && filteresSortedDailyStatus[0]?.processes.map((process) => {
+      if (process?.result?.OK) {
+        totalOK += process.result.OK
+      }
+      if (process?.result?.NG) {
+        totalNG += process.result.NG
+      }
+    })
+    
+    totalData[dateType.getTime()] = {
+      date:date[0],
+      total,
+      totalOK,
+      totalNG,
+    }
+
+    if(Object.keys(totalData).length==dates.length){
+      console.log(totalData);
+
+      res.status(201).json({
+        success: true,
+        totalData: totalData
+      });
+    }
+
+  })
+  
+  
+}

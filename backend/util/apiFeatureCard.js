@@ -1,18 +1,26 @@
 class ApiFeatureCard {
-  constructor(query, queryStr, createdAt) {
+  constructor(query, queryStr, createdAt, checkItemArray) {
     this.query = query;
     this.queryStr = queryStr;
     this.newQueryStr = {};
     this.createdAt = createdAt;
+    this.checkItemArray = checkItemArray
   }
 
   filter() {
     let newQueryStr = { ...this.queryStr };
-    console.log(this.queryStr);
 
     // deleteing keys for which regex is not required
+
     const deleteObj = ["entryDate", "target", "item"];
+
     deleteObj.forEach((item) => delete newQueryStr[item]);
+
+    if(this.checkItemArray.length>0 && this.checkItemArray[0]!=""){
+      this.newQueryStr.checkItem = {
+        $in:this.checkItemArray
+      }
+    }
 
     // add keys with regex in this.newQueryStr
     for (let key in newQueryStr) {

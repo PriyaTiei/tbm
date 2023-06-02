@@ -7,6 +7,7 @@ const {
   getAbnormality,
   getAbnormalityAll,
   uploadAbnormalityImage,
+  getAbnormalityByIdAndDate,
 } = require("../controller/abnormalityController");
 
 const abnormalityRouter = express.Router();
@@ -35,6 +36,7 @@ abnormalityRouter
   .delete(deleteAbnormality);
 
 abnormalityRouter.route("/find/:id").get(getAbnormality);
+abnormalityRouter.route("/findByIdAndDate").get(getAbnormalityByIdAndDate);
 abnormalityRouter.route("/find/fromDate/:fromDate/toDate/:toDate").get(getAbnormalityAll);
 abnormalityRouter.route("/uploadImage").post(upload.single("image"), uploadAbnormalityImage);
 

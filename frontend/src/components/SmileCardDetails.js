@@ -7,7 +7,7 @@ import TrendGraphModal from "./TrendGraphModal";
 import { useCookies } from "react-cookie";
 import ImageModal from "./ImageModal";
 
-function SmileCardDetails({ list, image, setImage }) {
+function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal }) {
   const [showModal, setShowModal] = useState(false);
   const [cookies] = useCookies(["userId"]);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -16,6 +16,9 @@ function SmileCardDetails({ list, image, setImage }) {
 
   const [showModalImage, setShowModalImage] = useState(false);
   const checkedByNew = useSelector((state) => state.checkedBy);
+
+  const auth = useSelector((state) => state.auth);
+  const level = auth.user ? auth.user.level : 0;
 
   let {
     cardNo,
@@ -52,6 +55,7 @@ function SmileCardDetails({ list, image, setImage }) {
     }
   }, []);
 
+  console.log(list);
   // const selectedDate = new Date(Date.now());
   // const entryForYear = selectedDate.getFullYear();
   // const entryForMonth = selectedDate.getMonth() + 1;
@@ -73,7 +77,46 @@ function SmileCardDetails({ list, image, setImage }) {
         checkedBy: checkedByNew,
       };
 
-      if (okNg === "OK" || okNg === "NG") {
+      if(okNg=="NG"){
+        axios
+        .get(
+          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/findByIdAndDate`,{
+            params:{
+              id:_id,
+              date:new Date().toISOString().split('T')[0]
+            }
+          }
+        )
+        .then((result) => {
+          console.log(result.data);
+          if (result.data.success) {
+            toast.success("Abnormality found");
+            axios
+          .post(
+            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
+            data
+          )
+          .then((result) => {
+            if (result.data.success) {
+              toast.success("saved data");
+            }
+          })
+          .catch((err) => {
+            // console.log("error ", err);
+            toast.error(`Data could not be saved , ${err.message}`);
+          });
+          }else{
+            setRecordAbnormalityShowModal(true)
+            toast.warn("Abnormality required before marking NG");
+          }
+        })
+        .catch((err) => {
+          // console.log("error ", err);
+          toast.error(`Data could not be saved , ${err.message}`);
+        });
+      }
+      if (okNg === "OK") {
+        
         axios
           .post(
             `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
@@ -88,8 +131,26 @@ function SmileCardDetails({ list, image, setImage }) {
             // console.log("error ", err);
             toast.error(`Data could not be saved , ${err.message}`);
           });
-      } else {
-        toast.warning("Please judge OK or NG");
+      } 
+      if (okNg !== "OK" && okNg !== "NG") {
+        axios
+        .post(
+          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/removeEntry`,
+          {
+            checkItem:data.checkItem,
+            entryFor:data.entryFor
+          }
+        )
+          .then((result) => {
+            if (result.data.success) {
+              toast.success("saved data");
+            }
+          })
+          .catch((err) => {
+            // console.log("error ", err);
+            toast.error(`Data could not be saved , ${err.message}`);
+          });
+        // toast.warning("Please judge OK or NG");
       }
     }
   };
@@ -289,12 +350,15 @@ function SmileCardDetails({ list, image, setImage }) {
                     Done by : {checkedBy}
                   </spam>
                 </h6>
-                <button
-                  className="btn btn-sm btn-primary"
-                  onClick={resetHandler}
-                >
-                  Reset
-                </button>
+                {level >= 20 && (
+          <button
+          className="btn btn-sm btn-primary"
+          onClick={resetHandler}
+        >
+          Reset
+        </button>
+        )}
+                
               </div>
 
               <input
@@ -324,6 +388,13 @@ function SmileCardDetails({ list, image, setImage }) {
                 onClick={() => setOkNg("NG")}
               >
                 <i className="bi bi-x-lg"></i>
+              </button>
+
+              <button
+                className="btn btn-warning  my-1 "
+                onClick={() => setOkNg("decisionPending")}
+              >
+                Pending
               </button>
 
               <button

@@ -52,10 +52,7 @@ function App() {
 
   useEffect(() => {     
     if (token) { 
-      loginWithToken().then((result) => {
-
-        dispatch(login(result.user, token));
-      })
+      loginWithToken()
     }
   }, [dispatch]);
 

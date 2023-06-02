@@ -7,10 +7,16 @@ const {
   getDailyStatusAggregated,
   getDailyStatus,
   getTrendDailyStatus,
+  removeDailyStatus,
+  getDailyStatusByCheckItem,
+  getGraphData,
+  changeVerified,
 } = require("../controller/dailyStatusController");
 const dailyStatusRouter = express.Router();
 
 dailyStatusRouter.route("/entry").post(createDailyStatus);
+dailyStatusRouter.route("/dailyStatusByCheckItem").get(getDailyStatusByCheckItem);
+dailyStatusRouter.route("/removeEntry").post(deleteDailyStatus);
 dailyStatusRouter.route("/").get(getDailyStatusAll);
 dailyStatusRouter
   .route("/update/:id")
@@ -20,6 +26,8 @@ dailyStatusRouter
   dailyStatusRouter.route("/find/:idCheckItem/fromDate/:fromDate/toDate/:toDate").get(getTrendDailyStatus);
   dailyStatusRouter.route("/aggregated").get(getDailyStatusAggregated)
 
+dailyStatusRouter.route("/getGraphData").post(getGraphData)
+dailyStatusRouter.route("/changeVerified").put(changeVerified)
 
 
 module.exports = dailyStatusRouter;

@@ -27,6 +27,7 @@ export const dailyStatusFetchFail = (error) => {
 
 export const getDailyStatus = (queryStr) => {
   return (dispatch) => {
+    console.log("qw",queryStr);
     dispatch(dailyStatusFetchRequest());
     axios
       .get(

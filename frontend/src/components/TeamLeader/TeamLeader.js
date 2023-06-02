@@ -40,7 +40,6 @@ export default function TeamLeader() {
                     counts={item.counts}
                     key={item.line}
                    
-                    
                   />
                 );
               })

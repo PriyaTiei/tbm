@@ -1,7 +1,10 @@
 const catchAsyncError = require("../middleware/catchAsyncError");
 const AbnormalityModel = require("../mongoSchema/abnormalityModel");
-const  ApiFeatureAbnormality = require("../util/apiFeatureAbnormality");
+const HeadModel = require("../mongoSchema/chekItemModel");
+const ApiFeatureAbnormality = require("../util/apiFeatureAbnormality");
 const ErrorHandler = require("../util/errorHandling");
+const { getStartDate, getEndDate } = require("../util/getISODate");
+const { ObjectId } = require("../util/getObjectType");
 
 exports.createAbnormality = catchAsyncError(async (req, res, next) => {
   const {
@@ -38,7 +41,7 @@ exports.createAbnormality = catchAsyncError(async (req, res, next) => {
 
 exports.uploadAbnormalityImage = catchAsyncError(async (req, res, next) => {
   const { _id } = req.body;
-  
+
   // save in mongo db
 
   AbnormalityModel.findByIdAndUpdate(
@@ -116,15 +119,33 @@ exports.getAbnormalityAll = catchAsyncError(async (req, res, next) => {
   const fromDate = req.params.fromDate;
   var toDate = req.params.toDate;
   var queryStr = req.query;
-  var createdAt= { $gte: fromDate, $lt: toDate }
-  const abnormailityFeature = new ApiFeatureAbnormality(AbnormalityModel.find(), queryStr, createdAt).filter()
+  var createdAt = { $gte: fromDate, $lt: toDate }
+  let checkItemArray = [""]
+  if (queryStr?.item){
+    checkItemArray = []
+    let checkItems = await HeadModel.find({
+      workDetail: {
+        $regex: queryStr.item,
+        $options: "i"
+      }
+    })
+    checkItems.map(item=>{
+      checkItemArray.push(item._id.toString())
+    })
+  }
+
+  if(queryStr.item  && !checkItemArray.length){
+    return []
+  }
+    
+  const abnormailityFeature = new ApiFeatureAbnormality(AbnormalityModel.find(), queryStr, createdAt, checkItemArray).filter()
 
   //test comp
   const abnormalities = await abnormailityFeature.query.find({
-    
-    
+
+
   })
- 
+
   if (abnormalities.length === 0) {
     return next(new ErrorHandler("Abnormalities list not found", 404));
   }
@@ -140,6 +161,31 @@ exports.getAbnormality = catchAsyncError(async (req, res, next) => {
     .populate("user", "name");
   if (!abnormalityItem) {
     return next(new ErrorHandler("cannot find this abnormalityItem", 404));
+  }
+
+  res.status(201).json({ success: true, abnormalityItem });
+});
+
+exports.getAbnormalityByIdAndDate = catchAsyncError(async (req, res, next) => {
+  const id = req.query.id;
+  const date = req.query.date;
+  console.log(date);
+  var newQueryStr = {}
+
+  if (id != "" && date != "") {
+    newQueryStr["createdAt"] = {
+      $lte:new Date(getEndDate(date)),
+      $gte:new Date(getStartDate(date)),
+    }
+  }
+
+  newQueryStr['checkItem']=ObjectId(id)
+
+  console.log(newQueryStr);
+  const abnormalityItem = await AbnormalityModel.findOne(newQueryStr)
+  
+  if (abnormalityItem==null) {
+    res.status(201).json({ success: false });
   }
 
   res.status(201).json({ success: true, abnormalityItem });
