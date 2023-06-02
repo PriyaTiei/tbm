@@ -21,9 +21,9 @@ function Line({ line, processNos, counts, dailyStatusDataLinewise }) {
 
   return (
     <Fragment>
-      <div className="d-flex bg-info m-3 p-1 w-90 justify-content-between">
-      <h3 className="bg-info text-center ">{`${line} - ${totalSum}`}</h3>
-      <button onClick={()=>setShowGraphModal(true)} className="btn btn-primary">Graph</button>
+      <div className="d-flex bg-primary m-3 p-1 w-90 justify-content-between">
+      <h3 className="text-white text-center ">{`${line} - ${totalSum}`}</h3>
+      <button onClick={()=>setShowGraphModal(true)} className="btn btn-outline-light border-white"><i className="bi bi-graph-up-arrow h4"> Graph</i></button>
       </div>
       
       <div className="d-flex flex-wrap">
