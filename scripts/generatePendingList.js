@@ -1,7 +1,7 @@
 const axios = require("axios");
 const dotenv = require("dotenv");
 
-dotenv.config();
+dotenv.config({path:__dirname + '/.env'});
 
 axios
   .get(`http://${process.env.host}:${process.env.port}/pendingTasks/generate`)
