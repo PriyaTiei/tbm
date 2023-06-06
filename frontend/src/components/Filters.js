@@ -107,6 +107,7 @@ function Filters() {
         <div className="d-flex">
           <DatePicker
             value={date}
+            format="dd/MM/yyyy"
             onChange={setDate}
             clearIcon={null}
             className="px-3"

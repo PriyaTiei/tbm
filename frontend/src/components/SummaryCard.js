@@ -204,12 +204,13 @@ function SummaryCard() {
         <div className="ms-auto me-3">
           <span>From</span>
           <DatePicker
+          format="dd/MM/yyyy"
             value={fromDate}
             onChange={setFromDate}
             clearIcon={null}
           />
           <span className="ms-3">To</span>
-          <DatePicker value={toDate} onChange={setToDate} clearIcon={null} />
+          <DatePicker format="dd/MM/yyyy" value={toDate} onChange={setToDate} clearIcon={null} />
         </div>
       </div>
 

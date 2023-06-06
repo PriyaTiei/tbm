@@ -173,7 +173,10 @@ function SmileCardAdd() {
     formData.append("holidayOperation", holidayOperationNew);
     formData.append("m", mNew);
     formData.append("methodWssNo", methodWssNoNew);
-    formData.append("pS", pSNew);
+
+    //formData.append("pS", pSNew);
+    formData.append("pS", pS);
+
     formData.append("prepManHr", prepManHrNew);
     formData.append("qualityOnePoint", qualityOnePointNew);
     formData.append("rS", rSNew);

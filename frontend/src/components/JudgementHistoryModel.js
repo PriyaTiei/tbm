@@ -90,7 +90,7 @@ function JudgementHistoryModel({ showModal, setShowModal, checkItem }) {
 
     return (
       <tr>
-        <td>{item.entryFor}</td>
+        <td>{item.checkedAt.split("T")[0]}</td>
         <td>{item.result}</td>
         <td>{item.value}</td>
         <td>{item.remarks}</td>

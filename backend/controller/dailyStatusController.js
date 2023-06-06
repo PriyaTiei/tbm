@@ -6,6 +6,7 @@ const ApiFeatureDailyStatus = require("../util/apiFeatureDailyStatus");
 const { ObjectId } = require("../util/getObjectType");
 const ApiFeatureHead = require("../util/apiFeatureHead");
 const HeadModel = require("../mongoSchema/chekItemModel");
+const DailyGraphModel = require("../mongoSchema/dailyGraphModel");
 
 exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
   const { checkItem, result, value, user, entryFor, pS, remarks, checkedBy } =
@@ -328,11 +329,11 @@ exports.changeVerified = catchAsyncError(async (req, res, next) => {
   console.log(req.query);
   const dailyStatus = await DailyStatusModel.findOneAndUpdate({
     _id: ObjectId(req.query.id),
-  },{
-    [req.query.role]:req.query.status=="false"?false:true
+  }, {
+    [req.query.role]: req.query.status == "false" ? false : true
   });
 
-  if(!dailyStatus){
+  if (!dailyStatus) {
     res.status(201).json({
       success: false,
     });
@@ -356,110 +357,248 @@ exports.getGraphData = catchAsyncError(async (req, res, next) => {
 
   var dates = getDatesInRange(d1, d2)
 
-  var totalData = {}
+  console.log(dates);
 
-  dates.map(async (date,i) => {
-
-    const dateType = new Date(date[1]);
-
-    const headVal = {
-      "d": dateType.getDate(),
-      "w": Math.floor(dateType.getDate() / 7.1) + 1,
-      "m": dateType.getMonth() + 1,
-      "y": dateType.getFullYear(),
-      "pS": req.body.pS
-    }
-
-    const headObject = new ApiFeatureHead(HeadModel, headVal).match();
-    const headCheckList = await headObject.query;
-
-    if (headCheckList.length === 0) {
-      return next(new ErrorHandler("could not find check list", 404));
-    }
-
-    // unique machne
-    let processNosUnique = [];
-    let machineData = [];
-    // let processCount=[]
-
-    headCheckList.forEach((item) => {
-      let line = item._id.line;
-
-      const counts = {};
-      item.processList.forEach((el) => {
-        counts[el] = counts[el] ? (counts[el] += 1) : 1;
-      });
-
-      item.processList.forEach((e) => {
-        let ind = processNosUnique.indexOf(e);
-        if (ind === -1) {
-          processNosUnique.push(e);
-        }
-      });
-
-      machineData = [
-        ...machineData,
-        { line, processNos: processNosUnique, counts },
-      ];
-      processNosUnique = [];
-    });
-
-    //done here
-    var total = 0;
-    machineData = machineData.filter(data => data.line == req.body.line)
-
-    Object.values(machineData[0]?.counts).forEach(val => {
-      if (val) {
-        total += val
-      }
-    });
-
-    var statusVal = {
-      "entryFor": date[0],
-      "pS": req.body.pS
-    }
-
-    const dailyStatusAll = await DailyStatusModel.find(statusVal)
-      .populate("checkItem", "line method processNo pS")
-      .populate("user", "name");
-    if (!dailyStatusAll) {
-      return next(new ErrorHandler("No such Daily status check", 404));
-    }
-
-    const sortedDailyStatus = sortData(dailyStatusAll);
-
-    const filteresSortedDailyStatus = sortedDailyStatus.filter(data => data.line == req.body.line)
-
-    const totalDailyStatus = dailyStatusAll.length;
-
-    var totalOK = 0;
-    var totalNG = 0;
-    filteresSortedDailyStatus.length && filteresSortedDailyStatus[0]?.processes.map((process) => {
-      if (process?.result?.OK) {
-        totalOK += process.result.OK
-      }
-      if (process?.result?.NG) {
-        totalNG += process.result.NG
-      }
-    })
-    
-    totalData[dateType.getTime()] = {
-      date:date[0],
-      total,
-      totalOK,
-      totalNG,
-    }
-
-    if(Object.keys(totalData).length==dates.length){
-      console.log(totalData);
-
-      res.status(201).json({
-        success: true,
-        totalData: totalData
-      });
-    }
-
-  })
-  
+  //get data from dailygraphmodel
+  const dailyGraph = await DailyGraphModel.find({})
   
 })
+
+exports.generateDailyGraph = async (req, res, next) => {
+  const {pS, line} =req.body;
+  if(!pS || !line){
+    return next(new ErrorHandler("pS or line not found", 400));
+  }
+
+  const dateType = new Date();
+
+  const headVal = {
+    "d": dateType.getDate(),
+    "w": Math.floor(dateType.getDate() / 7.1) + 1,
+    "m": dateType.getMonth() + 1,
+    "y": dateType.getFullYear(),
+    "pS": pS
+  }
+
+  console.log(headVal);
+
+  const headObject = new ApiFeatureHead(HeadModel, headVal).match();
+  const headCheckList = await headObject.query;
+
+  if (headCheckList.length === 0) {
+    return next(new ErrorHandler("could not find check list", 404));
+  }
+
+  // unique machne
+  let processNosUnique = [];
+  let machineData = [];
+  // let processCount=[]
+
+  headCheckList.forEach((item) => {
+    let line = item._id.line;
+
+    const counts = {};
+    item.processList.forEach((el) => {
+      counts[el] = counts[el] ? (counts[el] += 1) : 1;
+    });
+
+    item.processList.forEach((e) => {
+      let ind = processNosUnique.indexOf(e);
+      if (ind === -1) {
+        processNosUnique.push(e);
+      }
+    });
+
+    machineData = [
+      ...machineData,
+      { line, processNos: processNosUnique, counts },
+    ];
+    processNosUnique = [];
+  });
+
+  //done here
+  var total = 0;
+  machineData = machineData.filter(data => data.line == line)
+
+  Object.values(machineData[0]?.counts).forEach(val => {
+    if (val) {
+      total += val
+    }
+  });
+
+  var cdate = new Date().toLocaleDateString()
+  var fdate = cdate.split("/")
+  fdate = fdate[2] + "-" + fdate[0] + "-" + fdate[1]
+
+  var statusVal = {
+    "entryFor": fdate,
+    "pS": pS
+  }
+
+  const dailyStatusAll = await DailyStatusModel.find(statusVal)
+    .populate("checkItem", "line method processNo pS")
+    .populate("user", "name");
+  if (!dailyStatusAll) {
+    return next(new ErrorHandler("No such Daily status check", 404));
+  }
+
+  const sortedDailyStatus = sortData(dailyStatusAll);
+
+  const filteresSortedDailyStatus = sortedDailyStatus.filter(data => data.line == line)
+
+  const totalDailyStatus = dailyStatusAll.length;
+
+  var totalOK = 0;
+  var totalNG = 0;
+  filteresSortedDailyStatus.length && filteresSortedDailyStatus[0]?.processes.map((process) => {
+    if (process?.result?.OK) {
+      totalOK += process.result.OK
+    }
+    if (process?.result?.NG) {
+      totalNG += process.result.NG
+    }
+  })
+
+  const data = {
+    line: line,
+    pS: pS,
+    dateString:cdate.split("/").join("-"),
+    graphFor: dateType,
+    total,
+    totalOK,
+    totalNG,
+    totalPending: total - (totalOK + totalNG)
+  }
+
+  const dailyGraph = await DailyGraphModel.create(data);
+
+  if (dailyGraph) {
+    res.json({
+      dailyGraph: dailyGraph
+    })
+  }
+  else {
+    return next(new ErrorHandler("Daily graph not generated ", 500));
+  }
+}
+
+
+
+//unused
+// exports.getGraphData = catchAsyncError(async (req, res, next) => {
+
+//   console.log(req.body.startDate);
+//   var start = req.body.startDate.split("/")
+//   start = start[2] + "-" + start[1] + "-" + start[0]
+//   var end = req.body.endDate.split("/")
+//   end = end[2] + "-" + end[1] + "-" + end[0]
+//   const d1 = new Date(start);
+//   const d2 = new Date(end);
+
+//   var dates = getDatesInRange(d1, d2)
+
+//   var totalData = {}
+
+//   dates.map(async (date, i) => {
+
+//     const dateType = new Date(date[1]);
+
+//     const headVal = {
+//       "d": dateType.getDate(),
+//       "w": Math.floor(dateType.getDate() / 7.1) + 1,
+//       "m": dateType.getMonth() + 1,
+//       "y": dateType.getFullYear(),
+//       "pS": req.body.pS
+//     }
+
+//     const headObject = new ApiFeatureHead(HeadModel, headVal).match();
+//     const headCheckList = await headObject.query;
+
+//     if (headCheckList.length === 0) {
+//       return next(new ErrorHandler("could not find check list", 404));
+//     }
+
+//     // unique machne
+//     let processNosUnique = [];
+//     let machineData = [];
+//     // let processCount=[]
+
+//     headCheckList.forEach((item) => {
+//       let line = item._id.line;
+
+//       const counts = {};
+//       item.processList.forEach((el) => {
+//         counts[el] = counts[el] ? (counts[el] += 1) : 1;
+//       });
+
+//       item.processList.forEach((e) => {
+//         let ind = processNosUnique.indexOf(e);
+//         if (ind === -1) {
+//           processNosUnique.push(e);
+//         }
+//       });
+
+//       machineData = [
+//         ...machineData,
+//         { line, processNos: processNosUnique, counts },
+//       ];
+//       processNosUnique = [];
+//     });
+
+//     //done here
+//     var total = 0;
+//     machineData = machineData.filter(data => data.line == req.body.line)
+
+//     Object.values(machineData[0]?.counts).forEach(val => {
+//       if (val) {
+//         total += val
+//       }
+//     });
+
+//     var statusVal = {
+//       "entryFor": date[0],
+//       "pS": req.body.pS
+//     }
+
+//     const dailyStatusAll = await DailyStatusModel.find(statusVal)
+//       .populate("checkItem", "line method processNo pS")
+//       .populate("user", "name");
+//     if (!dailyStatusAll) {
+//       return next(new ErrorHandler("No such Daily status check", 404));
+//     }
+
+//     const sortedDailyStatus = sortData(dailyStatusAll);
+
+//     const filteresSortedDailyStatus = sortedDailyStatus.filter(data => data.line == req.body.line)
+
+//     const totalDailyStatus = dailyStatusAll.length;
+
+//     var totalOK = 0;
+//     var totalNG = 0;
+//     filteresSortedDailyStatus.length && filteresSortedDailyStatus[0]?.processes.map((process) => {
+//       if (process?.result?.OK) {
+//         totalOK += process.result.OK
+//       }
+//       if (process?.result?.NG) {
+//         totalNG += process.result.NG
+//       }
+//     })
+
+//     totalData[dateType.getTime()] = {
+//       date: date[0],
+//       total,
+//       totalOK,
+//       totalNG,
+//     }
+
+//     if (Object.keys(totalData).length == dates.length) {
+//       console.log(totalData);
+
+//       res.status(201).json({
+//         success: true,
+//         totalData: totalData
+//       });
+//     }
+
+//   })
+// })
