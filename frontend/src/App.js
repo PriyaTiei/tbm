@@ -20,6 +20,7 @@ import { useCookies } from "react-cookie";
 import { login } from "./redux/auth/AuthSlice";
 import axios from "axios";
 import { toast } from "react-toastify";
+import JudgementHistoryPage from "./components/JudgementHistoryPage";
 
 function App() { 
   const dispatch = useDispatch(); 
@@ -67,6 +68,7 @@ function App() {
           <Route path="/" element={<Machines />} />
           <Route path="/checkList" element={<SmileCard />} />
           <Route path="/pendingTasks" element={<PendingTask />} />
+          <Route path="/judgementHistory" element={<JudgementHistoryPage />} />
           <Route path="/pendingTasks/cardDetails" element={<PendingSmileCard/>}></Route>
           <Route path="/allMachine/cardDetails" element={<AllMachineSmileCard/>}></Route>
           <Route path="/card" element={<Card />} /> 

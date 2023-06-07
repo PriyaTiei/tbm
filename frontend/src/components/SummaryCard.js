@@ -243,12 +243,10 @@ function SummaryCard() {
               <th>Item</th>
               <th>Abnormality</th>
               <th>Card Type</th>
-              {/* <th>Countermeasure</th>
-            <th>Spare</th>
-            <th>PIC</th>
-            <th>Target</th> */}
               <th>Status</th>
-              <th></th>
+              <th style={{minWidth:"100px"}}>Image</th>
+              <th style={{minWidth:"100px"}}>Delete</th>
+              <th style={{minWidth:"100px"}}>Update</th>
               <th></th>
             </tr>
             <tr>

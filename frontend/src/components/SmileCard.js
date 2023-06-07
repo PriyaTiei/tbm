@@ -118,10 +118,6 @@ const checkedBy= useSelector(state=>state.checkedBy)
     } else {
       // Do nothing!
     }
-  };
-
-  const judgementHistory = () => {
-
   }
 
   console.log(list._id);
