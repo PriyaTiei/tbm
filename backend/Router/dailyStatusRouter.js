@@ -11,6 +11,7 @@ const {
   getDailyStatusByCheckItem,
   getGraphData,
   changeVerified,
+  generateDailyGraph,
 } = require("../controller/dailyStatusController");
 const dailyStatusRouter = express.Router();
 
@@ -29,5 +30,6 @@ dailyStatusRouter
 dailyStatusRouter.route("/getGraphData").post(getGraphData)
 dailyStatusRouter.route("/changeVerified").put(changeVerified)
 
+dailyStatusRouter.route("/generateDailyGraph").get(generateDailyGraph)
 
 module.exports = dailyStatusRouter;

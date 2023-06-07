@@ -20,7 +20,7 @@ const dailyStatusSchema = new mongoose.Schema({
   },
   result: {
     type: String,
-    required: [true, "please enter the result judgment"],
+    required: [true, "please enter the result judgement"],
   },
   remarks: {
     type: String,

@@ -124,12 +124,13 @@ function TrendGraphModal({ showModal, setShowModal, id }) {
         <div className="ms-4 my-2 ">
           <span>From</span>
           <DatePicker
+          format="dd/MM/yyyy"
             value={fromDate}
             onChange={setFromDate}
             clearIcon={null}
           />
           <span className="ms-3">To</span>
-          <DatePicker value={toDate} onChange={setToDate} clearIcon={null} />
+          <DatePicker format="dd/MM/yyyy" value={toDate} onChange={setToDate} clearIcon={null} />
         </div>
 
         {/* <Button variant="primary" type="submit" onClick={formHandler}>

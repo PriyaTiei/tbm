@@ -107,6 +107,7 @@ function Filters() {
         <div className="d-flex">
           <DatePicker
             value={date}
+            format="dd/MM/yyyy"
             onChange={setDate}
             clearIcon={null}
             className="px-3"
@@ -171,6 +172,13 @@ function Filters() {
             Pending Tasks
           </Button>
         </Link>
+
+        {/* <Link to="/judgementHistory">
+          <Button color="blue" className="mx-1">
+            <i className="bi bi-card-list px-1"></i>
+            Judgement History
+          </Button>
+        </Link> */}
       </div>
       <hr className="my-2"></hr>
     </Fragment>

@@ -118,10 +118,6 @@ const checkedBy= useSelector(state=>state.checkedBy)
     } else {
       // Do nothing!
     }
-  };
-
-  const judgementHistory = () => {
-
   }
 
   console.log(list._id);
@@ -211,7 +207,6 @@ const checkedBy= useSelector(state=>state.checkedBy)
           />
         )}
 
-        {level >= 20 && (
           <button
             className="btn btn-success"
             onClick={() => setShowJudgementHistoryModel(true)}
@@ -221,7 +216,7 @@ const checkedBy= useSelector(state=>state.checkedBy)
           >
             Judgement History
           </button>
-        )}
+        
       </div>
       {loading ? (
         <Loading />

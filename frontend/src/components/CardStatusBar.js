@@ -3,6 +3,8 @@ import { Bar } from "react-chartjs-2";
 
 const CardStatusGraph = ({ unFilteredData }) => {
 
+    console.log(unFilteredData);
+
     const [data, setData] = useState({})
 
     const [chartData, setChartData] = useState({
@@ -21,14 +23,21 @@ const CardStatusGraph = ({ unFilteredData }) => {
             },
             {
                 label: "NG",
-                backgroundColor: "rgba(54, 162, 235)",
+                backgroundColor: "rgba(255, 0, 0, 0.7)",
                 data: data.ngData,
                 grouped:false,
                 stack: '1'
             },
             {
+                label: "Pending",
+                backgroundColor: "#ff9191dd",
+                data: data.pendingData,
+                grouped:false,
+                stack: '1'
+            },
+            {
                 label: "Total",
-                backgroundColor: "rgba(255, 99, 132)",
+                backgroundColor: "#3498db",
                 data: data.totalData,
                 grouped:false
             }
@@ -44,19 +53,22 @@ const CardStatusGraph = ({ unFilteredData }) => {
         var ngData = []
         var okData = []
         var totalData = []
+        var pendingData = []
         
         Object.keys(unFilteredData).sort().map((val,i)=>{
             dates.push(unFilteredData[val].date)
             totalData.push(unFilteredData[val].total)
             okData.push(unFilteredData[val].totalOK)
             ngData.push(unFilteredData[val].totalNG)
+            pendingData.push(unFilteredData[val].totalPending)
         })
 
         setData({
             dates:dates,
             ngData:ngData,
             okData:okData,
-            totalData:totalData
+            totalData:totalData,
+            pendingData:pendingData
         })
     }, [unFilteredData])
 

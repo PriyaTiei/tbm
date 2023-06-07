@@ -11,7 +11,11 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
   const auth = useSelector((state) => state.auth); 
   const [image, setImage] = useState(null);
 
-  const entryForStr = moment(entryFor).format('YYYY-M-DD');  
+
+  const entryForStr = moment(entryFor).format('YYYY-M-DD').replace(/\b0/g, '');
+
+  //toyo
+  // console.log(new Date(entryForNew).toLocaleDateString());
 
   let { cardNo,
     d,
@@ -58,6 +62,7 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
         user: auth.user._id, 
         entryFor : entryForStr,
         pS,
+        line,
         remarks
       };
 
