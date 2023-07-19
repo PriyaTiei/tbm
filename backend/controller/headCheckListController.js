@@ -7,7 +7,7 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
   // const { token } = req.cookies;
   // console.log("cookie form getHeadChecklist");
   // console.log("token :", token);
-  
+  // console.log( req.query, "group query 1")
   const headObject = new ApiFeatureHead(HeadModel, req.query)
     .search()
     .filter()
@@ -24,6 +24,7 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
   res.status(201).json({ success: true, headCheckList, totalCount });
 });
 
+// TO display all card
 exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   // console.log("cookie form getHeadMachinelist ");
   // const { token } = req.cookies;
@@ -31,6 +32,7 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   // console.log("token :", token);
 
   req.query = { ...req.query };
+  // console.log( req.query, "group query 2")
   const headObject = new ApiFeatureHead(HeadModel, req.query).match();
   const headCheckList = await headObject.query;
 

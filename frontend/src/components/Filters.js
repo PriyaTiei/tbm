@@ -6,6 +6,7 @@ import {
   filterDept,
   filterLine,
   filterCheck,
+  filterGroup
 } from "../redux/filter/filterActions";
 import Select from "react-select";
 import { Button } from "react-bootstrap";
@@ -24,7 +25,7 @@ const todayDate = new Date(Date.now());
 function Filters() {
   const selectLineRef = useRef(null);
 
-  const [date, setDate] = useState(todayDate); 
+  const [date, setDate] = useState(todayDate);
 
   // generate options for selecting line
   var lineOptions = [{ value: null, label: "All Lines" }];
@@ -57,6 +58,11 @@ function Filters() {
     { value: null, label: "All Check" },
     { value: "S", label: "Stop Check" },
     { value: "R", label: "Run Check" },
+  ];
+  const groupOptions = [
+    { value: null, label: "All Group" },
+    { value: "white", label: "White Group" },
+    { value: "yellow", label: "Yellow Group" },
   ];
 
   // const lineOptions = [
@@ -98,6 +104,10 @@ function Filters() {
 
   const selectCheckHandler = (e) => {
     dispatch(filterCheck(e.value));
+  };
+
+  const selectGroupHandler = (e) => {
+    dispatch(filterGroup(e.value));
   };
 
   return (
@@ -163,6 +173,13 @@ function Filters() {
           onChange={selectCheckHandler}
           className="mx-1 secondary"
           defaultValue={checkOptions[0]}
+          isSearchable={false}
+        />
+        <Select
+          options={groupOptions}
+          onChange={selectGroupHandler}
+          className="mx-1 secondary"
+          defaultValue={groupOptions[0]}
           isSearchable={false}
         />
 

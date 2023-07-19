@@ -25,8 +25,9 @@ function Machines() {
 
   let lineStr = filters.line === null ? '' : `&line=${filters.line}`
   let rSStr = filters.rS === null ? '' : `&rS=${filters.rS}`
+  let groupStr = filters.group === null ? '' : `&group=${filters.group}`
 
-  let queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` + lineStr + rSStr;
+  let queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` + lineStr + rSStr +groupStr;
   let DailyStatusQueryStr = `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}`;
   
 
