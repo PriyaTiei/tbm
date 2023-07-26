@@ -68,7 +68,7 @@ function CardDoc({ item, fromDateSt, toDateSt }) {
       <td>{pS ==="P"? "Maint.":(pS==="S"?"Prod.":"")}</td>
       <td>{line}</td>
       <td>{processNo}</td>
-      <td>{checkItem.workDetail}</td>
+      <td>{checkItem?.workDetail}</td>
       <td>{abnormality}</td>
       <td>{cardType.toUpperCase()}</td>
       {/* <td>{countermeasure}</td>
@@ -130,10 +130,10 @@ function CardDoc({ item, fromDateSt, toDateSt }) {
           showModal={showModal}
           setShowModal={setShowModal}
           id={_id}
-          checkItem={checkItem._id}
+          checkItem={checkItem?._id}
           line={line}
           processNo={processNo}
-          workDetail={checkItem.workDetail}
+          workDetail={checkItem?.workDetail}
           abnormality={abnormality}
           cardType={cardType}
           image={image}

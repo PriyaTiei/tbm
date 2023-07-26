@@ -73,7 +73,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
       <td>{pS ==="P"? "Maint.":(pS==="S"?"Prod.":"")}</td>
       <td>{line}</td>
       <td>{processNo}</td>
-      <td>{checkItem.workDetail}</td>
+      <td>{checkItem?.workDetail}</td>
       <td>{abnormality}</td>
       <td>{countermeasure}</td>
       <td>{spare}</td>
@@ -152,7 +152,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
           checkItem={checkItem._id}
           line={line}
           processNo={processNo}
-          workDetail={checkItem.workDetail}
+          workDetail={checkItem?.workDetail}
           abnormality={abnormality}
           countermeasure={countermeasure}
           spare={spare}
@@ -172,7 +172,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
           checkItem={checkItem._id}
           line={line}
           processNo={processNo}
-          workDetail={checkItem.workDetail}
+          workDetail={checkItem?.workDetail}
           abnormality={abnormality}
           countermeasure={countermeasure}
           spare={spare}
