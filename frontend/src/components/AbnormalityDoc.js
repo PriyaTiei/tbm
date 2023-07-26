@@ -24,6 +24,14 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
     pS
   } = item;
 
+  var workDetail=""
+  if(checkItem==null){
+    workDetail=""
+  }
+  else{
+    workDetail=checkItem.workDetail
+  }
+  
   const [showModal, setShowModal] = useState(false);
   const [showModalRaiseCard, setShowModalRaiseCard] = useState(false);
   const [showModalImage, setShowModalImage] = useState(false);
@@ -73,7 +81,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
       <td>{pS ==="P"? "Maint.":(pS==="S"?"Prod.":"")}</td>
       <td>{line}</td>
       <td>{processNo}</td>
-      <td>{checkItem?.workDetail}</td>
+      <td>{workDetail}</td>
       <td>{abnormality}</td>
       <td>{countermeasure}</td>
       <td>{spare}</td>
@@ -152,7 +160,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
           checkItem={checkItem._id}
           line={line}
           processNo={processNo}
-          workDetail={checkItem?.workDetail}
+          workDetail={workDetail}
           abnormality={abnormality}
           countermeasure={countermeasure}
           spare={spare}
@@ -172,7 +180,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
           checkItem={checkItem._id}
           line={line}
           processNo={processNo}
-          workDetail={checkItem?.workDetail}
+          workDetail={workDetail}
           abnormality={abnormality}
           countermeasure={countermeasure}
           spare={spare}
