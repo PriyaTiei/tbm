@@ -56,10 +56,12 @@ function SmileCardDetails({ list, image, setImage }) {
     workTime,
     y,
     _id,
+    group
   } = list;
 
   const [actionNew, setActionNew] = useState(action === null ? "" : action);
   const [cardNoNew, setCardNoNew] = useState(cardNo === null ? "" : cardNo);
+  const [groupNew, setGroupNew] = useState(group === null ? "" : group);
 
   const [categoryCtrlNew, setCategoryCtrlNew] = useState(
     categoryCtrl === null ? "" : categoryCtrl
@@ -187,7 +189,11 @@ function SmileCardDetails({ list, image, setImage }) {
     { value: 6, label: "Sat" },
     { value: 7, label: "Sun" },
   ];
-
+  const optionsGroup = [  
+    
+    { value: "white", label:"White Group" },
+    { value: "yellow", label: "Yellow Group" },
+  ];
   const uploadImage = (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -259,6 +265,7 @@ function SmileCardDetails({ list, image, setImage }) {
     formData.append("workTime", workTimeNew);
     formData.append("y", yNew);
     formData.append("_id", _id);
+    formData.append("group", groupNew);
 
     axios
       .post(
@@ -444,6 +451,22 @@ function SmileCardDetails({ list, image, setImage }) {
                 onChange={(e) => setWorkTimeNew(e.target.value)}
               />
             </div>
+          </div>
+        </li>
+        <li>
+          <div className="d-flex">
+            <div className="firstCol">
+              Group
+            </div>
+            <div className="secondCol">
+            <Select
+                options={optionsGroup}
+                defaultValue={{ value: groupNew, label:  groupNew!="undefined" ? `${groupNew } Group` :""}}
+                onChange={(e) => setGroupNew(e.value)}
+                isDisabled={level >= 100 ? false : true}
+              />
+            </div>
+           
           </div>
         </li>
         <li>
@@ -655,6 +678,8 @@ function SmileCardDetails({ list, image, setImage }) {
             </div>
           </div>
         </li>
+       
+   
         {/* below items not required to be displayed for production  */}
         {pS === "S" ? null : (
           <>

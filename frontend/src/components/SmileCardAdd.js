@@ -47,6 +47,7 @@ function SmileCardAdd() {
   const [workTimeNew, setWorkTimeNew] = useState("");
   const [yNew, setYNew] = useState([9999]);
   const [areaToInspectNew, setAreaToInspectNew] = useState("");
+  const [groupNew, setGroupNew] = useState("");
 
   // const optionsLine = [
   //   { value: "Block", label: "Block Line" },
@@ -113,6 +114,12 @@ function SmileCardAdd() {
     { value: 5, label: "Fri" },
     { value: 6, label: "Sat" },
     { value: 7, label: "Sun" },
+  ];
+
+  const optionsGroup = [  
+    
+    { value: "white", label:"White Group" },
+    { value: "yellow", label: "Yellow Group" },
   ];
 
   const uploadImage = (e) => {
@@ -188,6 +195,7 @@ function SmileCardAdd() {
     formData.append("workManpower", workManpowerNew);
     formData.append("workTime", workTimeNew);
     formData.append("y", yNew);
+    formData.append("group", groupNew);
 
     axios
       .post(
@@ -280,6 +288,21 @@ function SmileCardAdd() {
               </div>
             </div>
           </li>
+          <li>
+          <div className="d-flex">
+            <div className="firstCol">
+              Group
+            </div>
+            <div className="secondCol">
+            <Select
+                options={optionsGroup}
+                defaultValue={{ value: groupNew, label: ""}}
+                onChange={(e) => setGroupNew(e.value)}                
+              />
+            </div>
+           
+          </div>
+        </li>
 
           <li>
             <div className="d-flex">

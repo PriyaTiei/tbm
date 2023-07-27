@@ -126,6 +126,9 @@ const checkItemSchema = new mongoose.Schema({
   commonItem: {
     type: String,
   },
+  group:{
+    type:String,
+  }
 });
 
 module.exports = mongoose.model("checkitems", checkItemSchema);

@@ -239,7 +239,10 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
     workTime,
     y,
     _id,
+    group
   } = req.body;
+
+  console.log("group is: ", group)
   //conver to int
   function converToInt(y) {
     const splitY = y.split(",");
@@ -293,6 +296,7 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
       workManpower,
       workTime,
       y: intY,
+      group
 
       // images: [req.file.filename],
     },
@@ -376,6 +380,7 @@ exports.insertData = catchAsyncError(async (req, res, next) => {
     workManpower,
     workTime,
     y,
+    group
   } = req.body;
 
   //conver to int
@@ -425,6 +430,7 @@ exports.insertData = catchAsyncError(async (req, res, next) => {
       workManpower,
       workTime,
       y: intY,
+      group
       // images: [req.file.filename],
     },
     (err, doc) => {
