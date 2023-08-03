@@ -3,7 +3,7 @@ import {
   FILTER_DATE,
   FILTER_DEPT,
   FILTER_LINE,
-  FILTER_GROUP
+  FILTER_SHIFT
 } from "./filterTypes";
 const todayDate = new Date(Date.now());
 const dt = todayDate.getDate();
@@ -14,7 +14,7 @@ const w = Math.floor(dt / 7.1) + 1;
 const pS = "S";
 const line = null;
 const rS = null;
-const group = null;
+const shift = null;
 const initialFilterState = {
   d,
   m,
@@ -24,7 +24,7 @@ const initialFilterState = {
   dt,
   line,
   rS, 
-  group
+  shift
 };
 
 const filterReducer = (state = initialFilterState, action) => {
@@ -49,10 +49,10 @@ const filterReducer = (state = initialFilterState, action) => {
         ...state,
         rS: action.payload,
       };
-      case FILTER_GROUP:
+      case FILTER_SHIFT:
         return {
           ...state,
-          group: action.payload,
+          shift: action.payload,
         };
     default:
       return state;

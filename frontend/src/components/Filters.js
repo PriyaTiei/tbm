@@ -6,7 +6,7 @@ import {
   filterDept,
   filterLine,
   filterCheck,
-  filterGroup
+  filterShift
 } from "../redux/filter/filterActions";
 import Select from "react-select";
 import { Button } from "react-bootstrap";
@@ -59,10 +59,11 @@ function Filters() {
     { value: "S", label: "Stop Check" },
     { value: "R", label: "Run Check" },
   ];
-  const groupOptions = [
-    { value: null, label: "All Group" },
-    { value: "white", label: "White Group" },
-    { value: "yellow", label: "Yellow Group" },
+  const shiftOptions = [
+    { value: null, label: "All Shift" },
+    { value: "first", label: "First Shift" },
+    { value: "second", label: "Second Shift" },
+    
   ];
 
   // const lineOptions = [
@@ -106,8 +107,8 @@ function Filters() {
     dispatch(filterCheck(e.value));
   };
 
-  const selectGroupHandler = (e) => {
-    dispatch(filterGroup(e.value));
+  const selectShiftHandler = (e) => {
+    dispatch(filterShift(e.value));
   };
 
   return (
@@ -176,10 +177,10 @@ function Filters() {
           isSearchable={false}
         />
         <Select
-          options={groupOptions}
-          onChange={selectGroupHandler}
+          options={shiftOptions}
+          onChange={selectShiftHandler}
           className="mx-1 secondary"
-          defaultValue={groupOptions[0]}
+          defaultValue={shiftOptions[0]}
           isSearchable={false}
         />
 

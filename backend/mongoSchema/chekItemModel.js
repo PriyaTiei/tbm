@@ -126,7 +126,7 @@ const checkItemSchema = new mongoose.Schema({
   commonItem: {
     type: String,
   },
-  group:{
+  shift:{
     type:String,
   }
 });

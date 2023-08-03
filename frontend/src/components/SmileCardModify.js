@@ -56,12 +56,12 @@ function SmileCardDetails({ list, image, setImage }) {
     workTime,
     y,
     _id,
-    group
+    shift
   } = list;
 
   const [actionNew, setActionNew] = useState(action === null ? "" : action);
   const [cardNoNew, setCardNoNew] = useState(cardNo === null ? "" : cardNo);
-  const [groupNew, setGroupNew] = useState(group === null ? "" : group);
+  const [shiftNew, setShiftNew] = useState(shift === null ? "" : shift);
 
   const [categoryCtrlNew, setCategoryCtrlNew] = useState(
     categoryCtrl === null ? "" : categoryCtrl
@@ -189,10 +189,10 @@ function SmileCardDetails({ list, image, setImage }) {
     { value: 6, label: "Sat" },
     { value: 7, label: "Sun" },
   ];
-  const optionsGroup = [  
+  const optionsShift = [  
+    { value: "first", label: "First Shift" },
+    { value: "second", label:"Second Shift" },
     
-    { value: "white", label:"White Group" },
-    { value: "yellow", label: "Yellow Group" },
   ];
   const uploadImage = (e) => {
     e.preventDefault();
@@ -265,7 +265,7 @@ function SmileCardDetails({ list, image, setImage }) {
     formData.append("workTime", workTimeNew);
     formData.append("y", yNew);
     formData.append("_id", _id);
-    formData.append("group", groupNew);
+    formData.append("shift", shiftNew);
 
     axios
       .post(
@@ -456,13 +456,13 @@ function SmileCardDetails({ list, image, setImage }) {
         <li>
           <div className="d-flex">
             <div className="firstCol">
-              Group
+              Shift
             </div>
             <div className="secondCol">
             <Select
-                options={optionsGroup}
-                defaultValue={{ value: groupNew, label:  groupNew!="undefined" ? `${groupNew } Group` :""}}
-                onChange={(e) => setGroupNew(e.value)}
+                options={optionsShift}
+                defaultValue={{ value: shiftNew, label:  shiftNew!="undefined" ? `${shiftNew } Shift` :""}}
+                onChange={(e) => setShiftNew(e.value)}
                 isDisabled={level >= 100 ? false : true}
               />
             </div>

@@ -3,7 +3,7 @@ import {
   FILTER_LINE,
   FILTER_DEPT,
   FILTER_CHECK,
-  FILTER_GROUP
+  FILTER_SHIFT
 } from "./filterTypes";
 
 export const filterDate = (d,w, m, y, dt) => {
@@ -36,10 +36,10 @@ export const filterCheck = (check) => {
 };
 
 
-export const filterGroup = (group) => {
+export const filterShift = (shift) => {
   return {
-    type: FILTER_GROUP,
-    payload: group,
+    type: FILTER_SHIFT,
+    payload: shift,
   };
 };
 
