@@ -55,7 +55,7 @@ print("URL-yesterday", urlForCardRaised_4_yesterday)
 
 
 # fetching the data using api
-response = requests.get(urlForCardRaised, auth=('user', 'pass'))                  
+response = requests.get(urlForCardRaised, auth=('user', 'pass'))
 print(response.status_code)
 card = response.json()
 # print(card["cards"])
@@ -518,7 +518,7 @@ server.login("pankaj.jogi@tiei.toyota-industries.com", "WB4psCxK")
 # Creation of the MIMEMultipart Object
 message = MIMEMultipart()
 # =================================================================================================
-family = [    
+family = [
     "naveen.kp@tiei.toyota-industries.com",
     "yousuf@tiei.toyota-industries.com",
     # "pankaj.jogi@tiei.toyota-industries.com",
@@ -539,8 +539,8 @@ family = [
     # "manu.b@tiei.toyota-industries.com",
     # "sandeep.a@tiei.toyota-industries.com",
     "marimuthu.k@tiei.toyota-industries.com"
- 
-   
+
+
 ]
 
 # msg['To'] =', '.join(family)
@@ -632,17 +632,16 @@ family = [
     "yousuf@tiei.toyota-industries.com",
     "anjineya.b@tiei.toyota-industries.com",
     "gurunath.mn@tiei.toyota-industries.com",
-    "raviverma.n@tiei.toyota-industries.com",
-    "nitish.cr@tiei.toyota-industries.com",
-    "mouneesh.m@tiei.toyota-industries.com",
+    "ravivarma.n@tiei.toyota-industries.com",
+    "nithish.cr@tiei.toyota-industries.com",
+    "mounesh.m@tiei.toyota-industries.com",
     "sharath.k@tiei.toyota-industries.com",
     "vishwapoorna.rao@tiei.toyota-industries.com",
     "madhusudhan.h@tiei.toyota-industries.com",
     "srinath.waiker@tiei.toyota-industries.com",
     "nandeesha.n@tiei.toyota-industries.com",
-   
-]
 
+]
 
 
 # msg['To'] =', '.join(family)
@@ -651,13 +650,11 @@ family = [
 # =================================================================================================
 
 
-
 # Setup of MIMEMultipart Object Header
 message['From'] = "pankaj.jogi@tiei.toyota-industries.com"
 # message['To'] = "pankaj.jogi@tiei.toyota-industries.com"
 message['To'] = ', '.join(family)
 message['Subject'] = "TNGA-PROD Daily OM card status"
-
 
 
 # Creation of a MIMEText Part
