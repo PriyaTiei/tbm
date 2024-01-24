@@ -37,23 +37,34 @@ const SOMSTATS = ({item}) => {
             }
     }, [item])
 
+    const getCell = (day) => {
+      return (
+        <td style={
+          day=="OK"?{backgroundColor:"rgba(0, 255, 0, 0.7)"}:
+          (day=="NG"?{backgroundColor:"rgba(255, 0, 0, 0.7)"}:{backgroundColor:"#cccccc"})
+        } colspan="1" rowspan="1">
+          <p>&nbsp;{day==""?"...":day}</p>
+        </td>
+      )
+    }
+
     return (
       <>
-      <td colspan="1" rowspan="1">
-          <p>&nbsp;{monday==""?"...":monday}</p>
-        </td>
-        <td colspan="1" rowspan="1">
-          <p>&nbsp;{tuesday==""?"...":tuesday}</p>
-        </td>
-        <td colspan="1" rowspan="1">
-          <p>&nbsp;{wednesday==""?"...":wednesday}</p>
-        </td>
-        <td colspan="1" rowspan="1">
-          <p>&nbsp;{thursday==""?"...":thursday}</p>
-        </td>
-        <td colspan="1" rowspan="1">
-          <p>&nbsp;{friday==""?"...":friday}</p>
-        </td>
+        {
+          getCell(monday)
+        }
+        {
+          getCell(tuesday)
+        }
+        {
+          getCell(wednesday)
+        }
+        {
+          getCell(thursday)
+        }
+        {
+          getCell(friday)
+        }
       </>
     )
   }
