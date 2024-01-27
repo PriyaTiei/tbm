@@ -42,9 +42,7 @@ class ApiFeatureSom {
   }
   match() {
     let newQueryStr = { ...this.queryStr };
-    console.log(newQueryStr.itemId);
     const dates = getWeekDates(newQueryStr.dt,newQueryStr.m,newQueryStr.y);
-    console.log("dates",dates);
     this.query = this.query.find({
       checkItem:newQueryStr.itemId,
       entryFor: { 

@@ -4,7 +4,6 @@ const DailyStatusModel = require("../mongoSchema/dailyStatusModel");
 const ApiFeatureSom = require("../util/apiFeatureSom");
 
 exports.getSomAll = catchAsyncError(async (req, res, next) => {
-    console.log(req.query);
     const items = new ApiFeatureSom(CheckItemsModel, req.query)
     .search()
     .filter()
@@ -22,7 +21,6 @@ exports.getSomStats = catchAsyncError(async (req, res, next) => {
     .match()   
     // .pagination(1);
     const itemsList = await items.query;
-    console.log("itemsList", itemsList);
 
     const datesList = {
         monday:"NA",
