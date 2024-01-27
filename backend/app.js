@@ -6,6 +6,7 @@ const error = require("./middleware/error");
 const userRouter = require("./Router/userRouter");
 const cookieParser = require("cookie-parser");
 const headRouter = require("./Router/headRouter");
+const somRouter = require("./Router/som");
 const dailyStatusRouter = require("./Router/dailyStatusRouter");
 const cardRouter = require("./Router/cardRouter");
 const abnormalityRouter = require("./Router/abnormalityRouter");
@@ -23,6 +24,7 @@ app.use("/assets", express.static(__dirname + "/public/"));
 
 app.use("/user", userRouter);
 app.use("/head", headRouter);
+app.use("/som", somRouter);
 app.use("/dailyStatus", dailyStatusRouter);
 app.use("/card", cardRouter);
 app.use("/abnormality", abnormalityRouter);
