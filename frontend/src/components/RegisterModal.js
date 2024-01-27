@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { toast } from "react-toastify"; 
 import { login } from "../redux/auth/AuthSlice";
 
-function LoginModal({ showModal, setShowModal }) {
+function RegisterModal({ showModal, setShowModal }) {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [cookies, setCookie] = useCookies(["token", "userId"]);
@@ -15,33 +15,6 @@ function LoginModal({ showModal, setShowModal }) {
   const handleClose = () => {
     setShowModal(false);
   };
-
-  const registerHandler = (e) => {
-    e.preventDefault();
-    axios
-      .post(
-        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/user/create`,
-        { name: userName, password,confirmPassword:password }
-      )
-      .then((result) => {
-        console.log(result);
-        if (result.data.success) {
-          setCookie("token", result.data.token);
-          setCookie("userId", result.data.user._id);
-          dispatch(
-            login({
-              user: result.data.user,
-              token: result.data.token,
-            })
-          );
-          setShowModal(false);
-        }
-      })
-      .catch((err) => {
-        console.log(err.message);
-        toast.error("Enter correct user Name & Password"); 
-      });
-  }
 
   const formHandler = (e) => {
     e.preventDefault();
@@ -98,17 +71,13 @@ function LoginModal({ showModal, setShowModal }) {
           </Form>
         </div>
       </Modal.Body>
-      <Modal.Footer className="d-flex justify-content-between">
-      <Button variant="secondary" onClick={registerHandler}>
-          Create account
-        </Button>
-        <Button variant="primary" onClick={formHandler}>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={formHandler}>
           Login
         </Button>
-        
       </Modal.Footer>
     </Modal>
   );
 }
 
-export default LoginModal;
+export default RegisterModal;
