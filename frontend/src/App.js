@@ -21,6 +21,7 @@ import { login } from "./redux/auth/AuthSlice";
 import axios from "axios";
 import { toast } from "react-toastify";
 import JudgementHistoryPage from "./components/JudgementHistoryPage";
+import SignOfMatrix from "./components/SignOfMatrix";
 
 function App() { 
   const dispatch = useDispatch(); 
@@ -75,6 +76,7 @@ function App() {
           <Route path="/abnormality" element={<AbnormalityRecord />} />
           <Route path="/summaryAbnormality" element={<SummaryAbnormality />} />
           <Route path="/summaryCards" element={<SummaryCard />} />
+          <Route path="/som" element={<SignOfMatrix />} />
           <Route path="/addCheckItems" element={<SmileCardAdd />} />
           <Route path="/allMachine" element={<AllMachine />} />
           <Route path="/teamleader" element={<TeamLeader />} />

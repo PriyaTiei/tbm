@@ -24,7 +24,6 @@ export default function AllMachine() {
   }, [dispatch , filters , queryStr]);
 
   const { loading, machineData } = machines;  
-  console.log(machineData)
   
   return (
     <Fragment>
