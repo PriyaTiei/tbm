@@ -6,6 +6,7 @@ class ApiFeatureDailyStatus {
   }
 
   search() {
+
     const keyword = this.queryStr.dept
       ? {
           pS: {
@@ -15,13 +16,16 @@ class ApiFeatureDailyStatus {
         }
       : {};
 
+     
+ 
+
     this.query = this.query.find({ ...keyword });
 
     return this;
   }
   filter() {
     let newQueryStr = { ...this.queryStr };
-    const removeItems = ["dept", "page", "limit"];
+    const removeItems = ["dept","page", "limit"];
     removeItems.forEach((item) => delete newQueryStr[item]);
 
     this.query = this.query.find(newQueryStr);

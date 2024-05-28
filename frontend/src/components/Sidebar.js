@@ -73,7 +73,7 @@ export function AppSidebar({ children }) {
           )}
 
 
-          {level >= 20 && (
+          {level >= 30 && (
             <Link to="/addCheckItems">
               <Button variant="dark" style={menuItemStyle}>
                 <i className="bi bi-plus-square"></i> CheckItems

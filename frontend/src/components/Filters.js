@@ -6,11 +6,14 @@ import {
   filterDept,
   filterLine,
   filterCheck,
-  filterShift
+  filterShift,
+  filterProcessNo,
+  filterCardNo
 } from "../redux/filter/filterActions";
 import Select from "react-select";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import Search_Modal from "./Search_Modal";
 
 const todayDate = new Date(Date.now());
 
@@ -26,6 +29,8 @@ function Filters() {
   const selectLineRef = useRef(null);
 
   const [date, setDate] = useState(todayDate);
+  const [showSearch, setShowSearch]= useState(false)
+  
 
   // generate options for selecting line
   var lineOptions = [{ value: null, label: "All Lines" }];
@@ -47,7 +52,9 @@ function Filters() {
   // const { totalCountBlock, totalCountCrank, totalCountHead } = totalCount;
 
   const dispatch = useDispatch();
-  // const filters = useSelector((state) => state.filters);
+  const filters = useSelector((state) => state.filters);  
+
+  const colorSearchButton = (filters.processNo == "" && filters.cardNo == "")? "btn-primary": "btn-warning"
   // let queryStr = `d=${filters.d}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}`;
   const deptOptions = [
     { value: "S", label: "Production Dept" },
@@ -110,6 +117,11 @@ function Filters() {
   const selectShiftHandler = (e) => {
     dispatch(filterShift(e.value));
   };
+
+  const clearSearchHandler = (e) => {
+    dispatch(filterProcessNo(""));
+    dispatch(filterCardNo(""));
+  }
 
   return (
     <Fragment>
@@ -183,6 +195,17 @@ function Filters() {
           defaultValue={shiftOptions[0]}
           isSearchable={false}
         />
+    
+    {(filters.processNo == "" && filters.cardNo == "")? <Button  className={`mx-1 ${colorSearchButton}`} onClick={()=>setShowSearch(true)}>
+            <i className="bi bi-search px-1"></i>
+            Search
+          </Button>:
+          <Button  className={`mx-1 ${colorSearchButton}`} onClick={()=>clearSearchHandler()}>
+            <i className="bi bi-search px-1"></i>
+            Clear Search
+          </Button>}
+       
+
 
         <Link to="/pendingTasks">
           <Button color="blue" className="mx-1">
@@ -199,8 +222,13 @@ function Filters() {
         </Link> */}
       </div>
       <hr className="my-2"></hr>
+      <Search_Modal showModal={showSearch} setShowModal={setShowSearch} />
     </Fragment>
+    
   );
+  
 }
+
+
 
 export default Filters;

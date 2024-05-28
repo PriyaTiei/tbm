@@ -30,6 +30,7 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   // const { token } = req.cookies;
   // console.log(req.cookies);
   // console.log("token :", token);
+  
 
   req.query = { ...req.query };
   // console.log( req.query, "group query 2")
@@ -108,6 +109,7 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
+  
   const { token } = req.cookies;
   console.log("cookie form getAllMachinelist");
   console.log(token);
