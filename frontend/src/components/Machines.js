@@ -26,13 +26,23 @@ function Machines() {
   let lineStr = filters.line === null ? '' : `&line=${filters.line}`
   let rSStr = filters.rS === null ? '' : `&rS=${filters.rS}`
   let shiftStr = filters.shift === null ? '' : `&shift=${filters.shift}`
+  let processNoStr = filters.processNo === null || filters.processNo === "" ? '' : `&processNo=${filters.processNo}`
+  let cardNoStr = filters.cardNo === null || filters.cardNo === "" ? '' : `&cardNo=${filters.cardNo}`
 
-  let queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` + lineStr + rSStr +shiftStr;
-  let DailyStatusQueryStr = `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}`;
+  let queryStr 
+  let DailyStatusQueryStr 
   
-
+if(filters.processNo ===  "" && filters.cardNo === "" ){
+  console.log("test ********************")
+  queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` + lineStr + rSStr +shiftStr + processNoStr + cardNoStr;
+  DailyStatusQueryStr = `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}` + lineStr + rSStr +shiftStr + processNoStr + cardNoStr;
+}else{
+  queryStr = `pS=${filters.pS}` + lineStr  + processNoStr + cardNoStr;
+  DailyStatusQueryStr = `pS=${filters.pS}` + lineStr +  processNoStr + cardNoStr;
+}
   useEffect(() => {
     dispatch(getMachines(queryStr));
+    
 
     dispatch(getDailyStatus(DailyStatusQueryStr));
     // dispatch(getDailyStatus());

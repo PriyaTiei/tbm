@@ -49,12 +49,12 @@ function SmileCardAdd() {
   const [areaToInspectNew, setAreaToInspectNew] = useState("");
   const [shiftNew, setShiftNew] = useState("");
 
-  // const optionsLine = [
-  //   { value: "Block", label: "Block Line" },
-  //   { value: "Head", label: "Head Line" },
-  //   { value: "Crank", label: "Crank Line" },
-  //   { value: "Assembly", label: "Assembly Line" },
-  // ];
+  const optionsLine = [
+    { value: "Block", label: "Block Line" },
+    { value: "Head", label: "Head Line" },
+    { value: "Crank", label: "Crank Line" },
+    { value: "Assembly", label: "Assembly Line" },
+  ];
   // const optionsPS = [
   //   { value: "P", label: "Maintenace dept." },
   //   { value: "S", label: "Production dept." },
@@ -260,11 +260,19 @@ function SmileCardAdd() {
                 <span className="text-danger">* </span>:
               </div>
               <div className="secondCol">
-                <input
+                {/* <input
                   className="form-control"
                   value={lineNew}
                   onChange={(e) => setLineNew(e.target.value)}
                   placeholder="Please enter line Name, Example Block"
+                /> */}
+                   <Select
+                  options={optionsLine}
+                  defaultValue={{
+                    value:lineNew,
+                    label: "",
+                  }}
+                  onChange={(e) => setLineNew(e.value)}
                 />
               </div>
             </div>

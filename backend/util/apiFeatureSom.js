@@ -7,6 +7,7 @@ class ApiFeatureSom {
     this.queryStr = queryStr;
   }
   search() {
+   
     const keyword = this.queryStr.Line
       ? { Line: {
             $regex: this.queryStr.Line,
@@ -15,13 +16,14 @@ class ApiFeatureSom {
         }
       : {};
 
-    this.query = this.query.find({ ...keyword });
+  
+    this.query = this.query.find({ ...keyword});
     
     return this;
   }
   filter() {
     let newQueryStr = { ...this.queryStr };
-    const removeItems = ["Line", "page", "limit"];
+    const removeItems = ["Line","page", "limit"];
     removeItems.forEach((item) => delete newQueryStr[item]);
 
     newQueryStr = newQueryStr.w
@@ -39,6 +41,8 @@ class ApiFeatureSom {
     this.query = this.query.find(newQueryStr);
     this.newQueryStr = { ...newQueryStr };
     return this;
+
+
   }
   match() {
     let newQueryStr = { ...this.queryStr };
