@@ -4,7 +4,6 @@ class ApiFeatures {
     this.queryStr = queryStr;
   }
   search() {
-
     const keyword = this.queryStr.Line
       ? { Line: {
             $regex: this.queryStr.Line,
@@ -12,9 +11,6 @@ class ApiFeatures {
           },
         }
       : {};
-
-      
-     
 
     this.query = this.query.find({ ...keyword });
 

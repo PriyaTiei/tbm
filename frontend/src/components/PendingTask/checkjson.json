@@ -1,0 +1,706 @@
+{
+    "success": true,
+    "pendingData": [
+        {
+            "line": "Testing",
+            "processList": [
+                {
+                    "processNo": "TEST-1",
+                    "processData": [
+                        {
+                            "id": "66d1be65e8663f2eedecbcd2",
+                            "checkItem": "66d1aa6af53f828bd4977620",
+                            "checkitems": [
+                                {
+                                    "_id": "66d1aa6af53f828bd4977620",
+                                    "line": "Testing",
+                                    "processNo": "TEST-1",
+                                    "model": "",
+                                    "workDetail": "inspecting the test item weather it will update pending item every cycle",
+                                    "methodWssNo": "",
+                                    "cycle": "",
+                                    "tool": "",
+                                    "workManpower": "",
+                                    "workTime": "",
+                                    "pS": "S",
+                                    "rS": "R",
+                                    "entryDate": "2024-08-30T11:18:02.000Z",
+                                    "y": [
+                                        9999
+                                    ],
+                                    "m": [
+                                        9999
+                                    ],
+                                    "w": [
+                                        9999
+                                    ],
+                                    "d": [
+                                        9999
+                                    ],
+                                    "cardNo": "",
+                                    "images": [
+                                        ""
+                                    ],
+                                    "holidayOperation": "",
+                                    "workOnePoint": "",
+                                    "safetyOnePoint": "",
+                                    "qualityOnePoint": "",
+                                    "remark": "",
+                                    "reason": "",
+                                    "action": "",
+                                    "prepManHr": "",
+                                    "wHr": "",
+                                    "criterion": "",
+                                    "categoryCtrl": "",
+                                    "commonItem": "",
+                                    "group": "",
+                                    "m_spec": [
+                                        {
+                                            "m_lable": "length",
+                                            "m_unit": "mm",
+                                            "_id": "66d1aa6af53f828bd4977621"
+                                        },
+                                        {
+                                            "m_lable": "mass",
+                                            "m_unit": "mg",
+                                            "_id": "66d1aa6af53f828bd4977622"
+                                        },
+                                        {
+                                            "m_lable": "time",
+                                            "m_unit": "s",
+                                            "_id": "66d1aa6af53f828bd4977623"
+                                        }
+                                    ],
+                                    "createdAt": "2024-08-30T11:18:02.319Z",
+                                    "__v": 0,
+                                    "glVerify": false,
+                                    "tlVerify": false
+                                }
+                            ],
+                            "result": "PENDING",
+                            "pS": "S",
+                            "entryDates": [
+                                "2024-08-31T17:40:01.937Z"
+                            ],
+                            "rS": "R",
+                            "itemSpec": {
+                                "_id": "66d1c162ea6c72a67d8d7632",
+                                "checkItem": "66d1aa6af53f828bd4977620",
+                                "entryFor": "2024-4-11",
+                                "pS": "S",
+                                "result": "OK",
+                                "user": "66a9f38d324f28395623042f",
+                                "tl": false,
+                                "gl": false,
+                                "checkedBy": "",
+                                "m_spec": [
+                                    {
+                                        "m_lable": "length",
+                                        "m_unit": "mm",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977621"
+                                    },
+                                    {
+                                        "m_lable": "mass",
+                                        "m_unit": "mg",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977622"
+                                    },
+                                    {
+                                        "m_lable": "time",
+                                        "m_unit": "s",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977623"
+                                    }
+                                ],
+                                "checkedAt": "2024-08-30T12:56:02.268Z",
+                                "__v": 0
+                            },
+                            "actuals": "length 11 mm, mass 11 mg, time 11 s",
+                            "criteria": null
+                        },
+                        {
+                            "id": "66d1be65e8663f2eedecbcd2",
+                            "checkItem": "66d1aa6af53f828bd4977620",
+                            "checkitems": [
+                                {
+                                    "_id": "66d1aa6af53f828bd4977620",
+                                    "line": "Testing",
+                                    "processNo": "TEST-1",
+                                    "model": "",
+                                    "workDetail": "inspecting the test item weather it will update pending item every cycle",
+                                    "methodWssNo": "",
+                                    "cycle": "",
+                                    "tool": "",
+                                    "workManpower": "",
+                                    "workTime": "",
+                                    "pS": "S",
+                                    "rS": "R",
+                                    "entryDate": "2024-08-30T11:18:02.000Z",
+                                    "y": [
+                                        9999
+                                    ],
+                                    "m": [
+                                        9999
+                                    ],
+                                    "w": [
+                                        9999
+                                    ],
+                                    "d": [
+                                        9999
+                                    ],
+                                    "cardNo": "",
+                                    "images": [
+                                        ""
+                                    ],
+                                    "holidayOperation": "",
+                                    "workOnePoint": "",
+                                    "safetyOnePoint": "",
+                                    "qualityOnePoint": "",
+                                    "remark": "",
+                                    "reason": "",
+                                    "action": "",
+                                    "prepManHr": "",
+                                    "wHr": "",
+                                    "criterion": "",
+                                    "categoryCtrl": "",
+                                    "commonItem": "",
+                                    "group": "",
+                                    "m_spec": [
+                                        {
+                                            "m_lable": "length",
+                                            "m_unit": "mm",
+                                            "_id": "66d1aa6af53f828bd4977621"
+                                        },
+                                        {
+                                            "m_lable": "mass",
+                                            "m_unit": "mg",
+                                            "_id": "66d1aa6af53f828bd4977622"
+                                        },
+                                        {
+                                            "m_lable": "time",
+                                            "m_unit": "s",
+                                            "_id": "66d1aa6af53f828bd4977623"
+                                        }
+                                    ],
+                                    "createdAt": "2024-08-30T11:18:02.319Z",
+                                    "__v": 0,
+                                    "glVerify": false,
+                                    "tlVerify": false
+                                }
+                            ],
+                            "result": "PENDING",
+                            "pS": "S",
+                            "entryDates": [
+                                "2024-08-31T17:40:01.937Z"
+                            ],
+                            "rS": "R",
+                            "itemSpec": {
+                                "_id": "66d486497a645007aa22e087",
+                                "checkItem": "66d1aa6af53f828bd4977620",
+                                "entryFor": "2024-9-1",
+                                "pS": "S",
+                                "result": "OK",
+                                "user": "66a9f38d324f28395623042f",
+                                "tl": false,
+                                "gl": false,
+                                "tlBy": null,
+                                "glBy": null,
+                                "tlAt": null,
+                                "glAt": null,
+                                "tlComment": null,
+                                "glComment": null,
+                                "checkedBy": "",
+                                "m_spec": [
+                                    {
+                                        "m_lable": "length",
+                                        "m_unit": "mm",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977621"
+                                    },
+                                    {
+                                        "m_lable": "mass",
+                                        "m_unit": "mg",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977622"
+                                    },
+                                    {
+                                        "m_lable": "time",
+                                        "m_unit": "s",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977623"
+                                    }
+                                ],
+                                "checkedAt": "2024-09-01T15:20:41.754Z",
+                                "__v": 0
+                            },
+                            "actuals": "length 11 mm, mass 11 mg, time 11 s",
+                            "criteria": null
+                        },
+                        {
+                            "id": "66d1cc7c4dc25591249b6374",
+                            "checkItem": "66d1aa6af53f828bd4977620",
+                            "checkitems": [
+                                {
+                                    "_id": "66d1aa6af53f828bd4977620",
+                                    "line": "Testing",
+                                    "processNo": "TEST-1",
+                                    "model": "",
+                                    "workDetail": "inspecting the test item weather it will update pending item every cycle",
+                                    "methodWssNo": "",
+                                    "cycle": "",
+                                    "tool": "",
+                                    "workManpower": "",
+                                    "workTime": "",
+                                    "pS": "S",
+                                    "rS": "R",
+                                    "entryDate": "2024-08-30T11:18:02.000Z",
+                                    "y": [
+                                        9999
+                                    ],
+                                    "m": [
+                                        9999
+                                    ],
+                                    "w": [
+                                        9999
+                                    ],
+                                    "d": [
+                                        9999
+                                    ],
+                                    "cardNo": "",
+                                    "images": [
+                                        ""
+                                    ],
+                                    "holidayOperation": "",
+                                    "workOnePoint": "",
+                                    "safetyOnePoint": "",
+                                    "qualityOnePoint": "",
+                                    "remark": "",
+                                    "reason": "",
+                                    "action": "",
+                                    "prepManHr": "",
+                                    "wHr": "",
+                                    "criterion": "",
+                                    "categoryCtrl": "",
+                                    "commonItem": "",
+                                    "group": "",
+                                    "m_spec": [
+                                        {
+                                            "m_lable": "length",
+                                            "m_unit": "mm",
+                                            "_id": "66d1aa6af53f828bd4977621"
+                                        },
+                                        {
+                                            "m_lable": "mass",
+                                            "m_unit": "mg",
+                                            "_id": "66d1aa6af53f828bd4977622"
+                                        },
+                                        {
+                                            "m_lable": "time",
+                                            "m_unit": "s",
+                                            "_id": "66d1aa6af53f828bd4977623"
+                                        }
+                                    ],
+                                    "createdAt": "2024-08-30T11:18:02.319Z",
+                                    "__v": 0,
+                                    "glVerify": false,
+                                    "tlVerify": false
+                                }
+                            ],
+                            "result": "PENDING",
+                            "pS": "S",
+                            "entryDates": [],
+                            "rS": "R",
+                            "itemSpec": {
+                                "_id": "66d1c162ea6c72a67d8d7632",
+                                "checkItem": "66d1aa6af53f828bd4977620",
+                                "entryFor": "2024-4-11",
+                                "pS": "S",
+                                "result": "OK",
+                                "user": "66a9f38d324f28395623042f",
+                                "tl": false,
+                                "gl": false,
+                                "checkedBy": "",
+                                "m_spec": [
+                                    {
+                                        "m_lable": "length",
+                                        "m_unit": "mm",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977621"
+                                    },
+                                    {
+                                        "m_lable": "mass",
+                                        "m_unit": "mg",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977622"
+                                    },
+                                    {
+                                        "m_lable": "time",
+                                        "m_unit": "s",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977623"
+                                    }
+                                ],
+                                "checkedAt": "2024-08-30T12:56:02.268Z",
+                                "__v": 0
+                            },
+                            "actuals": "length 11 mm, mass 11 mg, time 11 s",
+                            "criteria": null
+                        },
+                        {
+                            "id": "66d1cc7c4dc25591249b6374",
+                            "checkItem": "66d1aa6af53f828bd4977620",
+                            "checkitems": [
+                                {
+                                    "_id": "66d1aa6af53f828bd4977620",
+                                    "line": "Testing",
+                                    "processNo": "TEST-1",
+                                    "model": "",
+                                    "workDetail": "inspecting the test item weather it will update pending item every cycle",
+                                    "methodWssNo": "",
+                                    "cycle": "",
+                                    "tool": "",
+                                    "workManpower": "",
+                                    "workTime": "",
+                                    "pS": "S",
+                                    "rS": "R",
+                                    "entryDate": "2024-08-30T11:18:02.000Z",
+                                    "y": [
+                                        9999
+                                    ],
+                                    "m": [
+                                        9999
+                                    ],
+                                    "w": [
+                                        9999
+                                    ],
+                                    "d": [
+                                        9999
+                                    ],
+                                    "cardNo": "",
+                                    "images": [
+                                        ""
+                                    ],
+                                    "holidayOperation": "",
+                                    "workOnePoint": "",
+                                    "safetyOnePoint": "",
+                                    "qualityOnePoint": "",
+                                    "remark": "",
+                                    "reason": "",
+                                    "action": "",
+                                    "prepManHr": "",
+                                    "wHr": "",
+                                    "criterion": "",
+                                    "categoryCtrl": "",
+                                    "commonItem": "",
+                                    "group": "",
+                                    "m_spec": [
+                                        {
+                                            "m_lable": "length",
+                                            "m_unit": "mm",
+                                            "_id": "66d1aa6af53f828bd4977621"
+                                        },
+                                        {
+                                            "m_lable": "mass",
+                                            "m_unit": "mg",
+                                            "_id": "66d1aa6af53f828bd4977622"
+                                        },
+                                        {
+                                            "m_lable": "time",
+                                            "m_unit": "s",
+                                            "_id": "66d1aa6af53f828bd4977623"
+                                        }
+                                    ],
+                                    "createdAt": "2024-08-30T11:18:02.319Z",
+                                    "__v": 0,
+                                    "glVerify": false,
+                                    "tlVerify": false
+                                }
+                            ],
+                            "result": "PENDING",
+                            "pS": "S",
+                            "entryDates": [],
+                            "rS": "R",
+                            "itemSpec": {
+                                "_id": "66d486497a645007aa22e087",
+                                "checkItem": "66d1aa6af53f828bd4977620",
+                                "entryFor": "2024-9-1",
+                                "pS": "S",
+                                "result": "OK",
+                                "user": "66a9f38d324f28395623042f",
+                                "tl": false,
+                                "gl": false,
+                                "tlBy": null,
+                                "glBy": null,
+                                "tlAt": null,
+                                "glAt": null,
+                                "tlComment": null,
+                                "glComment": null,
+                                "checkedBy": "",
+                                "m_spec": [
+                                    {
+                                        "m_lable": "length",
+                                        "m_unit": "mm",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977621"
+                                    },
+                                    {
+                                        "m_lable": "mass",
+                                        "m_unit": "mg",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977622"
+                                    },
+                                    {
+                                        "m_lable": "time",
+                                        "m_unit": "s",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977623"
+                                    }
+                                ],
+                                "checkedAt": "2024-09-01T15:20:41.754Z",
+                                "__v": 0
+                            },
+                            "actuals": "length 11 mm, mass 11 mg, time 11 s",
+                            "criteria": null
+                        },
+                        {
+                            "id": "66d1cca24dc25591249b63b0",
+                            "checkItem": "66d1aa6af53f828bd4977620",
+                            "checkitems": [
+                                {
+                                    "_id": "66d1aa6af53f828bd4977620",
+                                    "line": "Testing",
+                                    "processNo": "TEST-1",
+                                    "model": "",
+                                    "workDetail": "inspecting the test item weather it will update pending item every cycle",
+                                    "methodWssNo": "",
+                                    "cycle": "",
+                                    "tool": "",
+                                    "workManpower": "",
+                                    "workTime": "",
+                                    "pS": "S",
+                                    "rS": "R",
+                                    "entryDate": "2024-08-30T11:18:02.000Z",
+                                    "y": [
+                                        9999
+                                    ],
+                                    "m": [
+                                        9999
+                                    ],
+                                    "w": [
+                                        9999
+                                    ],
+                                    "d": [
+                                        9999
+                                    ],
+                                    "cardNo": "",
+                                    "images": [
+                                        ""
+                                    ],
+                                    "holidayOperation": "",
+                                    "workOnePoint": "",
+                                    "safetyOnePoint": "",
+                                    "qualityOnePoint": "",
+                                    "remark": "",
+                                    "reason": "",
+                                    "action": "",
+                                    "prepManHr": "",
+                                    "wHr": "",
+                                    "criterion": "",
+                                    "categoryCtrl": "",
+                                    "commonItem": "",
+                                    "group": "",
+                                    "m_spec": [
+                                        {
+                                            "m_lable": "length",
+                                            "m_unit": "mm",
+                                            "_id": "66d1aa6af53f828bd4977621"
+                                        },
+                                        {
+                                            "m_lable": "mass",
+                                            "m_unit": "mg",
+                                            "_id": "66d1aa6af53f828bd4977622"
+                                        },
+                                        {
+                                            "m_lable": "time",
+                                            "m_unit": "s",
+                                            "_id": "66d1aa6af53f828bd4977623"
+                                        }
+                                    ],
+                                    "createdAt": "2024-08-30T11:18:02.319Z",
+                                    "__v": 0,
+                                    "glVerify": false,
+                                    "tlVerify": false
+                                }
+                            ],
+                            "result": "PENDING",
+                            "pS": "S",
+                            "entryDates": [],
+                            "rS": "R",
+                            "itemSpec": {
+                                "_id": "66d1c162ea6c72a67d8d7632",
+                                "checkItem": "66d1aa6af53f828bd4977620",
+                                "entryFor": "2024-4-11",
+                                "pS": "S",
+                                "result": "OK",
+                                "user": "66a9f38d324f28395623042f",
+                                "tl": false,
+                                "gl": false,
+                                "checkedBy": "",
+                                "m_spec": [
+                                    {
+                                        "m_lable": "length",
+                                        "m_unit": "mm",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977621"
+                                    },
+                                    {
+                                        "m_lable": "mass",
+                                        "m_unit": "mg",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977622"
+                                    },
+                                    {
+                                        "m_lable": "time",
+                                        "m_unit": "s",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977623"
+                                    }
+                                ],
+                                "checkedAt": "2024-08-30T12:56:02.268Z",
+                                "__v": 0
+                            },
+                            "actuals": "length 11 mm, mass 11 mg, time 11 s",
+                            "criteria": null
+                        },
+                        {
+                            "id": "66d1cca24dc25591249b63b0",
+                            "checkItem": "66d1aa6af53f828bd4977620",
+                            "checkitems": [
+                                {
+                                    "_id": "66d1aa6af53f828bd4977620",
+                                    "line": "Testing",
+                                    "processNo": "TEST-1",
+                                    "model": "",
+                                    "workDetail": "inspecting the test item weather it will update pending item every cycle",
+                                    "methodWssNo": "",
+                                    "cycle": "",
+                                    "tool": "",
+                                    "workManpower": "",
+                                    "workTime": "",
+                                    "pS": "S",
+                                    "rS": "R",
+                                    "entryDate": "2024-08-30T11:18:02.000Z",
+                                    "y": [
+                                        9999
+                                    ],
+                                    "m": [
+                                        9999
+                                    ],
+                                    "w": [
+                                        9999
+                                    ],
+                                    "d": [
+                                        9999
+                                    ],
+                                    "cardNo": "",
+                                    "images": [
+                                        ""
+                                    ],
+                                    "holidayOperation": "",
+                                    "workOnePoint": "",
+                                    "safetyOnePoint": "",
+                                    "qualityOnePoint": "",
+                                    "remark": "",
+                                    "reason": "",
+                                    "action": "",
+                                    "prepManHr": "",
+                                    "wHr": "",
+                                    "criterion": "",
+                                    "categoryCtrl": "",
+                                    "commonItem": "",
+                                    "group": "",
+                                    "m_spec": [
+                                        {
+                                            "m_lable": "length",
+                                            "m_unit": "mm",
+                                            "_id": "66d1aa6af53f828bd4977621"
+                                        },
+                                        {
+                                            "m_lable": "mass",
+                                            "m_unit": "mg",
+                                            "_id": "66d1aa6af53f828bd4977622"
+                                        },
+                                        {
+                                            "m_lable": "time",
+                                            "m_unit": "s",
+                                            "_id": "66d1aa6af53f828bd4977623"
+                                        }
+                                    ],
+                                    "createdAt": "2024-08-30T11:18:02.319Z",
+                                    "__v": 0,
+                                    "glVerify": false,
+                                    "tlVerify": false
+                                }
+                            ],
+                            "result": "PENDING",
+                            "pS": "S",
+                            "entryDates": [],
+                            "rS": "R",
+                            "itemSpec": {
+                                "_id": "66d486497a645007aa22e087",
+                                "checkItem": "66d1aa6af53f828bd4977620",
+                                "entryFor": "2024-9-1",
+                                "pS": "S",
+                                "result": "OK",
+                                "user": "66a9f38d324f28395623042f",
+                                "tl": false,
+                                "gl": false,
+                                "tlBy": null,
+                                "glBy": null,
+                                "tlAt": null,
+                                "glAt": null,
+                                "tlComment": null,
+                                "glComment": null,
+                                "checkedBy": "",
+                                "m_spec": [
+                                    {
+                                        "m_lable": "length",
+                                        "m_unit": "mm",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977621"
+                                    },
+                                    {
+                                        "m_lable": "mass",
+                                        "m_unit": "mg",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977622"
+                                    },
+                                    {
+                                        "m_lable": "time",
+                                        "m_unit": "s",
+                                        "m_value": 11,
+                                        "_id": "66d1aa6af53f828bd4977623"
+                                    }
+                                ],
+                                "checkedAt": "2024-09-01T15:20:41.754Z",
+                                "__v": 0
+                            },
+                            "actuals": "length 11 mm, mass 11 mg, time 11 s",
+                            "criteria": null
+                        }
+                    ]
+                }
+            ],
+            "counts": {
+                "TEST-1": 1,
+                "Test-1": 3
+            }
+        }
+    ],
+    "totalCount": {
+        "totalCountBlock": 0,
+        "totalCountCrank": 0,
+        "totalCountHead": 0
+    }
+}

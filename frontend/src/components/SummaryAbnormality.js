@@ -59,9 +59,7 @@ function SummaryAbnormality() {
     dispatch(getAbnormality(fromDateSt, toDateSt, queryStr));
   }, [dispatch, fromDate, toDate, filterObject]);
 
-  useEffect(() => {
-    console.log(filterObject);
-  }, [filterObject]);
+
   const abnormalities = useSelector((state) => state.abnormalities);
   const abnormalityList = abnormalities.loading
     ? []

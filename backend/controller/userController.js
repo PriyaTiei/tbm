@@ -5,6 +5,7 @@ const { sendToken } = require("../util/sendToken");
 const jwt = require("jsonwebtoken")
 
 exports.createUser = catchAsyncError(async (req, res, next) => {
+  
   const { name, password, confirmPassword } = req.body;
   if (!name || !password) {
     return next(new ErrorHandler("Please enter user Name & Password", 400));
@@ -18,8 +19,7 @@ exports.createUser = catchAsyncError(async (req, res, next) => {
     );
   }
 
-  const user = await UserModel.create({ name, password,role:"user",level:10 });
-
+  const user = await UserModel.create({ name, password });
   if (!user) {
     return next(
       new ErrorHandler(
@@ -27,9 +27,9 @@ exports.createUser = catchAsyncError(async (req, res, next) => {
       )
     );
   }
-
-  sendToken(user, res, 200);
-
+  res
+    .status(201)
+    .json({ success: true, message: `user ${user.name} created successfully` });
 });
 
 exports.login = catchAsyncError(async (req, res, next) => {

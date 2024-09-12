@@ -2,6 +2,50 @@ const catchAsyncError = require("../middleware/catchAsyncError");
 const HeadModel = require("../mongoSchema/chekItemModel");
 const ApiFeatureHead = require("../util/apiFeatureHead");
 const ErrorHandler = require("../util/errorHandling");
+const mongoose = require('mongoose');
+
+async function addMeassurementFieldSpec(headCheckList) {
+  /*
+  ** Added By Prasad Munaga
+  ** This is for reading values from the user against each measurement 
+  */
+  let tList = [];
+  let obj = {};
+  obj.m_spec_id = mongoose.Types.ObjectId();
+  obj.m_spec_lable = "Width";
+  obj.m_unit = "cm";
+  tList.push(obj);
+
+  obj = {};
+  obj.m_spec_id = mongoose.Types.ObjectId();
+  obj.m_spec_lable = "Heifht";
+  obj.m_unit = "cm";
+  tList.push(obj);
+
+  obj = {};
+  obj.m_spec_id = mongoose.Types.ObjectId();
+  obj.m_spec_lable = "Pressure";
+  obj.m_unit = "Pa";
+  tList.push(obj);
+
+  obj = {};
+  obj.m_spec_id = mongoose.Types.ObjectId();
+  obj.m_spec_lable = "Speed";
+  obj.m_unit = "m/s";
+  tList.push(obj);
+
+  var tArray = [];
+  headCheckList.forEach((check) => {
+    var tObj = check.toObject();
+    tObj.m_spec = tList;
+    tArray.push(tObj);
+    // console.log(check.m_spec);
+    // console.log(check);
+  });
+
+  return tArray;
+  /******************************************************* */
+}
 
 exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
   // const { token } = req.cookies;
@@ -12,13 +56,15 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
     .search()
     .filter()
     .pagination(1);
-  const headCheckList = await headObject.query;
+  var headCheckList = await headObject.query;
 
   if (headCheckList.length === 0) {
     return next(new ErrorHandler("could not find check list", 404));
   }
 
   const totalCount = await HeadModel.countDocuments(headObject.newQueryStr);
+
+  // headCheckList = await addMeassurementFieldSpec(headCheckList)
 
   // return results
   res.status(201).json({ success: true, headCheckList, totalCount });
@@ -30,12 +76,13 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   // const { token } = req.cookies;
   // console.log(req.cookies);
   // console.log("token :", token);
-  
 
   req.query = { ...req.query };
+  console.log(req.query);
   // console.log( req.query, "group query 2")
   const headObject = new ApiFeatureHead(HeadModel, req.query).match();
   const headCheckList = await headObject.query;
+// console.log(headCheckList);
 
   if (headCheckList.length === 0) {
     return next(new ErrorHandler("could not find check list", 404));
@@ -109,7 +156,6 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
-  
   const { token } = req.cookies;
   console.log("cookie form getAllMachinelist");
   console.log(token);
@@ -241,10 +287,13 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
     workTime,
     y,
     _id,
-    shift
+    group,
+    m_spec,
+    tlVerify,
+    glVerify
   } = req.body;
 
-  console.log("shift is: ", shift)
+  console.log("group is: ", group)
   //conver to int
   function converToInt(y) {
     const splitY = y.split(",");
@@ -263,6 +312,8 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
   if (!doc) {
     return next(new ErrorHandler("could not find Item", 404));
   }
+
+  const jsonMSpec = JSON.parse(m_spec);
 
   HeadModel.findByIdAndUpdate(
     _id,
@@ -298,8 +349,11 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
       workManpower,
       workTime,
       y: intY,
-     shift
-
+      group,
+      m_spec: jsonMSpec,
+      tlVerify,
+      glVerify
+  
       // images: [req.file.filename],
     },
     (err, doc) => {
@@ -382,7 +436,10 @@ exports.insertData = catchAsyncError(async (req, res, next) => {
     workManpower,
     workTime,
     y,
-    shift
+    group,
+    m_spec,
+    glVerify,
+    tlVerify
   } = req.body;
 
   //conver to int
@@ -398,6 +455,8 @@ exports.insertData = catchAsyncError(async (req, res, next) => {
   const intY = converToInt(y);
 
   // save in mongo db
+
+  const jsonMSpec = JSON.parse(m_spec);
 
   HeadModel.create(
     {
@@ -432,7 +491,10 @@ exports.insertData = catchAsyncError(async (req, res, next) => {
       workManpower,
       workTime,
       y: intY,
-      shift
+      group,
+      m_spec: jsonMSpec,
+      glVerify,
+      tlVerify
       // images: [req.file.filename],
     },
     (err, doc) => {

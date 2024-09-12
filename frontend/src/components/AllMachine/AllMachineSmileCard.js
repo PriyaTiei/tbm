@@ -20,15 +20,15 @@ export default function AllMachineSmileCard() {
         `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/machine/${processData[idIndex].id}`
       );
       let data = response.data;
-      console.log(data);
+
       await setList(data.data);
-      console.log(list);
+
     } catch (error) {
       console.error(error);
     }
   };
 
- 
+
 
   useEffect(() => {
     getMachineById();
@@ -62,11 +62,11 @@ export default function AllMachineSmileCard() {
         `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/delete/${itemId}`
       )
       .then((result) => {
-        console.log("deleted check item ");
+      
         toast.success("deleted check item ");
       })
       .catch((err) => {
-        console.log("error deleting check item ", err.message);
+        
         toast.error("error deleting check item ");
       });
   };
@@ -108,7 +108,7 @@ export default function AllMachineSmileCard() {
           </button>
         </div>
 
-     
+
         {level >= 20 && (
           <button className="btn btn-warning mx-2" onClick={modifyHandler}>
             <i

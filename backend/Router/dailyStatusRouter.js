@@ -12,6 +12,10 @@ const {
   getGraphData,
   changeVerified,
   generateDailyGraph,
+  updateGlComment,
+  updateTlComment,
+  updateGlConfirm,
+  updateTlConfirm
 } = require("../controller/dailyStatusController");
 const dailyStatusRouter = express.Router();
 
@@ -32,4 +36,8 @@ dailyStatusRouter.route("/changeVerified").put(changeVerified)
 
 dailyStatusRouter.route("/generateDailyGraph").get(generateDailyGraph)
 
+dailyStatusRouter.route('/updateGlComment').post(updateGlComment);
+dailyStatusRouter.route('/updateTlComment').post(updateTlComment);
+dailyStatusRouter.route('/updateGlConfirm').post(updateGlConfirm);
+dailyStatusRouter.route('/updateTlConfirm').post(updateTlConfirm);
 module.exports = dailyStatusRouter;

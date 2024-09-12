@@ -2,27 +2,28 @@ import React, { useState, useEffect } from "react";
 import styles from "../styles/smilecard.module.css";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { toast } from "react-toastify"; 
+import { toast } from "react-toastify";
 import moment from "moment"
 import TrendGraphModal from "./../TrendGraphModal";
 
-export default function PendingSmileCardDetails({ list  ,   entryFor}) { 
+export default function PendingSmileCardDetails({ list, entryFor, checkItems }) {
 
-  const auth = useSelector((state) => state.auth); 
+  const auth = useSelector((state) => state.auth);
   const [image, setImage] = useState(null);
+  const [mspecs, setMspecs] = useState([])
+
 
 
   const entryForStr = moment(entryFor).format('YYYY-M-DD').replace(/\b0/g, '');
 
-  //toyo
-  // console.log(new Date(entryForNew).toLocaleDateString());
+
 
   let { cardNo,
     d,
     line,
     model,
     processNo,
-    cycle,  
+    cycle,
     workDetail,
     tool,
     criterion,
@@ -31,17 +32,32 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
     pS,
     dailyStatus,
     value,
-    methodWssNo,    
+    methodWssNo,
     rS,
     workManpower,
     areaToInspect,
-    workTime
+    workTime,
+    m_spec,
   } = list;
+
+  useEffect(() => {
+    setMspecs(m_spec)
+  }, [list])
+
+
   const [okNg, setOkNg] = useState("decisionPending");
   const [valueM, setValueM] = useState(value);
-  const [remarks , setRemarks] = useState(null) 
-
+  const [remarks, setRemarks] = useState(null)
+  const [parts, setParts] = useState([]);
   var bgColor = rS == "R" ? "red" : "green";
+
+  const handleChange = (id, e) => {
+
+    let msp = [...mspecs];
+    msp[id].m_value = Number(e.target.value);
+    setMspecs(msp);
+
+  };
 
   useEffect(() => {
     if (images !== null) {
@@ -59,11 +75,12 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
         checkItem: _id,
         result: okNg === "OK" ? "OK" : okNg === "NG" ? "NG" : "not judge",
         value: valueM,
-        user: auth.user._id, 
-        entryFor : entryForStr,
+        user: auth.user._id,
+        entryFor: entryForStr,
         pS,
         line,
-        remarks
+        remarks,
+        m_specs: mspecs
       };
 
       if (okNg === "OK" || okNg === "NG") {
@@ -78,13 +95,19 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
             }
           })
           .catch((err) => {
-            // console.log("error ", err);
+
             toast.error(`Data could not be saved , ${err.message}`);
           });
       } else {
         toast.warning("Please judge OK or NG");
       }
     }
+  };
+
+
+
+  const removePart = (indexToRemove) => {
+    setParts(parts.filter((_, index) => index !== indexToRemove));
   };
 
   return (
@@ -94,15 +117,15 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
           className={`${styles.brA} ${styles.center} col-sm-3 align-self-stretch `}
           style={{ backgroundColor: `${bgColor}` }}
         >
-          <h6 className={`${styles.scTh} h2`}>            
+          <h6 className={`${styles.scTh} h2`}>
             {pS === "P" ? "TBM Card" : `Smile Card `}
-            <spam className = {"h3"}> - {rS === "R" ? "RMI" : "OM"}</spam>
-          </h6>          
+            <spam className={"h3"}> - {rS === "R" ? "RMI" : "OM"}</spam>
+          </h6>
         </div>
 
         <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}> {pS=="S" ? "Matrix Card No." : "Control No"}</h6>
+            <h6 className={`${styles.scTh}`}> {pS == "S" ? "Matrix Card No." : "Control No"}</h6>
           </div>
           <div className={styles.brT}>
             <h6 className={`${styles.scTd}`}>{cardNo}</h6>
@@ -111,7 +134,7 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
 
         <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}> {pS=="S" ? "Ledger No." : "WSS No."}</h6>
+            <h6 className={`${styles.scTh}`}> {pS == "S" ? "Ledger No." : "WSS No."}</h6>
           </div>
           <div className={styles.brT}>
             <h6 className={`${styles.scTd}`}>{methodWssNo}</h6>
@@ -131,7 +154,7 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
 
         <div className={`col-md-2 col-sm-2  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>{pS=="S" ? "Line/Group" : "Line"}</h6>
+            <h6 className={`${styles.scTh}`}>{pS == "S" ? "Line/Group" : "Line"}</h6>
           </div>
           <div className={styles.brT}>
             <h6 className={`${styles.scTd}`}>{line}</h6>
@@ -149,7 +172,7 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
 
         <div className={`col-md-1 col-sm-2  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}> {pS=="S" ? "Station / Line" : "OP no"} </h6>
+            <h6 className={`${styles.scTh}`}> {pS == "S" ? "Station / Line" : "OP no"} </h6>
           </div>
           <div className={styles.brT}>
             <h6 className={`${styles.scTd}`}>{processNo}</h6>
@@ -158,7 +181,7 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
 
         <div className={`col-md-3 col-sm-4  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>{pS=="S" ? "Inspection Item" : "Work Detail"} </h6>
+            <h6 className={`${styles.scTh}`}>{pS == "S" ? "Inspection Item" : "Work Detail"} </h6>
           </div>
           <div className={styles.brT}>
             <h6 className={`${styles.scTd}`}>{workDetail}</h6>
@@ -176,15 +199,15 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
 
         <div className={`col-md-2 col-sm-2  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>{pS=="S" ? "Area to inspect" : "No. of members"}</h6>
+            <h6 className={`${styles.scTh}`}>{pS == "S" ? "Area to inspect" : "No. of members"}</h6>
           </div>
           <div className={styles.brT}>
-            <h6 className={`${styles.scTd}`}>{ workManpower}</h6>
+            <h6 className={`${styles.scTd}`}>{workManpower}</h6>
           </div>
         </div>
         <div className={`col-md-1 col-sm-1  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>{pS=="S" ? "Time" : "Total Manhours"}</h6>
+            <h6 className={`${styles.scTh}`}>{pS == "S" ? "Time" : "Total Manhours"}</h6>
           </div>
           <div className={styles.brT}>
             <h6 className={`${styles.scTd}`}>{workTime}</h6>
@@ -193,7 +216,7 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
 
         <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>{pS=="S" ? "Inspection Method" : "Tools"}</h6>
+            <h6 className={`${styles.scTh}`}>{pS == "S" ? "Inspection Method" : "Tools"}</h6>
           </div>
           <div className={`${styles.brT} align-self-stretch`}>
             <h6 className={`${styles.scTd}`}>{tool}</h6>
@@ -205,7 +228,7 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
             <h6 className={`${styles.scTh}`}>Criteria</h6>
           </div>
           <div className={styles.brT}>
-            <h6 className={`${styles.scTd}`}>{criterion}</h6>
+            <h6 className={`${styles.scTd}`}>{mspecs?.map((spec) => spec.m_criteria).join(", ")}</h6>
           </div>
         </div>
       </div>
@@ -219,7 +242,7 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
                 : `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/images/${image}`
             }
             alt="Details_Photo"
-            style={{ width: image === null || image === undefined ?"20vW" :"58.33vw", height: "auto" }}
+            style={{ width: image === null || image === undefined ? "20vW" : "58.33vw", height: "auto" }}
           ></img>
           <div>{image}</div>
         </div>
@@ -246,13 +269,72 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
               <div className="d-flex justify-content-between align-items-center">
                 <h6 className="text-center text-light mx-3">Judgement</h6>
               </div>
-              <input
-                className="bg-light my-1"
-                type="number"
-                placeholder="Enter actual value"
-                value={valueM}
-                onChange={(e) => setValueM(e.target.value)}
-              ></input>
+              <div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '10px' }}>
+
+                  {mspecs?.map((spec, index) => (
+                    <div key={spec._id} style={{ display: 'flex' }}>
+                      <label
+                        htmlFor={spec.m_lable}
+                        style={{ color: 'white' }}
+                        title={spec.m_criteria}
+                      >
+                        {spec.m_lable} ({spec.m_unit}):
+                      </label>
+
+                      <input
+                        type="number"
+                        id={spec.m_lable}
+                        name={spec.m_lable}
+                        value={spec.m_value}
+                        onChange={(e) => handleChange(index, e)}
+                        placeholder={`Enter ${spec.m_lable} in ${spec.m_unit}`}
+                        style={{ minWidth: '50px', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                  ))}
+                </div>
+                {/* <input
+                  className="bg-light my-1"
+                  type="text"
+                  placeholder="Enter actual value"
+                  value={valueM}
+                  onChange={handleChange}
+                  style={{width: "100%"}}
+                ></input> */}
+                <div className="mt-2">
+                  {parts.map((part, index) => (
+                    <span
+                      key={index}
+                      style={{
+                        backgroundColor: "#f0f0f0", // Change this to your desired background color
+                        padding: "5px 10px",
+                        margin: "5px",
+                        borderRadius: "5px",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.2)",
+                      }}
+                    >
+                      {part}
+                      <button
+                        onClick={() => removePart(index)}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "#888",
+                          fontWeight: "bold",
+                          marginLeft: "10px",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                        }}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
 
               <textarea
                 type="text"
@@ -293,22 +375,23 @@ export default function PendingSmileCardDetails({ list  ,   entryFor}) {
           showModal={showModal}
           setShowModal={setShowModal}
           id={_id}
-          // checkItem={checkItem._id}
-          // line={line}
-          // processNo={processNo}
-          // workDetail={checkItem.workDetail}
-          // abnormality={abnormality}
-          // cardType={cardType}
-          // // countermeasure={countermeasure}
-          // // spare={spare}
-          // // pic={pic}
-          // // targetDate={targetDate}
-          // status={status}
-          // fromDateSt={fromDateSt}
-          //  toDateSt={toDateSt}
+          mspecs={mspecs}
+        // checkItem={checkItem._id}
+        // line={line}
+        // processNo={processNo}
+        // workDetail={checkItem.workDetail}
+        // abnormality={abnormality}
+        // cardType={cardType}
+        // // countermeasure={countermeasure}
+        // // spare={spare}
+        // // pic={pic}
+        // // targetDate={targetDate}
+        // status={status}
+        // fromDateSt={fromDateSt}
+        //  toDateSt={toDateSt}
         />
       ) : null}
     </div>
   );
 }
- 
+

@@ -96,7 +96,7 @@ function ModalForm(props) {
         dispatch(getCards(fromDateSt, toDateSt));
       })
       .catch((err) => {
-        console.log(err);
+
         toast.error("Please fill Abnormility Details");
       });
   };

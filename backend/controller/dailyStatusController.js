@@ -7,27 +7,72 @@ const { ObjectId } = require("../util/getObjectType");
 const ApiFeatureHead = require("../util/apiFeatureHead");
 const HeadModel = require("../mongoSchema/chekItemModel");
 const DailyGraphModel = require("../mongoSchema/dailyGraphModel");
+const DailyStatusVerificationModel = require("../mongoSchema/dailyStatusVerificationModel");
+const AbnormalityModel = require("../mongoSchema/abnormalityModel");
+var mongoose = require('mongoose');
 
 exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
-  const { checkItem, result, value, user, entryFor, pS, line, remarks, checkedBy } =
+  var { checkItem, result, value, user, entryFor, pS, line, remarks, checkedBy, m_specs} =
     req.body;
-  console.log(req.body);
 
-  const dailystatusAvailable = await DailyStatusModel.findOne({
-    checkItem,
+  const m_spec = m_specs;
+  const cItemId = new ObjectId(checkItem);
+  var dailystatusAvailable = await DailyStatusModel.findOne({
+    checkItem: cItemId,
     entryFor,
   });
+  console.log(checkItem);
+  console.log(entryFor);
+  console.log(dailystatusAvailable);
 
+  //////////////////////////////////////////////////////////////
+  // Check for tlVerify/glVerify and change results accordingly.
+  // Added By Prasad Munaga
+  //////////////////////////////////////////////////////////////
+  if(!dailystatusAvailable) {
+    dailystatusAvailable = await DailyStatusModel.create({checkItem, result, value, user, entryFor, pS, line, remarks, checkedBy, m_specs});
+  }
+  const cItem = await HeadModel.findOne({_id: checkItem});
+  if(result == "OK" || result == "NG") {
+    if(cItem) {
+      const abItem = AbnormalityModel.findOne({checkItem: dailystatusAvailable.checkItem});
+      if(cItem.tlVerify == true || cItem.glVerify == true || abItem) {
+          var dsv = DailyStatusVerificationModel.find({dailyStatusItemId: dailystatusAvailable._id});
+          if(dsv) {
+            await dsv.remove();
+          }
+        var obj = dailystatusAvailable.toObject();
+        obj._id = mongoose.Types.ObjectId();;
+        obj.result = result;
+        obj.checkItem = cItem.id;
+        obj.glVerify = cItem.glVerify;
+        obj.tlVerify = cItem.tlVerify;
+        obj.m_spec = dailystatusAvailable.m_spec;
+        console.log("===>> " + dailystatusAvailable._id);
+        obj.dailyStatusItemId = dailystatusAvailable._id;
+        await DailyStatusVerificationModel.create(obj);
+      }
+    }
+  }
+  //////////////////////////////////////////////////////////////
   if (dailystatusAvailable) {
     dailystatusAvailable.result = result;
     dailystatusAvailable.value = value;
     dailystatusAvailable.remarks = remarks;
     dailystatusAvailable.checkedBy = checkedBy;
+    dailystatusAvailable.m_spec = m_spec;
+    dailystatusAvailable.tlVerify = cItem.tlVerify;
+    dailystatusAvailable.glVerify = cItem.glVerify;
     const dailyStatus = await dailystatusAvailable.save({
       validateBeforeSave: false,
     });
 
-    res.status(200).json({ success: true, dailyStatus });
+    const pendingTask = await PendingTask.findOne({ checkItem: checkItem });
+    if(pendingTask) {
+      await pendingTask.remove();
+    }
+
+    return res.status(200).json({ success: true, dailyStatus });
   } else {
     const dailyStatus = await DailyStatusModel.create({
       checkItem,
@@ -38,13 +83,17 @@ exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
       pS,
       remarks,
       checkedBy,
+      m_spec,
+      tlVerify: cItem.tlVerify,
+      glVerify: cItem.glVerify
     });
 
     const pendingTask = await PendingTask.findOne({ checkItem: checkItem });
 
     if (pendingTask) {
-      pendingTask.result = result;
-      await pendingTask.save();
+      // pendingTask.result = result;
+      // await pendingTask.save();
+      await pendingTask.remove();
       const graph = await DailyGraphModel.findOne({
         pS: pS,
         line: line,
@@ -93,8 +142,10 @@ exports.removeDailyStatus = async (req, res, next) => {
 
 exports.updateDailyStatus = catchAsyncError(async (req, res, next) => {
   const id = req.params.id;
-  const { checkItem, result, value, user, entryFor, pS, remarks, checkedBy } =
+  const { checkItem, result, value, user, entryFor, pS, remarks, checkedBy, m_specs } =
     req.body;
+
+  const m_spec = m_specs;
 
   let dailyStatus = await DailyStatusModel.findById(id);
   if (!dailyStatus) {
@@ -109,6 +160,7 @@ exports.updateDailyStatus = catchAsyncError(async (req, res, next) => {
   dailyStatus.pS = pS;
   dailyStatus.remarks = remarks;
   dailyStatus.checkedBy = checkedBy;
+  dailyStatus.m_spec = m_spec;
   await dailyStatus.save({ validateBeforeSave: false });
 
   res.status(201).json({ success: true, message: "Updated Successfully" });
@@ -124,17 +176,43 @@ exports.deleteDailyStatus = catchAsyncError(async (req, res, next) => {
     entryFor: entryFor,
   });
 
-  console.log(dailyStatus);
+  if(dailyStatus) {
+    await DailyStatusVerificationModel.deleteOne({dailyStatusItemId: dailyStatus.id});
+  }
+  
   if (!dailyStatus) {
     return next(new ErrorHandler("No such daily status check ", 404));
   }
-  console.log(dailyStatus);
+
+  var dObj = dailyStatus.toObject();
+  dObj.result = "PENDING";
+  dObj._id = mongoose.Types.ObjectId();
+
+  var pItem = PendingTask.find({checkItem: checkItem});
+  if(pItem) {
+    await PendingTask.remove({checkItem: checkItem});
+  }
+  
+  var cItem = await HeadModel.findOne({_id: dailyStatus.checkItem});
+  if(cItem) {
+    dObj.rS = cItem.rS;
+    dObj.workDetail = cItem.workDetail;
+    dObj.processNo = cItem.processNo;
+    dObj.line = cItem.line;
+    await PendingTask.create(dObj);
+  } else {
+    return res.status(400).json({
+      success: false,
+      message: `Failed to get checkItem , ${err.message} `,
+    });
+  }
+
   await dailyStatus.remove();
   res.status(201).json({ success: true, message: "Deleted Successfully" });
 });
 
 exports.getDailyStatus = catchAsyncError(async (req, res, next) => {
-  const { idCheckItem, entryFor } = req.params;
+  let { idCheckItem, entryFor } = req.params;
 
   let dailyStatus = await DailyStatusModel.findOne({
     checkItem: idCheckItem,
@@ -142,12 +220,12 @@ exports.getDailyStatus = catchAsyncError(async (req, res, next) => {
   });
   if (!dailyStatus) {
     // return next(new ErrorHandler("No such daily status check ", 404));
-    res
+    return res
       .status(201)
       .json({ success: true, dailyStatus: { result: "decisionPending" } });
   }
 
-  res.status(201).json({ success: true, dailyStatus });
+  return res.status(201).json({ success: true, dailyStatus });
 });
 
 const sortData = (data) => {
@@ -313,12 +391,24 @@ exports.getTrendDailyStatus = catchAsyncError(async (req, res, next) => {
   const { idCheckItem, fromDate, toDate } = req.params;
   // console.log(req.params);
   // console.log(`checkedAt:{$gte:${fromDate}, $lt:${toDate}}`)
+  
+  // Buid date string array -> fromDate to toDate
+  var dates = [];
+  var tDate = new Date(fromDate);
+
+  do {
+    var strDate = tDate.toISOString().split('T')[0];
+    dates.push(tDate.getFullYear() + '-' + (tDate.getMonth() + 1) + '-' + tDate.getDate());
+    tDate.setUTCDate(tDate.getDate() + 1);
+  } while (strDate != toDate);
+// console.log(dates);
+
   let dailyStatus = await DailyStatusModel.find(
     {
       checkItem: idCheckItem,
-      checkedAt: { $gte: fromDate, $lt: toDate },
+      entryFor: { $in: dates },
     },
-    { value: 1, entryFor: 1 }
+    { value: 1, entryFor: 1, m_spec: 1 }
   );
 
   if (!dailyStatus) {
@@ -410,6 +500,7 @@ exports.getGraphData = catchAsyncError(async (req, res, next) => {
 })
 
 exports.generateDailyGraph = async (req, res, next) => {
+  console.log(req.query);
   const { pS,reqDate } = req.query;
   if (!pS) {
     return next(new ErrorHandler("pS not found", 400));
@@ -556,7 +647,102 @@ exports.generateDailyGraph = async (req, res, next) => {
   }
 }
 
+// Added By Prasad Munaga
+exports.updateGlComment = async (req, res, next) => {
+  const { ids, user, comment } = req.body;
 
+  for(var i = 0; i < ids.length; i++) {
+    var id = ids[i];
+    const dailyStatusVefication = await DailyStatusVerificationModel.find({_id : id});
+    if(!dailyStatusVefication) {
+      return next(new ErrorHandler("Daily Status Record not found", 500));
+    }
+
+    var dailyStatus = await DailyStatusModel.findOne({_id: dailyStatusVefication[0].dailyStatusItemId});
+    var obj = dailyStatus.toObject();
+    obj.result = "OK";
+    obj.glAt = new Date();
+    obj.glId = user;
+    obj.glComment = comment;
+    await DailyStatusModel.updateOne({_id: obj._id}, { $set: obj });
+  
+    await DailyStatusVerificationModel.deleteOne({ _id: dailyStatusVefication[0]._id});
+  }
+
+  res.status(200).json({ success: true });
+}
+
+exports.updateTlComment = async (req, res, next) => {
+  const { ids, user, comment } = req.body;
+
+  for(var i = 0; i < ids.length; i++) {
+    var id = ids[i];
+    const dailyStatusVefication = await DailyStatusVerificationModel.find({_id : id});
+    if(!dailyStatusVefication) {
+      return next(new ErrorHandler("Daily Status Record not found", 500));
+    }
+
+    var dailyStatus = await DailyStatusModel.findOne({_id: dailyStatusVefication[0].dailyStatusItemId});
+    var obj = dailyStatus.toObject();
+    obj.result = "OK";
+    obj.tlAt = new Date();
+    obj.tlId = user;
+    obj.tlComment = comment;
+    await DailyStatusModel.updateOne({_id: obj._id}, { $set: obj });
+  
+    await DailyStatusVerificationModel.deleteOne({ _id: dailyStatusVefication[0]._id});
+  }
+
+  res.status(200).json({ success: true });
+}
+
+exports.updateGlConfirm = async (req, res, next) => {
+  const { ids, user } = req.body;
+
+  for(var i = 0; i < ids.length; i++) {
+    var id = ids[i];
+    const dailyStatusVefication = await DailyStatusVerificationModel.find({_id : id});
+    if(!dailyStatusVefication) {
+      return next(new ErrorHandler("Daily Status Record not found", 500));
+    }
+
+    var dailyStatus = await DailyStatusModel.findOne({_id: dailyStatusVefication[0].dailyStatusItemId});
+    var obj = dailyStatus.toObject();
+    obj.result = "OK";
+    obj.glAt = new Date();
+    obj.glId = user;
+    await DailyStatusModel.updateOne({_id: obj._id}, { $set: obj });
+  
+    await DailyStatusVerificationModel.deleteOne({ _id: dailyStatusVefication[0]._id});
+  }
+
+  res.status(200).json({ success: true });
+}
+
+exports.updateTlConfirm = async (req, res, next) => {
+  const { ids, user } = req.body;
+
+  for(var i = 0; i < ids.length; i++) {
+    var id = ids[i];
+    const dailyStatusVefication = await DailyStatusVerificationModel.find({_id : id});
+    if(!dailyStatusVefication) {
+      return next(new ErrorHandler("Daily Status Record not found", 500));
+    }
+
+    var dailyStatus = await DailyStatusModel.findOne({_id: dailyStatusVefication[0].dailyStatusItemId});
+    var obj = dailyStatus.toObject();
+    obj.result = "OK";
+    obj.tlAt = new Date();
+    obj.tlId = user;
+    await DailyStatusModel.updateOne({_id: obj._id}, { $set: obj });
+  
+    await DailyStatusVerificationModel.deleteOne({ _id: dailyStatusVefication[0]._id});
+  }
+
+  res.status(200).json({ success: true });
+}
+
+//////////////////////////////////////////////////////////////////////
 
 //unused
 // exports.getGraphData = catchAsyncError(async (req, res, next) => {

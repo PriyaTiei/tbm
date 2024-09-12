@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import styles from "./styles/smilecard.module.css";
 import axios from "axios";
 import "./table.css";
@@ -7,17 +7,36 @@ import Select from "react-select";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import DatePicker from "react-date-picker";
+import { Button, Col, Form, Row } from "react-bootstrap";
 
 function SmileCardDetails({ list, image, setImage }) {
   const [selectedFile, setSelectedFile] = useState("");
 
   const auth = useSelector((state) => state.auth);
   const { machineData } = useSelector((state) => state.machines);
-  const optionsLine = machineData.machineData.map((element) => {
+
+  const optionsLine = machineData?.machineData?.map((element) => {
     return { value: element.line, label: element.line };
   });
 
   const level = auth.user ? auth.user.level : 0;
+
+  const [labelUnits, setLabelUnits] = useState([{ m_lable: "", m_unit: "", m_criteria: "" }]);
+
+  const handleAddLabelUnit = () => {
+    setLabelUnits([...labelUnits, { m_lable: "", m_unit: "", m_criteria: "" }]);
+  };
+
+  const handleLabelUnitChange = (index, field, value) => {
+    const newLabelUnits = [...labelUnits];
+    newLabelUnits[index][field] = value;
+    setLabelUnits(newLabelUnits);
+  };
+
+  const handleRemoveLabelUnit = (index) => {
+    const newLabelUnits = labelUnits.filter((_, i) => i !== index);
+    setLabelUnits(newLabelUnits);
+  };
 
   const selectedFileHandler = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -56,13 +75,27 @@ function SmileCardDetails({ list, image, setImage }) {
     workTime,
     y,
     _id,
-    shift
+    m_spec,
+    group,
+    tlVerify,
+    glVerify
   } = list;
 
+
+
+
+
+  useEffect(() => {
+    if (m_spec.length) {
+      setLabelUnits(m_spec)
+    }
+
+  }, [m_spec])
   const [actionNew, setActionNew] = useState(action === null ? "" : action);
   const [cardNoNew, setCardNoNew] = useState(cardNo === null ? "" : cardNo);
-  const [shiftNew, setShiftNew] = useState(shift === null ? "" : shift);
-
+  const [groupNew, setGroupNew] = useState(group === null ? "" : group);
+  const [tlVerifys, setVerifTL] = useState(tlVerify ? tlVerify : false);
+  const [glVerifys, setVerifGL] = useState(glVerify ? glVerify : false);
   const [categoryCtrlNew, setCategoryCtrlNew] = useState(
     categoryCtrl === null ? "" : categoryCtrl
   );
@@ -81,11 +114,11 @@ function SmileCardDetails({ list, image, setImage }) {
     entryDate == null
       ? new Date(Date.now())
       : typeof entryDate == "object"
-      ? entryDate
-      : new Date(entryDate)
+        ? entryDate
+        : new Date(entryDate)
     //  entryDate
   );
-  console.log(typeof new Date());
+
   const [holidayOperationNew, setHolidayOperationNew] = useState(
     holidayOperation === null ? "" : holidayOperation
   );
@@ -189,11 +222,14 @@ function SmileCardDetails({ list, image, setImage }) {
     { value: 6, label: "Sat" },
     { value: 7, label: "Sun" },
   ];
-  const optionsShift = [  
-    { value: "first", label: "First Shift" },
-    { value: "second", label:"Second Shift" },
-    
+  const optionsGroup = [
+
+    { value: "white", label: "White Group" },
+    { value: "yellow", label: "Yellow Group" },
   ];
+
+
+
   const uploadImage = (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -217,7 +253,7 @@ function SmileCardDetails({ list, image, setImage }) {
         }
       })
       .catch((err) => {
-        console.log("error uploading image", err);
+
         toast.error(
           `Failed to upload Image, choose correct Image file with file extension .png/.jpg`
         );
@@ -227,8 +263,7 @@ function SmileCardDetails({ list, image, setImage }) {
   const saveData = (e) => {
     e.preventDefault();
     const formData = new FormData();
-    console.log("Id:", _id);
-    console.log("entryValue :", entryDateNew);
+
 
     // formData.append("image", selectedFile);
 
@@ -265,7 +300,10 @@ function SmileCardDetails({ list, image, setImage }) {
     formData.append("workTime", workTimeNew);
     formData.append("y", yNew);
     formData.append("_id", _id);
-    formData.append("shift", shiftNew);
+    formData.append("group", groupNew);
+    formData.append("m_spec", JSON.stringify(labelUnits));
+    formData.append("tlVerify", tlVerifys);
+    formData.append("glVerify", glVerifys);
 
     axios
       .post(
@@ -279,8 +317,7 @@ function SmileCardDetails({ list, image, setImage }) {
         toast.success(`Data uploaded successfully`);
       })
       .catch((err) => {
-        console.log(err.message);
-        console.log("error uploading Data", err);
+
         toast.error(`failed to upload data, ${err.message}`);
       });
   };
@@ -456,17 +493,17 @@ function SmileCardDetails({ list, image, setImage }) {
         <li>
           <div className="d-flex">
             <div className="firstCol">
-              Shift
+              Group
             </div>
             <div className="secondCol">
-            <Select
-                options={optionsShift}
-                defaultValue={{ value: shiftNew, label:  shiftNew!="undefined" ? `${shiftNew } Shift` :""}}
-                onChange={(e) => setShiftNew(e.value)}
+              <Select
+                options={optionsGroup}
+                defaultValue={{ value: groupNew, label: groupNew != "undefined" ? `${groupNew} Group` : "" }}
+                onChange={(e) => setGroupNew(e.value)}
                 isDisabled={level >= 100 ? false : true}
               />
             </div>
-           
+
           </div>
         </li>
         <li>
@@ -678,8 +715,87 @@ function SmileCardDetails({ list, image, setImage }) {
             </div>
           </div>
         </li>
-       
-   
+        <li>
+          <div className="d-flex">
+            <div className="firstCol">
+              {" "}
+              TL Approval required
+            </div>
+            <div className="secondCol">
+              <select className="form-control" value={tlVerifys} onChange={(e) => setVerifTL(e.target.value)}>
+                <option value={false}>Not Required</option>
+                <option value={true}>Required</option>
+              </select>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div className="d-flex">
+            <div className="firstCol">
+              {" "}
+              GL Approval required
+            </div>
+            <div className="secondCol">
+              <select className="form-control" value={glVerifys} onChange={(e) => setVerifGL(e.target.value)}>
+                <option value={false}>Not Required</option>
+                <option value={true}>Required</option>
+              </select>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div className="d-flex">
+            <div className="firstCol">
+              {" "}
+              Measurement
+            </div>
+            <div className="secondCol">
+              {labelUnits?.map((item, index) => (
+                <Row key={index} className="mb-3">
+                  <Col xs={5}>
+                    <Form.Control
+                      type="text"
+                      placeholder="Label"
+                      value={item.m_lable}
+                      onChange={(e) =>
+                        handleLabelUnitChange(index, "m_lable", e.target.value)
+                      }
+                    />
+                  </Col>
+                  <Col xs={5}>
+                    <Form.Control
+                      type="text"
+                      placeholder="Unit"
+                      value={item.m_unit}
+                      onChange={(e) =>
+                        handleLabelUnitChange(index, "m_unit", e.target.value)
+                      }
+                    />
+                  </Col>
+                  <Col xs={5}>
+                    <Form.Control
+                      type="text"
+                      placeholder="Criteria"
+                      value={item.m_criteria}
+                      onChange={(e) =>
+                        handleLabelUnitChange(index, "m_criteria", e.target.value)
+                      }
+                    />
+                  </Col>
+                  <Col xs={2}>
+                    <Button variant="danger" onClick={() => handleRemoveLabelUnit(index)}>
+                      Remove
+                    </Button>
+                  </Col>
+                </Row>
+              ))}
+              <Button variant="primary" onClick={handleAddLabelUnit}>
+                + Add Label and Unit
+              </Button>
+            </div>
+          </div>
+        </li>
+
         {/* below items not required to be displayed for production  */}
         {pS === "S" ? null : (
           <>

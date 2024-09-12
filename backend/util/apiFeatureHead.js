@@ -6,8 +6,6 @@ class ApiFeatureHead {
   }
 
   search() {
-
-    console.log("in dept search ")
     const keyword = this.queryStr.dept
       ? {
           pS: {
@@ -17,9 +15,6 @@ class ApiFeatureHead {
         }
       : {};
 
-   
-      
-
     this.query = this.query.find({ ...keyword });
     this.newQueryStr = { ...keyword };
 
@@ -27,7 +22,7 @@ class ApiFeatureHead {
   }
   filter() {
     let newQueryStr = { ...this.queryStr };
-    const removeItems = ["dept",  "page", "limit"];
+    const removeItems = ["dept", "page", "limit"];
     removeItems.forEach((item) => delete newQueryStr[item]);
 
     newQueryStr = newQueryStr.d
@@ -58,10 +53,10 @@ class ApiFeatureHead {
   }
 
   match() {
-    console.log("found")
     let newQueryStr = { ...this.queryStr };
     const removeItems = ["dept", "page", "limit"];
     removeItems.forEach((item) => delete newQueryStr[item]);
+console.log(newQueryStr);
 
     newQueryStr = newQueryStr.d
       ? { ...newQueryStr, d: { $in: [9999, Number(newQueryStr.d)] } }
@@ -79,35 +74,9 @@ class ApiFeatureHead {
       ? { ...newQueryStr, y: { $in: [9999, Number(newQueryStr.y)] } }
       : { ...newQueryStr };
 
-    
-    
-    // The below line of code is to search cards based on OP number
-    const keyword1 = this.newQueryStr.processNo
-    ? {
-        processNo: {
-          $regex: this.newQueryStr.processNo,
-          $options: "i",
-        },
-      }
-    : {};
-
-       // The below line of code is to search cards based on card number
-       const keyword2 = this.newQueryStr.cardNo
-       ? {
-           cardNo: {
-             $regex: this.newQueryStr.cardNo,
-             $options: "i",
-           },
-         }
-       : {};
-   
-
-    // Updating the search query with revised filter parameters
-    newQueryStr= {...newQueryStr, ...keyword1, ...keyword2}
     this.newQueryStr = { ...newQueryStr };
 
-    console.log(newQueryStr)
-    
+//    console.log(this.newQueryStr);
 
     this.query = this.query.aggregate([
       { $match: newQueryStr },
@@ -119,6 +88,7 @@ class ApiFeatureHead {
         },
       },
     ]);
+//    console.log(this.query);
     return this;
   }
 }

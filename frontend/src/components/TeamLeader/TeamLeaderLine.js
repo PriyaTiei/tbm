@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import TeamLeaderCard from "./TeamLeaderCard";
 
-export default function TeamLeaderLine({ line, processNos, counts  }) {
+export default function TeamLeaderLine({ line, processNos, counts }) {
   const resultData = {};
   dailyStatusDataLinewise = dailyStatusDataLinewise
     ? dailyStatusDataLinewise
@@ -11,8 +11,8 @@ export default function TeamLeaderLine({ line, processNos, counts  }) {
       OK: element.result.OK,
       NG: element.result.NG,
     };
-  }); 
- 
+  });
+
 
   return (
     <Fragment>
@@ -36,4 +36,4 @@ export default function TeamLeaderLine({ line, processNos, counts  }) {
   );
 }
 
- 
+

@@ -27,7 +27,7 @@ export default function Title() {
         removeCookie("userId"); 
       })
       .catch((err) => {
-        console.log("error", err);
+       
       });
   };
 

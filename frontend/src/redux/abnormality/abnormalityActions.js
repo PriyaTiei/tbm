@@ -32,12 +32,12 @@ export const getAbnormality = (fromDateSt, toDateSt, queryStr) => {
         `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/find/fromDate/${fromDateSt}/toDate/${toDateSt}?${queryStr}`
       )
       .then((result) => {
-        console.log("results ab", result.data);
+       
         dispatch(abnormalityFetchSuccess(result.data));
       })
       .catch((error) => {
         dispatch(abnormalityFetchFail(error.message));
-        console.log("triggered getAbnormality & Error", error.message);
+        
       });
   };
 };

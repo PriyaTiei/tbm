@@ -3,9 +3,7 @@ import {
   FILTER_DATE,
   FILTER_DEPT,
   FILTER_LINE,
-  FILTER_SHIFT,
-  FILTER_PROCESS_NO,
-  FILTER_CARD_NO
+  FILTER_GROUP
 } from "./filterTypes";
 const todayDate = new Date(Date.now());
 const dt = todayDate.getDate();
@@ -16,9 +14,7 @@ const w = Math.floor(dt / 7.1) + 1;
 const pS = "S";
 const line = null;
 const rS = null;
-const shift = null;
-const processNo ="";
-const cardNo = "";
+const group = null;
 const initialFilterState = {
   d,
   m,
@@ -28,9 +24,7 @@ const initialFilterState = {
   dt,
   line,
   rS, 
-  shift,
-  processNo,
-  cardNo
+  group
 };
 
 const filterReducer = (state = initialFilterState, action) => {
@@ -55,21 +49,11 @@ const filterReducer = (state = initialFilterState, action) => {
         ...state,
         rS: action.payload,
       };
-      case FILTER_SHIFT:
+      case FILTER_GROUP:
         return {
           ...state,
-          shift: action.payload,
+          group: action.payload,
         };
-        case FILTER_PROCESS_NO:
-          return {
-            ...state,
-            processNo: action.payload,
-          };
-          case FILTER_CARD_NO:
-            return {
-              ...state,
-              cardNo: action.payload,
-            };
     default:
       return state;
   }

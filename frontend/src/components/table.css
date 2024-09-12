@@ -24,3 +24,27 @@ align-self: center;
 .datepicker-borderless {
   border: none;
 }
+
+.cardss{
+  width: 50% !important;
+}
+
+@media (max-width: 600px) {
+  .table td {
+      font-size: 0.8rem;
+      
+  }
+  .cardss{
+    width: 100% !important;
+  }
+}
+@media (min-width: 601px) and (max-width: 1200px) {
+  .table td {
+      font-size: 1rem;
+  }
+}
+@media (min-width: 1201px) {
+  .table td {
+      font-size: 1.2rem;
+  }
+}

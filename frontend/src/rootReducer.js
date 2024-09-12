@@ -1,7 +1,7 @@
-import { combineReducers } from "redux"; 
+import { combineReducers } from "redux";
 import machineReducer from "./redux/machine/machineReducer";
 import checkItemReducer from "./redux/checkItem/checkItemsReducer";
-import filterReducer from "./redux/filter/filterReducer"; 
+import filterReducer from "./redux/filter/filterReducer";
 import dailyStatusReducer from "./redux/dailyStatus/dailyStatusReducer";
 import abnormalityReducer from "./redux/abnormality/abnormalityReducer";
 import cardReducer from "./redux/card/cardReducer";
@@ -10,19 +10,23 @@ import navBarReducer from "./redux/navbarSlice"
 import processDataReducer from "./redux/processData/processReducer";
 import authReducer from "./redux/auth/AuthSlice";
 import checkedByReducer from "./redux/checkedBy";
+import holidayReducer from "./redux/holiday/holidayReducer";
+import reportChartReducer from "./redux/reportChart/reportChartReducer";
 
-const rootReducer = combineReducers({ 
+const rootReducer = combineReducers({
   machines: machineReducer,
   checkItems: checkItemReducer,
-  filters: filterReducer, 
+  filters: filterReducer,
   dailyStatuses: dailyStatusReducer,
   abnormalities: abnormalityReducer,
   cards: cardReducer,
   pendingTasks: pendingTaskReducer,
-  navBar : navBarReducer,
-  processData : processDataReducer,
-  auth : authReducer,
-  checkedBy: checkedByReducer
+  navBar: navBarReducer,
+  processData: processDataReducer,
+  auth: authReducer,
+  checkedBy: checkedByReducer,
+  holiday: holidayReducer,
+  report: reportChartReducer
 });
 
 export default rootReducer;
