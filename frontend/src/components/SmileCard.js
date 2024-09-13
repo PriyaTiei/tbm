@@ -13,13 +13,14 @@ import { setCheckedBy } from "../redux/checkedBy"
 import JudgementHistoryModel from "./JudgementHistoryModel";
 import { Card } from "react-bootstrap";
 
+
 function SmileCard() {
   const [modify, setModify] = useState(false);
   const [image, setImage] = useState(null);
   const auth = useSelector((state) => state.auth);
   const level = auth.user ? auth.user.level : 0;
 
-
+  const [mspecs, setMspecs] = useState([])
 
   // get query string from link
   const [searchParams] = useSearchParams();
@@ -131,18 +132,24 @@ function SmileCard() {
     if (!list || list.length === 0) return "";
 
     const check = list[0];  // Assuming you want to check only the first item
-    console.log(check?.dailyStatus)
-    if (check[type + "Verify"] && (check?.dailyStatus == "OK" || check?.dailyStatus == "NG")) {
-      if (check[type + "At"] && (!check[type + "Comment"] || check[type + "Comment"].trim() === "")) {
-        return `${type.toUpperCase()} Approved`;
-      } else if (check[type + "At"] && check[type + "Comment"] && check[type + "Comment"].trim() !== "") {
-        return `${type.toUpperCase()} Commented: ${check[type + "Comment"]}`;
+
+    const verifyKey = `${type}Verify`;
+    const atKey = `${type}At`;
+    const commentKey = `${type}Comment`;
+
+    if (check[verifyKey] && (check.dailyStatus === "OK" || check.dailyStatus === "NG")) {
+      if (check[atKey]) {
+        if (!check[commentKey] || check[commentKey].trim() === "") {
+          return `${type.toUpperCase()} Approved`;
+        } else {
+          return `${type.toUpperCase()} Commented: ${check[commentKey]}`;
+        }
       } else {
         return `${type.toUpperCase()} Pending from their side`;
       }
     }
 
-
+    return ""; // Default return if none of the conditions are met
   };
 
 
@@ -156,7 +163,7 @@ function SmileCard() {
 
   return (
     <Fragment>
-      <div className="overflow-auto" style={{ height: "85vh" }}>
+      <div className="overflow-auto" style={{ height: "85vh", paddingBottom: "10%" }}>
         <div className="d-flex flex-wrap my-2">
           <div className="d-flex allign-middle">
             <button
@@ -253,9 +260,9 @@ function SmileCard() {
           <Card className="p-1 text-center" style={{ maxWidth: "400px", margin: "auto" }}>
             <Card.Body>
               <Card.Subtitle className="text-muted" style={{ fontSize: "16px", fontWeight: "500" }}>
-                {getStatusLabel(checkItem?.headCheckList, "tl")} <br /> {getStatusLabel(checkItem?.headCheckList, "gl")}
+                {getStatusLabel(checkItem?.headCheckList, "tl")} <br />
+                {getStatusLabel(checkItem?.headCheckList, "gl")}
               </Card.Subtitle>
-
             </Card.Body>
           </Card>
 
@@ -275,6 +282,7 @@ function SmileCard() {
                     setImage={setImage}
                     setRecordAbnormalityShowModal={setShowModal}
                     checkItems={checkItems}
+                    setMspecsAbnormal={setMspecs}
                   />
 
                   {showModal ? (
@@ -283,6 +291,7 @@ function SmileCard() {
                       setShowModal={setShowModal}
                       workDetail={list.workDetail}
                       itemId={list._id}
+                      mspecs={mspecs}
                     />
                   ) : null}
                   {

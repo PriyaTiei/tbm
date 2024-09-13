@@ -32,7 +32,7 @@ export default function AllMachine() {
         <Loading />
       ) : (
         <Fragment >
-         <div className="overflow-auto" style={{height:"85vh"}}>
+         <div className="overflow-auto" style={{height:"85vh", paddingBottom: "10%"}}>
           {machineData.success
             ? machineData.machineData.map((item, i) => {
                 return (

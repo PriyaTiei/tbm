@@ -378,7 +378,7 @@ exports.tbmFrequency = catchAsyncError(async (req, res, next) => {
 exports.tlVerifyItems = catchAsyncError(async (req, res, next) => {
     const tlList = await DailyStatusVerificationModel.aggregate([
         {
-          $match: { tlVerify: true }
+            $match: { $or: [{ tlVerify: true }, { result: "NG"}]}
         },
         {
           $lookup: {
@@ -407,6 +407,14 @@ exports.tlVerifyItems = catchAsyncError(async (req, res, next) => {
               $eq: ["$entryFor", "$dailystatus.entryFor"]
             }
           }
+        },
+        {
+          $addFields: {
+            "entryForDate": { $dateFromString: { dateString: "$entryFor" }}
+          }
+        },
+        {
+            $sort: { entryForDate: -1}
         }
       ]);
     res.status(200).json({ success: true, tlList });
@@ -415,7 +423,7 @@ exports.tlVerifyItems = catchAsyncError(async (req, res, next) => {
 exports.glVerifyItems = catchAsyncError(async (req, res, next) => {
     const glList = await DailyStatusVerificationModel.aggregate([
         {
-          $match: { glVerify: true }
+          $match: { $or: [{ glVerify: true }, { result: "NG"}]}
         },
         {
           $lookup: {
@@ -444,7 +452,54 @@ exports.glVerifyItems = catchAsyncError(async (req, res, next) => {
               $eq: ["$entryFor", "$dailystatus.entryFor"]
             }
           }
+        },
+        {
+          $addFields: {
+            "entryForDate": { $dateFromString: { dateString: "$entryFor" }}
+          }
+        },
+        {
+            $sort: { entryForDate: -1}
         }
       ]);
     res.status(200).json({ success: true, glList });
 });
+
+exports.getVerifyItems = catchAsyncError(async (req, res, next) => {
+    // var dailyItems = await DailyStatus.find({}).populate("checkItem", "glVerify tlVerify");
+
+    var dailyItems = await DailyStatus.aggregate([{
+          $lookup: {
+            from: "checkitems",
+            localField: "checkItem",
+            foreignField: "_id",
+            as: "checkItem"
+          }
+        },
+        {
+          $unwind: {
+            path: "$checkItem",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $addFields: {
+            "entryForDate": { $dateFromString: { dateString: "$entryFor" }}
+          }
+        },
+        {
+            $sort: { entryForDate: -1}
+        }
+      ]);
+
+    if(dailyItems == null || (dailyItems != null && dailyItems.length == 0)) {
+        return res.status(200).json({ success: true, dailyItemsWithGlTlVerify: [] });
+    }
+
+    var dailyItemsWithGlTlVerify = dailyItems.filter((dItem) => {
+        return (dItem.checkItem.glVerify == true || dItem.checkItem.tlVerify);
+    });
+
+    return res.status(200).json({ success: true, dailyItemsWithGlTlVerify });
+});
+

@@ -461,7 +461,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                                                     textAlign: "center"
                                                 }}
                                             >
-                                                {String(dats).padStart(3, "0")}
+                                                {String(dats).padStart(2, "0")}
                                             </td>
                                         ))}
                                     </tr>
@@ -476,7 +476,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                                                     textAlign: "center"
                                                 }}
                                             >
-                                                {String(dats).padStart(3, "0")}
+                                                {String(dats).padStart(2, "0")}
                                             </td>
                                         ))}
                                     </tr>

@@ -9,6 +9,7 @@ const HeadModel = require("../mongoSchema/chekItemModel");
 const DailyGraphModel = require("../mongoSchema/dailyGraphModel");
 const DailyStatusVerificationModel = require("../mongoSchema/dailyStatusVerificationModel");
 const AbnormalityModel = require("../mongoSchema/abnormalityModel");
+const CardRaisedModel = require("../mongoSchema/cardRaisedModel");
 var mongoose = require('mongoose');
 
 exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
@@ -35,7 +36,7 @@ exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
   const cItem = await HeadModel.findOne({_id: checkItem});
   if(result == "OK" || result == "NG") {
     if(cItem) {
-      const abItem = AbnormalityModel.findOne({checkItem: dailystatusAvailable.checkItem});
+      const abItem = AbnormalityModel.find({checkItem: dailystatusAvailable.checkItem});
       if(cItem.tlVerify == true || cItem.glVerify == true || abItem) {
           var dsv = DailyStatusVerificationModel.find({dailyStatusItemId: dailystatusAvailable._id});
           if(dsv) {
@@ -176,14 +177,15 @@ exports.deleteDailyStatus = catchAsyncError(async (req, res, next) => {
     entryFor: entryFor,
   });
 
+  if (!dailyStatus) {
+    console.log("===========================**********");
+    return next(new ErrorHandler("No such daily status check ", 404));
+  }
+
   if(dailyStatus) {
     await DailyStatusVerificationModel.deleteOne({dailyStatusItemId: dailyStatus.id});
   }
   
-  if (!dailyStatus) {
-    return next(new ErrorHandler("No such daily status check ", 404));
-  }
-
   var dObj = dailyStatus.toObject();
   dObj.result = "PENDING";
   dObj._id = mongoose.Types.ObjectId();
@@ -500,7 +502,6 @@ exports.getGraphData = catchAsyncError(async (req, res, next) => {
 })
 
 exports.generateDailyGraph = async (req, res, next) => {
-  console.log(req.query);
   const { pS,reqDate } = req.query;
   if (!pS) {
     return next(new ErrorHandler("pS not found", 400));
@@ -533,7 +534,7 @@ exports.generateDailyGraph = async (req, res, next) => {
   fdate = fdate[2] + "-" + fdate[0] + "-" + fdate[1]
   var dbDateString = fdate.split("-").reverse().join("-")
 
-  console.log(dbDateString);
+  // console.log(dbDateString);
 
   const deleted = await DailyGraphModel.deleteMany({
     dateString: dbDateString,
@@ -648,98 +649,122 @@ exports.generateDailyGraph = async (req, res, next) => {
 }
 
 // Added By Prasad Munaga
+async function createCard(user, checkItem) {
+  // console.log("createCard checkItem: " + checkItem);
+  const ciObjId = new ObjectId(checkItem)
+  const cardList = await CardRaisedModel.find({checkItem: ciObjId});
+  if(cardList && cardList.length > 0) {
+    return;
+  }
+
+  const abItem = await AbnormalityModel.find({checkItem: ciObjId});
+  if(abItem && abItem.length > 0) {
+    // console.log(abItem);
+    const card = await CardRaisedModel.create({
+      cardType: "White",
+      abnormality: abItem[0].abnormality,
+      checkItem: ciObjId,
+      user,
+      line: abItem[0].line,
+      processNo: abItem[0].processNo,
+      status: abItem[0].status,
+      image: abItem[0].image,
+      pS: abItem[0].pS
+    });
+  } else {
+    console.log("No abnormal record for check item " + checkItem);
+  }
+}
+
 exports.updateGlComment = async (req, res, next) => {
   const { ids, user, comment } = req.body;
 
-  for(var i = 0; i < ids.length; i++) {
-    var id = ids[i];
-    const dailyStatusVefication = await DailyStatusVerificationModel.find({_id : id});
-    if(!dailyStatusVefication) {
-      return next(new ErrorHandler("Daily Status Record not found", 500));
-    }
-
-    var dailyStatus = await DailyStatusModel.findOne({_id: dailyStatusVefication[0].dailyStatusItemId});
-    var obj = dailyStatus.toObject();
-    obj.result = "OK";
-    obj.glAt = new Date();
-    obj.glId = user;
-    obj.glComment = comment;
-    await DailyStatusModel.updateOne({_id: obj._id}, { $set: obj });
+  var dsvList = await DailyStatusVerificationModel.find({_id: {$in: ids.map(id => id)}})
+                .populate("checkItem", "tlVerify glVerify")
+                .populate("dailyStatusItemId", "_id, glBy, tlBy");
   
-    await DailyStatusVerificationModel.deleteOne({ _id: dailyStatusVefication[0]._id});
-  }
+  var result = await DailyStatusModel.updateMany({_id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id)}}, 
+    { "$set": { "glAt": new Date(), "glBy": new ObjectId(user), "glComment": comment} }); 
+  
+  const delList = dsvList.filter((delItem) => {
+    return ((delItem.checkItem != null && delItem.checkItem.tlVerify == true && delItem.dailyStatusItemId.tlBy != null) || (delItem.checkItem.tlVerify == false));
+  });
 
-  res.status(200).json({ success: true });
+  result = await DailyStatusVerificationModel.deleteMany({ _id: { $in: delList.map(doc => doc._id)}});
+
+  return res.status(200).json({ success: true });
 }
 
 exports.updateTlComment = async (req, res, next) => {
   const { ids, user, comment } = req.body;
 
-  for(var i = 0; i < ids.length; i++) {
-    var id = ids[i];
-    const dailyStatusVefication = await DailyStatusVerificationModel.find({_id : id});
-    if(!dailyStatusVefication) {
-      return next(new ErrorHandler("Daily Status Record not found", 500));
-    }
-
-    var dailyStatus = await DailyStatusModel.findOne({_id: dailyStatusVefication[0].dailyStatusItemId});
-    var obj = dailyStatus.toObject();
-    obj.result = "OK";
-    obj.tlAt = new Date();
-    obj.tlId = user;
-    obj.tlComment = comment;
-    await DailyStatusModel.updateOne({_id: obj._id}, { $set: obj });
+  var dsvList = await DailyStatusVerificationModel.find({_id: {$in: ids.map(id => id)}})
+                .populate("checkItem", "tlVerify glVerify")
+                .populate("dailyStatusItemId", "_id, glBy, tlBy");
   
-    await DailyStatusVerificationModel.deleteOne({ _id: dailyStatusVefication[0]._id});
-  }
+  var result = await DailyStatusModel.updateMany({_id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id)}}, 
+    { "$set": { "tlAt": new Date(), "tlBy": new ObjectId(user), "tlComment": comment} }); 
+  
+  const delList = dsvList.filter((delItem) => {
+    return ((delItem.checkItem != null && delItem.checkItem.glVerify == true && delItem.dailyStatusItemId.glBy != null) || (delItem.checkItem.glVerify == false));
+  });
 
-  res.status(200).json({ success: true });
+  result = await DailyStatusVerificationModel.deleteMany({ _id: { $in: delList.map(doc => doc._id)}});
+
+  return res.status(200).json({ success: true });
 }
 
 exports.updateGlConfirm = async (req, res, next) => {
   const { ids, user } = req.body;
 
-  for(var i = 0; i < ids.length; i++) {
-    var id = ids[i];
-    const dailyStatusVefication = await DailyStatusVerificationModel.find({_id : id});
-    if(!dailyStatusVefication) {
-      return next(new ErrorHandler("Daily Status Record not found", 500));
-    }
+  var dsvList = await DailyStatusVerificationModel.find({_id: {$in: ids.map(id => id)}})
+                .populate("checkItem", "tlVerify glVerify")
+                .populate("dailyStatusItemId", "_id, glBy, tlBy");
 
-    var dailyStatus = await DailyStatusModel.findOne({_id: dailyStatusVefication[0].dailyStatusItemId});
-    var obj = dailyStatus.toObject();
-    obj.result = "OK";
-    obj.glAt = new Date();
-    obj.glId = user;
-    await DailyStatusModel.updateOne({_id: obj._id}, { $set: obj });
+  var result = await DailyStatusModel.updateMany({_id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id)}}, 
+    { "$set": { "glAt": new Date(), "glBy": new ObjectId(user)} }); 
   
-    await DailyStatusVerificationModel.deleteOne({ _id: dailyStatusVefication[0]._id});
-  }
+  const delList = dsvList.filter((delItem) => {
+    return ((delItem.checkItem != null && delItem.checkItem.tlVerify == true && delItem.dailyStatusItemId.tlBy != null) || (delItem.checkItem.tlVerify == false));
+  });
 
-  res.status(200).json({ success: true });
+  console.log(JSON.stringify(delList));
+  result = await DailyStatusVerificationModel.deleteMany({ _id: { $in: delList.map(doc => doc._id)}});
+
+  var dsNGList = await DailyStatusModel.find({_id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id)}});
+  dsNGList.forEach((item) => {
+    if(item.result == "NG") {
+      createCard(user, item.checkItem);
+    }
+  });
+
+  return res.status(200).json({ success: true });
 }
 
 exports.updateTlConfirm = async (req, res, next) => {
   const { ids, user } = req.body;
 
-  for(var i = 0; i < ids.length; i++) {
-    var id = ids[i];
-    const dailyStatusVefication = await DailyStatusVerificationModel.find({_id : id});
-    if(!dailyStatusVefication) {
-      return next(new ErrorHandler("Daily Status Record not found", 500));
-    }
-
-    var dailyStatus = await DailyStatusModel.findOne({_id: dailyStatusVefication[0].dailyStatusItemId});
-    var obj = dailyStatus.toObject();
-    obj.result = "OK";
-    obj.tlAt = new Date();
-    obj.tlId = user;
-    await DailyStatusModel.updateOne({_id: obj._id}, { $set: obj });
+  var dsvList = await DailyStatusVerificationModel.find({_id: {$in: ids.map(id => id)}})
+                .populate("checkItem", "tlVerify glVerify")
+                .populate("dailyStatusItemId", "_id, glBy, tlBy");
   
-    await DailyStatusVerificationModel.deleteOne({ _id: dailyStatusVefication[0]._id});
-  }
+  var result = await DailyStatusModel.updateMany({_id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id)}}, 
+    { "$set": { "tlAt": new Date(), "tlBy": new ObjectId(user)} }); 
+  
+  const delList = dsvList.filter((delItem) => {
+    return ((delItem.checkItem != null && delItem.checkItem.glVerify == true && delItem.dailyStatusItemId.glBy != null) || (delItem.checkItem.glVerify == false));
+  });
 
-  res.status(200).json({ success: true });
+  result = await DailyStatusVerificationModel.deleteMany({ _id: { $in: delList.map(doc => doc._id)}});
+
+  var dsNGList = await DailyStatusModel.find({_id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id)}});
+  dsNGList.forEach((item) => {
+    if(item.result == "NG") {
+      createCard(user, item.checkItem);
+    }
+  });
+
+  return res.status(200).json({ success: true });
 }
 
 //////////////////////////////////////////////////////////////////////

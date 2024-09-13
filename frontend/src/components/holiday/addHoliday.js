@@ -192,7 +192,7 @@ export const AddHoliday = () => {
     }
   };
   return (
-    <div className="overflow-auto" style={{ height: "85vh" }}>
+    <div className="overflow-auto" style={{ height: "85vh", paddingBottom: "10%" }}>
       {cards && cards === 'add' ? (
         <Card style={{ width: '30rem', margin: "auto", marginTop: "2%", position: "relative" }}>
           <Card.Body>

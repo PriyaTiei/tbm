@@ -7,7 +7,7 @@ import TrendGraphModal from "./TrendGraphModal";
 import { useCookies } from "react-cookie";
 import ImageModal from "./ImageModal";
 
-function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal, checkItems }) {
+function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal, setMspecsAbnormal, checkItems }) {
   const [showModal, setShowModal] = useState(false);
   const [cookies] = useCookies(["userId"]);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -63,7 +63,8 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
   useEffect(() => {
     if (checkItems?.checkItem?.headCheckList[0]?.m_spec) {
       setMspecs(checkItems?.checkItem?.headCheckList[0]?.m_spec)
-      
+      setMspecsAbnormal(checkItems?.checkItem?.headCheckList[0]?.m_spec)
+
     }
   }, [checkItems])
   // const selectedDate = new Date(Date.now());
@@ -72,96 +73,105 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
   // const entryForDate = selectedDate.getDate();
   const entryFor = `${filters.y}-${filters.m}-${filters.dt}`;
 
+
+  const validateInputs = () => {
+    return mspecs.every(spec => 'm_value' in spec && spec.m_value !== '');
+  };
+
   const dailyEntry = (e) => {
     if (!isAuthenticated) {
       toast.warning("Login required");
     } else {
-      let data = {
-        checkItem: _id,
-        result: okNg === "OK" ? "OK" : okNg === "NG" ? "NG" : "not judge",
-        value: valueM,
-        user: userId,
-        entryFor,
-        pS,
-        remarks,
-        checkedBy: checkedByNew,
-        m_specs: mspecs
-      };
+      if (validateInputs()) {
+        let data = {
+          checkItem: _id,
+          result: okNg === "OK" ? "OK" : okNg === "NG" ? "NG" : "not judge",
+          value: valueM,
+          user: userId,
+          entryFor,
+          pS,
+          remarks,
+          checkedBy: checkedByNew,
+          m_specs: mspecs
+        };
 
-      if (okNg == "NG") {
-        axios
-          .get(
-            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/findByIdAndDate`, {
-            params: {
-              id: _id,
-              date: new Date().toISOString().split('T')[0]
+        if (okNg == "NG") {
+          axios
+            .get(
+              `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/findByIdAndDate`, {
+              params: {
+                id: _id,
+                date: new Date().toISOString().split('T')[0]
+              }
             }
-          }
-          )
-          .then((result) => {
+            )
+            .then((result) => {
 
-            if (result.data.success) {
-              toast.success("Abnormality found");
-              axios
-                .post(
-                  `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
-                  data
-                )
-                .then((result) => {
-                  if (result.data.success) {
-                    toast.success("saved data");
-                  }
-                })
-                .catch((err) => {
+              if (result.data.success) {
+                toast.success("Abnormality found");
+                axios
+                  .post(
+                    `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
+                    data
+                  )
+                  .then((result) => {
+                    if (result.data.success) {
+                      toast.success("saved data");
+                    }
+                  })
+                  .catch((err) => {
 
-                  toast.error(`Data could not be saved , ${err.message}`);
-                });
-            } else {
-              setRecordAbnormalityShowModal(true)
-              toast.warn("Abnormality required before marking NG");
-            }
-          })
-          .catch((err) => {
+                    toast.error(`Data could not be saved , ${err.message}`);
+                  });
+              } else {
+                setRecordAbnormalityShowModal(true)
+                toast.warn("Abnormality required before marking NG");
+              }
+            })
+            .catch((err) => {
 
-            toast.error(`Data could not be saved , ${err.message}`);
-          });
-      }
-      if (okNg === "OK") {
+              toast.error(`Data could not be saved , ${err.message}`);
+            });
+        }
+        if (okNg === "OK") {
 
-        axios
-          .post(
-            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
-            data
-          )
-          .then((result) => {
-            if (result.data.success) {
-              toast.success("saved data");
-            }
-          })
-          .catch((err) => {
+          axios
+            .post(
+              `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
+              data
+            )
+            .then((result) => {
+              if (result.data.success) {
+                toast.success("saved data");
+              }
+            })
+            .catch((err) => {
 
-            toast.error(`Data could not be saved , ${err.message}`);
-          });
-      }
-      if (okNg !== "OK" && okNg !== "NG") {
-        axios
-          .post(
-            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/removeEntry`,
-            {
-              checkItem: data.checkItem,
-              entryFor: data.entryFor
-            }
-          )
-          .then((result) => {
-            if (result.data.success) {
-              toast.success("saved data");
-            }
-          })
-          .catch((err) => {
+              toast.error(`Data could not be saved , ${err.message}`);
+            });
+        }
+        if (okNg !== "OK" && okNg !== "NG") {
+          axios
+            .post(
+              `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/removeEntry`,
+              {
+                checkItem: data.checkItem,
+                entryFor: data.entryFor
+              }
+            )
+            .then((result) => {
+              if (result.data.success) {
+                toast.success("saved data");
+              }
+            })
+            .catch((err) => {
 
-            toast.error(`Data could not be saved , ${err.message}`);
-          });
-        // toast.warning("Please judge OK or NG");
+              toast.error(`Data could not be saved , ${err.message}`);
+            });
+          // toast.warning("Please judge OK or NG");
+        }
+      } else {
+        toast.error('Please fill actual values. Values cannot be empty.');
       }
     }
   };
@@ -176,17 +186,20 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
   const handleChange = (id, e) => {
 
     let msp = [...mspecs];
-    msp[id].m_value = Number(e.target.value);
+    msp[id].m_value = e.target.value;
     setMspecs(msp);
- 
+    setMspecsAbnormal(msp)
+
   };
+
+
 
   const removePart = (indexToRemove) => {
     setParts(parts.filter((_, index) => index !== indexToRemove));
   };
 
   return (
-    <div className="overflow-auto" style={{ height: "85vh" }}>
+    <div className="overflow-auto" style={{ height: "85vh", paddingBottom: "10%" }}>
       <div className="d-sm-flex flex-wrap">
         <div
           className={`${styles.brA} ${styles.center} col-sm-3 align-self-stretch `}
@@ -319,7 +332,7 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
 
         <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>Criteria</h6>
+            <h6 className={`${styles.scTh}`}>Standard Value</h6>
           </div>
           <div className={styles.brT}>
             <h6 className={`${styles.scTd}`}>{mspecs?.map((spec) => spec.m_criteria).join(", ")}</h6>
@@ -350,7 +363,7 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
         </div>
 
         <div className="col-sm-5 bg-secondary">
-          <div className="d-flex " style={{ overflow: "scroll", height: "100%" }}>
+          <div className="d-flex " style={{ overflow: "scroll", height: "40vh" }}>
             <div className="d-flex flex-column">
               <button
                 className="btn btn-primary mr-1"
@@ -389,7 +402,7 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
               <div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '10px' }}>
-              
+
                   {mspecs?.map((spec, index) => (
                     <div key={spec._id} style={{ display: 'flex' }}>
                       <label
@@ -446,15 +459,17 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
                     </span>
                   ))}
                 </div>
+                <textarea
+                  type="text"
+                  className="bg-light my-1"
+                  style={{ width: "100%" }}
+                  placeholder="Enter Remarks"
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                ></textarea>
               </div>
 
-              <textarea
-                type="text"
-                className="bg-light my-1"
-                placeholder="Enter Remarks"
-                value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
-              ></textarea>
+
 
               <button
                 className="btn btn-success  my-1"

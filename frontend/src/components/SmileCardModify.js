@@ -261,65 +261,71 @@ function SmileCardDetails({ list, image, setImage }) {
   };
 
   const saveData = (e) => {
-    e.preventDefault();
-    const formData = new FormData();
+    console.log(labelUnits)
+    if (labelUnits[0].m_criteria != "" && labelUnits[0].m_lable != "" && labelUnits[0].m_unit != "" && cycleNew) {
+      e.preventDefault();
+      const formData = new FormData();
 
 
-    // formData.append("image", selectedFile);
+      // formData.append("image", selectedFile);
 
-    formData.append("images", imagesNew);
-    //// formData.append("createdAt" ,createdAtNew);
+      formData.append("images", imagesNew);
+      //// formData.append("createdAt" ,createdAtNew);
 
-    formData.append("action", actionNew);
-    formData.append("cardNo", cardNoNew);
-    formData.append("criterion", criterionNew);
-    formData.append("cycle", cycleNew);
-    formData.append("d", dNew);
-    formData.append("line", lineNew);
-    formData.append("model", modelNew);
-    formData.append("processNo", processNoNew);
-    formData.append("tool", toolNew);
-    formData.append("workDetail", workDetailNew);
-    formData.append("workOnePoint", workOnePointNew);
-    formData.append("categoryCtrl", categoryCtrlNew);
-    formData.append("commonItem", commonItemNew);
-    formData.append("entryDate", entryDateNew);
-    formData.append("holidayOperation", holidayOperationNew);
-    formData.append("m", mNew);
-    formData.append("methodWssNo", methodWssNoNew);
-    formData.append("pS", pSNew);
-    formData.append("prepManHr", prepManHrNew);
-    formData.append("qualityOnePoint", qualityOnePointNew);
-    formData.append("rS", rSNew);
-    formData.append("reason", reasonNew);
-    formData.append("remark", remarkNew);
-    formData.append("safetyOnePoint", safetyOnePointNew);
-    formData.append("w", wNew);
-    formData.append("wHr", wHrNew);
-    formData.append("workManpower", workManpowerNew);
-    formData.append("workTime", workTimeNew);
-    formData.append("y", yNew);
-    formData.append("_id", _id);
-    formData.append("group", groupNew);
-    formData.append("m_spec", JSON.stringify(labelUnits));
-    formData.append("tlVerify", tlVerifys);
-    formData.append("glVerify", glVerifys);
+      formData.append("action", actionNew);
+      formData.append("cardNo", cardNoNew);
+      formData.append("criterion", criterionNew);
+      formData.append("cycle", cycleNew);
+      formData.append("d", dNew);
+      formData.append("line", lineNew);
+      formData.append("model", modelNew);
+      formData.append("processNo", processNoNew);
+      formData.append("tool", toolNew);
+      formData.append("workDetail", workDetailNew);
+      formData.append("workOnePoint", workOnePointNew);
+      formData.append("categoryCtrl", categoryCtrlNew);
+      formData.append("commonItem", commonItemNew);
+      formData.append("entryDate", entryDateNew);
+      formData.append("holidayOperation", holidayOperationNew);
+      formData.append("m", mNew);
+      formData.append("methodWssNo", methodWssNoNew);
+      formData.append("pS", pSNew);
+      formData.append("prepManHr", prepManHrNew);
+      formData.append("qualityOnePoint", qualityOnePointNew);
+      formData.append("rS", rSNew);
+      formData.append("reason", reasonNew);
+      formData.append("remark", remarkNew);
+      formData.append("safetyOnePoint", safetyOnePointNew);
+      formData.append("w", wNew);
+      formData.append("wHr", wHrNew);
+      formData.append("workManpower", workManpowerNew);
+      formData.append("workTime", workTimeNew);
+      formData.append("y", yNew);
+      formData.append("_id", _id);
+      formData.append("group", groupNew);
+      formData.append("m_spec", JSON.stringify(labelUnits));
+      formData.append("tlVerify", tlVerifys);
+      formData.append("glVerify", glVerifys);
 
-    axios
-      .post(
-        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/saveData`,
-        formData,
-        {
-          headers: { "Content-Type": "Multipart/form-data" },
-        }
-      )
-      .then((result) => {
-        toast.success(`Data uploaded successfully`);
-      })
-      .catch((err) => {
+      axios
+        .post(
+          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/saveData`,
+          formData,
+          {
+            headers: { "Content-Type": "Multipart/form-data" },
+          }
+        )
+        .then((result) => {
+          toast.success(`Data uploaded successfully`);
+        })
+        .catch((err) => {
 
-        toast.error(`failed to upload data, ${err.message}`);
-      });
+          toast.error(`failed to upload data, ${err.message}`);
+        });
+    } else {
+      toast.error("Add all required fields")
+    }
+
   };
 
   return (
@@ -356,7 +362,7 @@ function SmileCardDetails({ list, image, setImage }) {
 
       <ol
         className="d-flex flex-wrap justify-content-around overflow-auto "
-        style={{ height: "40vh" }}
+        style={{ height: "40vh",paddingBottom: "10%" }}
       >
         {/* <FlavorForm /> */}
 
@@ -465,7 +471,8 @@ function SmileCardDetails({ list, image, setImage }) {
         </li>
         <li>
           <div className="d-flex">
-            <div className="firstCol">Cycle :</div>
+            <div className="firstCol">Cycle :<span className="text-danger">* </span></div>
+
             <div className="secondCol">
               <input
                 className="form-control"
@@ -748,6 +755,7 @@ function SmileCardDetails({ list, image, setImage }) {
             <div className="firstCol">
               {" "}
               Measurement
+              <span className="text-danger">* </span>:
             </div>
             <div className="secondCol">
               {labelUnits?.map((item, index) => (
@@ -775,7 +783,7 @@ function SmileCardDetails({ list, image, setImage }) {
                   <Col xs={5}>
                     <Form.Control
                       type="text"
-                      placeholder="Criteria"
+                      placeholder="Standard Value"
                       value={item.m_criteria}
                       onChange={(e) =>
                         handleLabelUnitChange(index, "m_criteria", e.target.value)

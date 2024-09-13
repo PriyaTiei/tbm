@@ -48,7 +48,7 @@ export default function PendingTask() {
     if (exceldata?.pendingData?.length) {
       // console.log("pendingTasksData?.pendingData", pendingTasksData?.pendingData)
       // console.log("exceldata?.pendingData", exceldata?.pendingData)
-      const newHeader = ["SL NO", "LATEST PLAN DATE", "OP NO", "WORK DETAIL", "FREQUENCY", "CRITERIA", "LATEST ACTUAL VALUE", "LAST COMPLETED DATE"];
+      const newHeader = ["SL NO", "LATEST PLAN DATE", "OP NO", "WORK DETAIL", "FREQUENCY", "STANDARD VALUE", "LATEST ACTUAL VALUE", "LAST COMPLETED DATE"];
       setHeader(newHeader);
 
       let index = 1; // Initialize the index
@@ -130,7 +130,7 @@ export default function PendingTask() {
 
 
           </div>
-          <div className="overflow-auto" style={{ height: "75vh" }}>
+          <div className="overflow-auto" style={{ height: "75vh", paddingBottom: "10%" }}>
             {pendingTasksData.success
               ? pendingTasksData.pendingData.map((item, i) => {
                 return (<>

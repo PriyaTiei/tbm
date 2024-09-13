@@ -54,7 +54,7 @@ export default function PendingSmileCardDetails({ list, entryFor, checkItems }) 
   const handleChange = (id, e) => {
 
     let msp = [...mspecs];
-    msp[id].m_value = Number(e.target.value);
+    msp[id].m_value = e.target.value;
     setMspecs(msp);
 
   };
@@ -67,41 +67,52 @@ export default function PendingSmileCardDetails({ list, entryFor, checkItems }) 
 
   const [showModal, setShowModal] = useState(false);
 
+  const validateInputs = () => {
+    console.log(mspecs)
+    return mspecs.every(spec => 'm_value' in spec && spec.m_value !== '');
+
+  };
+
   const dailyEntry = (e) => {
     if (!auth.isAuthenticated) {
       toast.warning("Login required");
     } else {
-      let data = {
-        checkItem: _id,
-        result: okNg === "OK" ? "OK" : okNg === "NG" ? "NG" : "not judge",
-        value: valueM,
-        user: auth.user._id,
-        entryFor: entryForStr,
-        pS,
-        line,
-        remarks,
-        m_specs: mspecs
-      };
+      if (validateInputs()) {
+        let data = {
+          checkItem: _id,
+          result: okNg === "OK" ? "OK" : okNg === "NG" ? "NG" : "not judge",
+          value: valueM,
+          user: auth.user._id,
+          entryFor: entryForStr,
+          pS,
+          line,
+          remarks,
+          m_specs: mspecs
+        };
 
-      if (okNg === "OK" || okNg === "NG") {
-        axios
-          .post(
-            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
-            data
-          )
-          .then((result) => {
-            if (result.data.success) {
-              toast.success("saved data");
-            }
-          })
-          .catch((err) => {
+        if (okNg === "OK" || okNg === "NG") {
+          axios
+            .post(
+              `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
+              data
+            )
+            .then((result) => {
+              if (result.data.success) {
+                toast.success("saved data");
+              }
+            })
+            .catch((err) => {
 
-            toast.error(`Data could not be saved , ${err.message}`);
-          });
+              toast.error(`Data could not be saved , ${err.message}`);
+            });
+        } else {
+          toast.warning("Please judge OK or NG");
+        }
       } else {
-        toast.warning("Please judge OK or NG");
+        toast.error('Please fill actual values. Values cannot be empty.');
       }
     }
+
   };
 
 
@@ -111,7 +122,7 @@ export default function PendingSmileCardDetails({ list, entryFor, checkItems }) 
   };
 
   return (
-    <div style={{ height: "65vh" }} className="overflow-auto">
+    <div style={{ height: "65vh", paddingBottom: "10%" }} className="overflow-auto">
       <div className="d-sm-flex flex-wrap">
         <div
           className={`${styles.brA} ${styles.center} col-sm-3 align-self-stretch `}
@@ -225,7 +236,7 @@ export default function PendingSmileCardDetails({ list, entryFor, checkItems }) 
 
         <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>Criteria</h6>
+            <h6 className={`${styles.scTh}`}>Standard Value</h6>
           </div>
           <div className={styles.brT}>
             <h6 className={`${styles.scTd}`}>{mspecs?.map((spec) => spec.m_criteria).join(", ")}</h6>
