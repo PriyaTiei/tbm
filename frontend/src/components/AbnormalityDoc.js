@@ -24,22 +24,22 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
     pS
   } = item;
 
-  var workDetail=""
-  if(checkItem==null){
-    workDetail=""
+  var workDetail = ""
+  if (checkItem == null) {
+    workDetail = ""
   }
-  else{
-    workDetail=checkItem.workDetail
+  else {
+    workDetail = checkItem.workDetail
   }
-  
+
   const [showModal, setShowModal] = useState(false);
   const [showModalRaiseCard, setShowModalRaiseCard] = useState(false);
   const [showModalImage, setShowModalImage] = useState(false);
 
   const auth = useSelector((state) => state.auth);
   const level = auth.user ? auth.user.level : 0;
-        
-     
+
+
 
   const dispatch = useDispatch();
   const deleteItem = (itemId) => {
@@ -50,9 +50,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
       .then((result) => {
         dispatch(getAbnormality(fromDateSt, toDateSt));
       })
-      .catch((err) => {
-        console.log("error deleting abnormality item ", err.message);
-      });
+    
   };
 
   const deleteConfirmation = () => {
@@ -63,22 +61,20 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
     }
   };
 
-  // console.log(users);
-  {
-    console.log("level", level);
-  }
+
+
   return (
     <tr
       className={
         status === "complete"
           ? "bg-success"
           : status === "inprogress"
-          ? "bg-warning"
-          : "bg-light"
+            ? "bg-warning"
+            : "bg-light"
       }
     >
       <td>{createdAt.slice(0, 10)}</td>
-      <td>{pS ==="P"? "Maint.":(pS==="S"?"Prod.":"")}</td>
+      <td>{pS === "P" ? "Maint." : (pS === "S" ? "Prod." : "")}</td>
       <td>{line}</td>
       <td>{processNo}</td>
       <td>{workDetail}</td>

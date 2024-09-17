@@ -59,9 +59,7 @@ function SummaryAbnormality() {
     dispatch(getAbnormality(fromDateSt, toDateSt, queryStr));
   }, [dispatch, fromDate, toDate, filterObject]);
 
-  useEffect(() => {
-    console.log(filterObject);
-  }, [filterObject]);
+
   const abnormalities = useSelector((state) => state.abnormalities);
   const abnormalityList = abnormalities.loading
     ? []
@@ -217,7 +215,7 @@ function SummaryAbnormality() {
         </button>
         </div>
 
-      <div className="overflow-auto " style={{ height: "65vh", width: "97vw" }}>
+      <div className="overflow-auto " style={{ height: "65vh", width: "97vw", paddingBottom: "10%" }}>
       
          
         <table className="m-3   table table-bordered table-sm table-hover text-dark ">

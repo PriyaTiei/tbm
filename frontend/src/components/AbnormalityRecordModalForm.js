@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { Button } from "react-bootstrap";
 import { useSearchParams } from "react-router-dom";
@@ -8,14 +8,15 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-function ModalForm({ showModal, setShowModal, workDetail, itemId }) {
+function ModalForm({ showModal, setShowModal, workDetail, itemId, mspecs }) {
   // const [isOpen, setIsOpen] = useState(true)
   const handleClose = () => {
     // setIsOpen(false)
     setShowModal(false);
   };
 
-  const {pS} = useSelector(state=>state.filters)
+  const { pS } = useSelector(state => state.filters)
+
 
   const [selectedFile, setSelectedFile] = useState("");
   const [image, setImage] = useState("");
@@ -36,7 +37,7 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId }) {
 
   const auth = useSelector((state) => state.auth);
 
-  const user = auth.loading === false    
+  const user = auth.loading === false
     ? auth.user._id
     : null;
 
@@ -101,7 +102,8 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId }) {
           spare,
           status,
           image,
-          pS
+          pS,
+          m_spec: mspecs
         }
         // , { withCredentials: true }
       )
@@ -110,7 +112,7 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId }) {
         setShowModal(false);
       })
       .catch((err) => {
-        console.log(err);
+
         toast.error("Please fill Abnormility Details");
       });
   };

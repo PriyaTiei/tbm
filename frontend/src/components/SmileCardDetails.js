@@ -7,12 +7,14 @@ import TrendGraphModal from "./TrendGraphModal";
 import { useCookies } from "react-cookie";
 import ImageModal from "./ImageModal";
 
-function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal }) {
+function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal, setMspecsAbnormal, checkItems }) {
   const [showModal, setShowModal] = useState(false);
   const [cookies] = useCookies(["userId"]);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const filters = useSelector((state) => state.filters);
   const { userId } = cookies;
+  const [parts, setParts] = useState([]);
+  // const [formValues, setFormValues] = useState();
 
   const [showModalImage, setShowModalImage] = useState(false);
   const checkedByNew = useSelector((state) => state.checkedBy);
@@ -46,6 +48,7 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
   const [okNg, setOkNg] = useState(dailyStatus);
   const [valueM, setValueM] = useState(value);
   const [remarks, setRemarks] = useState(judgementRemarks);
+  const [mspecs, setMspecs] = useState([])
 
   var bgColor = rS == "R" ? "red" : "green";
 
@@ -55,102 +58,120 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
     }
   }, []);
 
-  console.log(list);
+
+
+  useEffect(() => {
+    if (checkItems?.checkItem?.headCheckList[0]?.m_spec) {
+      setMspecs(checkItems?.checkItem?.headCheckList[0]?.m_spec)
+      setMspecsAbnormal(checkItems?.checkItem?.headCheckList[0]?.m_spec)
+
+    }
+  }, [checkItems])
   // const selectedDate = new Date(Date.now());
   // const entryForYear = selectedDate.getFullYear();
   // const entryForMonth = selectedDate.getMonth() + 1;
   // const entryForDate = selectedDate.getDate();
   const entryFor = `${filters.y}-${filters.m}-${filters.dt}`;
 
+
+  const validateInputs = () => {
+    return mspecs.every(spec => 'm_value' in spec && spec.m_value !== '');
+  };
+
   const dailyEntry = (e) => {
     if (!isAuthenticated) {
       toast.warning("Login required");
     } else {
-      let data = {
-        checkItem: _id,
-        result: okNg === "OK" ? "OK" : okNg === "NG" ? "NG" : "not judge",
-        value: valueM,
-        user: userId,
-        entryFor,
-        pS,
-        remarks,
-        checkedBy: checkedByNew,
-      };
+      if (validateInputs()) {
+        let data = {
+          checkItem: _id,
+          result: okNg === "OK" ? "OK" : okNg === "NG" ? "NG" : "not judge",
+          value: valueM,
+          user: userId,
+          entryFor,
+          pS,
+          remarks,
+          checkedBy: checkedByNew,
+          m_specs: mspecs
+        };
 
-      if(okNg=="NG"){
-        axios
-        .get(
-          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/findByIdAndDate`,{
-            params:{
-              id:_id,
-              date:new Date().toISOString().split('T')[0]
+        if (okNg == "NG") {
+          axios
+            .get(
+              `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/findByIdAndDate`, {
+              params: {
+                id: _id,
+                date: new Date().toISOString().split('T')[0]
+              }
             }
-          }
-        )
-        .then((result) => {
-          console.log(result.data);
-          if (result.data.success) {
-            toast.success("Abnormality found");
-            axios
-          .post(
-            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
-            data
-          )
-          .then((result) => {
-            if (result.data.success) {
-              toast.success("saved data");
-            }
-          })
-          .catch((err) => {
-            // console.log("error ", err);
-            toast.error(`Data could not be saved , ${err.message}`);
-          });
-          }else{
-            setRecordAbnormalityShowModal(true)
-            toast.warn("Abnormality required before marking NG");
-          }
-        })
-        .catch((err) => {
-          // console.log("error ", err);
-          toast.error(`Data could not be saved , ${err.message}`);
-        });
-      }
-      if (okNg === "OK") {
-        
-        axios
-          .post(
-            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
-            data
-          )
-          .then((result) => {
-            if (result.data.success) {
-              toast.success("saved data");
-            }
-          })
-          .catch((err) => {
-            // console.log("error ", err);
-            toast.error(`Data could not be saved , ${err.message}`);
-          });
-      } 
-      if (okNg !== "OK" && okNg !== "NG") {
-        axios
-        .post(
-          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/removeEntry`,
-          {
-            checkItem:data.checkItem,
-            entryFor:data.entryFor
-          }
-        )
-          .then((result) => {
-            if (result.data.success) {
-              toast.success("saved data");
-            }
-          })
-          .catch((err) => {
-            // console.log("error ", err);
-            toast.error(`Data could not be saved , ${err.message}`);
-          });
-        // toast.warning("Please judge OK or NG");
+            )
+            .then((result) => {
+
+              if (result.data.success) {
+                toast.success("Abnormality found");
+                axios
+                  .post(
+                    `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
+                    data
+                  )
+                  .then((result) => {
+                    if (result.data.success) {
+                      toast.success("saved data");
+                    }
+                  })
+                  .catch((err) => {
+
+                    toast.error(`Data could not be saved , ${err.message}`);
+                  });
+              } else {
+                setRecordAbnormalityShowModal(true)
+                toast.warn("Abnormality required before marking NG");
+              }
+            })
+            .catch((err) => {
+
+              toast.error(`Data could not be saved , ${err.message}`);
+            });
+        }
+        if (okNg === "OK") {
+
+          axios
+            .post(
+              `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/entry`,
+              data
+            )
+            .then((result) => {
+              if (result.data.success) {
+                toast.success("saved data");
+              }
+            })
+            .catch((err) => {
+
+              toast.error(`Data could not be saved , ${err.message}`);
+            });
+        }
+        if (okNg !== "OK" && okNg !== "NG") {
+          axios
+            .post(
+              `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/removeEntry`,
+              {
+                checkItem: data.checkItem,
+                entryFor: data.entryFor
+              }
+            )
+            .then((result) => {
+              if (result.data.success) {
+                toast.success("saved data");
+              }
+            })
+            .catch((err) => {
+
+              toast.error(`Data could not be saved , ${err.message}`);
+            });
+          // toast.warning("Please judge OK or NG");
+        }
+      } else {
+        toast.error('Please fill actual values. Values cannot be empty.');
       }
     }
   };
@@ -160,8 +181,25 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
     setRemarks(null);
   };
 
+
+
+  const handleChange = (id, e) => {
+
+    let msp = [...mspecs];
+    msp[id].m_value = e.target.value;
+    setMspecs(msp);
+    setMspecsAbnormal(msp)
+
+  };
+
+
+
+  const removePart = (indexToRemove) => {
+    setParts(parts.filter((_, index) => index !== indexToRemove));
+  };
+
   return (
-    <div style={{ height: "65vh" }} className="overflow-auto">
+    <div className="overflow-auto" style={{ height: "85vh", paddingBottom: "10%" }}>
       <div className="d-sm-flex flex-wrap">
         <div
           className={`${styles.brA} ${styles.center} col-sm-3 align-self-stretch `}
@@ -294,15 +332,15 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
 
         <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>Criteria</h6>
+            <h6 className={`${styles.scTh}`}>Standard Value</h6>
           </div>
           <div className={styles.brT}>
-            <h6 className={`${styles.scTd}`}>{criterion}</h6>
+            <h6 className={`${styles.scTd}`}>{mspecs?.map((spec) => spec.m_criteria).join(", ")}</h6>
           </div>
         </div>
       </div>
 
-      <div className="d-sm-flex  " style={{ maxHeight: "35vh" }}>
+      <div className="d-sm-flex  " >
         <div className="col-sm-7 ">
           <img
             src={
@@ -325,7 +363,7 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
         </div>
 
         <div className="col-sm-5 bg-secondary">
-          <div className="d-flex ">
+          <div className="d-flex " style={{ overflow: "scroll", height: "40vh" }}>
             <div className="d-flex flex-column">
               <button
                 className="btn btn-primary mr-1"
@@ -351,31 +389,87 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
                   </spam>
                 </h6>
                 {level >= 20 && (
-          <button
-          className="btn btn-sm btn-primary"
-          onClick={resetHandler}
-        >
-          Reset
-        </button>
-        )}
-                
+                  <button
+                    className="btn btn-sm btn-primary"
+                    onClick={resetHandler}
+                  >
+                    Reset
+                  </button>
+                )}
+
               </div>
 
-              <input
-                className="bg-light my-1"
-                type="number"
-                placeholder="Enter actual value"
-                value={valueM}
-                onChange={(e) => setValueM(e.target.value)}
-              ></input>
+              <div>
 
-              <textarea
-                type="text"
-                className="bg-light my-1"
-                placeholder="Enter Remarks"
-                value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
-              ></textarea>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '10px' }}>
+
+                  {mspecs?.map((spec, index) => (
+                    <div key={spec._id} style={{ display: 'flex' }}>
+                      <label
+                        htmlFor={spec.m_lable}
+                        style={{ color: 'white' }}
+                        title={spec.m_criteria}
+                      >
+                        {spec.m_lable} ({spec.m_unit}):
+                      </label>
+
+
+                      <input
+                        type="number"
+                        id={spec.m_lable}
+                        name={spec.m_lable}
+                        value={spec.m_value}
+                        onChange={(e) => handleChange(index, e)}
+                        placeholder={`Enter ${spec.m_lable} in ${spec.m_unit}`}
+                        style={{ minWidth: '50px', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-2">
+                  {parts.map((part, index) => (
+                    <span
+                      key={index}
+                      style={{
+                        backgroundColor: "#f0f0f0", // Change this to your desired background color
+                        padding: "5px 10px",
+                        margin: "5px",
+                        borderRadius: "5px",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.2)",
+                      }}
+                    >
+                      {part}
+                      <button
+                        onClick={() => removePart(index)}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "#888",
+                          fontWeight: "bold",
+                          marginLeft: "10px",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                        }}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <textarea
+                  type="text"
+                  className="bg-light my-1"
+                  style={{ width: "100%" }}
+                  placeholder="Enter Remarks"
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                ></textarea>
+              </div>
+
+
 
               <button
                 className="btn btn-success  my-1"
@@ -415,19 +509,20 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
           showModal={showModal}
           setShowModal={setShowModal}
           id={_id}
-          // checkItem={checkItem._id}
-          // line={line}
-          // processNo={processNo}
-          // workDetail={checkItem.workDetail}
-          // abnormality={abnormality}
-          // cardType={cardType}
-          // // countermeasure={countermeasure}
-          // // spare={spare}
-          // // pic={pic}
-          // // targetDate={targetDate}
-          // status={status}
-          // fromDateSt={fromDateSt}
-          //  toDateSt={toDateSt}
+          mspecs={mspecs}
+        // checkItem={checkItem._id}
+        // line={line}
+        // processNo={processNo}
+        // workDetail={checkItem.workDetail}
+        // abnormality={abnormality}
+        // cardType={cardType}
+        // // countermeasure={countermeasure}
+        // // spare={spare}
+        // // pic={pic}
+        // // targetDate={targetDate}
+        // status={status}
+        // fromDateSt={fromDateSt}
+        //  toDateSt={toDateSt}
         />
       ) : null}
 

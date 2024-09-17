@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import styles from "./styles/smilecard.module.css";
 import axios from "axios";
 import "./table.css";
@@ -6,9 +6,27 @@ import Select from "react-select";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 // import FlavorForm from "./MultipleOptions";
+import { Button, Form, Row, Col } from "react-bootstrap";
 
 function SmileCardAdd() {
   const { pS } = useSelector((state) => state.filters);
+  const [labelUnits, setLabelUnits] = useState([{ m_lable: "", m_unit: "", m_criteria: "" }]);
+
+  const handleAddLabelUnit = () => {
+    setLabelUnits([...labelUnits, { m_lable: "", m_unit: "", m_criteria: "" }]);
+  };
+
+  const handleLabelUnitChange = (index, field, value) => {
+    const newLabelUnits = [...labelUnits];
+    newLabelUnits[index][field] = value;
+    setLabelUnits(newLabelUnits);
+  };
+
+  const handleRemoveLabelUnit = (index) => {
+    const newLabelUnits = labelUnits.filter((_, i) => i !== index);
+    setLabelUnits(newLabelUnits);
+  };
+
 
   const [selectedFile, setSelectedFile] = useState("");
 
@@ -43,18 +61,19 @@ function SmileCardAdd() {
   const [wHrNew, setWHrNew] = useState("");
   const [workDetailNew, setWorkDetailNew] = useState("");
   const [workManpowerNew, setWorkManpowerNew] = useState("");
+  const [tlVerify, setVerifTL] = useState(false);
+  const [glVerify, setGlVerify] = useState(false);
   const [workOnePointNew, setWorkOnePointNew] = useState("");
   const [workTimeNew, setWorkTimeNew] = useState("");
   const [yNew, setYNew] = useState([9999]);
-  const [areaToInspectNew, setAreaToInspectNew] = useState("");
-  const [shiftNew, setShiftNew] = useState("");
+  const [groupNew, setGroupNew] = useState("");
 
-  const optionsLine = [
-    { value: "Block", label: "Block Line" },
-    { value: "Head", label: "Head Line" },
-    { value: "Crank", label: "Crank Line" },
-    { value: "Assembly", label: "Assembly Line" },
-  ];
+  // const optionsLine = [
+  //   { value: "Block", label: "Block Line" },
+  //   { value: "Head", label: "Head Line" },
+  //   { value: "Crank", label: "Crank Line" },
+  //   { value: "Assembly", label: "Assembly Line" },
+  // ];
   // const optionsPS = [
   //   { value: "P", label: "Maintenace dept." },
   //   { value: "S", label: "Production dept." },
@@ -116,9 +135,10 @@ function SmileCardAdd() {
     { value: 7, label: "Sun" },
   ];
 
-  const optionsShift = [  
-    { value: "first", label: "First Shift" },
-    { value: "second", label:"Second Shift" },   
+  const optionsGroup = [
+
+    { value: "white", label: "White Group" },
+    { value: "yellow", label: "Yellow Group" },
   ];
 
   const uploadImage = (e) => {
@@ -144,7 +164,7 @@ function SmileCardAdd() {
         }
       })
       .catch((err) => {
-        console.log("error uploading image", err);
+
         toast.success(
           `Failed to upload Image, choose correct Image file with file extension .png/.jpg`
         );
@@ -152,73 +172,82 @@ function SmileCardAdd() {
   };
 
   const saveData = (e) => {
-    e.preventDefault();
-    const formData = new FormData();
+    console.log(labelUnits)
+    if (labelUnits[0].m_criteria != "" && labelUnits[0].m_lable != "" && labelUnits[0].m_unit != "" && cycleNew) {
+      e.preventDefault();
+      const formData = new FormData();
 
-    console.log("entryValue :", entryDateNew);
 
-    // formData.append("image", selectedFile);
 
-    formData.append("images", imagesNew);
-    //// formData.append("createdAt" ,createdAtNew);
+      // formData.append("image", selectedFile);
 
-    formData.append("action", actionNew);
-    formData.append("cardNo", cardNoNew);
-    formData.append("criterion", criterionNew);
-    formData.append("cycle", cycleNew);
-    formData.append("d", dNew);
-    formData.append("line", lineNew);
-    formData.append("model", modelNew);
-    formData.append("processNo", processNoNew);
-    formData.append("tool", toolNew);
-    formData.append("workDetail", workDetailNew);
-    formData.append("workOnePoint", workOnePointNew);
-    formData.append("categoryCtrl", categoryCtrlNew);
-    formData.append("commonItem", commonItemNew);
-    formData.append("entryDate", new Date(Date.now()));
-    formData.append("holidayOperation", holidayOperationNew);
-    formData.append("m", mNew);
-    formData.append("methodWssNo", methodWssNoNew);
+      formData.append("images", imagesNew);
+      //// formData.append("createdAt" ,createdAtNew);
 
-    //formData.append("pS", pSNew);
-    formData.append("pS", pS);
+      formData.append("action", actionNew);
+      formData.append("cardNo", cardNoNew);
+      formData.append("criterion", criterionNew);
+      formData.append("cycle", cycleNew);
+      formData.append("d", dNew);
+      formData.append("line", lineNew);
+      formData.append("model", modelNew);
+      formData.append("processNo", processNoNew);
+      formData.append("tool", toolNew);
+      formData.append("workDetail", workDetailNew);
+      formData.append("workOnePoint", workOnePointNew);
+      formData.append("tlVerify", tlVerify);
+      formData.append("glVerify", glVerify);
+      formData.append("categoryCtrl", categoryCtrlNew);
+      formData.append("commonItem", commonItemNew);
+      formData.append("entryDate", new Date(Date.now()));
+      formData.append("holidayOperation", holidayOperationNew);
+      formData.append("m", mNew);
+      formData.append("methodWssNo", methodWssNoNew);
+      formData.append("m_spec", JSON.stringify(labelUnits));
 
-    formData.append("prepManHr", prepManHrNew);
-    formData.append("qualityOnePoint", qualityOnePointNew);
-    formData.append("rS", rSNew);
-    formData.append("reason", reasonNew);
-    formData.append("remark", remarkNew);
-    formData.append("safetyOnePoint", safetyOnePointNew);
-    formData.append("w", wNew);
-    formData.append("wHr", wHrNew);
-    formData.append("workManpower", workManpowerNew);
-    formData.append("workTime", workTimeNew);
-    formData.append("y", yNew);
-    formData.append("shift", shiftNew);
 
-    axios
-      .post(
-        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/insertData`,
-        formData,
-        {
-          headers: { "Content-Type": "Multipart/form-data" },
-        }
-      )
-      .then((result) => {
-        toast.success(`Data uploaded successfully`);
-      })
-      .catch((err) => {
-        console.log(err.message);
-        console.log("error uploading Data", err);
-        toast.error(
-          err.response.data.message
-          // `failed to upload data, Fill all data with correct Data type`
-        );
-      });
+      //formData.append("pS", pSNew);
+      formData.append("pS", pS);
+
+      formData.append("prepManHr", prepManHrNew);
+      formData.append("qualityOnePoint", qualityOnePointNew);
+      formData.append("rS", rSNew);
+      formData.append("reason", reasonNew);
+      formData.append("remark", remarkNew);
+      formData.append("safetyOnePoint", safetyOnePointNew);
+      formData.append("w", wNew);
+      formData.append("wHr", wHrNew);
+      formData.append("workManpower", workManpowerNew);
+      formData.append("workTime", workTimeNew);
+      formData.append("y", yNew);
+      formData.append("group", groupNew);
+
+      axios
+        .post(
+          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/insertData`,
+          formData,
+          {
+            headers: { "Content-Type": "Multipart/form-data" },
+          }
+        )
+        .then((result) => {
+          toast.success(`Data uploaded successfully`);
+        })
+        .catch((err) => {
+
+          toast.error(
+            err.response.data.message
+            // `failed to upload data, Fill all data with correct Data type`
+          );
+        });
+    } else {
+      toast.error("Add all required fields")
+    }
+
   };
 
   return (
-    <div className="mx-3">
+    <div className="mx-3 overflow-scroll" style={{ height: "85vh" }}>
       {/* <hr /> */}
 
       <div className="d-flex">
@@ -248,7 +277,7 @@ function SmileCardAdd() {
         <span className="text-danger mx-3"> * </span>Mandatory Fields
       </h6>
 
-      <div className="overflow-auto" style={{ height: "55vh" }}>
+      <div className="overflow-auto" style={{ height: "100vh", paddingBottom: "10%" }}>
         <ol className="d-flex flex-wrap justify-content-around">
           {/* <FlavorForm /> */}
 
@@ -260,19 +289,11 @@ function SmileCardAdd() {
                 <span className="text-danger">* </span>:
               </div>
               <div className="secondCol">
-                {/* <input
+                <input
                   className="form-control"
                   value={lineNew}
                   onChange={(e) => setLineNew(e.target.value)}
                   placeholder="Please enter line Name, Example Block"
-                /> */}
-                   <Select
-                  options={optionsLine}
-                  defaultValue={{
-                    value:lineNew,
-                    label: "",
-                  }}
-                  onChange={(e) => setLineNew(e.value)}
                 />
               </div>
             </div>
@@ -290,26 +311,26 @@ function SmileCardAdd() {
                   value={processNoNew}
                   onChange={(e) => setProcessNoNew(e.target.value)}
                   placeholder="Please enter OP No., Example OP10"
-                  // disabled
+                // disabled
                 />
               </div>
             </div>
           </li>
           <li>
-          <div className="d-flex">
-            <div className="firstCol">
-              Shift
+            <div className="d-flex">
+              <div className="firstCol">
+                Group
+              </div>
+              <div className="secondCol">
+                <Select
+                  options={optionsGroup}
+                  defaultValue={{ value: groupNew, label: "" }}
+                  onChange={(e) => setGroupNew(e.value)}
+                />
+              </div>
+
             </div>
-            <div className="secondCol">
-            <Select
-                options={optionsShift}
-                defaultValue={{ value: shiftNew, label: ""}}
-                onChange={(e) => setShiftNew(e.value)}                
-              />
-            </div>
-           
-          </div>
-        </li>
+          </li>
 
           <li>
             <div className="d-flex">
@@ -379,7 +400,8 @@ function SmileCardAdd() {
 
           <li>
             <div className="d-flex">
-              <div className="firstCol">cycle :</div>
+              <div className="firstCol">cycle :<span className="text-danger">* </span></div>
+
               <div className="secondCol">
                 <input
                   className="form-control"
@@ -409,9 +431,9 @@ function SmileCardAdd() {
           <li>
             <div className="d-flex">
               <div className="firstCol">Day
-              <span className="text-danger">* </span>:
+                <span className="text-danger">* </span>:
               </div>
-              
+
               <div className="secondCol">
                 <Select
                   options={optionsDay}
@@ -441,7 +463,7 @@ function SmileCardAdd() {
           <li>
             <div className="d-flex">
               <div className="firstCol">Week
-              <span className="text-danger">* </span>:
+                <span className="text-danger">* </span>:
               </div>
               <div className="secondCol">
                 <Select
@@ -472,7 +494,7 @@ function SmileCardAdd() {
           <li>
             <div className="d-flex">
               <div className="firstCol">optionsMonth
-              <span className="text-danger">* </span>:
+                <span className="text-danger">* </span>:
               </div>
               <div className="secondCol">
                 <Select
@@ -503,7 +525,7 @@ function SmileCardAdd() {
           <li>
             <div className="d-flex">
               <div className="firstCol">optionsYear
-              <span className="text-danger">* </span>:
+                <span className="text-danger">* </span>:
               </div>
               <div className="secondCol">
                 <Select
@@ -594,13 +616,94 @@ function SmileCardAdd() {
                 {pS === "S" ? "Area to inspect" : "No. of members"}
               </div>
               <div className="secondCol">
-                
-                  <input
-                    className="form-control"
-                    value={workManpowerNew}
-                    onChange={(e) => setWorkManpowerNew(e.target.value)}
-                  />
-                
+
+                <input
+                  className="form-control"
+                  value={workManpowerNew}
+                  onChange={(e) => setWorkManpowerNew(e.target.value)}
+                />
+
+              </div>
+            </div>
+          </li>
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">
+                {" "}
+                TL Approval required
+              </div>
+              <div className="secondCol">
+                <select className="form-control" value={tlVerify} onChange={(e) => setVerifTL(e.target.value)}>
+                  <option value={false}>Not Required</option>
+                  <option value={true}>Required</option>
+                </select>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">
+                {" "}
+                GL Approval required
+              </div>
+              <div className="secondCol">
+                <select className="form-control" value={glVerify} onChange={(e) => setGlVerify(e.target.value)}>
+                  <option value={false}>Not Required</option>
+                  <option value={true}>Required</option>
+                </select>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div className="d-flex">
+              <div className="firstCol">
+                {" "}
+                Measurement
+                <span className="text-danger">* </span>:
+              </div>
+              <div className="secondCol">
+                {labelUnits.map((item, index) => (
+                  <Row key={index} className="mb-3">
+                    <Col xs={5}>
+                      <Form.Control
+                        type="text"
+                        placeholder="Label"
+                        value={item.m_lable}
+                        onChange={(e) =>
+                          handleLabelUnitChange(index, "m_lable", e.target.value)
+                        }
+                      />
+                    </Col>
+                    <Col xs={5}>
+                      <Form.Control
+                        type="text"
+                        placeholder="Unit"
+                        value={item.m_unit}
+                        onChange={(e) =>
+                          handleLabelUnitChange(index, "m_unit", e.target.value)
+                        }
+                      />
+                    </Col>
+                    <Col xs={5}>
+                      <Form.Control
+                        type="text"
+                        placeholder="Standard Value"
+                        value={item.m_criteria}
+                        onChange={(e) =>
+                          handleLabelUnitChange(index, "m_criteria", e.target.value)
+                        }
+                      />
+                    </Col>
+                    <Col xs={2}>
+                      <Button variant="danger" onClick={() => handleRemoveLabelUnit(index)}>
+                        Remove
+                      </Button>
+                    </Col>
+                  </Row>
+                ))}
+                <Button variant="primary" onClick={handleAddLabelUnit}>
+                  + Add Label and Unit
+                </Button>
               </div>
             </div>
           </li>

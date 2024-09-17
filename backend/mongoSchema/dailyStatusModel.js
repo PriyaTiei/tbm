@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { ObjectId } = require("../util/getObjectType");
 
 const dailyStatusSchema = new mongoose.Schema({
   checkItem: {
@@ -41,9 +42,48 @@ const dailyStatusSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  tlBy: {
+    type: mongoose.Schema.ObjectId,
+    default: null,
+    ref: "users",
+    required: false,
+  },
+  glBy: {
+    type: mongoose.Schema.ObjectId,
+    default: null,
+    ref: "users",
+    required: false,
+  },
+  tlAt: {
+    type: Date,
+    default: null,
+    required: false
+  },
+  glAt: {
+    type: Date,
+    default: null,
+    required: false
+  },
+  tlComment: {
+    type: String,
+    default: null
+  },
+  glComment: {
+    type: String,
+    default: null
+  },
   checkedBy: {
     type: String,
   },
+  m_spec: [
+    {
+      m_id: { type: String,},
+      m_lable: { type: String},
+      m_unit: { type: String},
+      m_value:{ type: Number},
+      m_criteria: { type: String} 
+    }
+  ],
 });
 
 module.exports = mongoose.model("dailystatus", dailyStatusSchema);

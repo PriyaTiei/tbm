@@ -51,29 +51,18 @@ export function AppSidebar({ children }) {
           {level >= 0 && (
             <Link to="/summaryAbnormality">
               <Button variant="dark" style={menuItemStyle}>
-                <i className="bi bi-stack-overflow px-1"></i>Abnormality Summary
+                <i className="bi bi-stack-overflow px-1"></i>Abnormalities by member
               </Button>
             </Link>
           )}
           {level >= 0 && (
             <Link to="/summaryCards">
               <Button variant="dark" style={menuItemStyle}>
-                <i className="bi bi-stack-overflow px-1"></i>Cards Summary
+                <i className="bi bi-stack-overflow px-1"></i>Actual Abnormalities
               </Button>
             </Link>
           )}
-
-            {/* SOM  */}
-          {level >= 0 && (
-            <Link to="/som">
-              <Button variant="dark" style={menuItemStyle}>
-                <i className="bi bi-stack-overflow px-1"></i>Sign of matrix
-              </Button>
-            </Link>
-          )}
-
-
-          {level >= 30 && (
+          {level >= 20 && (
             <Link to="/addCheckItems">
               <Button variant="dark" style={menuItemStyle}>
                 <i className="bi bi-plus-square"></i> CheckItems

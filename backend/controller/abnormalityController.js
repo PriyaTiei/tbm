@@ -20,6 +20,7 @@ exports.createAbnormality = catchAsyncError(async (req, res, next) => {
     user,
     image,
     pS,
+    m_spec
   } = req.body;
   const abnormalityItem = await AbnormalityModel.create({
     checkItem,
@@ -35,6 +36,7 @@ exports.createAbnormality = catchAsyncError(async (req, res, next) => {
     status,
     image,
     pS,
+    m_spec
   });
   res.status(200).json({ success: true, abnormalityItem });
 });
@@ -84,6 +86,7 @@ exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
     checkItem,
     user,
     image,
+    m_spec
   } = req.body;
 
   abnormalityItem.abnormality = abnormality;
@@ -95,6 +98,7 @@ exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
   abnormalityItem.user = user;
   abnormalityItem.checkItem = checkItem;
   abnormalityItem.image = image;
+  abnormalityItem.m_spec = m_spec;
 
   await abnormalityItem.save({ validateBeforeSave: false });
   res.status(201).json({ success: true, abnormalityItem });
@@ -169,6 +173,7 @@ exports.getAbnormality = catchAsyncError(async (req, res, next) => {
 exports.getAbnormalityByIdAndDate = catchAsyncError(async (req, res, next) => {
   const id = req.query.id;
   const date = req.query.date;
+  console.log(date);
   var newQueryStr = {}
 
   if (id != "" && date != "") {

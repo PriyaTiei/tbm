@@ -4,7 +4,8 @@ import { getDailyStatus } from "../redux/dailyStatus/dailyStatusActions";
 import { getMachines } from "../redux/machine/machineActions";
 import Line from "./Line";
 import Loading from "./Loading";
-import {getLoginCookie} from "../services/getLoginCookie.js"
+import { getLoginCookie } from "../services/getLoginCookie.js"
+import MultiLevelXAxisBarChart from "../BarChart.js";
 
 function Machines() {
   const dispatch = useDispatch();
@@ -17,66 +18,58 @@ function Machines() {
         ? dailyStatuses.dailyStatus.sortedDailyStatus
         : []
       : [];
-  const dailyStatusDataLinewise ={} 
-  dailyStatusData.forEach((item)=>{
-      dailyStatusDataLinewise[item.line]= item.processes
+  const dailyStatusDataLinewise = {}
+  dailyStatusData.forEach((item) => {
+    dailyStatusDataLinewise[item.line] = item.processes
   })
   
 
   let lineStr = filters.line === null ? '' : `&line=${filters.line}`
   let rSStr = filters.rS === null ? '' : `&rS=${filters.rS}`
-  let shiftStr = filters.shift === null ? '' : `&shift=${filters.shift}`
-  let processNoStr = filters.processNo === null || filters.processNo === "" ? '' : `&processNo=${filters.processNo}`
-  let cardNoStr = filters.cardNo === null || filters.cardNo === "" ? '' : `&cardNo=${filters.cardNo}`
+  let groupStr = filters.group === null ? '' : `&group=${filters.group}`
 
-  let queryStr 
-  let DailyStatusQueryStr 
-  
-if(filters.processNo ===  "" && filters.cardNo === "" ){
-  console.log("test ********************")
-  queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` + lineStr + rSStr +shiftStr + processNoStr + cardNoStr;
-  DailyStatusQueryStr = `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}` + lineStr + rSStr +shiftStr + processNoStr + cardNoStr;
-}else{
-  queryStr = `pS=${filters.pS}` + lineStr  + processNoStr + cardNoStr;
-  DailyStatusQueryStr = `pS=${filters.pS}` + lineStr +  processNoStr + cardNoStr;
-}
+  let queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` + lineStr + rSStr + groupStr;
+  let DailyStatusQueryStr = `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}`;
+
+
   useEffect(() => {
     dispatch(getMachines(queryStr));
-    
 
     dispatch(getDailyStatus(DailyStatusQueryStr));
     // dispatch(getDailyStatus());
-  }, [dispatch, filters,queryStr, DailyStatusQueryStr]);
+  }, [dispatch, filters, queryStr, DailyStatusQueryStr]);
 
-  const { loading, machineData } = machines;  
-  // console.log(`token : ${getLoginCookie()}`)
- 
+  const { loading, machineData } = machines;
+
+
   return (
     <Fragment>
       {loading ? (
         <Loading />
       ) : (
         <Fragment >
-         <div className="overflow-auto" style={{height:"85vh"}}>
-          {machineData.success
-            ? machineData.machineData.map((item, i) => {
+
+          <div className="overflow-auto" style={{ height: "85vh", paddingBottom: "10%" }}>
+            {machineData.success
+              ? machineData.machineData.map((item, i) => {
                 return (
                   <Line
-                    
+
                     line={item.line}
                     processNos={item.processNos}
                     counts={item.counts}
                     key={item.line}
-                   
+
                     dailyStatusDataLinewise={dailyStatusDataLinewise[item.line]}
                   />
                 );
               })
-            : null}
-            </div>
+              : null}
+
+          </div>
         </Fragment>
       )}
-      
+
     </Fragment>
   );
 }

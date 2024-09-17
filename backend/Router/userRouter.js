@@ -15,7 +15,6 @@ const {
 } = require("../middleware/isAuthenticated");
 
 userRouter.route("/login").post(login);
-userRouter.route("/create").post(createUser);
 userRouter.route("/tokenlogin").post(loginWithToken);
 userRouter.route("/logout").get(logout);
 
@@ -23,7 +22,6 @@ userRouter.route("/logout").get(logout);
 userRouter
   .route("/admin/create")
   .post(isAuthenticated, authorizedRole("admin"), createUser);
-  
 userRouter
   .route("/admin/getusers")
   .get(isAuthenticated, authorizedRole("admin"), getUsers);

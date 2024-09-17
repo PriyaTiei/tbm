@@ -7,7 +7,7 @@ function ModalForm({ showModal, setShowModal, image }) {
   const handleClose = () => {
     setShowModal(false);
   };
-  console.log("image : ", image);
+
 
   return (
     <Modal

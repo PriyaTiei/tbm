@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify"; 
+import { toast } from "react-toastify";
 
 function AbnormalityRecord() {
   let info = {};
@@ -18,7 +18,7 @@ function AbnormalityRecord() {
 
   const auth = useSelector((state) => state.auth);
 
-  const user =  auth.user._id;
+  const user = auth.user._id;
 
   const [abnormality, setAbnormality] = useState("");
   const [countermeasure, setCountermeasure] = useState("");
@@ -58,7 +58,7 @@ function AbnormalityRecord() {
         navigate(`/checkList?line=${line}&processNo=${processNo}`);
       })
       .catch((err) => {
-        console.log(err);
+
         toast.error("Please fill Abnormility Details");
       });
   };
