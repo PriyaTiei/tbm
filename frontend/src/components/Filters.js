@@ -1,0 +1,312 @@
+import React, { Fragment, useState, useEffect, useRef } from "react";
+import DatePicker from "react-date-picker";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  filterDate,
+  filterDept,
+  filterLine,
+  filterCheck,
+  filterGroup
+} from "../redux/filter/filterActions";
+import Select from "react-select";
+import { Button, Modal } from "react-bootstrap";
+import { Link, NavLink } from "react-router-dom";
+import SlideInNotification from "./common/Slicein";
+import { useCookies } from "react-cookie";
+import MultiLevelXAxisBarChart from "../BarChart";
+import Verification from "./common/verification";
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { downloadExcel } from "react-export-table-to-excel";
+import { getPendingTasks } from "../redux/pendingTasks/pendingActions";
+import axios from "axios";
+
+const todayDate = new Date(Date.now());
+
+//getting week no
+// Date.prototype.getWeek = function() {
+//   var dt = new Date(this.getFullYear(), 0, 1);
+//   return Math.ceil(((this - dt) / 86400000 + dt.getDay() + 1) / 7);
+// };
+
+// end week no
+
+function Filters() {
+  const selectLineRef = useRef(null);
+  const [cookies] = useCookies(['token', 'userId']);
+  const [date, setDate] = useState(todayDate);
+  const [showModal, setShowModal] = useState(false)
+  const [showModals, setShowModals] = useState(false)
+
+  const auth = useSelector((state) => state.auth);
+  // const [header, setHeader] = useState([])
+  // const [body, setBody] = useState([])
+
+
+
+  const level = auth.user ? auth.user.level : 0;
+  // const { loading, pendingTasksData } = pendingTasks;
+  // const [pendingTasksData, setPendingTasksData] = useState([])
+  // generate options for selecting line
+  var lineOptions = [{ value: null, label: "All Lines" }];
+  var lineOptions2 = [];
+  const { machineData } = useSelector((state) => state.machines);
+  if (machineData.machineData != undefined) {
+    lineOptions2 = machineData.machineData.map((element) => {
+      return { value: element.line, label: element.line };
+    });
+    lineOptions = [...lineOptions, ...lineOptions2];
+  }
+
+  // const totalCount = machines.loading
+  //   ? { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 }
+  //   : machines.machineData.success
+  //   ? machines.machineData.totalCount
+  //   : { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 };
+
+  // const { totalCountBlock, totalCountCrank, totalCountHead } = totalCount;
+
+  const dispatch = useDispatch();
+
+  // useEffect(() => {
+  //   axios.get(
+  //     `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/tbmFrequency`)
+  //     .then((result) => {
+  //       if (result.data.success) {
+  //         setPendingTasksData(result.data?.frequencyTasks)
+  //         // setCardList(result.data.dailyStatusAll)
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       // console.log("error ", err);
+  //       // toast.error(`Data could not be saved , ${err.message}`);
+  //     });
+
+  // }, [])
+
+  // useEffect(() => {
+  //   if (pendingTasksData.length) {
+
+
+  //     const newHeader = ["SL NO", "OP NO", "WORK DETAIL", "LAST_COMPLETED", "FREQUENCY"];
+  //     setHeader(newHeader);
+
+
+
+  //     const newBody = pendingTasksData.map((task, index) => [
+  //       index + 1, // SL NO
+
+  //       task.top.opNo, // OP NO
+  //       task.top.workDetail,
+  //       task.top.entryFor && task.top.entryFor[task.top.entryFor.length - 1],
+  //       task.top.frequency// WORK DETAIL
+
+
+  //     ]);
+
+
+  //     setBody(newBody);
+
+  //   }
+  // }, [pendingTasksData]);
+  // useEffect(() => {
+  //   if (level >= 100) {
+  //     setShowModals(true)
+  //   }
+  // }, [level])
+  // const filters = useSelector((state) => state.filters);
+  // let queryStr = `d=${filters.d}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}`;
+  const deptOptions = [
+    { value: "S", label: "Production Dept" },
+    { value: "P", label: "Maint Dept" },
+  ];
+
+  const checkOptions = [
+    { value: null, label: "All Check" },
+    { value: "S", label: "Stop Check" },
+    { value: "R", label: "Run Check" },
+  ];
+  const groupOptions = [
+    { value: null, label: "All Group" },
+    { value: "white", label: "White Group" },
+    { value: "yellow", label: "Yellow Group" },
+  ];
+
+  // const lineOptions = [
+  //   { value: null, label: "All Lines" },
+  //   { value: "Head", label: "Head" },
+  //   { value: "Block", label: "Block" },
+  //   { value: "Crank", label: "Crank" },
+  //   {
+  //     value: "Assembly (Head Sub-assembly)",
+  //     label: "Assembly (Head Sub-assembly)",
+  //   },
+  //   {
+  //     value: "Assembly (Block Sub-assembly)",
+  //     label: "Assembly (Block Sub-assembly)",
+  //   },
+  //   { value: "Assembly (MK-1)", label: "Assembly (MK-1)" },
+  // ];
+
+  useEffect(() => {
+
+    dispatch(
+      filterDate(
+        date.getDay(),
+        Math.floor(date.getDate() / 7.1) + 1,
+        date.getMonth() + 1,
+        date.getFullYear(),
+        date.getDate()
+      )
+    );
+  }, [dispatch, date]);
+
+  const selectDeptHandler = (e) => {
+    dispatch(filterDept(e.value));
+  };
+
+  const selectLineHandler = (e) => {
+    dispatch(filterLine(e.value));
+  };
+
+  const selectCheckHandler = (e) => {
+    dispatch(filterCheck(e.value));
+  };
+
+  const selectGroupHandler = (e) => {
+    dispatch(filterGroup(e.value));
+  };
+
+
+  // function handleDownloadExcel() {
+  //   const today = new Date().toISOString().slice(0, 10); // Format: YYYY-MM-DD
+  //   const fileName = `${today}-pending-from-month`;
+
+  //   downloadExcel({
+  //     fileName: fileName,
+  //     sheet: "pending-cards",
+  //     tablePayload: {
+  //       header: header,
+  //       body: body,
+  //     },
+  //   });
+  // }
+
+
+
+
+  return (
+    <Fragment>
+      <hr className="my-2"></hr>
+      <div className="d-flex justify-content-between">
+        <div className="d-flex">
+          <DatePicker
+            value={date}
+            format="dd/MM/yyyy"
+            onChange={setDate}
+            clearIcon={null}
+            className="px-3"
+          />
+        </div>
+        {/* {
+          cookies.userId ? (<>
+            <SlideInNotification message={
+              "An error occurred. Please try again."
+            }
+              duration={5000}
+              type={"info"} handleDownloadExcel={handleDownloadExcel} />  </>) : (<></>)
+        } */}
+        <Link to="/">
+          <Button className="mx-1 bg-blue px-3">
+            <i className="bi bi-house"></i> Home
+          </Button>
+        </Link>
+
+        {/* <Link to="/teamleader">
+          <Button variant="secondary" className="mx-3 bg-green px-3">
+            Team Leader
+          </Button>
+        </Link> */}
+
+        {/* 
+        <Container className="mx-3 px-3" style={{ maxWidth: "30vw" }}>
+          <Row className="bg-info text-light border rounded-2 d-flex align-items-center justify-content-center">
+            <Col xs={12} md={6} className="text-center">
+              <h6 className="my-2">Total Check</h6>
+            </Col>
+            <Col xs={12} md={6} className="text-center">
+              <h6 className="my-2">
+                Block: {totalCountBlock} | Crank: {totalCountCrank} | Head:{" "}
+                {totalCountHead}
+              </h6>
+            </Col>
+          </Row>
+        </Container> */}
+
+        <Select
+          options={deptOptions}
+          onChange={selectDeptHandler}
+          className="mx-1 secondary"
+          defaultValue={{ value: "S", label: "Production Dept" }}
+          isSearchable={false}
+        />
+
+        <Select
+          ref={selectLineRef}
+          options={lineOptions}
+          onChange={selectLineHandler}
+          className="mx-1 secondary"
+          defaultValue={lineOptions[0]}
+          isSearchable={false}
+        />
+
+        <Select
+          options={checkOptions}
+          onChange={selectCheckHandler}
+          className="mx-1 secondary"
+          defaultValue={checkOptions[0]}
+          isSearchable={false}
+        />
+        <Select
+          options={groupOptions}
+          onChange={selectGroupHandler}
+          className="mx-1 secondary"
+          defaultValue={groupOptions[0]}
+          isSearchable={false}
+        />
+        {date ? (<OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Monthly Report</Tooltip>}><Button className="" onClick={() => setShowModal(true)} style={{ background: "transparent", color: "#000" }}>
+          <i class="bi bi-graph-up bi-2x"></i>
+        </Button></OverlayTrigger>) : (<></>)}
+
+        {level >= 100 ? <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Holiday List</Tooltip>}><Link to="/holidays"><Button className="" style={{ background: "transparent", color: "#000" }}>
+          <i class="bi bi-sunset bi-2x"></i>
+        </Button></Link></OverlayTrigger> : ""}
+        {level >= 20 ? <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">TL/GL Verification</Tooltip>}><Link to="/verification"><Button className="" onClick={() => setShowModals(true)} style={{ background: "transparent", color: "#000" }}>
+          <i class="bi bi-calendar-check bi-2x"></i><span style={{ background: "red", borderRadius: "50%", width: "10px", height: "10px", position: "absolute" }}></span>
+        </Button></Link></OverlayTrigger> : ""}
+        {/* <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Pending cards in brief</Tooltip>}>
+          <Button style={{ background: "transparent", color: "#000", marginRight: '20px' }} onClick={handleDownloadExcel}>
+            <i class="bi bi-file-earmark-excel"></i>
+          </Button>
+        </OverlayTrigger> */}
+        <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Pending Items</Tooltip>}><Link to="/pendingTasks">
+          <Button style={{ background: "transparent", color: "#000", marginRight: '20px' }}>
+            <i class="bi bi-hourglass-split"></i>
+          </Button>
+        </Link></OverlayTrigger>
+
+        {/* <Link to="/judgementHistory">
+          <Button color="blue" className="mx-1">
+            <i className="bi bi-card-list px-1"></i>
+            Judgement History
+          </Button>
+        </Link> */}
+      </div>
+      <hr className="my-2"></hr>
+      <MultiLevelXAxisBarChart showModal={showModal} setShowModal={setShowModal} chkDate={date} />
+      {/* <Verification showModals={showModals} setShowModals={setShowModals} /> */}
+    </Fragment>
+  );
+}
+
+export default Filters;

@@ -1,0 +1,13 @@
+node_modules/
+card2.py
+card_status.xlsx
+frontend_test/
+build/
+.env
+backend/public/
+backend\public/
+backend\node_modules/
+frontend/package-lock.json
+frontend/package.json
+frontend/yarn.lock
+frontend/node_modules/

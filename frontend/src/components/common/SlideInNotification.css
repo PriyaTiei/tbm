@@ -1,0 +1,98 @@
+.slide-in-notification {
+  position: fixed;
+  bottom: 20px; /* 20px from the bottom */
+  right: 20px; /* 20px from the right */
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8));
+  color: #fff; /* White text color for better contrast */
+  padding: 20px;
+  border-radius: 12px;
+  height: 30vh; /* 30% of the viewport height */
+  max-width: 500px; /* Adjust as needed */
+  width: 100%; /* Full width of the container */
+  text-align: center;
+  z-index: 1000;
+  opacity: 0;
+justify-content: center;
+align-items: center;
+display: flex;
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+  font-size: 20px;
+  line-height: 1.4;
+  transform: translateY(50px); /* Start position for slide-in effect */
+}
+
+.slide-in-notification.show {
+  opacity: 1;
+  transform: translateY(0); /* Slide up into view */
+}
+
+.slide-in-notification.success {
+  background: linear-gradient(135deg, #28a745, #218838); /* Vibrant green for success */
+  color: #fff; /* White text color for high contrast */
+}
+
+.slide-in-notification.error {
+  background: linear-gradient(135deg, #dc3545, #c82333); /* Bright red for error */
+  color: #fff; /* White text color for high contrast */
+}
+
+.slide-in-notification.info {
+  background: linear-gradient(135deg, #17a2b8, #117a8b); /* Bright blue for info */
+  color: #fff; /* White text color for high contrast */
+}
+
+
+.table-container {
+  max-height: 400px; /* Adjust as needed */
+  overflow-y: auto;
+}
+
+.table-fixed-header {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-fixed-header thead tr {
+  position: sticky;
+  top: 0;
+  background-color: #fff; /* Background color of header */
+  z-index: 1;
+}
+
+.table-fixed-header th, .table-fixed-header td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+  font-size: 12px !important;
+  overflow-x: scroll;
+}
+
+.table-fixed-header th {
+  background-color: #f8f9fa; /* Optional: Add background color to header */
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+
+.wide-column {
+  width: 1500px !important;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+
+.table-responsive {
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 12px !important;
+}
+
+tbody > td {
+  font-size: 12px !important;
+}
+
+.sticky-header th {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa !important; /* Bootstrap's table header background color */
+  z-index: 1;
+  border-bottom: 2px solid #000;
+}
