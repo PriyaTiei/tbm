@@ -24,10 +24,6 @@ export default function AllMachine() {
   }, [dispatch , filters , queryStr]);
 
   const { loading, machineData } = machines;  
-<<<<<<< HEAD
-=======
-
->>>>>>> originNew/DTC-25092024
   
   return (
     <Fragment>

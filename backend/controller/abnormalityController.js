@@ -193,8 +193,5 @@ exports.getAbnormalityByIdAndDate = catchAsyncError(async (req, res, next) => {
   }
 
   res.status(201).json({ success: true, abnormalityItem });
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> originNew/DTC-25092024
+
