@@ -26,6 +26,10 @@ export const pendingTaskFetchFail = (error) => {
 };
 
 export const getPendingTasks = (queryStr) => {
+<<<<<<< HEAD
+=======
+ 
+>>>>>>> originNew/DTC-25092024
   return (dispatch) => {
     dispatch(pendingTaskFetchRequest());
     let url = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/pendingTasks?${queryStr}`;
