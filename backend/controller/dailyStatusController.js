@@ -13,7 +13,7 @@ const CardRaisedModel = require("../mongoSchema/cardRaisedModel");
 var mongoose = require('mongoose');
 
 exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
-  var { checkItem, result, value, user, entryFor, pS, line, remarks, checkedBy, m_specs} =
+  var { checkItem, result, value, user, entryFor, pS, line, remarks, checkedBy, m_specs } =
     req.body;
 
   const m_spec = m_specs;
@@ -30,20 +30,20 @@ exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
   // Check for tlVerify/glVerify and change results accordingly.
   // Added By Prasad Munaga
   //////////////////////////////////////////////////////////////
-  if(!dailystatusAvailable) {
-    dailystatusAvailable = await DailyStatusModel.create({checkItem, result, value, user, entryFor, pS, line, remarks, checkedBy, m_specs});
+  if (!dailystatusAvailable) {
+    dailystatusAvailable = await DailyStatusModel.create({ checkItem, result, value, user, entryFor, pS, line, remarks, checkedBy, m_specs });
   }
-  const cItem = await HeadModel.findOne({_id: checkItem});
-  if(result == "OK" || result == "NG") {
-    if(cItem) {
-      const abItem = AbnormalityModel.find({checkItem: dailystatusAvailable.checkItem});
-      if(cItem.tlVerify == true || cItem.glVerify == true || abItem) {
-          var dsv = DailyStatusVerificationModel.find({dailyStatusItemId: dailystatusAvailable._id});
-          if(dsv) {
-            await dsv.remove();
-          }
+  const cItem = await HeadModel.findOne({ _id: checkItem });
+  if (result == "OK" || result == "NG") {
+    if (cItem) {
+      const abItem = AbnormalityModel.find({ checkItem: dailystatusAvailable.checkItem });
+      if (cItem.tlVerify == true || cItem.glVerify == true || abItem) {
+        var dsv = DailyStatusVerificationModel.find({ dailyStatusItemId: dailystatusAvailable._id });
+        if (dsv) {
+          await dsv.remove();
+        }
         var obj = dailystatusAvailable.toObject();
-        obj._id = mongoose.Types.ObjectId();;
+        obj._id = mongoose.Types.ObjectId();
         obj.result = result;
         obj.checkItem = cItem.id;
         obj.glVerify = cItem.glVerify;
@@ -69,7 +69,7 @@ exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
     });
 
     const pendingTask = await PendingTask.findOne({ checkItem: checkItem });
-    if(pendingTask) {
+    if (pendingTask) {
       await pendingTask.remove();
     }
 
@@ -113,7 +113,7 @@ exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
 
     }
 
-    res.status(200).json({ success: true, dailyStatus });
+    return res.status(200).json({ success: true, dailyStatus });
   }
 });
 
@@ -138,7 +138,7 @@ exports.removeDailyStatus = async (req, res, next) => {
   dailyStatus.checkedBy = checkedBy;
   await dailyStatus.save({ validateBeforeSave: false });
 
-  res.status(201).json({ success: true, message: "Updated Successfully" });
+  return res.status(201).json({ success: true, message: "Updated Successfully" });
 }
 
 exports.updateDailyStatus = catchAsyncError(async (req, res, next) => {
@@ -164,7 +164,7 @@ exports.updateDailyStatus = catchAsyncError(async (req, res, next) => {
   dailyStatus.m_spec = m_spec;
   await dailyStatus.save({ validateBeforeSave: false });
 
-  res.status(201).json({ success: true, message: "Updated Successfully" });
+  return res.status(201).json({ success: true, message: "Updated Successfully" });
 });
 
 exports.deleteDailyStatus = catchAsyncError(async (req, res, next) => {
@@ -182,21 +182,21 @@ exports.deleteDailyStatus = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("No such daily status check ", 404));
   }
 
-  if(dailyStatus) {
-    await DailyStatusVerificationModel.deleteOne({dailyStatusItemId: dailyStatus.id});
+  if (dailyStatus) {
+    await DailyStatusVerificationModel.deleteOne({ dailyStatusItemId: dailyStatus.id });
   }
-  
+
   var dObj = dailyStatus.toObject();
   dObj.result = "PENDING";
   dObj._id = mongoose.Types.ObjectId();
 
-  var pItem = PendingTask.find({checkItem: checkItem});
-  if(pItem) {
-    await PendingTask.remove({checkItem: checkItem});
+  var pItem = PendingTask.find({ checkItem: checkItem });
+  if (pItem) {
+    await PendingTask.remove({ checkItem: checkItem });
   }
-  
-  var cItem = await HeadModel.findOne({_id: dailyStatus.checkItem});
-  if(cItem) {
+
+  var cItem = await HeadModel.findOne({ _id: dailyStatus.checkItem });
+  if (cItem) {
     dObj.rS = cItem.rS;
     dObj.workDetail = cItem.workDetail;
     dObj.processNo = cItem.processNo;
@@ -210,7 +210,7 @@ exports.deleteDailyStatus = catchAsyncError(async (req, res, next) => {
   }
 
   await dailyStatus.remove();
-  res.status(201).json({ success: true, message: "Deleted Successfully" });
+  return res.status(201).json({ success: true, message: "Deleted Successfully" });
 });
 
 exports.getDailyStatus = catchAsyncError(async (req, res, next) => {
@@ -314,12 +314,12 @@ exports.getDailyStatusAll = catchAsyncError(async (req, res, next) => {
   const sortedDailyStatus = sortData(dailyStatusAll);
 
   const totalDailyStatus = dailyStatusAll.length;
-  res.status(201).json({
+  return res.status(201).json({
     success: true,
     totalDailyStatus,
     sortedDailyStatus,
   });
-  // res.status(201).json({
+  // return res.status(201).json({
   //   success: true,
   //    totalDailyStatus,
   //   dailyStatusAll,
@@ -330,11 +330,11 @@ exports.getDailyStatusByCheckItem = catchAsyncError(async (req, res, next) => {
   const query = {}
   console.log("here");
 
-  console.log(req?.query?.byData==="yes");
+  console.log(req?.query?.byData === "yes");
   const dailyStatusAll = await DailyStatusModel.find(
-    req?.query?.byData==="yes" ?{
+    req?.query?.byData === "yes" ? {
       ...req?.query?.query
-    }:{
+    } : {
       checkItem: ObjectId(req.query.checkItem)
     }
   );
@@ -342,13 +342,13 @@ exports.getDailyStatusByCheckItem = catchAsyncError(async (req, res, next) => {
   console.log(dailyStatusAll);
 
   if (!dailyStatusAll) {
-    res.status(201).json({
+    return res.status(201).json({
       success: false,
       dailyStatusAll: []
     });
   }
 
-  res.status(201).json({
+  return res.status(201).json({
     success: true,
     dailyStatusAll: dailyStatusAll
   });
@@ -386,14 +386,14 @@ exports.getDailyStatusAggregated = catchAsyncError(async (req, res, next) => {
   // });
 
   // return results
-  res.status(201).json({ success: true, dailyStatusAggregatedList });
+  return res.status(201).json({ success: true, dailyStatusAggregatedList });
 });
 
 exports.getTrendDailyStatus = catchAsyncError(async (req, res, next) => {
   const { idCheckItem, fromDate, toDate } = req.params;
   // console.log(req.params);
   // console.log(`checkedAt:{$gte:${fromDate}, $lt:${toDate}}`)
-  
+
   // Buid date string array -> fromDate to toDate
   var dates = [];
   var tDate = new Date(fromDate);
@@ -403,7 +403,7 @@ exports.getTrendDailyStatus = catchAsyncError(async (req, res, next) => {
     dates.push(tDate.getFullYear() + '-' + (tDate.getMonth() + 1) + '-' + tDate.getDate());
     tDate.setUTCDate(tDate.getDate() + 1);
   } while (strDate != toDate);
-// console.log(dates);
+  // console.log(dates);
 
   let dailyStatus = await DailyStatusModel.find(
     {
@@ -448,12 +448,12 @@ exports.changeVerified = catchAsyncError(async (req, res, next) => {
   });
 
   if (!dailyStatus) {
-    res.status(201).json({
+    return res.status(201).json({
       success: false,
     });
   }
 
-  res.status(201).json({
+  return res.status(201).json({
     success: true,
     dailyStatus: dailyStatus
   });
@@ -502,23 +502,23 @@ exports.getGraphData = catchAsyncError(async (req, res, next) => {
 })
 
 exports.generateDailyGraph = async (req, res, next) => {
-  const { pS,reqDate } = req.query;
+  const { pS, reqDate } = req.query;
   if (!pS) {
     return next(new ErrorHandler("pS not found", 400));
   }
 
   var dateType = new Date();
-  if(reqDate){
+  if (reqDate) {
     var rdateType = new Date(reqDate)
-    if(rdateType.getTime() < dateType.getTime() && rdateType.getTime() > 946665000000){
-        dateType = rdateType
+    if (rdateType.getTime() < dateType.getTime() && rdateType.getTime() > 946665000000) {
+      dateType = rdateType
     }
-    else{
-       return next(new ErrorHandler("Enter valid reqDate format (yyyy/MM/dd) ", 500));
+    else {
+      return next(new ErrorHandler("Enter valid reqDate format (yyyy/MM/dd) ", 500));
     }
   }
-  else{
-    dateType.setDate(dateType.getDate()-1)
+  else {
+    dateType.setDate(dateType.getDate() - 1)
   }
 
   const headVal = {
@@ -615,7 +615,7 @@ exports.generateDailyGraph = async (req, res, next) => {
         totalNG += process.result.NG
       }
     })
-    var total = totalGraphData[dailystat.line].total
+    var total = totalGraphData && totalGraphData.length > 0 && totalGraphData[dailystat.line] ? totalGraphData[dailystat.line].total : 0;
     totalGraphData[dailystat.line] = {
       total: total,
       totalOK: totalOK,
@@ -652,13 +652,13 @@ exports.generateDailyGraph = async (req, res, next) => {
 async function createCard(user, checkItem) {
   // console.log("createCard checkItem: " + checkItem);
   const ciObjId = new ObjectId(checkItem)
-  const cardList = await CardRaisedModel.find({checkItem: ciObjId});
-  if(cardList && cardList.length > 0) {
+  const cardList = await CardRaisedModel.find({ checkItem: ciObjId });
+  if (cardList && cardList.length > 0) {
     return;
   }
 
-  const abItem = await AbnormalityModel.find({checkItem: ciObjId});
-  if(abItem && abItem.length > 0) {
+  const abItem = await AbnormalityModel.find({ checkItem: ciObjId });
+  if (abItem && abItem.length > 0) {
     // console.log(abItem);
     const card = await CardRaisedModel.create({
       cardType: "White",
@@ -679,18 +679,18 @@ async function createCard(user, checkItem) {
 exports.updateGlComment = async (req, res, next) => {
   const { ids, user, comment } = req.body;
 
-  var dsvList = await DailyStatusVerificationModel.find({_id: {$in: ids.map(id => id)}})
-                .populate("checkItem", "tlVerify glVerify")
-                .populate("dailyStatusItemId", "_id, glBy, tlBy");
-  
-  var result = await DailyStatusModel.updateMany({_id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id)}}, 
-    { "$set": { "glAt": new Date(), "glBy": new ObjectId(user), "glComment": comment} }); 
-  
+  var dsvList = await DailyStatusVerificationModel.find({ _id: { $in: ids.map(id => id) } })
+    .populate("checkItem", "tlVerify glVerify")
+    .populate("dailyStatusItemId", "_id, glBy, tlBy");
+
+  var result = await DailyStatusModel.updateMany({ _id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id) } },
+    { "$set": { "glAt": new Date(), "glBy": new ObjectId(user), "glComment": comment } });
+
   const delList = dsvList.filter((delItem) => {
     return ((delItem.checkItem != null && delItem.checkItem.tlVerify == true && delItem.dailyStatusItemId.tlBy != null) || (delItem.checkItem.tlVerify == false));
   });
 
-  result = await DailyStatusVerificationModel.deleteMany({ _id: { $in: delList.map(doc => doc._id)}});
+  result = await DailyStatusVerificationModel.deleteMany({ _id: { $in: delList.map(doc => doc._id) } });
 
   return res.status(200).json({ success: true });
 }
@@ -698,18 +698,18 @@ exports.updateGlComment = async (req, res, next) => {
 exports.updateTlComment = async (req, res, next) => {
   const { ids, user, comment } = req.body;
 
-  var dsvList = await DailyStatusVerificationModel.find({_id: {$in: ids.map(id => id)}})
-                .populate("checkItem", "tlVerify glVerify")
-                .populate("dailyStatusItemId", "_id, glBy, tlBy");
-  
-  var result = await DailyStatusModel.updateMany({_id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id)}}, 
-    { "$set": { "tlAt": new Date(), "tlBy": new ObjectId(user), "tlComment": comment} }); 
-  
+  var dsvList = await DailyStatusVerificationModel.find({ _id: { $in: ids.map(id => id) } })
+    .populate("checkItem", "tlVerify glVerify")
+    .populate("dailyStatusItemId", "_id, glBy, tlBy");
+
+  var result = await DailyStatusModel.updateMany({ _id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id) } },
+    { "$set": { "tlAt": new Date(), "tlBy": new ObjectId(user), "tlComment": comment } });
+
   const delList = dsvList.filter((delItem) => {
     return ((delItem.checkItem != null && delItem.checkItem.glVerify == true && delItem.dailyStatusItemId.glBy != null) || (delItem.checkItem.glVerify == false));
   });
 
-  result = await DailyStatusVerificationModel.deleteMany({ _id: { $in: delList.map(doc => doc._id)}});
+  result = await DailyStatusVerificationModel.deleteMany({ _id: { $in: delList.map(doc => doc._id) } });
 
   return res.status(200).json({ success: true });
 }
@@ -717,23 +717,23 @@ exports.updateTlComment = async (req, res, next) => {
 exports.updateGlConfirm = async (req, res, next) => {
   const { ids, user } = req.body;
 
-  var dsvList = await DailyStatusVerificationModel.find({_id: {$in: ids.map(id => id)}})
-                .populate("checkItem", "tlVerify glVerify")
-                .populate("dailyStatusItemId", "_id, glBy, tlBy");
+  var dsvList = await DailyStatusVerificationModel.find({ _id: { $in: ids.map(id => id) } })
+    .populate("checkItem", "tlVerify glVerify")
+    .populate("dailyStatusItemId", "_id, glBy, tlBy");
 
-  var result = await DailyStatusModel.updateMany({_id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id)}}, 
-    { "$set": { "glAt": new Date(), "glBy": new ObjectId(user)} }); 
-  
+  var result = await DailyStatusModel.updateMany({ _id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id) } },
+    { "$set": { "glAt": new Date(), "glBy": new ObjectId(user) } });
+
   const delList = dsvList.filter((delItem) => {
     return ((delItem.checkItem != null && delItem.checkItem.tlVerify == true && delItem.dailyStatusItemId.tlBy != null) || (delItem.checkItem.tlVerify == false));
   });
 
   console.log(JSON.stringify(delList));
-  result = await DailyStatusVerificationModel.deleteMany({ _id: { $in: delList.map(doc => doc._id)}});
+  result = await DailyStatusVerificationModel.deleteMany({ _id: { $in: delList.map(doc => doc._id) } });
 
-  var dsNGList = await DailyStatusModel.find({_id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id)}});
+  var dsNGList = await DailyStatusModel.find({ _id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id) } });
   dsNGList.forEach((item) => {
-    if(item.result == "NG") {
+    if (item.result == "NG") {
       createCard(user, item.checkItem);
     }
   });
@@ -744,22 +744,22 @@ exports.updateGlConfirm = async (req, res, next) => {
 exports.updateTlConfirm = async (req, res, next) => {
   const { ids, user } = req.body;
 
-  var dsvList = await DailyStatusVerificationModel.find({_id: {$in: ids.map(id => id)}})
-                .populate("checkItem", "tlVerify glVerify")
-                .populate("dailyStatusItemId", "_id, glBy, tlBy");
-  
-  var result = await DailyStatusModel.updateMany({_id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id)}}, 
-    { "$set": { "tlAt": new Date(), "tlBy": new ObjectId(user)} }); 
-  
+  var dsvList = await DailyStatusVerificationModel.find({ _id: { $in: ids.map(id => id) } })
+    .populate("checkItem", "tlVerify glVerify")
+    .populate("dailyStatusItemId", "_id, glBy, tlBy");
+
+  var result = await DailyStatusModel.updateMany({ _id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id) } },
+    { "$set": { "tlAt": new Date(), "tlBy": new ObjectId(user) } });
+
   const delList = dsvList.filter((delItem) => {
     return ((delItem.checkItem != null && delItem.checkItem.glVerify == true && delItem.dailyStatusItemId.glBy != null) || (delItem.checkItem.glVerify == false));
   });
 
-  result = await DailyStatusVerificationModel.deleteMany({ _id: { $in: delList.map(doc => doc._id)}});
+  result = await DailyStatusVerificationModel.deleteMany({ _id: { $in: delList.map(doc => doc._id) } });
 
-  var dsNGList = await DailyStatusModel.find({_id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id)}});
+  var dsNGList = await DailyStatusModel.find({ _id: { $in: dsvList.map(doc => doc.dailyStatusItemId._id) } });
   dsNGList.forEach((item) => {
-    if(item.result == "NG") {
+    if (item.result == "NG") {
       createCard(user, item.checkItem);
     }
   });
