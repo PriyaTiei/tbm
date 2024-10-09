@@ -40,3 +40,59 @@ display: flex;
   background: linear-gradient(135deg, #17a2b8, #117a8b); /* Bright blue for info */
   color: #fff; /* White text color for high contrast */
 }
+
+
+.table-container {
+  max-height: 400px; /* Adjust as needed */
+  overflow-y: auto;
+}
+
+.table-fixed-header {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-fixed-header thead tr {
+  position: sticky;
+  top: 0;
+  background-color: #fff; /* Background color of header */
+  z-index: 1;
+}
+
+.table-fixed-header th, .table-fixed-header td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+  font-size: 12px !important;
+  overflow-x: scroll;
+}
+
+.table-fixed-header th {
+  background-color: #f8f9fa; /* Optional: Add background color to header */
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+
+.wide-column {
+  width: 1500px !important;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+
+.table-responsive {
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 12px !important;
+}
+
+tbody > td {
+  font-size: 12px !important;
+}
+
+.sticky-header th {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa !important; /* Bootstrap's table header background color */
+  z-index: 1;
+  border-bottom: 2px solid #000;
+}

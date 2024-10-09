@@ -60,7 +60,7 @@ exports.loginWithToken = catchAsyncError(async (req, res, next) => {
       return next(new ErrorHandler("Invalid token", 401));
     }
 
-    res.status(200).json({ success: true, message: "Authentication successful", user });
+    return res.status(200).json({ success: true, message: "Authentication successful", user });
   } catch (error) {
     return next(new ErrorHandler(error, 401));
   }
@@ -83,7 +83,7 @@ exports.getUsers = catchAsyncError(async (req, res, next) => {
   }
   const totalUsers = users.length;
 
-  res.status(201).json({ success: true, totalUsers, users });
+  return  res.status(201).json({ success: true, totalUsers, users });
 });
 
 exports.deleteUser = catchAsyncError(async (req, res, next) => {

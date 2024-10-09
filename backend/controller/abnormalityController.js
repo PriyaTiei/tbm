@@ -20,6 +20,7 @@ exports.createAbnormality = catchAsyncError(async (req, res, next) => {
     user,
     image,
     pS,
+    m_spec
   } = req.body;
   const abnormalityItem = await AbnormalityModel.create({
     checkItem,
@@ -35,8 +36,9 @@ exports.createAbnormality = catchAsyncError(async (req, res, next) => {
     status,
     image,
     pS,
+    m_spec
   });
-  res.status(200).json({ success: true, abnormalityItem });
+  return res.status(200).json({ success: true, abnormalityItem });
 });
 
 exports.uploadAbnormalityImage = catchAsyncError(async (req, res, next) => {
@@ -52,12 +54,12 @@ exports.uploadAbnormalityImage = catchAsyncError(async (req, res, next) => {
     (err, doc) => {
       if (err) {
         console.log("err ", err);
-        res.status(400).json({
+        return res.status(400).json({
           success: false,
           message: "image upload Failed",
         });
       } else {
-        res.status(200).json({
+        return res.status(200).json({
           success: true,
           message: "image uploaded successfully",
           file: req.file,
@@ -84,6 +86,7 @@ exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
     checkItem,
     user,
     image,
+    m_spec
   } = req.body;
 
   abnormalityItem.abnormality = abnormality;
@@ -95,9 +98,10 @@ exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
   abnormalityItem.user = user;
   abnormalityItem.checkItem = checkItem;
   abnormalityItem.image = image;
+  abnormalityItem.m_spec = m_spec;
 
   await abnormalityItem.save({ validateBeforeSave: false });
-  res.status(201).json({ success: true, abnormalityItem });
+  return res.status(201).json({ success: true, abnormalityItem });
 });
 
 exports.deleteAbnormality = catchAsyncError(async (req, res, next) => {
@@ -151,7 +155,7 @@ exports.getAbnormalityAll = catchAsyncError(async (req, res, next) => {
   }
   const totalAbnormalities = abnormalities.length;
   // console.log(abnormalities)
-  res.status(201).json({ success: true, totalAbnormalities, abnormalities });
+  return res.status(201).json({ success: true, totalAbnormalities, abnormalities });
 });
 
 exports.getAbnormality = catchAsyncError(async (req, res, next) => {
@@ -163,7 +167,7 @@ exports.getAbnormality = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("cannot find this abnormalityItem", 404));
   }
 
-  res.status(201).json({ success: true, abnormalityItem });
+  return res.status(201).json({ success: true, abnormalityItem });
 });
 
 exports.getAbnormalityByIdAndDate = catchAsyncError(async (req, res, next) => {
@@ -185,8 +189,8 @@ exports.getAbnormalityByIdAndDate = catchAsyncError(async (req, res, next) => {
   const abnormalityItem = await AbnormalityModel.findOne(newQueryStr)
   
   if (abnormalityItem==null) {
-    res.status(201).json({ success: false });
+    return res.status(201).json({ success: false });
   }
 
-  res.status(201).json({ success: true, abnormalityItem });
+  return res.status(201).json({ success: true, abnormalityItem });
 });

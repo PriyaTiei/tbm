@@ -23,7 +23,8 @@ const checkItemSchema = new mongoose.Schema({
   },
 
   cycle: {
-    type: String,   
+    type: String,
+    required: [true, "please enter Cycle/Frequency"],
   },
   tool: {
     type: String,  

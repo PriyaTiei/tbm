@@ -215,7 +215,7 @@ function SummaryAbnormality() {
         </button>
         </div>
 
-      <div className="overflow-auto " style={{ height: "65vh", width: "97vw" }}>
+      <div className="overflow-auto " style={{ height: "65vh", width: "97vw", paddingBottom: "10%" }}>
       
          
         <table className="m-3   table table-bordered table-sm table-hover text-dark ">

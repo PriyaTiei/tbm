@@ -26,7 +26,7 @@ export default function OldPending() {
         <Loading />
       ) : (
         <Fragment>
-          <div className="overflow-auto" style={{ height: "75vh" }}>
+          <div className="overflow-auto" style={{ height: "75vh", paddingBottom: "10%" }}>
             {pendingTasksData.success
               ? pendingTasksData.pendingData.map((item, i) => {
                   return (

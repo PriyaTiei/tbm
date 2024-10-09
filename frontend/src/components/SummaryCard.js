@@ -63,8 +63,8 @@ function SummaryCard() {
   const cardList = cards.loading
     ? []
     : cards.cards.success
-    ? cards.cards.cards
-    : [];
+      ? cards.cards.cards
+      : [];
 
   const list = cardList.map((item) => {
     // return null
@@ -204,7 +204,7 @@ function SummaryCard() {
         <div className="ms-auto me-3">
           <span>From</span>
           <DatePicker
-          format="dd/MM/yyyy"
+            format="dd/MM/yyyy"
             value={fromDate}
             onChange={setFromDate}
             clearIcon={null}
@@ -231,7 +231,7 @@ function SummaryCard() {
           Clear Filters
         </button>
       </div>
-      <div className="overflow-auto " style={{ height: "65vh", width: "97vw" }}>
+      <div className="overflow-auto " style={{ height: "65vh", width: "97vw", paddingBottom: "10%" }}>
         <table className="m-3  table table-bordered table-sm table-hover text-dark">
           {/* <table className="m-5 border border-black-50 text-light"> */}
           <thead>
@@ -244,9 +244,9 @@ function SummaryCard() {
               <th>Abnormality</th>
               <th>Card Type</th>
               <th>Status</th>
-              <th style={{minWidth:"100px"}}>Image</th>
-              <th style={{minWidth:"100px"}}>Delete</th>
-              <th style={{minWidth:"100px"}}>Update</th>
+              <th style={{ minWidth: "100px" }}>Image</th>
+              <th style={{ minWidth: "100px" }}>Delete</th>
+              <th style={{ minWidth: "100px" }}>Update</th>
               <th></th>
             </tr>
             <tr>

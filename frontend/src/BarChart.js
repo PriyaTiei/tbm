@@ -369,7 +369,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     modifyDataHolidayAtIndex(
                         difference,
                         typeof maxCount === "number" && maxCount != -Infinity && maxCount != 0
-                            ? roundUpToNearest10(maxCount)
+                            ? roundUpToNearest10(maxCount-totalOkNgCount)
                             : 2
                     );
                     // }
@@ -461,7 +461,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                                                     textAlign: "center"
                                                 }}
                                             >
-                                                {String(dats).padStart(3, "0")}
+                                                {String(dats).padStart(2, "0")}
                                             </td>
                                         ))}
                                     </tr>
@@ -476,7 +476,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                                                     textAlign: "center"
                                                 }}
                                             >
-                                                {String(dats).padStart(3, "0")}
+                                                {String(dats).padStart(2, "0")}
                                             </td>
                                         ))}
                                     </tr>

@@ -39,14 +39,14 @@ function Filters() {
   const [showModals, setShowModals] = useState(false)
 
   const auth = useSelector((state) => state.auth);
-  const [header, setHeader] = useState([])
-  const [body, setBody] = useState([])
+  // const [header, setHeader] = useState([])
+  // const [body, setBody] = useState([])
 
 
 
   const level = auth.user ? auth.user.level : 0;
   // const { loading, pendingTasksData } = pendingTasks;
-  const [pendingTasksData, setPendingTasksData] = useState([])
+  // const [pendingTasksData, setPendingTasksData] = useState([])
   // generate options for selecting line
   var lineOptions = [{ value: null, label: "All Lines" }];
   var lineOptions2 = [];
@@ -68,47 +68,47 @@ function Filters() {
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    axios.get(
-      `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/tbmFrequency`)
-      .then((result) => {
-        if (result.data.success) {
-          setPendingTasksData(result.data?.frequencyTasks)
-          // setCardList(result.data.dailyStatusAll)
-        }
-      })
-      .catch((err) => {
-        // console.log("error ", err);
-        // toast.error(`Data could not be saved , ${err.message}`);
-      });
+  // useEffect(() => {
+  //   axios.get(
+  //     `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/tbmFrequency`)
+  //     .then((result) => {
+  //       if (result.data.success) {
+  //         setPendingTasksData(result.data?.frequencyTasks)
+  //         // setCardList(result.data.dailyStatusAll)
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       // console.log("error ", err);
+  //       // toast.error(`Data could not be saved , ${err.message}`);
+  //     });
 
-  }, [])
+  // }, [])
 
-  useEffect(() => {
-    if (pendingTasksData.length) {
-
-
-      const newHeader = ["SL NO", "OP NO", "WORK DETAIL", "LAST_COMPLETED", "FREQUENCY"];
-      setHeader(newHeader);
+  // useEffect(() => {
+  //   if (pendingTasksData.length) {
 
 
-
-      const newBody = pendingTasksData.map((task, index) => [
-        index + 1, // SL NO
-
-        task.top.opNo, // OP NO
-        task.top.workDetail,
-        task.top.entryFor && task.top.entryFor[task.top.entryFor.length - 1],
-        task.top.frequency// WORK DETAIL
+  //     const newHeader = ["SL NO", "OP NO", "WORK DETAIL", "LAST_COMPLETED", "FREQUENCY"];
+  //     setHeader(newHeader);
 
 
-      ]);
+
+  //     const newBody = pendingTasksData.map((task, index) => [
+  //       index + 1, // SL NO
+
+  //       task.top.opNo, // OP NO
+  //       task.top.workDetail,
+  //       task.top.entryFor && task.top.entryFor[task.top.entryFor.length - 1],
+  //       task.top.frequency// WORK DETAIL
 
 
-      setBody(newBody);
+  //     ]);
 
-    }
-  }, [pendingTasksData]);
+
+  //     setBody(newBody);
+
+  //   }
+  // }, [pendingTasksData]);
   // useEffect(() => {
   //   if (level >= 100) {
   //     setShowModals(true)
@@ -178,19 +178,19 @@ function Filters() {
   };
 
 
-  function handleDownloadExcel() {
-    const today = new Date().toISOString().slice(0, 10); // Format: YYYY-MM-DD
-    const fileName = `${today}-pending-from-month`;
+  // function handleDownloadExcel() {
+  //   const today = new Date().toISOString().slice(0, 10); // Format: YYYY-MM-DD
+  //   const fileName = `${today}-pending-from-month`;
 
-    downloadExcel({
-      fileName: fileName,
-      sheet: "pending-cards",
-      tablePayload: {
-        header: header,
-        body: body,
-      },
-    });
-  }
+  //   downloadExcel({
+  //     fileName: fileName,
+  //     sheet: "pending-cards",
+  //     tablePayload: {
+  //       header: header,
+  //       body: body,
+  //     },
+  //   });
+  // }
 
 
 
@@ -208,14 +208,14 @@ function Filters() {
             className="px-3"
           />
         </div>
-        {
+        {/* {
           cookies.userId ? (<>
             <SlideInNotification message={
               "An error occurred. Please try again."
             }
               duration={5000}
               type={"info"} handleDownloadExcel={handleDownloadExcel} />  </>) : (<></>)
-        }
+        } */}
         <Link to="/">
           <Button className="mx-1 bg-blue px-3">
             <i className="bi bi-house"></i> Home
@@ -284,11 +284,11 @@ function Filters() {
         {level >= 20 ? <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">TL/GL Verification</Tooltip>}><Link to="/verification"><Button className="" onClick={() => setShowModals(true)} style={{ background: "transparent", color: "#000" }}>
           <i class="bi bi-calendar-check bi-2x"></i><span style={{ background: "red", borderRadius: "50%", width: "10px", height: "10px", position: "absolute" }}></span>
         </Button></Link></OverlayTrigger> : ""}
-        <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Pending cards in brief</Tooltip>}>
+        {/* <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Pending cards in brief</Tooltip>}>
           <Button style={{ background: "transparent", color: "#000", marginRight: '20px' }} onClick={handleDownloadExcel}>
             <i class="bi bi-file-earmark-excel"></i>
           </Button>
-        </OverlayTrigger>
+        </OverlayTrigger> */}
         <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Pending Items</Tooltip>}><Link to="/pendingTasks">
           <Button style={{ background: "transparent", color: "#000", marginRight: '20px' }}>
             <i class="bi bi-hourglass-split"></i>

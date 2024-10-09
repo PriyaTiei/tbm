@@ -8,9 +8,10 @@ const ErrorHandler = require("../util/errorHandling");
 const HolidayCalendarModel = require("../mongoSchema/holidayCalendarModel");
 const { ObjectId } = require("../util/getObjectType");
 const DailyStatusVerificationModel = require("../mongoSchema/dailyStatusVerificationModel");
+const ApiFeatureHead = require("../util/apiFeatureHead");
 
-function getStartDate(month, year) {
-    var tDate =  new Date(year, month, 1);
+async function getStartDate(month, year) {
+    var tDate =  new Date(Date.UTC(year, month, 1));
     if(tDate.getUTCDay() === 1) {
         return tDate;
     }
@@ -20,7 +21,7 @@ function getStartDate(month, year) {
     return tDate;  
 }
 
-function getEndDate(date) {
+async function getEndDate(date) {
     var eDate = new Date(date);
     const month = eDate.getUTCMonth();
     while(month == eDate.getUTCMonth()) {
@@ -62,7 +63,10 @@ async function getItemsOKCount(report) {
         }
     ]);
     dailyStatus.forEach((task) => {
-        report.data.push({entryFor: task._id, okCount: task.count});
+      let date = new Date(task._id);
+      date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const dateStr = date.toISOString().split('T')[0];
+      report.data.push({entryFor: dateStr, okCount: task.count});
     });
 }
 
@@ -81,8 +85,11 @@ async function getItemsNGCount(report) {
         }
     ]);
     dailyStatus.forEach((task) => {
-        report.data.push({entryFor: task._id, ngCount: task.count});
-    })
+      let date = new Date(task._id);
+      date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const dateStr = date.toISOString().split('T')[0];
+      report.data.push({entryFor: dateStr, ngCount: task.count});
+    });
 }
 
 async function getItemsPendingCount(report) {
@@ -100,8 +107,11 @@ async function getItemsPendingCount(report) {
         }
     ]);
     pendingTasks.forEach((task) => {
-        report.data.push({entryFor: task._id, pendingCount: task.count});
-    })
+      let date = new Date(task._id);
+      date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const dateStr = date.toISOString().split('T')[0];
+      report.data.push({entryFor: dateStr, pendingCount: task.count});
+    });
 }
 
 function findAndSetData(dataArray, strDate) {
@@ -212,34 +222,47 @@ function isItemScheduled(date, item) {
 }
 
 async function fillTotalItems(report) {
-    var tDate = report.startDate;
-    let dataArray = report.data;
-    var items = await HeadModel.find({});
-    const strEndDate = report.endDate.toISOString().split('T')[0];
-    console.log("Item Count: " + items.length);
-    items.forEach((item) => {
-        tDate = new Date(report.startDate);
-        var strTDate = tDate.toISOString().split('T')[0];
+  var tDate = report.startDate;
+  let dataArray = report.data;
+  const strEndDate = report.endDate.toISOString().split('T')[0];
+  tDate = new Date(report.startDate);
+  var strTDate = tDate.toISOString().split('T')[0];
 
-        while(strTDate != strEndDate) {
-            let strDate = tDate.toISOString().split('T')[0];
-            let tmpStrDate = strDate.replaceAll('-0', '-');
-            let tObj = dataArray.find((o) => (o.entryFor == strDate || o.entryFor == tmpStrDate));
-            if(tObj != null && typeof tObj !== "undefined") {
-                tObj.totalItemCount = (tObj.hasOwnProperty("totalItemCount")) ? tObj.totalItemCount : 0;
-                tObj.totalItemCount += (isItemScheduled(tDate, item) ? 1 : 0);
-            } else {
-                tObj = {};
-                tObj.entryFor = strDate;
-                tObj.totalItemCount = isItemScheduled(tDate, item) ? 1 : 0;
-                dataArray.push(tObj);
-            }
-            tDate.setUTCDate(tDate.getUTCDate() + 1);
-            strTDate = tDate.toISOString().split('T')[0];
-        };
-        tDate = null;
-    }); 
-    report.data = dataArray;   
+  while(tDate <= report.endDate) {
+    let d = tDate.getDay();
+    let w = Math.trunc(tDate.getDate()/7) + 1;
+    let m = tDate.getMonth() + 1;
+    let y = tDate.getFullYear();
+
+    let query = {
+      d: d, w: w, m: m, y: y, pS: 'S'
+    };
+
+    const headObject = new ApiFeatureHead(HeadModel, query).match();
+    const headCheckList = await headObject.query;
+//    console.log(headCheckList);
+    let totalItemCount = 0;
+    headCheckList.forEach((item) => {
+      totalItemCount += item.processList.length;
+    });
+
+    let strDate = tDate.toISOString().split('T')[0];
+    let tmpStrDate = strDate.replaceAll('-0', '-');
+    let tObj = dataArray.find((o) => (o.entryFor == strDate || o.entryFor == tmpStrDate));
+    if(tObj != null && typeof tObj !== "undefined") {
+        tObj.totalItemCount = (tObj.hasOwnProperty("totalItemCount")) ? tObj.totalItemCount + totalItemCount : totalItemCount;
+    } else {
+        tObj = {};
+        tObj.entryFor = strDate;
+        tObj.totalItemCount = totalItemCount;
+        dataArray.push(tObj);
+    }
+    tDate.setDate(tDate.getDate() + 1);
+    strTDate = tDate.toISOString().split('T')[0];
+  };
+
+  console.log(dataArray);
+  report.data = dataArray;   
 }
 
 exports.reportTBMStatus = catchAsyncError(async (req, res, next) => {
@@ -259,8 +282,8 @@ exports.reportTBMStatus = catchAsyncError(async (req, res, next) => {
 
     const userObjID = ObjectId(user);
 
-    report.startDate = getStartDate(month, year);
-    report.endDate = getEndDate(report.startDate);
+    report.startDate = await getStartDate(month, year);
+    report.endDate = await getEndDate(report.startDate);
     report.data = [];
 
     await fillHolidays(report);
@@ -270,7 +293,7 @@ exports.reportTBMStatus = catchAsyncError(async (req, res, next) => {
     await fillTotalItems(report);
     await refineData(report);
     
-    res.status(200).json({ success: true, report });
+    return res.status(200).json({ success: true, report });
 });
 
 exports.pendingForLesser30Days = catchAsyncError(async (req, res, next) => {
@@ -304,7 +327,7 @@ exports.pendingForLesser30Days = catchAsyncError(async (req, res, next) => {
         }
         ]
     );
-    res.status(200).json({ success: true, pendingTasks });
+    return res.status(200).json({ success: true, pendingTasks });
 });
 
 exports.pendingForGreater30Days = catchAsyncError(async (req, res, next) => {
@@ -338,7 +361,7 @@ exports.pendingForGreater30Days = catchAsyncError(async (req, res, next) => {
         }
         ]
     );
-    res.status(200).json({ success: true, pendingTasks });
+    return res.status(200).json({ success: true, pendingTasks });
 });
 
 exports.tbmFrequency = catchAsyncError(async (req, res, next) => {
@@ -372,13 +395,13 @@ exports.tbmFrequency = catchAsyncError(async (req, res, next) => {
         }
       ]
     );
-    res.status(200).json({ success: true, frequencyTasks });
+    return res.status(200).json({ success: true, frequencyTasks });
 });
 
 exports.tlVerifyItems = catchAsyncError(async (req, res, next) => {
     const tlList = await DailyStatusVerificationModel.aggregate([
         {
-          $match: { tlVerify: true }
+            $match: { $or: [{ tlVerify: true }, { result: "NG"}]}
         },
         {
           $lookup: {
@@ -407,15 +430,23 @@ exports.tlVerifyItems = catchAsyncError(async (req, res, next) => {
               $eq: ["$entryFor", "$dailystatus.entryFor"]
             }
           }
+        },
+        {
+          $addFields: {
+            "entryForDate": { $dateFromString: { dateString: "$entryFor" }}
+          }
+        },
+        {
+            $sort: { entryForDate: -1}
         }
       ]);
-    res.status(200).json({ success: true, tlList });
+    return res.status(200).json({ success: true, tlList });
 });
 
 exports.glVerifyItems = catchAsyncError(async (req, res, next) => {
     const glList = await DailyStatusVerificationModel.aggregate([
         {
-          $match: { glVerify: true }
+          $match: { $or: [{ glVerify: true }, { result: "NG"}]}
         },
         {
           $lookup: {
@@ -444,7 +475,62 @@ exports.glVerifyItems = catchAsyncError(async (req, res, next) => {
               $eq: ["$entryFor", "$dailystatus.entryFor"]
             }
           }
+        },
+        {
+          $addFields: {
+            "entryForDate": { $dateFromString: { dateString: "$entryFor" }}
+          }
+        },
+        {
+            $sort: { entryForDate: -1}
         }
       ]);
-    res.status(200).json({ success: true, glList });
+    return res.status(200).json({ success: true, glList });
 });
+
+exports.getVerifyItems = catchAsyncError(async (req, res, next) => {
+    // var dailyItems = await DailyStatus.find({}).populate("checkItem", "glVerify tlVerify");
+
+    var dailyItems = await DailyStatus.aggregate([{
+          $lookup: {
+            from: "checkitems",
+            localField: "checkItem",
+            foreignField: "_id",
+            as: "checkItem"
+          }
+        },
+        {
+          $unwind: {
+            path: "$checkItem",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $addFields: {
+            "entryForDate": { $dateFromString: { dateString: "$entryFor" }}
+          }
+        },
+        {
+            $sort: { entryForDate: -1}
+        }
+      ]);
+
+    if(dailyItems == null || (dailyItems != null && dailyItems.length == 0)) {
+        return res.status(200).json({ success: true, dailyItemsWithGlTlVerify: [] });
+    }
+
+    var dailyItemsWithGlTlVerify = dailyItems.filter((dItem) => {
+        return (dItem.checkItem && (dItem.checkItem.glVerify == true || dItem.checkItem.tlVerify));
+    });
+
+    if(dailyItemsWithGlTlVerify && Array.isArray(dailyItemsWithGlTlVerify)) {
+      dailyItemsWithGlTlVerify.forEach((dItem) => {
+        if(!dItem.hasOwnProperty("m_spec")) {
+          dItem.m_spec = [];
+        }
+      });
+    }
+
+    return res.status(200).json({ success: true, dailyItemsWithGlTlVerify });
+});
+
