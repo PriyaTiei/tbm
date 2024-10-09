@@ -31,7 +31,6 @@ const Verification = ({ showModals, setShowModals }) => {
                 `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/getVerifyItems`
             )
             .then((result) => {
-
                 setCommon(result?.data?.dailyItemsWithGlTlVerify)
             })
             .catch((err) => {
