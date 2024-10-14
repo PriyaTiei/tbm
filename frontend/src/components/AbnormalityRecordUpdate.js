@@ -27,7 +27,7 @@ function ModalForm(props) {
     toDateSt,
     image,
   } = props;
-  console.log("image :", image);
+ 
   const dispatch = useDispatch();
   const handleClose = () => {
     setShowModal(false);
@@ -80,7 +80,7 @@ function ModalForm(props) {
         }
       })
       .catch((err) => {
-        console.log("error uploading image", err);
+        
         toast.error(
           `Failed to upload Image, choose correct Image file with file extension .png/.jpg`
         );
@@ -109,12 +109,12 @@ function ModalForm(props) {
       )
       .then((result) => {
         toast.success("Saved Successfully");
-        console.log(result.data);
+      
         setShowModal(false);
         dispatch(getAbnormality(fromDateSt, toDateSt));
       })
       .catch((err) => {
-        console.log(err);
+       
         toast.error("Please fill Abnormility Details");
       });
   };

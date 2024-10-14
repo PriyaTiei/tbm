@@ -3,7 +3,7 @@ import { Bar } from "react-chartjs-2";
 
 const CardStatusGraph = ({ unFilteredData }) => {
 
-    console.log(unFilteredData);
+
 
     const [data, setData] = useState({})
 

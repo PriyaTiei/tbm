@@ -9,7 +9,6 @@ from openpyxl import Workbook
 import json
 from openpyxl.styles import Font
 
-
 today = datetime.now()
 from_date = today-timedelta(days=30)
 to_date = today+timedelta(days=1)
@@ -45,153 +44,95 @@ d = datetime.now().day
 weekNo = (d//7.1)+1
 
 # generate the url address
-urlForCardRaised = "http://10.82.126.73:5071/card/find/fromDate/" + \
+urlForCardRaised = "http://localhost:5051/card/find/fromDate/" + \
     str(f_y)+"-"+str(f_m)+"-"+str(f_d)+"/toDate/" + \
     str(t_y)+"-"+str(t_m)+"-"+str(t_d)
-urlForCardRaised_4_yesterday = "http://10.82.126.73:5071/card/find/fromDate/" + \
+urlForCardRaised_4_yesterday = "http://localhost:5051/card/find/fromDate/" + \
     str(y_y)+"-"+str(y_m)+"-"+str(y_d)+"/toDate/"+str(y)+"-"+str(m)+"-"+str(d)
 print("URL-last 30 days", urlForCardRaised)
 print("URL-yesterday", urlForCardRaised_4_yesterday)
 
 
 # fetching the data using api
-response = requests.get(urlForCardRaised, auth=('user', 'pass'))
-print(response.status_code)
+response = requests.get(urlForCardRaised)
+print('response-->',response.status_code)
 card = response.json()
 # print(card["cards"])
 
-response2 = requests.get(urlForCardRaised_4_yesterday, auth=('user', 'pass'))
-print(response2.status_code)
+response2 = requests.get(urlForCardRaised_4_yesterday)
+print('response2-->',response2.status_code)
 card_y = response2.json()
 #####################################################################################################
 wb = Workbook()
 
-wsS = wb.create_sheet("Summary", 0)
-wsB = wb.create_sheet("Block", 1)
-wsC = wb.create_sheet("Crank", 2)
-wsH = wb.create_sheet("Head", 3)
+# --------------------loop to create the excel and its headers for each sheet starts-------------------------------
+
+columns = ['A', 'B', 'C', 'D', 'E']
+column_width = 12
+line_name_lst = ['Summary']
+for each_card in card['cards']:  # getting all the unique line name
+    if each_card['line'] not in line_name_lst:
+        line_name_lst.append(each_card['line'])
+
+print('----Total line names-->',line_name_lst)
+
+line_sheet_dct = {} # this will hold sheet obj with repective line name --> {sheetname : sheet_obj}
+# Create sheets and set column widths in a loop
+for i, sheet_name in enumerate(line_name_lst):
+    ws = wb.create_sheet(sheet_name, i)
+    line_sheet_dct[sheet_name] = ws
+    for col in columns:
+        ws.column_dimensions[col].width = column_width
+
+del wb["Sheet"]
+#--------------------loop to create the excel and its headers for each sheet ends----------------------------------
 
 
-wsS.column_dimensions['A'].width = 12
-wsS.column_dimensions['B'].width = 12
-wsS.column_dimensions['C'].width = 12
-wsS.column_dimensions['D'].width = 12
-wsS.column_dimensions['E'].width = 12
-wsB.column_dimensions['A'].width = 12
-wsB.column_dimensions['B'].width = 12
-wsB.column_dimensions['C'].width = 12
-wsB.column_dimensions['D'].width = 12
-wsB.column_dimensions['E'].width = 12
-wsC.column_dimensions['A'].width = 12
-wsC.column_dimensions['B'].width = 12
-wsC.column_dimensions['C'].width = 12
-wsC.column_dimensions['D'].width = 12
-wsC.column_dimensions['E'].width = 12
-wsH.column_dimensions['A'].width = 12
-wsH.column_dimensions['B'].width = 12
-wsH.column_dimensions['C'].width = 12
-wsH.column_dimensions['D'].width = 12
-wsH.column_dimensions['E'].width = 12
-
+#--------------------Adding data to respective sheet starts----------------------------------
 if card["success"] == True:
     card_list = card["cards"]  # last 30 cards
-if card_y["success"] == True:  # yesterdays cards
-    card_list_y = card_y["cards"]
+if card_y["success"] == True:  
+    card_list_y = card_y["cards"]  # yesterdays cards
+
 
 if card["success"] == True:
-    # ================================Block Line=========================================================
-    r = 3
-    card_message = "Daily smile card raise status in TNGA is attached."
-    for entry in card_list:
-        if entry["line"] == "Block" and entry["status"] != "complete":
-            wsB["A1"] = "Summary of card raised in TNGA BLOCK LINE (last 30 days)"
-            wsB['A1'].font = Font(bold=True)
-            wsB["A2"] = "OP No."
-            wsB['A2'].font = Font(bold=True)
-            wsB["B2"] = "Status"
-            wsB['B2'].font = Font(bold=True)
-            wsB["C2"] = "Abnormality"
-            wsB['C2'].font = Font(bold=True)
-            wsB["D2"] = "Card"
-            wsB['D2'].font = Font(bold=True)
-            wsB["E2"] = "Pending Days"
-            wsB["E2"].font = Font(bold=True)
-            # print(entry["line"],",",entry["status"])
+    for line_name in line_name_lst:
+        print('Line name -->',line_name)
+        r = 3
+        card_message = "Daily smile card raise status in TNGA is attached."
+        for entry in card_list:
+            if entry["line"] == line_name and entry["status"] != "complete":
+                ws = line_sheet_dct[line_name]
+                ws["A1"] = f"Summary of card raised in TNGA {line_name} LINE (last 30 days)"  
+                ws['A1'].font = Font(bold=True)
+                ws["A2"] = "OP No."
+                ws['A2'].font = Font(bold=True)
+                ws["B2"] = "Status"
+                ws['B2'].font = Font(bold=True)
+                ws["C2"] = "Abnormality"
+                ws['C2'].font = Font(bold=True)
+                ws["D2"] = "Card"
+                ws['D2'].font = Font(bold=True)
+                ws["E2"] = "Pending Days"
+                ws["E2"].font = Font(bold=True)
+                # print(entry["line"],",",entry["status"])
 
-            opNo = wsB.cell(row=r, column=1)
-            opNo.value = entry["processNo"]
-            status = wsB.cell(row=r, column=2)
-            status.value = entry["status"]
-            abnormality = wsB.cell(row=r, column=3)
-            abnormality.value = entry["abnormality"]
-            cardType = wsB.cell(row=r, column=4)
-            cardType.value = entry["cardType"]
-            pending_days = wsB.cell(row=r, column=5)
-            dateCreated = date(int(entry["createdAt"][0:4]), int(
-                entry["createdAt"][5:7]), int(entry["createdAt"][8:10]))
-            pending_days.value = (today.date()-dateCreated).days
-            r = r+1
-    # ================================Crank Line=========================================================
-    r = 3
-    for entry in card_list:
-        if entry["line"] == "Crank" and entry["status"] != "complete":
-            wsC["A1"] = "Summary of card raised in TNGA CRANK LINE (last 30 days)"
-            wsC['A1'].font = Font(bold=True)
-            wsC["A2"] = "OP No."
-            wsC['A2'].font = Font(bold=True)
-            wsC["B2"] = "Status"
-            wsC['B2'].font = Font(bold=True)
-            wsC["C2"] = "Abnormality"
-            wsC['C2'].font = Font(bold=True)
-            wsC["D2"] = "Card"
-            wsC['D2'].font = Font(bold=True)
-            wsC["E2"] = "Pending Days"
-            wsC['E2'].font = Font(bold=True)
-            # print(entry["line"],",",entry["status"])
-            opNo = wsC.cell(row=r, column=1)
-            opNo.value = entry["processNo"]
-            status = wsC.cell(row=r, column=2)
-            status.value = entry["status"]
-            abnormality = wsC.cell(row=r, column=3)
-            abnormality.value = entry["abnormality"]
-            cardType = wsC.cell(row=r, column=4)
-            cardType.value = entry["cardType"]
-            pending_days = wsC.cell(row=r, column=5)
-            dateCreated = date(int(entry["createdAt"][0:4]), int(
-                entry["createdAt"][5:7]), int(entry["createdAt"][8:10]))
-            pending_days.value = (today.date()-dateCreated).days
-            r = r+1
-    # ================================HEAD Line=========================================================
-    r = 3
-    for entry in card_list:
-        if entry["line"] == "Head" and entry["status"] != "complete":
-            wsH["A1"] = "Summary of card raised in TNGA HEAD LINE (last 30 days)"
-            wsH['A1'].font = Font(bold=True)
-            wsH["A2"] = "OP No."
-            wsH['A2'].font = Font(bold=True)
-            wsH["B2"] = "Status"
-            wsH['B2'].font = Font(bold=True)
-            wsH["C2"] = "Abnormality"
-            wsH['C2'].font = Font(bold=True)
-            wsH["D2"] = "Card"
-            wsH['D2'].font = Font(bold=True)
-            wsH["E2"] = "Pending Days"
-            wsH['E2'].font = Font(bold=True)
-            # print(entry["line"],",",entry["status"])
-            opNo = wsH.cell(row=r, column=1)
-            opNo.value = entry["processNo"]
-            status = wsH.cell(row=r, column=2)
-            status.value = entry["status"]
-            abnormality = wsH.cell(row=r, column=3)
-            abnormality.value = entry["abnormality"]
-            cardType = wsH.cell(row=r, column=4)
-            cardType.value = entry["cardType"]
-            pending_days = wsH.cell(row=r, column=5)
-            dateCreated = date(int(entry["createdAt"][0:4]), int(
-                entry["createdAt"][5:7]), int(entry["createdAt"][8:10]))
-            pending_days.value = (today.date()-dateCreated).days
-            r = r+1
+                opNo = ws.cell(row=r, column=1)
+                opNo.value = entry["processNo"]
+                status = ws.cell(row=r, column=2)
+                status.value = entry["status"]
+                abnormality = ws.cell(row=r, column=3)
+                abnormality.value = entry["abnormality"]
+                cardType = ws.cell(row=r, column=4)
+                cardType.value = entry["cardType"]
+                pending_days = ws.cell(row=r, column=5)
+                dateCreated = date(int(entry["createdAt"][0:4]), int(
+                    entry["createdAt"][5:7]), int(entry["createdAt"][8:10]))
+                pending_days.value = (today.date()-dateCreated).days
+                r = r+1
+
     # ================================SUMMARY SHEET-Last 30 days=========================================================
+    wsS = line_sheet_dct['Summary']
     wsS["A1"] = "Summary of card raised in TNGA (last 30 days)"
     wsS['A1'].font = Font(bold=True)
     wsS["A2"] = "LINE"
@@ -204,162 +145,167 @@ if card["success"] == True:
     wsS['D2'].font = Font(bold=True)
     wsS["E2"] = "PENDING"
     wsS['E2'].font = Font(bold=True)
-    wsS["A3"] = "BLOCK"
-    wsS['A3'].font = Font(bold=True)
-    wsS["A4"] = "CRANK"
-    wsS['A4'].font = Font(bold=True)
-    wsS["A5"] = "HEAD"
-    wsS['A5'].font = Font(bold=True)
+    summary_row_num  = 3
+    for each_line in line_name_lst:
+        if each_line != 'Summary':
+            wsS["A"+str(summary_row_num )] = each_line
+            wsS["A"+str(summary_row_num )].font = Font(bold=True)
+            summary_row_num += 1
 
-    completeB = 0
-    completeC = 0
-    completeH = 0
-    inprogressB = 0
-    inprogressC = 0
-    inprogressH = 0
-    pendingB = 0
-    pendingC = 0
-    pendingH = 0
-    for entry in card_list:
-        if entry["line"] == "Head":
-            if entry["status"] == "complete":
-                completeH = completeH+1
-            if entry["status"] == "inprogress":
-                inprogressH = inprogressH+1
-            if entry["status"] == "pending":
-                pendingH = pendingH+1
-        if entry["line"] == "Crank":
-            if entry["status"] == "complete":
-                completeC = completeC+1
-            if entry["status"] == "inprogress":
-                inprogressC = inprogressC+1
-            if entry["status"] == "pending":
-                pendingC = pendingC+1
-        if entry["line"] == "Block":
-            if entry["status"] == "complete":
-                completeB = completeB+1
-            if entry["status"] == "inprogress":
-                inprogressB = inprogressB+1
-            if entry["status"] == "pending":
-                pendingB = pendingB+1
+    complete = 0
+    inprogress = 0
+    pending = 0
+    row = 3
 
-    # ===========summary of BLOCK===================
-    total_B = wsS.cell(row=3, column=2)
-    total_B.value = completeB+inprogressB+pendingB
-    complete_B = wsS.cell(row=3, column=3)
-    complete_B.value = completeB
-    inprogress_B = wsS.cell(row=3, column=4)
-    inprogress_B.value = inprogressB
-    pending_B = wsS.cell(row=3, column=5)
-    pending_B.value = pendingB
+    for each_line in  line_name_lst:
+        if each_line != 'Summary':
+            complete = 0
+            inprogress = 0
+            pending = 0
+            for entry in card_list:
+                if entry["line"] == each_line:
+                    if entry["status"] == "complete":
+                        complete = complete+1
+                    if entry["status"] == "inprogress":
+                        inprogress = inprogress+1
+                    if entry["status"] == "pending":
+                        pending = pending+1
+                
+            total_B = wsS.cell(row=row, column=2)
+            total_B.value = complete+inprogress+pending
+            complete_B = wsS.cell(row=row, column=3)
+            complete_B.value = complete
+            inprogress_B = wsS.cell(row=row, column=4)
+            inprogress_B.value = inprogress
+            pending_B = wsS.cell(row=row, column=5)
+            pending_B.value = pending
 
-    # ===========summary of CRANK===================
-    total_C = wsS.cell(row=4, column=2)
-    total_C.value = completeC+inprogressC+pendingC
-    complete_C = wsS.cell(row=4, column=3)
-    complete_C.value = completeC
-    inprogress_C = wsS.cell(row=4, column=4)
-    inprogress_C.value = inprogressC
-    pending_C = wsS.cell(row=4, column=5)
-    pending_C.value = pendingC
+            row += 1
 
-    # ===========summary of HEAD===================
-    total_H = wsS.cell(row=5, column=2)
-    total_H.value = completeH+inprogressH+pendingH
-    complete_H = wsS.cell(row=5, column=3)
-    complete_H.value = completeH
-    inprogress_H = wsS.cell(row=5, column=4)
-    inprogress_H.value = inprogressH
-    pending_H = wsS.cell(row=5, column=5)
-    pending_H.value = pendingH
     # ================================SUMMARY SHEET-YESTERDAY=========================================================
     if card_y["success"] == True:
-        wsS["A11"] = "Summary of card raised in TNGA (Yesterday)"
-        wsS['A11'].font = Font(bold=True)
-        wsS["A12"] = "LINE"
-        wsS['A12'].font = Font(bold=True)
-        wsS["B12"] = "TOTAL"
-        wsS['B12'].font = Font(bold=True)
-        wsS["C12"] = "COMPLETE"
-        wsS['C12'].font = Font(bold=True)
-        wsS["D12"] = "INPROGRESS"
-        wsS['D12'].font = Font(bold=True)
-        wsS["E12"] = "PENDING"
-        wsS['E12'].font = Font(bold=True)
-        wsS["A13"] = "BLOCK"
-        wsS['A13'].font = Font(bold=True)
-        wsS["A14"] = "CRANK"
-        wsS['A14'].font = Font(bold=True)
-        wsS["A15"] = "HEAD"
-        wsS['A15'].font = Font(bold=True)
+        summary_row_num = summary_row_num + 5
+        row = summary_row_num + 2
+        wsS["A"+str(summary_row_num)] = "Summary of card raised in TNGA (Yesterday)"
+        wsS['A'+str(summary_row_num)].font = Font(bold=True)
+        wsS["A"+str(summary_row_num + 1)] = "LINE"
+        wsS['A'+str(summary_row_num + 1)].font = Font(bold=True)
+        wsS["B"+str(summary_row_num + 1)] = "TOTAL"
+        wsS['B'+str(summary_row_num + 1)].font = Font(bold=True)
+        wsS["C"+str(summary_row_num + 1)] = "COMPLETE"
+        wsS['C'+str(summary_row_num + 1)].font = Font(bold=True)
+        wsS["D"+str(summary_row_num + 1)] = "INPROGRESS"
+        wsS['D'+str(summary_row_num + 1)].font = Font(bold=True)
+        wsS["E"+str(summary_row_num + 1)] = "PENDING"
+        wsS['E'+str(summary_row_num + 1)].font = Font(bold=True)
 
-        completeB = 0
-        completeC = 0
-        completeH = 0
-        inprogressB = 0
-        inprogressC = 0
-        inprogressH = 0
-        pendingB = 0
-        pendingC = 0
-        pendingH = 0
-        for entry in card_list_y:
-            if entry["line"] == "Head":
-                if entry["status"] == "complete":
-                    completeH = completeH+1
-                if entry["status"] == "inprogress":
-                    inprogressH = inprogressH+1
-                if entry["status"] == "pending":
-                    pendingH = pendingH+1
-            if entry["line"] == "Crank":
-                if entry["status"] == "complete":
-                    completeC = completeC+1
-                if entry["status"] == "inprogress":
-                    inprogressC = inprogressC+1
-                if entry["status"] == "pending":
-                    pendingC = pendingC+1
-            if entry["line"] == "Block":
-                if entry["status"] == "complete":
-                    completeB = completeB+1
-                if entry["status"] == "inprogress":
-                    inprogressB = inprogressB+1
-                if entry["status"] == "pending":
-                    pendingB = pendingB+1
+        summary_row_num = summary_row_num + 2
+        for each_line in line_name_lst:
+            if each_line != 'Summary':
+                wsS["A"+str(summary_row_num )] = each_line
+                wsS["A"+str(summary_row_num )].font = Font(bold=True)
+                summary_row_num += 1
 
-        # ===========summary of BLOCK===================
-        total_B = wsS.cell(row=13, column=2)
-        total_B.value = completeB+inprogressB+pendingB
-        complete_B = wsS.cell(row=13, column=3)
-        complete_B.value = completeB
-        inprogress_B = wsS.cell(row=13, column=4)
-        inprogress_B.value = inprogressB
-        pending_B = wsS.cell(row=13, column=5)
-        pending_B.value = pendingB
+        complete = 0
+        inprogress = 0
+        pending = 0
 
-        # ===========summary of CRANK===================
-        total_C = wsS.cell(row=14, column=2)
-        total_C.value = completeC+inprogressC+pendingC
-        complete_C = wsS.cell(row=14, column=3)
-        complete_C.value = completeC
-        inprogress_C = wsS.cell(row=14, column=4)
-        inprogress_C.value = inprogressC
-        pending_C = wsS.cell(row=14, column=5)
-        pending_C.value = pendingC
+        for each_line in  line_name_lst:
+            if each_line != 'Summary':
+                complete = 0
+                inprogress = 0
+                pending = 0
+                for entry in card_list_y:
+                    if entry["line"] == each_line:
+                        if entry["status"] == "complete":
+                            complete = complete+1
+                        if entry["status"] == "inprogress":
+                            inprogress = inprogress+1
+                        if entry["status"] == "pending":
+                            pending = pending+1
+                    
+                total_B = wsS.cell(row=row, column=2)
+                total_B.value = complete+inprogress+pending
+                complete_B = wsS.cell(row=row, column=3)
+                complete_B.value = complete
+                inprogress_B = wsS.cell(row=row, column=4)
+                inprogress_B.value = inprogress
+                pending_B = wsS.cell(row=row, column=5)
+                pending_B.value = pending
 
-        # ===========summary of HEAD===================
-        total_H = wsS.cell(row=15, column=2)
-        total_H.value = completeH+inprogressH+pendingH
-        complete_H = wsS.cell(row=15, column=3)
-        complete_H.value = completeH
-        inprogress_H = wsS.cell(row=15, column=4)
-        inprogress_H.value = inprogressH
-        pending_H = wsS.cell(row=15, column=5)
-        pending_H.value = pendingH
-        # ====================================================================================================
-
+                row += 1
     wb.save("card_status_tnga.xlsx")
 else:
     card_message = "No TBM/OM card raised in last 30 days."
+
+print('------------------------excel part ends--------------------------')
+#--------------------Adding data to respective sheet ends----------------------------------
+
+# ==============================pending card details starts===============================
+
+ws_pending = wb.create_sheet("Pending Cards", len(line_name_lst))
+
+
+ws_pending.column_dimensions['A'].width = 12
+ws_pending.column_dimensions['B'].width = 12
+ws_pending.column_dimensions['C'].width = 12
+ws_pending.column_dimensions['D'].width = 12
+ws_pending.column_dimensions['E'].width = 12
+
+ws_pending["A1"] = "Details For Pending Cards for more than 30 days"
+ws_pending['A1'].font = Font(bold=True)
+ws_pending['A2'] = "Line"
+ws_pending['A2'].font = Font(bold=True)
+ws_pending['B2'] = "Process No"
+ws_pending['B2'].font = Font(bold=True)
+ws_pending['C2'] = "CheckItem Id"
+ws_pending['C2'].font = Font(bold=True)
+ws_pending['D2'] = "Pending Since(entryDates)"
+ws_pending['D2'].font = Font(bold=True)
+ws_pending['E2'] = "Frequency"
+ws_pending['E2'].font = Font(bold=True)
+
+urlForPendingCardsGreater30days = "http://localhost:5051/reports/pendingForGreater30Days"
+response_pending = requests.get(urlForPendingCardsGreater30days)
+print('response_pending-->',response_pending.status_code)
+penData = response_pending.json()
+
+urlForFrequency = "http://localhost:5051/reports/tbmFrequency"
+response_freq = requests.get(urlForFrequency)
+freqData = response_freq.json()
+print('response_frequency-->',response_freq.status_code,freqData)
+
+pen_row = 3
+if penData['success']:
+    for eachCard in penData['pendingTasks']:
+        line = ws_pending.cell(row=pen_row, column=1)
+        line.value = eachCard['line']
+        processNo = ws_pending.cell(row=pen_row, column=2)
+        processNo.value = eachCard['processNo']
+        checkItem = ws_pending.cell(row=pen_row, column=3)
+        checkItem.value = eachCard['checkItem']
+        entryDates = ws_pending.cell(row=pen_row, column=4)
+        entryDates.value = eachCard['entryDates']
+
+        if freqData['success']:
+            for freqCard in freqData['frequencyTasks']:
+                top = freqCard['top']
+                if top['checkItem'] == eachCard['checkItem']:
+                    freq = ws_pending.cell(row=pen_row, column=5)
+                    if top['frequency']:
+                        freq.value = top['frequency'][0]
+                    else:
+                        freq.value = 'NA'
+        
+        pen_row += 1
+
+wb.save("card_status_tnga.xlsx")
+
+# ==============================pending card details ends===============================
+
 # ==============================excel part finished=========================================
+
+
 # ==============================mail summarry part starts===================================
 
 today = datetime.now()
@@ -384,13 +330,13 @@ weekNo = (d//7.1)+1
 
 # generate the url address
 # print("Year:",y,"Month:",m,"Day:",d,"WeekDay:",weekd,"Week No:",weekNo)
-url4mcDetails = "http://10.82.126.73:5071/head/headMachineList?d=" + \
+url4mcDetails = "http://localhost:5051/head/headMachineList?d=" + \
     str(y_weekd)+"&y="+str(y_y)+"&w="+str(y_weekNo)+"&m="+str(y_m)+"&pS=P"
-url4dailyStatus = "http://10.82.126.73:5071/dailyStatus?entryFor=" + \
+url4dailyStatus = "http://localhost:5051/dailyStatus?entryFor=" + \
     str(y_y)+"-"+str(y_m)+"-"+str(y_d)+"&pS=P"
-url4mcDetails_OM = "http://10.82.126.73:5071/head/headMachineList?d=" + \
+url4mcDetails_OM = "http://localhost:5051/head/headMachineList?d=" + \
     str(y_weekd)+"&y="+str(y_y)+"&w="+str(y_weekNo)+"&m="+str(y_m)+"&pS=S"
-url4dailyStatus_OM = "http://10.82.126.73:5071/dailyStatus?entryFor=" + \
+url4dailyStatus_OM = "http://localhost:5051/dailyStatus?entryFor=" + \
     str(y_y)+"-"+str(y_m)+"-"+str(y_d)+"&pS=S"
 print(url4mcDetails)
 print(url4dailyStatus)
@@ -398,15 +344,28 @@ print(url4mcDetails_OM)
 print(url4dailyStatus_OM)
 
 # fetching the data using api
-response1 = requests.get(url4mcDetails, auth=('user', 'pass'))
-response2 = requests.get(url4dailyStatus, auth=('user', 'pass'))
+response1 = requests.get(url4mcDetails)
+response2 = requests.get(url4dailyStatus)
 mcDetails = response1.json()
 dailyStatus = response2.json()
 
-response3 = requests.get(url4mcDetails_OM, auth=('user', 'pass'))
-response4 = requests.get(url4dailyStatus_OM, auth=('user', 'pass'))
+response3 = requests.get(url4mcDetails_OM)
+response4 = requests.get(url4dailyStatus_OM)
 mcDetails_OM = response3.json()
 dailyStatus_OM = response4.json()
+
+# to get total number of line list
+url = "http://localhost:5051/head/headMachineList"
+response5 = requests.get(url)
+res_data = response5.json()
+if res_data['success']:
+    res_data = res_data['machineData'];
+    final_line_list = [x['line'] for x in res_data]
+else:
+    final_line_list = ["Assembly (Block Sub-assembly)", "Assembly (Head Sub-assembly)", "Assembly (MK-1)",
+                       "Assembly (MK-2)", "Assembly (Piston Sub-assembly)", "Assembly (Test Bench)", "Block", "Crank", "Head"]
+
+print('----final line list-->',final_line_list)
 
 # ================================mail summary for maintenance===============================================================
 line_list_mnt = []
@@ -414,43 +373,50 @@ tabular_fields = ["Line", "Total", "OK", "NG", "Pending"]
 tabular_table = PrettyTable()
 tabular_table.field_names = tabular_fields
 
+# wsP = wb.create_sheet("PendingMain", 4)
 
-for i in mcDetails["machineData"]:
-    # m=mcData["machineData"]
-    # print("from-mcData:",i["line"])
-    line_name_mcData = i["line"]
-    # print(i["counts"])
-    nn = i["counts"]
-    total_points = sum(nn.values())
-    # print("Total:",sum(nn.values()))
-    ok_p = 0
-    ng_p = 0
+if mcDetails['success']:
+    for i in mcDetails["machineData"]:
+        # m=mcData["machineData"]
+        # print("from-mcData:",i["line"])
+        line_name_mcData = i["line"]
+        # print(i["counts"])
+        nn = i["counts"]
+        total_points = sum(nn.values())
+        # print("Total:",sum(nn.values()))
+        ok_p = 0
+        ng_p = 0
 
-    for j in dailyStatus["sortedDailyStatus"]:
-        line_name_statusData = j["line"]
-        if line_name_statusData == line_name_mcData:
-            # ok_p=0
-            # ng_p=0
-            # print("from-sortedDetails:",j["line"])
+        for j in dailyStatus["sortedDailyStatus"]:
+            line_name_statusData = j["line"]
+            if line_name_statusData == line_name_mcData:
+                # ok_p=0
+                # ng_p=0
+                # print("from-sortedDetails:",j["line"])
 
-            for jj in j["processes"]:
-                # print(jj["result"],"\n")
-                ok_p = ok_p + jj["result"].get("OK")
-                ng_p = ng_p + jj["result"].get("NG")
-            # print(j,"\n\n")
-            # print("OK:",ok_p)
-            # print("NG",ng_p)
-            # print("\n")
-        else:
-            pass
-    tabular_table.add_row(
-        [line_name_mcData, total_points, ok_p, ng_p, total_points-ok_p-ng_p])
-    line_list_mnt.append(line_name_mcData)
-    ok_p = 0
-    ng_p = 0
+                for jj in j["processes"]:
+                    # print(jj["result"],"\n")
+                    ok_p = ok_p + jj["result"].get("OK")
+                    ng_p = ng_p + jj["result"].get("NG")
+                # print(j,"\n\n")
+                # print("OK:",ok_p)
+                # print("NG",ng_p)
+                # print("\n")
+            else:
+                pass
+        tabular_table.add_row([line_name_mcData, total_points, ok_p, ng_p, total_points-ok_p-ng_p])
+        line_list_mnt.append(line_name_mcData)
+        ok_p = 0
+        ng_p = 0
 
-total_line_list_mnt = ["Assembly (Block Sub-assembly)", "Assembly (Head Sub-assembly)", "Assembly (MK-1)",
-                       "Assembly (MK-2)", "Assembly (Piston Sub-assembly)", "Assembly (Test Bench)", "Block", "Crank", "Head"]
+# total_line_list_mnt = ["Assembly (Block Sub-assembly)", "Assembly (Head Sub-assembly)", "Assembly (MK-1)",
+#                        "Assembly (MK-2)", "Assembly (Piston Sub-assembly)", "Assembly (Test Bench)", "Block", "Crank", "Head"]
+
+
+
+total_line_list_mnt = final_line_list
+
+
 for line_name_mnt in total_line_list_mnt:
     if line_name_mnt not in line_list_mnt:
         tabular_table.add_row([line_name_mnt, "-", "-", "-", "-"])
@@ -460,43 +426,46 @@ tabular_fields_OM = ["Line", "Total", "OK", "NG", "Pending"]
 tabular_table_OM = PrettyTable()
 tabular_table_OM.field_names = tabular_fields_OM
 
+if mcDetails_OM['success']:
+    for i in mcDetails_OM["machineData"]:
+        # m=mcData["machineData"]
+        # print("from-mcData:",i["line"])
+        line_name_mcData = i["line"]
+        # print(i["counts"])
+        nn = i["counts"]
+        total_points = sum(nn.values())
+        # print("Total:",sum(nn.values()))
+        ok_p = 0
+        ng_p = 0
 
-for i in mcDetails_OM["machineData"]:
-    # m=mcData["machineData"]
-    # print("from-mcData:",i["line"])
-    line_name_mcData = i["line"]
-    # print(i["counts"])
-    nn = i["counts"]
-    total_points = sum(nn.values())
-    # print("Total:",sum(nn.values()))
-    ok_p = 0
-    ng_p = 0
+        for j in dailyStatus_OM["sortedDailyStatus"]:
+            line_name_statusData = j["line"]
+            if line_name_statusData == line_name_mcData:
+                # ok_p=0
+                # ng_p=0
+                # print("from-sortedDetails:",j["line"])
 
-    for j in dailyStatus_OM["sortedDailyStatus"]:
-        line_name_statusData = j["line"]
-        if line_name_statusData == line_name_mcData:
-            # ok_p=0
-            # ng_p=0
-            # print("from-sortedDetails:",j["line"])
+                for jj in j["processes"]:
+                    # print(jj["result"],"\n")
+                    ok_p = ok_p + jj["result"].get("OK")
+                    ng_p = ng_p + jj["result"].get("NG")
+                # print(j,"\n\n")
+                # print("OK:",ok_p)
+                # print("NG",ng_p)
+                # print("\n")
+            else:
+                pass
+        tabular_table_OM.add_row([line_name_mcData, total_points, ok_p, ng_p, total_points-ok_p-ng_p])
+        line_list_prod.append(line_name_mcData)
+        ok_p = 0
+        ng_p = 0
+else:
+    print('------')
+# total_line_list_prod = ["Assembly (Block Sub-assembly)", "Assembly (Head Sub-assembly)", "Assembly (MK-1)",
+#                         "Assembly (MK-2)", "Assembly (Piston Sub-assembly)", "Assembly (Test Bench)", "Block", "Crank", "Head"]
 
-            for jj in j["processes"]:
-                # print(jj["result"],"\n")
-                ok_p = ok_p + jj["result"].get("OK")
-                ng_p = ng_p + jj["result"].get("NG")
-            # print(j,"\n\n")
-            # print("OK:",ok_p)
-            # print("NG",ng_p)
-            # print("\n")
-        else:
-            pass
-    tabular_table_OM.add_row(
-        [line_name_mcData, total_points, ok_p, ng_p, total_points-ok_p-ng_p])
-    line_list_prod.append(line_name_mcData)
-    ok_p = 0
-    ng_p = 0
+total_line_list_prod = final_line_list
 
-total_line_list_prod = ["Assembly (Block Sub-assembly)", "Assembly (Head Sub-assembly)", "Assembly (MK-1)",
-                        "Assembly (MK-2)", "Assembly (Piston Sub-assembly)", "Assembly (Test Bench)", "Block", "Crank", "Head"]
 for line_name_prod in total_line_list_prod:
     if line_name_prod not in line_list_prod:
         tabular_table_OM.add_row([line_name_prod, "-", "-", "-", "-"])
@@ -504,43 +473,24 @@ for line_name_prod in total_line_list_prod:
 
 # ==============================table for mail-start========================================
 print("OM\n", tabular_table_OM)
+print('-------------------------------------------------------')
 print("SM\n", tabular_table)
 # ==============================table for mail-end========================================
 
-# ==============================TO SEND EMAIL==TNGA MNT=============================================
+
+# ==============================TO SEND EMAIL==GD MNT===================================
 
 
 # Connection with the server
 server = smtplib.SMTP(host="smtp.office365.com", port=587)
 server.starttls()
-server.login("pankaj.jogi@tiei.toyota-industries.com", "WB4psCxK")
+server.login("username", "pass")
 
 # Creation of the MIMEMultipart Object
 message = MIMEMultipart()
 # =================================================================================================
 family = [
-    "naveen.kp@tiei.toyota-industries.com",
-    "yousuf@tiei.toyota-industries.com",
-    # "pankaj.jogi@tiei.toyota-industries.com",
-    "puranik.kv@tiei.toyota-industries.com",
-    "shridharbhat@tiei.toyota-industries.com",
-    "srharidas@tiei.toyota-industries.com",
-    # "lohith.s@tiei.toyota-industries.com",
-    "manjunatha.ramadas@tiei.toyota-industries.com",
-    "nagendra.ks@tiei.toyota-industries.com",
-    # "kirankumar.r@tiei.toyota-industries.com",
-    # "vijay.r@tiei.toyota-industries.com",
-    # "vinothkumar.r@tiei.toyota-industries.com",
-    # "kailash.kp@tiei.toyota-industries.com",
-    "sundeep@tiei.toyota-industries.com",
-    "sivasreekar.reddy@tiei.toyota-industries.com",
-    # "sanketh@tiei.toyota-industries.com",
-    # "kirana@tiei.toyota-industries.com",
-    # "manu.b@tiei.toyota-industries.com",
-    # "sandeep.a@tiei.toyota-industries.com",
-    "marimuthu.k@tiei.toyota-industries.com"
-
-
+    "subham.gupta.26@outlook.com"
 ]
 
 # msg['To'] =', '.join(family)
@@ -550,8 +500,7 @@ family = [
 
 
 # Setup of MIMEMultipart Object Header
-message['From'] = "pankaj.jogi@tiei.toyota-industries.com"
-# message['To'] = "pankaj.jogi@tiei.toyota-industries.com"
+message['From'] = "subham.g@dtcinfotech.com"
 message['To'] = ', '.join(family)
 message['Subject'] = "TNGA-MNT Daily TBM card status"
 
@@ -614,35 +563,20 @@ server.quit()
 # ==================================EMAIL PART END===============================================
 
 
-# ==============================TO SEND EMAIL==TNGA PROD=============================================
+# ==============================TO SEND EMAIL==GD PROD=============================================
 
 
 # Connection with the server
 server = smtplib.SMTP(host="smtp.office365.com", port=587)
 server.starttls()
-server.login("pankaj.jogi@tiei.toyota-industries.com", "WB4psCxK")
+server.login("username", "pass")
 
 # Creation of the MIMEMultipart Object
 message = MIMEMultipart()
-
 # =================================================================================================
 family = [
-
-    "raghavendra.singh@tiei.toyota-industries.com",
-    "yousuf@tiei.toyota-industries.com",
-    "anjineya.b@tiei.toyota-industries.com",
-    "gurunath.mn@tiei.toyota-industries.com",
-    "ravivarma.n@tiei.toyota-industries.com",
-    "nithish.cr@tiei.toyota-industries.com",
-    "mounesh.m@tiei.toyota-industries.com",
-    "sharath.k@tiei.toyota-industries.com",
-    "vishwapoorna.rao@tiei.toyota-industries.com",
-    "madhusudhan.h@tiei.toyota-industries.com",
-    "srinath.waiker@tiei.toyota-industries.com",
-    "nandeesha.n@tiei.toyota-industries.com",
-
+    "subham.gupta.26@outlook.com"
 ]
-
 
 # msg['To'] =', '.join(family)
 # msg =', '.join(family)
@@ -651,14 +585,13 @@ family = [
 
 
 # Setup of MIMEMultipart Object Header
-message['From'] = "pankaj.jogi@tiei.toyota-industries.com"
-# message['To'] = "pankaj.jogi@tiei.toyota-industries.com"
-message['To'] = ', '.join(family)
+message['From'] = "subham.g@dtcinfotech.com"
+message['To'] = "subham.gupta.26@outlook.com"
+# message['To'] = ', '.join(family)
 message['Subject'] = "TNGA-PROD Daily OM card status"
 
-
 # Creation of a MIMEText Part
-# textPart1 = MIMEText(f"Good Morning\nSUMMARY OF PREVIOUS DAY ({y_d}-{y_m}-{y_y}) OM CHECK ACTIVITY\n\nA.PRODUCTION\n\nLine\tTotal\tOK\tNG\tPending\nBlock\t{total_block_OM}\t{ok_Block_OM}\t{ng_Block_OM}\t{total_block_OM-ok_Block_OM-ng_Block_OM}\nCrank\t{total_crank_OM}\t{ok_Crank_OM}\t{ng_Crank_OM}\t{total_crank_OM-ok_Crank_OM-ng_Crank_OM}\nHead\t{total_head_OM}\t{ok_Head_OM}\t{ng_Head_OM}\t{total_head_OM-ok_Head_OM-ng_Head_OM}\n\nB.MAINTENANCE\n\nLine\tTotal\tOK\tNG\tPending\nBlock\t{total_block}\t{ok_Block}\t{ng_Block}\t{total_block-ok_Block-ng_Block}\nCrank\t{total_crank}\t{ok_Crank}\t{ng_Crank}\t{total_crank-ok_Crank-ng_Crank}\nHead\t{total_head}\t{ok_Head}\t{ng_Head}\t{total_head-ok_Head-ng_Head}\n\nDaily TBM card raise status is attached.\nThank You\n\nMNT-MES", 'plain')
+# textPart1 = MIMEText(f"Good Morning\nSUMMARY OF PREVIOUS DAY ({y_d}-{y_m}-{y_y}) TBM CHECK ACTIVITY\n\nA.PRODUCTION\n\nLine\tTotal\tOK\tNG\tPending\nBlock\t{total_block_OM}\t{ok_Block_OM}\t{ng_Block_OM}\t{total_block_OM-ok_Block_OM-ng_Block_OM}\nCrank\t{total_crank_OM}\t{ok_Crank_OM}\t{ng_Crank_OM}\t{total_crank_OM-ok_Crank_OM-ng_Crank_OM}\nHead\t{total_head_OM}\t{ok_Head_OM}\t{ng_Head_OM}\t{total_head_OM-ok_Head_OM-ng_Head_OM}\n\nB.MAINTENANCE\n\nLine\tTotal\tOK\tNG\tPending\nBlock\t{total_block}\t{ok_Block}\t{ng_Block}\t{total_block-ok_Block-ng_Block}\nCrank\t{total_crank}\t{ok_Crank}\t{ng_Crank}\t{total_crank-ok_Crank-ng_Crank}\nHead\t{total_head}\t{ok_Head}\t{ng_Head}\t{total_head-ok_Head-ng_Head}\n\nDaily TBM card raise status is attached.\nThank You\n\nMNT-MES", 'plain')
 my_message = tabular_table_OM.get_html_string()
 my_message2 = tabular_table.get_html_string()
 html = """\
@@ -678,7 +611,7 @@ html = """\
 <body>
 <p>
 Good Morning<br> 
-SUMMARY OF PREVIOUS DAY <b>(%s)</b> OM CHECK ACTIVITY<br> 
+SUMMARY OF PREVIOUS DAY <b>(%s)</b> TBM CHECK ACTIVITY<br> 
 </p>
 <p>    
 <b>TNGA-PRODUCTION</b>
@@ -697,7 +630,6 @@ MNT-MES
 """ % (yesterday_date, my_message, card_message)
 
 textPart1 = MIMEText(html, 'html')
-
 
 # Creation of a MIMEApplication Part
 

@@ -46,12 +46,10 @@ function CardDoc({ item, fromDateSt, toDateSt }) {
         `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/card/update/${itemId}`
       )
       .then((result) => {
-        console.log("Card item deleted successfully");
+       
         dispatch(getCards(fromDateSt, toDateSt));
       })
-      .catch((err) => {
-        console.log("error deleting Card item ", err.message);
-      });
+     
   };
 
   const deleteConfirmation = () => {

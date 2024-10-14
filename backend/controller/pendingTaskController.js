@@ -5,16 +5,19 @@ const PendingTask = require("../mongoSchema/pendingTaskModel");
 const ApiFeaturePendingTask = require("../util/apiFeaturePendingTasks");
 const ApiFeatureDailyStatus = require("../util/apiFeatureDailyStatus");
 const ErrorHandler = require("../util/errorHandling");
+const CheckItemModel = require("../mongoSchema/chekItemModel");
+const { checkout } = require("../Router/pendingTaskRouter");
+
 
 exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
   let date = new Date();
-  date.setDate(date.getDate() - 1);
+  date.setUTCDate(date.getUTCDate() - 1);
 
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const week = Math.ceil(date.getDate() / 7);
-  const day = date.getDay();
-  const dated = date.getDate();
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth() + 1;
+  const week = Math.ceil(date.getUTCDate() / 7);
+  const day = date.getUTCDate();
+  const dated = date.getUTCDate();
 
   const pendingTaskObject = new ApiFeaturePendingTask(HeadModel, {
     d: day,
@@ -30,7 +33,7 @@ exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
   const dailyStatusList = await dailyStatusObject.query;
   console.log("dailyStatusLis :", dailyStatusList);
 
-  console.log();
+  console.log(machineTaskList);
 
   if (machineTaskList.length === 0) {
     return next(new ErrorHandler("could not find check list", 404));
@@ -70,7 +73,6 @@ exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
 
   const bulkOps = updatedPendingTaskList.map(
     (task) => (
-      console.log(task),
       {
         updateOne: {
           filter: { checkItem: task.checkItem },
@@ -81,6 +83,7 @@ exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
     )
   );
 
+  await deletePendingTasks();
   deleteOkTasks();
 
   PendingTask.bulkWrite(bulkOps, (err, result) => {
@@ -115,13 +118,100 @@ const deleteOkTasks = async () => {
   }
 };
 
+async function deletePendingTasks(pendingTaskList) {
+  if(pendingTaskList) {
+    pendingTaskList.forEach((pendingTask) => {
+      PendingTask.remove({checkItem: pendingTask.checkItem});
+    });
+  }
+} 
+
 exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
   const pendingTaskObject = new ApiFeaturePendingTask(PendingTask, {
     ...req.query,
-    result: "PENDING",
+    result: "PENDING"
   });
   const pendingTaskObjectWithLine = pendingTaskObject.line();
   const pendingTaskList = await pendingTaskObjectWithLine.query;
+
+  const totalCountBlock = await PendingTask.countDocuments({
+    line: "Block",
+  });
+
+  const totalCountCrank = await PendingTask.countDocuments({
+    line: "Crank",
+  });
+
+  const totalCountHead = await PendingTask.countDocuments({
+    line: "Head",
+  });
+
+  let pendingData = [];
+
+  pendingTaskList.forEach((item) => {
+    let line = item._id;
+
+    const counts = {};
+    item.processList.forEach((el) => {
+      counts[el.processNo] = el.processData.length;
+    });
+
+    let processList = item.processList;
+
+    processList.sort((a, b) => {
+      let x = a.processNo;
+      let y = b.processNo;
+      if (x < y) {
+        return -1;
+      }
+      if (x > y) {
+        return 1;
+      }
+      return 0;
+    });
+
+    pendingData = [...pendingData, { line, processList, counts }];
+  });
+
+  pendingData.sort((a, b) => {
+    let x = a.line;
+    let y = b.line;
+    if (x < y) {
+      return -1;
+    }
+    if (x > y) {
+      return 1;
+    }
+    return 0;
+  });
+
+  /*
+  pendingData.forEach((pData) => {
+    pData.processList.forEach((pl) => {
+      pl.processData.forEach((pd) => {
+        console.log(pd.checkItem);
+        var ckItem = CheckItemModel.find({_id: pd.checkItem});
+        console.log(ckItem);
+      });
+    });
+  });
+  */
+
+  res.status(200).json({
+    success: true,
+    pendingData,
+    totalCount: { totalCountBlock, totalCountCrank, totalCountHead },
+  });
+});
+
+exports.getPendingTaskReport = catchAsyncError(async (req, res, next) => {
+  const pendingTaskObject = new ApiFeaturePendingTask(PendingTask, {
+    ...req.query,
+    result: "PENDING"
+  });
+  const pendingTaskObjectWithLine = pendingTaskObject.lineReport();
+  const pendingTaskList = await pendingTaskObjectWithLine.query;
+console.log(pendingTaskList);
 
   const totalCountBlock = await PendingTask.countDocuments({
     line: "Block",
@@ -179,6 +269,7 @@ exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
     pendingData,
     totalCount: { totalCountBlock, totalCountCrank, totalCountHead },
   });
+
 });
 
 exports.updateResult = async (req, res) => {

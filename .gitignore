@@ -6,5 +6,8 @@ build/
 .env
 backend/public/
 backend\public/
-
-
+backend\node_modules/
+frontend/package-lock.json
+frontend/package.json
+frontend/yarn.lock
+frontend/node_modules/

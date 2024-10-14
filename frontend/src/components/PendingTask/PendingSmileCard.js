@@ -14,9 +14,9 @@ export default function PendingSmileCard() {
     try {
       const response = await axios.get(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/machine/${processData[idIndex].checkItem}`); 
       let data =  response.data;
-      console.log(data)
+      
       await setList(data.data)
-      console.log(list)
+     
     } catch (error) {
       console.error(error);
     }

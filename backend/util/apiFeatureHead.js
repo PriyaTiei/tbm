@@ -56,6 +56,7 @@ class ApiFeatureHead {
     let newQueryStr = { ...this.queryStr };
     const removeItems = ["dept", "page", "limit"];
     removeItems.forEach((item) => delete newQueryStr[item]);
+console.log(newQueryStr);
 
     newQueryStr = newQueryStr.d
       ? { ...newQueryStr, d: { $in: [9999, Number(newQueryStr.d)] } }
@@ -75,6 +76,8 @@ class ApiFeatureHead {
 
     this.newQueryStr = { ...newQueryStr };
 
+//    console.log(this.newQueryStr);
+
     this.query = this.query.aggregate([
       { $match: newQueryStr },
       {
@@ -85,6 +88,7 @@ class ApiFeatureHead {
         },
       },
     ]);
+//    console.log(this.query);
     return this;
   }
 }

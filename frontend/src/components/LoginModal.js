@@ -37,7 +37,7 @@ function LoginModal({ showModal, setShowModal }) {
         }
       })
       .catch((err) => {
-        console.log(err.message);
+       
         toast.error("Enter correct user Name & Password"); 
       });
   };

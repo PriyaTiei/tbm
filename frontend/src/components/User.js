@@ -50,7 +50,7 @@ const fetchUsers = () => {
         dispatch(fetchUserSuccess(result.data));
       })
       .catch((err) => {
-        console.log("have error", err);
+       
         dispatch(fetchUserFail(err.message));
       });
   };

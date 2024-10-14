@@ -169,6 +169,7 @@ exports.getAbnormality = catchAsyncError(async (req, res, next) => {
 exports.getAbnormalityByIdAndDate = catchAsyncError(async (req, res, next) => {
   const id = req.query.id;
   const date = req.query.date;
+  console.log(date);
   var newQueryStr = {}
 
   if (id != "" && date != "") {

@@ -9,8 +9,9 @@ import SmileCardModify from "./SmileCardModify";
 import axios from "axios";
 import AbnormalityRecordModalForm from "./AbnormalityRecordModalForm";
 import { toast } from "react-toastify";
-import {setCheckedBy} from "../redux/checkedBy"
+import { setCheckedBy } from "../redux/checkedBy"
 import JudgementHistoryModel from "./JudgementHistoryModel";
+import { Card } from "react-bootstrap";
 
 function SmileCard() {
   const [modify, setModify] = useState(false);
@@ -18,7 +19,7 @@ function SmileCard() {
   const auth = useSelector((state) => state.auth);
   const level = auth.user ? auth.user.level : 0;
 
-  
+
 
   // get query string from link
   const [searchParams] = useSearchParams();
@@ -26,6 +27,9 @@ function SmileCard() {
   const [showJudgementHistoryModel, setShowJudgementHistoryModel] = useState(false)
 
   const filters = useSelector((state) => state.filters);
+
+
+
   let queryStr;
   if (filters.rS == null) {
     queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}`;
@@ -46,11 +50,11 @@ function SmileCard() {
 
   const dispatch = useDispatch();
   const checkItems = useSelector((state) => state.checkItems);
-  
+
 
   // const {checkedBy} = checkItems.checkItem.headCheckList[0] ? checkItems.checkItem.headCheckList[0] :""
 
-
+  // console.log("checkItems", checkItems)
 
   useEffect(() => {
     dispatch(getCheckItem(queryStr, page, entryForQueryStr));
@@ -68,21 +72,23 @@ function SmileCard() {
   const { loading, checkItem } = checkItems;
 
 
-const checkedBy= useSelector(state=>state.checkedBy)
+  const checkedBy = useSelector(state => state.checkedBy)
   const [checkedByCurrent, setCheckedByCurrent] = useState(checkedBy);
+
+
 
 
   let list = loading
     ? {}
     : checkItem.success
-    ? checkItems.checkItem.headCheckList[0]
-    : {};
+      ? checkItems.checkItem.headCheckList[0]
+      : {};
 
   let totalCount = loading
     ? 0
     : checkItem.success
-    ? checkItems.checkItem.totalCount
-    : 0;
+      ? checkItems.checkItem.totalCount
+      : 0;
   let disabledNext = page < totalCount ? null : "disabled";
   const changePage = () => {
     setPage(page + 1);
@@ -92,6 +98,7 @@ const checkedBy= useSelector(state=>state.checkedBy)
       setPage(page - 1);
     }
   };
+
 
   const modifyHandler = () => {
     setModify(!modify);
@@ -103,11 +110,11 @@ const checkedBy= useSelector(state=>state.checkedBy)
         `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/delete/${itemId}`
       )
       .then((result) => {
-        console.log("deleted check item ");
+
         toast.success("deleted check item ");
       })
       .catch((err) => {
-        console.log("error deleting check item ", err.message);
+
         toast.error("error deleting check item ");
       });
   };
@@ -120,92 +127,110 @@ const checkedBy= useSelector(state=>state.checkedBy)
     }
   }
 
-  console.log(list._id);
+  const getStatusLabel = (list, type) => {
+    if (!list || list.length === 0) return "";
+
+    const check = list[0];  // Assuming you want to check only the first item
+    console.log(check?.dailyStatus)
+    if (check[type + "Verify"] && (check?.dailyStatus == "OK" || check?.dailyStatus == "NG")) {
+      if (check[type + "At"] && (!check[type + "Comment"] || check[type + "Comment"].trim() === "")) {
+        return `${type.toUpperCase()} Approved`;
+      } else if (check[type + "At"] && check[type + "Comment"] && check[type + "Comment"].trim() !== "") {
+        return `${type.toUpperCase()} Commented: ${check[type + "Comment"]}`;
+      } else {
+        return `${type.toUpperCase()} Pending from their side`;
+      }
+    }
+
+
+  };
+
 
   const checkedByHandler = (e) => {
     setCheckedByCurrent(e.target.value);
   };
 
-  useEffect(()=>{
-    dispatch( setCheckedBy(checkedByCurrent))
-  },[checkedByCurrent])
+  useEffect(() => {
+    dispatch(setCheckedBy(checkedByCurrent))
+  }, [checkedByCurrent])
 
   return (
     <Fragment>
-      <div className="d-flex flex-wrap my-2">
-        <div className="d-flex allign-middle">
-          <button
-            className={`btn btn-sm btn-info mx-2 ${disabledPrevious} `}
-            onClick={changePageMinus}
-          >
-            <i
-              className="bi bi-arrow-left-circle-fill px-1"
-              style={{ fontSize: "1.1rem", color: "dark" }}
-            ></i>{" "}
-            {`Previous Page`}
-          </button>
-          <p>
-            Page {page} of {totalCount}
-          </p>
-          <button
-            className={`btn btn-sm btn-info mx-2 ${disabledNext}`}
-            onClick={changePage}
-          >
-            {`Next page`}
-            <i
-              className="bi bi-arrow-right-circle-fill px-1"
-              style={{ fontSize: "1.1rem", color: "dark" }}
-            ></i>
-          </button>
-        </div>
+      <div className="overflow-auto" style={{ height: "85vh" }}>
+        <div className="d-flex flex-wrap my-2">
+          <div className="d-flex allign-middle">
+            <button
+              className={`btn btn-sm btn-info mx-2 ${disabledPrevious} `}
+              onClick={changePageMinus}
+            >
+              <i
+                className="bi bi-arrow-left-circle-fill px-1"
+                style={{ fontSize: "1.1rem", color: "dark" }}
+              ></i>{" "}
+              {`Previous Page`}
+            </button>
+            <p>
+              Page {page} of {totalCount}
+            </p>
+            <button
+              className={`btn btn-sm btn-info mx-2 ${disabledNext}`}
+              onClick={changePage}
+            >
+              {`Next page`}
+              <i
+                className="bi bi-arrow-right-circle-fill px-1"
+                style={{ fontSize: "1.1rem", color: "dark" }}
+              ></i>
+            </button>
+          </div>
 
-        {auth.isAuthenticated && (
-          <button
-            className="btn btn-primary"
-            onClick={() => setShowModal(true)}
-          >
-            <i
-              className="bi bi-record-btn pe-2"
-              style={{ fontSize: "1rem", color: "dark" }}
-            ></i>
-            Record Abnormality
-          </button>
-        )}
-        {level >= 20 && (
-          <button className="btn btn-warning mx-2" onClick={modifyHandler}>
-            <i
-              className="bi bi-pencil"
-              style={{ fontSize: "1rem", color: "dark" }}
-            ></i>
-            {modify ? " Back" : " Modify"}
-          </button>
-        )}
+          {auth.isAuthenticated && (
+            <button
+              className="btn btn-primary"
+              onClick={() => setShowModal(true)}
+            >
+              <i
+                className="bi bi-record-btn pe-2"
+                style={{ fontSize: "1rem", color: "dark" }}
+              ></i>
+              Record Abnormality
+            </button>
+          )}
+          {level >= 20 && (
+            <button className="btn btn-warning mx-2" onClick={modifyHandler}>
+              <i
+                className="bi bi-pencil"
+                style={{ fontSize: "1rem", color: "dark" }}
+              ></i>
+              {modify ? " Back" : " Modify"}
+            </button>
+          )}
 
-        {level >= 100 && (
-          <button
-            className="btn btn-danger"
-            onClick={deleteConfirmation}
-            // data-toggle="tooltip"
-            // data-placement="top"
-            title="Delete the entry"
-          >
-            <i
-              className="bi bi-trash"
-              style={{ fontSize: "1.3rem", color: "white" }}
-            ></i>
-            Delete
-          </button>
-        )}
+          {level >= 100 && (
+            <button
+              className="btn btn-danger"
+              onClick={deleteConfirmation}
+              // data-toggle="tooltip"
+              // data-placement="top"
+              title="Delete the entry"
+            >
+              <i
+                className="bi bi-trash"
+                style={{ fontSize: "1.3rem", color: "white" }}
+              ></i>
+              Delete
+            </button>
+          )}
 
-        {level >= 10 && (
-          <input
-            type="text"
-            className="mx-2"
-            placeholder="Checked by"
-            value={checkedByCurrent}
-            onChange={checkedByHandler}
-          />
-        )}
+          {level >= 10 && (
+            <input
+              type="text"
+              className="mx-2"
+              placeholder="Checked by"
+              value={checkedByCurrent}
+              onChange={checkedByHandler}
+            />
+          )}
 
           <button
             className="btn btn-success"
@@ -216,41 +241,61 @@ const checkedBy= useSelector(state=>state.checkedBy)
           >
             Judgement History
           </button>
-        
-      </div>
-      {loading ? (
-        <Loading />
-      ) : (
-        <Fragment>
-          {checkItem.success ? (
-            modify ? (
-              <SmileCardModify list={list} image={image} setImage={setImage} />
-            ) : (
-              <div>
-                <SmileCardDetails
-                  list={list}
-                  image={image}
-                  setImage={setImage}
-                  setRecordAbnormalityShowModal={setShowModal}
-                />
-                {showModal ? (
-                  <AbnormalityRecordModalForm
-                    showModal={showModal}
-                    setShowModal={setShowModal}
-                    workDetail={list.workDetail}
-                    itemId={list._id}
+          {/* {console.log("checkItemcheckItem", checkItem?.headCheckList && checkItem?.headCheckList[0])} */}
+          {/* <div className="p-3 bg-light rounded text-center" style={{ fontFamily: "Arial, sans-serif" }}>
+            <p className="mb-2 font-weight-bold text-dark">
+              {getStatusLabel(checkItem?.headCheckList, "tl")}
+            </p>
+            <p className="mb-0 font-weight-bold text-dark">
+              
+            </p>
+          </div> */}
+          <Card className="p-1 text-center" style={{ maxWidth: "400px", margin: "auto" }}>
+            <Card.Body>
+              <Card.Subtitle className="text-muted" style={{ fontSize: "16px", fontWeight: "500" }}>
+                {getStatusLabel(checkItem?.headCheckList, "tl")} <br /> {getStatusLabel(checkItem?.headCheckList, "gl")}
+              </Card.Subtitle>
+
+            </Card.Body>
+          </Card>
+
+        </div>
+        {loading ? (
+          <Loading />
+        ) : (
+          <Fragment>
+            {checkItem.success ? (
+              modify ? (
+                <SmileCardModify list={list} image={image} setImage={setImage} />
+              ) : (
+                <div >
+                  <SmileCardDetails
+                    list={list}
+                    image={image}
+                    setImage={setImage}
+                    setRecordAbnormalityShowModal={setShowModal}
+                    checkItems={checkItems}
                   />
-                ) : null}
-                {
-                  showJudgementHistoryModel && (
-                    <JudgementHistoryModel showModal={showJudgementHistoryModel} setShowModal={setShowJudgementHistoryModel} checkItem={list._id}/>
-                  )
-                }
-              </div>
-            )
-          ) : null}
-        </Fragment>
-      )}
+
+                  {showModal ? (
+                    <AbnormalityRecordModalForm
+                      showModal={showModal}
+                      setShowModal={setShowModal}
+                      workDetail={list.workDetail}
+                      itemId={list._id}
+                    />
+                  ) : null}
+                  {
+                    showJudgementHistoryModel && (
+                      <JudgementHistoryModel showModal={showJudgementHistoryModel} setShowModal={setShowJudgementHistoryModel} checkItem={list._id} />
+                    )
+                  }
+                </div>
+              )
+            ) : null}
+          </Fragment>
+        )}
+      </div>
     </Fragment>
   );
 }

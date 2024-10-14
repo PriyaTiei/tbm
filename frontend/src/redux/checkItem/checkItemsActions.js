@@ -38,16 +38,26 @@ export const getCheckItem = (queryStr, page, entryForQueryStr) => {
             `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/find/${result.data.headCheckList[0]._id}/entryFor/${entryForQueryStr}`
           )
           .then((result2) => {
+
             result.data.headCheckList[0].dailyStatus =
               result2.data.dailyStatus.result;
-              result.data.headCheckList[0].judgementRemarks=
+            result.data.headCheckList[0].judgementRemarks =
               result2.data.dailyStatus.remarks;
             result.data.headCheckList[0].value = result2.data.dailyStatus.value;
             result.data.headCheckList[0].checkedBy = result2.data.dailyStatus.checkedBy;
+            result.data.headCheckList[0].m_spec = result2.data.dailyStatus.m_spec ? result2.data.dailyStatus.m_spec : result.data.headCheckList[0].m_spec;
+            result.data.headCheckList[0].tl = result2.data.dailyStatus.tl ? result2.data.dailyStatus.tl : result.data.headCheckList[0].tl;
+            result.data.headCheckList[0].gl = result2.data.dailyStatus.gl ? result2.data.dailyStatus.gl : result.data.headCheckList[0].gl;
+            result.data.headCheckList[0].tlBy = result2.data.dailyStatus.tlBy ? result2.data.dailyStatus.tlBy : result.data.headCheckList[0].tlBy;
+            result.data.headCheckList[0].glBy = result2.data.dailyStatus.glBy ? result2.data.dailyStatus.glBy : result.data.headCheckList[0].glBy;
+            result.data.headCheckList[0].tlAt = result2.data.dailyStatus.tlAt ? result2.data.dailyStatus.tlAt : result.data.headCheckList[0].tlAt;
+            result.data.headCheckList[0].glAt = result2.data.dailyStatus.glAt ? result2.data.dailyStatus.glAt : result.data.headCheckList[0].glAt;
+            result.data.headCheckList[0].tlComment = result2.data.dailyStatus.tlComment ? result2.data.dailyStatus.tlComment : result.data.headCheckList[0].tlComment;
+            result.data.headCheckList[0].glComment = result2.data.dailyStatus.glComment ? result2.data.dailyStatus.glComment : result.data.headCheckList[0].glComment;
             dispatch(checkItemFetchSuccess(result.data));
           })
           .catch((err) => {
-            console.log(err.message);
+
           });
       })
       .catch((err) => {

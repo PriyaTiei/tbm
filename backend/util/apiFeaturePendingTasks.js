@@ -28,6 +28,8 @@ class ApiFeaturePendingTask {
 
     this.newQueryStr = { ...newQueryStr };
 
+    console.log(this.newQueryStr);
+
     this.query = this.query.aggregate([
       { $match: newQueryStr },
       {
@@ -38,7 +40,7 @@ class ApiFeaturePendingTask {
           workDetail: 1,
           pS: 1,
           rS: 1,
-          cardNo:1,
+          cardNo: 1,
         },
       },
       { $addFields: { result: "PENDING" } },
@@ -54,8 +56,21 @@ class ApiFeaturePendingTask {
         $match: newQueryStr,
       },
       {
+        $lookup: {
+          from: "checkitems",
+          localField: "checkItem",
+          foreignField: "_id",
+          as: "itemSpec"
+        }
+      },
+      {
+        $unwind: {
+          path: "$itemSpec"
+        }
+      },
+      {
         $group: {
-          _id: { line: "$line", processNo: "$processNo" },
+          _id: { line: "$line", processNo: "$processNo", checkItem: "$checkItem" },
           processList: {
             $push: {
               id: "$_id",
@@ -64,6 +79,7 @@ class ApiFeaturePendingTask {
               pS: "$pS",
               entryDates: "$entryDates",
               rS: "$rS",
+              itemSpec: "$itemSpec"
             },
           },
         },
@@ -78,10 +94,164 @@ class ApiFeaturePendingTask {
             },
           },
         },
-      },
+      }
     ]);
     return this;
   }
-}
+
+  lineReport() {
+    let newQueryStr = { ...this.queryStr };
+
+
+    this.query = this.query.aggregate([
+      {
+        $match: newQueryStr,
+      },
+      {
+        $lookup: {
+          from: "dailystatuses",
+          localField: "checkItem",
+          foreignField: "checkItem",
+          as: "itemSpec"
+        }
+      },
+      {
+        $lookup: {
+          from: "checkitems",
+          localField: "checkItem",
+          foreignField: "_id",
+          as: "checkitems"
+        }
+      },
+      {
+        $unwind: {
+          path: "$itemSpec",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $addFields: {
+          actuals: {
+            $reduce: {
+              input: "$itemSpec.m_spec",
+              initialValue: "",
+              in: {
+                $cond: {
+                  if: {
+                    $eq: [
+                      {
+                        $indexOfArray: [
+                          "$itemSpec.m_spec",
+                          "$$this"
+                        ]
+                      },
+                      0
+                    ]
+                  },
+                  then: {
+                    $concat: [
+                      "$$value",
+                      "$$this.m_lable",
+                      " ",
+                      {
+                        $toString: "$$this.m_value"
+                      },
+                      " ",
+                      "$$this.m_unit"
+                    ]
+                  },
+                  else: {
+                    $concat: [
+                      "$$value",
+                      ", ",
+                      "$$this.m_lable",
+                      " ",
+                      {
+                        $toString: "$$this.m_value"
+                      },
+                      " ",
+                      "$$this.m_unit"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          criteria: {
+            $reduce: {
+              input: "$itemSpec.m_spec",
+              initialValue: "",
+              in: {
+                $cond: {
+                  if: {
+                    $eq: [
+                      {
+                        $indexOfArray: [
+                          "$itemSpec.m_spec",
+                          "$$this"
+                        ]
+                      },
+                      0
+                    ]
+                  },
+                  then: {
+                    $concat: [
+                      "$$value",
+                      "$$this.m_criteria",
+                    ]
+                  },
+                  else: {
+                    $concat: [
+                      "$$value",
+                      ", ",
+                      "$$this.m_criteria",
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { line: "$line", processNo: "$processNo", checkItem: "$checkItem" },
+          processList: {
+            $push: {
+              id: "$_id",
+              checkItem: "$checkItem",
+              checkitems: "$checkitems",
+              result: "$result",
+              pS: "$pS",
+              entryDates: "$entryDates",
+              rS: "$rS",
+              itemSpec: "$itemSpec",
+              actuals: "$actuals",
+              criteria: "$criteria"
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.line",
+          processList: {
+            $push: {
+              processNo: "$_id.processNo",
+              processData: "$processList",
+            },
+          },
+        },
+      }
+
+    ]);
+    return this;
+  }
+
+};
 
 module.exports = ApiFeaturePendingTask;

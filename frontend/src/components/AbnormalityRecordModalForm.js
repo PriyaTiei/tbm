@@ -15,7 +15,7 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId }) {
     setShowModal(false);
   };
 
-  const {pS} = useSelector(state=>state.filters)
+  const { pS } = useSelector(state => state.filters)
 
   const [selectedFile, setSelectedFile] = useState("");
   const [image, setImage] = useState("");
@@ -36,7 +36,7 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId }) {
 
   const auth = useSelector((state) => state.auth);
 
-  const user = auth.loading === false    
+  const user = auth.loading === false
     ? auth.user._id
     : null;
 
@@ -110,7 +110,7 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId }) {
         setShowModal(false);
       })
       .catch((err) => {
-        console.log(err);
+
         toast.error("Please fill Abnormility Details");
       });
   };

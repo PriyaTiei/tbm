@@ -40,6 +40,8 @@ class ApiFeatureDailyStatus {
     const removeItems = ["dept", "page", "limit"];
     removeItems.forEach((item) => delete newQueryStr[item]);
 
+    console.log(newQueryStr);
+    
     this.query = this.query.aggregate([
       { $match: newQueryStr },
       { $project : { _id : 1, checkItem : 1, result : 1}}

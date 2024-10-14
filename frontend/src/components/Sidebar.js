@@ -62,17 +62,6 @@ export function AppSidebar({ children }) {
               </Button>
             </Link>
           )}
-
-            {/* SOM  */}
-          {level >= 0 && (
-            <Link to="/som">
-              <Button variant="dark" style={menuItemStyle}>
-                <i className="bi bi-stack-overflow px-1"></i>Sign of matrix
-              </Button>
-            </Link>
-          )}
-
-
           {level >= 20 && (
             <Link to="/addCheckItems">
               <Button variant="dark" style={menuItemStyle}>

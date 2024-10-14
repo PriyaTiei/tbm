@@ -21,7 +21,7 @@ export default function TeamLeader() {
   }, [dispatch, filters, DailyStatusQueryStr]);
 
   const { loading, dailyStatus } = dailyStatuses; 
-  console.log(dailyStatus) 
+  
  
   return (
     <Fragment>
