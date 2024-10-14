@@ -43,20 +43,26 @@ const dailyStatusSchema = new mongoose.Schema({
     default: false,
   },
   tlBy: {
-    type: ObjectId,
-    default: null
+    type: mongoose.Schema.ObjectId,
+    default: null,
+    ref: "users",
+    required: false,
   },
   glBy: {
-    type: ObjectId,
-    default: null
+    type: mongoose.Schema.ObjectId,
+    default: null,
+    ref: "users",
+    required: false,
   },
   tlAt: {
     type: Date,
-    default: null
+    default: null,
+    required: false
   },
   glAt: {
     type: Date,
-    default: null
+    default: null,
+    required: false
   },
   tlComment: {
     type: String,

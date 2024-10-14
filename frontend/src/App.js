@@ -63,33 +63,33 @@ function App() {
 
 
   return (
+    <div className="cheking">
+      <AppSidebar>
 
-    <AppSidebar>
+        <Title />
+        <Filters />
+        {/* <MultiLevelXAxisBarChart /> */}
+        <Routes>
+          <Route path="/" element={<Machines />} />
+          <Route path="/checkList" element={<SmileCard />} />
+          <Route path="/pendingTasks" element={<PendingTask />} />
+          <Route path="/judgementHistory" element={<JudgementHistoryPage />} />
+          <Route path="/pendingTasks/cardDetails" element={<PendingSmileCard />}></Route>
+          <Route path="/allMachine/cardDetails" element={<AllMachineSmileCard />}></Route>
+          <Route path="/card" element={<Card />} />
+          <Route path="/abnormality" element={<AbnormalityRecord />} />
+          <Route path="/summaryAbnormality" element={<SummaryAbnormality />} />
+          <Route path="/summaryCards" element={<SummaryCard />} />
+          <Route path="/addCheckItems" element={<SmileCardAdd />} />
+          <Route path="/allMachine" element={<AllMachine />} />
+          <Route path="/pendingOld" element={<OldPending />} />
+          <Route path="/teamleader" element={<TeamLeader />} />
+          <Route path="/holidays" element={<AddHoliday />} />
+          <Route path="/verification" element={<Verification />} />
+        </Routes>
 
-      <Title />
-      <Filters />
-      {/* <MultiLevelXAxisBarChart /> */}
-      <Routes>
-        <Route path="/" element={<Machines />} />
-        <Route path="/checkList" element={<SmileCard />} />
-        <Route path="/pendingTasks" element={<PendingTask />} />
-        <Route path="/judgementHistory" element={<JudgementHistoryPage />} />
-        <Route path="/pendingTasks/cardDetails" element={<PendingSmileCard />}></Route>
-        <Route path="/allMachine/cardDetails" element={<AllMachineSmileCard />}></Route>
-        <Route path="/card" element={<Card />} />
-        <Route path="/abnormality" element={<AbnormalityRecord />} />
-        <Route path="/summaryAbnormality" element={<SummaryAbnormality />} />
-        <Route path="/summaryCards" element={<SummaryCard />} />
-        <Route path="/addCheckItems" element={<SmileCardAdd />} />
-        <Route path="/allMachine" element={<AllMachine />} />
-        <Route path="/pendingOld" element={<OldPending />} />
-        <Route path="/teamleader" element={<TeamLeader />} />
-        <Route path="/holidays" element={<AddHoliday />} />
-        <Route path="/verification" element={<Verification />} />
-      </Routes>
-
-    </AppSidebar>
-
+      </AppSidebar>
+    </div>
   );
 }
 

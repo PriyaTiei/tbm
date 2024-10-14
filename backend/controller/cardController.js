@@ -27,7 +27,7 @@ exports.createCard = catchAsyncError(async (req, res, next) => {
     image,
     pS,
   });
-  res.status(200).json({ success: true, card });
+  return res.status(200).json({ success: true, card });
 });
 
 exports.updateCard = catchAsyncError(async (req, res, next) => {
@@ -56,7 +56,7 @@ exports.updateCard = catchAsyncError(async (req, res, next) => {
   card.image = image;
 
   await card.save({ validateBeforeSave: false });
-  res.status(201).json({ success: true, card });
+  return res.status(201).json({ success: true, card });
 });
 
 exports.deleteCard = catchAsyncError(async (req, res, next) => {
@@ -67,7 +67,7 @@ exports.deleteCard = catchAsyncError(async (req, res, next) => {
   }
 
   await card.remove();
-  res.status(201).json({ success: true, message: "deleted Card successfully" });
+  return res.status(201).json({ success: true, message: "deleted Card successfully" });
 });
 
 exports.getCardAll = catchAsyncError(async (req, res, next) => {
@@ -109,7 +109,7 @@ exports.getCardAll = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Cards not found", 404));
   }
   const totalCards = cards.length;
-  res.status(201).json({ success: true, totalCards, cards });
+  return res.status(201).json({ success: true, totalCards, cards });
 });
 
 exports.getCard = catchAsyncError(async (req, res, next) => {
@@ -122,5 +122,5 @@ exports.getCard = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("cannot find this card", 404));
   }
 
-  res.status(201).json({ success: true, card });
+  return res.status(201).json({ success: true, card });
 });

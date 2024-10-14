@@ -67,7 +67,7 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
   // headCheckList = await addMeassurementFieldSpec(headCheckList)
 
   // return results
-  res.status(201).json({ success: true, headCheckList, totalCount });
+  return res.status(201).json({ success: true, headCheckList, totalCount });
 });
 
 // TO display all card
@@ -148,7 +148,7 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   });
 
   // return results
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     machineData,
     totalCount: { totalCountBlock, totalCountCrank, totalCountHead },
@@ -233,7 +233,7 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
   });
 
   // return results
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     machineData,
   });
@@ -247,7 +247,7 @@ exports.getHeadMachineById = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("could not find Machine", 404));
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     data: machine,
   });
@@ -359,12 +359,12 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
     (err, doc) => {
       if (err) {
         console.log("Could not save data", err);
-        res.status(400).json({
+        return res.status(400).json({
           success: false,
           message: `Failed to upload Data, ${err.message} `,
         });
       } else {
-        res.status(200).json({
+        return res.status(200).json({
           success: true,
           message: "Data uploaded successfully !",
         });
@@ -386,12 +386,12 @@ exports.uploadImage = catchAsyncError(async (req, res, next) => {
     (err, doc) => {
       if (err) {
         console.log("err ", err);
-        res.status(400).json({
+        return res.status(400).json({
           success: false,
           message: "image upload Failed",
         });
       } else {
-        res.status(200).json({
+        return res.status(200).json({
           success: true,
           message: "image uploaded successfully",
           file: req.file,
@@ -500,12 +500,12 @@ exports.insertData = catchAsyncError(async (req, res, next) => {
     (err, doc) => {
       if (err) {
         console.log("Could not save data", err);
-        res.status(400).json({
+        return res.status(400).json({
           success: false,
           message: `Failed to insert Data, ${err.message} `,
         });
       } else {
-        res.status(200).json({
+        return res.status(200).json({
           success: true,
           message: "Data inserted successfully !",
         });

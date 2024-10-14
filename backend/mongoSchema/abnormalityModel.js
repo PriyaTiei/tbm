@@ -48,6 +48,15 @@ const abnormalityListSchema = new mongoose.Schema({
   pS: {
     type: String,
   },
+  m_spec: [
+    {
+      m_id: { type: String,},
+      m_lable: { type: String},
+      m_unit: { type: String},
+      m_value:{ type: Number},
+      m_criteria: { type: String} 
+    }
+  ]
 });
 
 module.exports = mongoose.model("abnormalities", abnormalityListSchema);

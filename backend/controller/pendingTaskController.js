@@ -6,7 +6,7 @@ const ApiFeaturePendingTask = require("../util/apiFeaturePendingTasks");
 const ApiFeatureDailyStatus = require("../util/apiFeatureDailyStatus");
 const ErrorHandler = require("../util/errorHandling");
 const CheckItemModel = require("../mongoSchema/chekItemModel");
-const { checkout } = require("../Router/pendingTaskRouter");
+// const { checkout } = require("../Router/pendingTaskRouter");
 
 
 exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
@@ -96,7 +96,7 @@ exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
     }
   });
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     dailyStatusList,
     pendingTaskList,
@@ -197,7 +197,7 @@ exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
   });
   */
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     pendingData,
     totalCount: { totalCountBlock, totalCountCrank, totalCountHead },
@@ -264,7 +264,7 @@ console.log(pendingTaskList);
     return 0;
   });
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     pendingData,
     totalCount: { totalCountBlock, totalCountCrank, totalCountHead },
@@ -286,6 +286,6 @@ exports.updateResult = async (req, res) => {
     res.send(data);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Server Error");
+    return res.status(500).send("Server Error");
   }
 };

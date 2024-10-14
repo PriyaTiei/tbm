@@ -7,7 +7,8 @@ const {
     pendingForGreater30Days,
     tbmFrequency,
     glVerifyItems,
-    tlVerifyItems
+    tlVerifyItems,
+    getVerifyItems,
 } = require("../controller/reportsController");
   
 const reportsRouter = express.Router();
@@ -18,6 +19,6 @@ reportsRouter.route("/pendingForGreater30Days").get(pendingForGreater30Days);
 reportsRouter.route("/glVerifyItems").get(glVerifyItems);
 reportsRouter.route("/tlVerifyItems").get(tlVerifyItems);
 reportsRouter.route("/tbmFrequency").get(tbmFrequency);
-
+reportsRouter.route("/getVerifyItems").get(getVerifyItems);
 
 module.exports = reportsRouter;

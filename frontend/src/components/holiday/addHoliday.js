@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import { useDispatch, useSelector } from 'react-redux';
 import DatePicker from "react-date-picker";
@@ -16,6 +16,7 @@ export const AddHoliday = () => {
   const [inputValue, setInputValue] = useState("");
   const [showToast, setShowToast] = useState(false);
   const dispatch = useDispatch();
+  const textareaRef = useRef(null);
   const [hdata, setHdata] = useState({
     date: new Date(Date.now()),
     reason: "",
@@ -174,7 +175,7 @@ export const AddHoliday = () => {
 
 
   const handleEditClick = (item) => {
-
+    textareaRef.current?.focus();
     dispatch(fetchSingleData(item))
     setSelected(item)
     setCards("edit")
@@ -192,7 +193,7 @@ export const AddHoliday = () => {
     }
   };
   return (
-    <div className="overflow-auto" style={{ height: "85vh" }}>
+    <div className="overflow-auto" style={{ height: "85vh", paddingBottom: "10%" }}>
       {cards && cards === 'add' ? (
         <Card style={{ width: '30rem', margin: "auto", marginTop: "2%", position: "relative" }}>
           <Card.Body>
@@ -285,6 +286,7 @@ export const AddHoliday = () => {
                 onChange={(e) => {
                   setHdata({ ...hdata, reason: e.target.value });
                 }}
+                ref={textareaRef} 
                 value={hdata?.reason}
               />
             </FloatingLabel>
@@ -377,6 +379,6 @@ export const AddHoliday = () => {
           </tbody>
         </Table>
       </div>
-    </div >
+    </div>
   );
 }

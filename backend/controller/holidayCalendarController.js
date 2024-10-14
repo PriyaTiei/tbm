@@ -21,7 +21,7 @@ exports.createHolidayCalendar = catchAsyncError(async (req, res, next) => {
       user: userObjID
     });
 
-    res.status(200).json({ success: true, holidayCalendarItem });
+    return res.status(200).json({ success: true, holidayCalendarItem });
 });
 
 exports.updateHolidayCalendar = catchAsyncError(async (req, res, next) => {
@@ -49,7 +49,7 @@ exports.updateHolidayCalendar = catchAsyncError(async (req, res, next) => {
     holidayCalendarItem.user = user;
 
     await holidayCalendarItem.save({ validateBeforeSave: false });
-    res.status(201).json({ success: true, holidayCalendarItem });
+    return res.status(201).json({ success: true, holidayCalendarItem });
   });
 
   exports.deleteHolidayCalendar = catchAsyncError(async (req, res, next) => {
@@ -81,7 +81,7 @@ exports.updateHolidayCalendar = catchAsyncError(async (req, res, next) => {
       holidays.push(item)
     })
 
-    res.status(201).json({ success: true, holidays });
+    return res.status(201).json({ success: true, holidays });
   });
   
   exports.getHolidayCalendar = catchAsyncError(async (req, res, next) => {
@@ -96,7 +96,7 @@ exports.updateHolidayCalendar = catchAsyncError(async (req, res, next) => {
       return next(new ErrorHandler("Holiday requested was deleted", 404));
     } 
   
-    res.status(201).json({ success: true, holiday });
+    return res.status(201).json({ success: true, holiday });
   });
 
   exports.prepopulate = catchAsyncError(async (req, res, next) => {
@@ -127,6 +127,6 @@ exports.updateHolidayCalendar = catchAsyncError(async (req, res, next) => {
       date.setUTCDate(date.getUTCDate() + ((date.getUTCDay() == 0) ? 6 : 1));
     } while (date.getUTCFullYear() == year);
 
-    res.status(200).json({ success: true });
+    return res.status(200).json({ success: true });
   });
   

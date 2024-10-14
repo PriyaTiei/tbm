@@ -48,7 +48,7 @@ export default function PendingTask() {
     if (exceldata?.pendingData?.length) {
       // console.log("pendingTasksData?.pendingData", pendingTasksData?.pendingData)
       // console.log("exceldata?.pendingData", exceldata?.pendingData)
-      const newHeader = ["SL NO", "LATEST PLAN DATE", "OP NO", "WORK DETAIL", "FREQUENCY", "CRITERIA", "LATEST ACTUAL VALUE", "LAST COMPLETED DATE"];
+      const newHeader = ["SL NO", "LATEST PLAN DATE", "OP NO", "WORK DETAIL", "FREQUENCY", "MEASUREMENT", "STANDARD VALUE", "LATEST ACTUAL VALUE", "LAST COMPLETED DATE"];
       setHeader(newHeader);
 
       let index = 1; // Initialize the index
@@ -59,17 +59,29 @@ export default function PendingTask() {
 
         jsonData.pendingData.forEach((pending) => {
           pending.processList.forEach((process) => {
+            const lastCheckItems = new Map();
+
+            // Store only the last occurrence of each checkItem
             process.processData.forEach((data) => {
+              lastCheckItems.set(data.checkItem, data);
+            });
+
+            // Now process only the last occurrence
+            lastCheckItems.forEach((data) => {
               data.checkitems.forEach((item) => {
                 const workDetail = item.workDetail;
                 const cycle = item.cycle;
                 const entryDate = data?.entryDates[0];
-
                 const result = data.result;
                 const latestEntryFor = data.itemSpec?.checkedAt;
-                const actuals = data.actuals;
-                const m_criteria = item.m_spec
-                  ? item.m_spec.map(spec => spec.m_criteria || '').join(', ')
+                const m_criteria = data.itemSpec?.m_spec
+                  ? data.itemSpec?.m_spec.map(spec => spec.m_criteria || '').join(', ')
+                  : '';
+                const m_value = data.itemSpec?.m_spec
+                  ? data.itemSpec?.m_spec.map(spec => spec.m_value || '').join(', ')
+                  : '';
+                const m_label = data.itemSpec?.m_spec
+                  ? data.itemSpec?.m_spec.map(spec => `${spec.m_lable}(${spec.m_unit})` || '').join(', ')
                   : '';
 
                 results.push([
@@ -78,8 +90,9 @@ export default function PendingTask() {
                   process.processNo,
                   workDetail,
                   cycle,
+                  m_label,
                   m_criteria,
-                  actuals,
+                  m_value,
                   latestEntryFor?.split("T")[0],
                 ]);
               });
@@ -122,15 +135,17 @@ export default function PendingTask() {
         <Fragment>
           <div>
 
-            {body.length > 0 && (
+            {body.length > 0 ? (
               <Button variant="warning" style={{ position: "absolute", right: 150 }} onClick={handleDownloadExcel}>
                 Download Excel
               </Button>
-            )}
+            ) : <Button style={{ position: "absolute", right: 150, background: "#666" }}>
+              Download Excel
+            </Button>}
 
 
           </div>
-          <div className="overflow-auto" style={{ height: "75vh" }}>
+          <div className="overflow-auto" style={{ height: "75vh", paddingBottom: "10%" }}>
             {pendingTasksData.success
               ? pendingTasksData.pendingData.map((item, i) => {
                 return (<>
