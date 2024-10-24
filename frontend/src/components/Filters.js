@@ -6,11 +6,14 @@ import {
   filterDept,
   filterLine,
   filterCheck,
-  filterGroup
+  filterGroup,
+  filterProcessNo,
+  filterCardNo
 } from "../redux/filter/filterActions";
 import Select from "react-select";
 import { Button, Modal } from "react-bootstrap";
 import { Link, NavLink } from "react-router-dom";
+import Search_Modal from "./Search_Modal";
 import SlideInNotification from "./common/Slicein";
 import { useCookies } from "react-cookie";
 import MultiLevelXAxisBarChart from "../BarChart";
@@ -35,8 +38,10 @@ function Filters() {
   const selectLineRef = useRef(null);
   const [cookies] = useCookies(['token', 'userId']);
   const [date, setDate] = useState(todayDate);
+  const [showSearch, setShowSearch]= useState(false)
   const [showModal, setShowModal] = useState(false)
   const [showModals, setShowModals] = useState(false)
+  
 
   const auth = useSelector((state) => state.auth);
   // const [header, setHeader] = useState([])
@@ -191,9 +196,12 @@ function Filters() {
   //     },
   //   });
   // }
-
-
-
+const filters = useSelector((state) => state.filters);  
+const colorSearchButton = (filters.processNo == "" && filters.cardNo == "")? "btn-primary": "btn-warning"
+  const clearSearchHandler = (e) => {
+    dispatch(filterProcessNo(""));
+    dispatch(filterCardNo(""));
+  }
 
   return (
     <Fragment>
@@ -274,6 +282,14 @@ function Filters() {
           defaultValue={groupOptions[0]}
           isSearchable={false}
         />
+          {(filters.processNo == "" && filters.cardNo == "")? <Button  className={`mx-1 ${colorSearchButton}`} onClick={()=>setShowSearch(true)}>
+            <i className="bi bi-search px-1"></i>
+            Search
+          </Button>:
+          <Button  className={`mx-1 ${colorSearchButton}`} onClick={()=>clearSearchHandler()}>
+            <i className="bi bi-search px-1"></i>
+            Clear Search
+          </Button>}
         {date ? (<OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Monthly Report</Tooltip>}><Button className="" onClick={() => setShowModal(true)} style={{ background: "transparent", color: "#000" }}>
           <i class="bi bi-graph-up bi-2x"></i>
         </Button></OverlayTrigger>) : (<></>)}
@@ -305,6 +321,7 @@ function Filters() {
       <hr className="my-2"></hr>
       <MultiLevelXAxisBarChart showModal={showModal} setShowModal={setShowModal} chkDate={date} />
       {/* <Verification showModals={showModals} setShowModals={setShowModals} /> */}
+      <Search_Modal showModal={showSearch} setShowModal={setShowSearch} />
     </Fragment>
   );
 }

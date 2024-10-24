@@ -3,3 +3,5 @@ export const FILTER_DEPT = "FILTER_DEPT";
 export const FILTER_LINE = "FILTER_LINE";
 export const FILTER_CHECK = "FILTER_CHECK";
 export const FILTER_GROUP = "FILTER_GROUP";
+export const FILTER_PROCESS_NO= "FILTER_PROCESS_NO";
+export const FILTER_CARD_NO= "FILTER_CARD_NO";
