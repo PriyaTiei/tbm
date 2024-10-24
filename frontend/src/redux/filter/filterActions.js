@@ -3,7 +3,9 @@ import {
   FILTER_LINE,
   FILTER_DEPT,
   FILTER_CHECK,
-  FILTER_GROUP
+  FILTER_GROUP,
+  FILTER_PROCESS_NO,
+  FILTER_CARD_NO
 } from "./filterTypes";
 
 export const filterDate = (d,w, m, y, dt) => {
@@ -43,3 +45,16 @@ export const filterGroup = (group) => {
   };
 };
 
+
+export const filterProcessNo = (processNo) => {
+  return {
+    type: FILTER_PROCESS_NO,
+    payload: processNo,
+  };
+};
+export const filterCardNo = (cardNo) => {
+  return {
+    type: FILTER_CARD_NO,
+    payload: cardNo,
+  };
+};

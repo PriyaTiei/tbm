@@ -74,6 +74,30 @@ console.log(newQueryStr);
       ? { ...newQueryStr, y: { $in: [9999, Number(newQueryStr.y)] } }
       : { ...newQueryStr };
 
+         
+    
+    // The below line of code is to search cards based on OP number
+    const keyword1 = this.newQueryStr.processNo
+    ? {
+        processNo: {
+          $regex: this.newQueryStr.processNo,
+          $options: "i",
+        },
+      }
+    : {};
+       // The below line of code is to search cards based on card number
+       const keyword2 = this.newQueryStr.cardNo
+       ? {
+           cardNo: {
+             $regex: this.newQueryStr.cardNo,
+             $options: "i",
+           },
+         }
+       : {};
+   
+    // Updating the search query with revised filter parameters
+    newQueryStr= {...newQueryStr, ...keyword1, ...keyword2}
+
     this.newQueryStr = { ...newQueryStr };
 
 //    console.log(this.newQueryStr);
