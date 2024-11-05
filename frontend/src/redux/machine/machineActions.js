@@ -54,3 +54,18 @@ export const getAllMachines = (queryStr) => {
       });
   };
 };
+
+export const getDeletedCheckItems = (queryStr) => {
+  return (dispatch) => {
+    dispatch(machineFetchRequest());
+    let url = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/deleted-items?${queryStr}`;
+    axios
+      .get(url)
+      .then((result) => {
+        dispatch(machineFetchSuccess(result.data));
+      })
+      .catch((err) => {
+        dispatch(machineFetchFail(err.message));
+      });
+  };
+};

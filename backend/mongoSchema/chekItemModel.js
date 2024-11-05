@@ -145,7 +145,11 @@ const checkItemSchema = new mongoose.Schema({
   tlVerify: { 
     type: Boolean,
     default: false
-  }
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 module.exports = mongoose.model("checkitems", checkItemSchema);

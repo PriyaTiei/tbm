@@ -13,7 +13,7 @@ export default function PendingSmileCardDetails({ list, entryFor, checkItems }) 
   const [mspecs, setMspecs] = useState([])
 
 
-
+  const checkedByNew = useSelector((state) => state.checkedBy);
   const entryForStr = moment(entryFor).format('YYYY-M-DD').replace(/\b0/g, '');
 
 
@@ -38,6 +38,7 @@ export default function PendingSmileCardDetails({ list, entryFor, checkItems }) 
     areaToInspect,
     workTime,
     m_spec,
+    checkedBy,
   } = list;
 
   useEffect(() => {
@@ -87,7 +88,8 @@ export default function PendingSmileCardDetails({ list, entryFor, checkItems }) 
           pS,
           line,
           remarks,
-          m_specs: mspecs
+          m_specs: mspecs,
+          checkedBy: checkedByNew,
         };
 
         if (okNg === "OK" || okNg === "NG") {
@@ -272,6 +274,15 @@ export default function PendingSmileCardDetails({ list, entryFor, checkItems }) 
                 alt="Not Evaluated"
                 style={{ width: "17vw", height: "17vw" }}
               ></img>
+            </div>
+            <div className="d-flex justify-content-between align-items-center">
+            <h6 className="text-center text-light mx-3">
+                  
+                  <spam style={{ fontSize: "0.7rem" }}>
+                   {checkedBy}
+                  </spam>
+                </h6>
+
             </div>
             <div
               style={{ width: "24.5vw" }}

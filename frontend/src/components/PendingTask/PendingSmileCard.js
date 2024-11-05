@@ -1,12 +1,21 @@
 import React, { useEffect, useState, Fragment } from "react"; 
 import { useDispatch, useSelector } from "react-redux";  
 import PendingSmileCardDetails from "./PendingSmileCardDetails";  
+import { setCheckedBy } from "../../redux/checkedBy";
 import axios from "axios"; 
 
 export default function PendingSmileCard() { 
   const processData = useSelector((state) => state.processData.processData);
   const [page, setPage] = useState(1);
   const [list, setList] = useState();
+  const dispatch = useDispatch();
+  const auth = useSelector((state) => state.auth);
+  const level = auth.user ? auth.user.level : 0;
+
+  
+
+  const checkedBy = useSelector(state => state.checkedBy)
+  const [checkedByCurrent, setCheckedByCurrent] = useState(checkedBy);
 
   const idIndex = page - 1;
 
@@ -43,6 +52,15 @@ export default function PendingSmileCard() {
   let disabledPrevious = page < 2 ? "disabled" : null;
   let disabledNext = page < counts ? null : "disabled"; 
 
+
+  const checkedByHandler = (e) => {
+    setCheckedByCurrent(e.target.value);
+  };
+
+  useEffect(() => {
+    dispatch(setCheckedBy(checkedByCurrent))
+  }, [checkedByCurrent]) 
+
   return (
     <Fragment>
       <div className="d-flex flex-wrap my-2 ">
@@ -69,6 +87,16 @@ export default function PendingSmileCard() {
             style={{ fontSize: "1.1rem", color: "dark" }}
           ></i>
         </button>
+        {level >= 10 && (
+            <input
+              type="text"
+              className="mx-2"
+              placeholder="Checked by"
+              value={checkedByCurrent}
+              onChange={checkedByHandler}
+            />
+          )}
+
       </div>
       {list ? (
         <PendingSmileCardDetails list={list}  entryFor={processData[idIndex].entryDates[0]}  />
