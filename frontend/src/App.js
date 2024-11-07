@@ -14,8 +14,10 @@ import PendingTask from "./components/PendingTask/PendingTask";
 import TeamLeader from "./components/TeamLeader/TeamLeader"
 import PendingSmileCard from "./components/PendingTask/PendingSmileCard"
 import AllMachineSmileCard from "./components/AllMachine/AllMachineSmileCard"
+import AlldelMachineSmileCard from "./components/AllMachine/AlldelMachineSmileCard"
 import { AppSidebar } from "./components/Sidebar";
 import AllMachine from "./components/AllMachine/AllMachine";
+import DelMachine from "./components/AllMachine/DeletedCheckitems";
 import { useCookies } from "react-cookie";
 import { login } from "./redux/auth/AuthSlice";
 import axios from "axios";
@@ -76,12 +78,14 @@ function App() {
           <Route path="/judgementHistory" element={<JudgementHistoryPage />} />
           <Route path="/pendingTasks/cardDetails" element={<PendingSmileCard />}></Route>
           <Route path="/allMachine/cardDetails" element={<AllMachineSmileCard />}></Route>
+          <Route path="/delMachine/cardDetails" element={<AlldelMachineSmileCard />}></Route>
           <Route path="/card" element={<Card />} />
           <Route path="/abnormality" element={<AbnormalityRecord />} />
           <Route path="/summaryAbnormality" element={<SummaryAbnormality />} />
           <Route path="/summaryCards" element={<SummaryCard />} />
           <Route path="/addCheckItems" element={<SmileCardAdd />} />
           <Route path="/allMachine" element={<AllMachine />} />
+          <Route path="/delMachine" element={<DelMachine />} />
           <Route path="/pendingOld" element={<OldPending />} />
           <Route path="/teamleader" element={<TeamLeader />} />
           <Route path="/holidays" element={<AddHoliday />} />

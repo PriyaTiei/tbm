@@ -15,6 +15,8 @@ exports.createCard = catchAsyncError(async (req, res, next) => {
     status,
     image,
     pS,
+    abnormalityId,
+    dailyStatusId
   } = req.body;
   const card = await CardRaisedModel.create({
     cardType,
@@ -26,6 +28,8 @@ exports.createCard = catchAsyncError(async (req, res, next) => {
     status,
     image,
     pS,
+    abnormalityId,
+    dailyStatusId
   });
   return res.status(200).json({ success: true, card });
 });
@@ -72,27 +76,25 @@ exports.deleteCard = catchAsyncError(async (req, res, next) => {
 
 exports.getCardAll = catchAsyncError(async (req, res, next) => {
   const fromDate = req.params.fromDate;
-  var toDate = req.params.toDate;
+  const toDate = req.params.toDate;
+  console.log("getCardAll Function clicked");
+  const queryStr = req.query;
+  const createdAt = { $gte: fromDate, $lt: toDate };
 
-  var queryStr = req.query;
-  var createdAt = { $gte: fromDate, $lt: toDate };
-
-  let checkItemArray = [""]
-  if (queryStr?.item){
-    checkItemArray = []
-    let checkItems = await HeadModel.find({
+  let checkItemArray = [""];
+  if (queryStr?.item) {
+    checkItemArray = [];
+    const checkItems = await HeadModel.find({
       workDetail: {
         $regex: queryStr.item,
         $options: "i"
       }
-    })
-    checkItems.map(item=>{
-      checkItemArray.push(item._id.toString())
-    })
+    });
+    checkItemArray = checkItems.map(item => item._id.toString());
   }
 
-  if(queryStr.item  && !checkItemArray.length){
-    return []
+  if (queryStr.item && !checkItemArray.length) {
+    return res.status(200).json({ success: true, totalCards: 0, cards: [] });
   }
 
   const cardFeature = new ApiFeatureCard(
@@ -102,15 +104,38 @@ exports.getCardAll = catchAsyncError(async (req, res, next) => {
     checkItemArray
   ).filter();
 
-  //test comp
-  const cards = await cardFeature.query.find({});
+  // Test comp
+  var cards = await cardFeature.query.find({});
+
+  cards.forEach((item, i) => {
+
+    // Check and update abnormalityId
+    if (!item.abnormalityId) {
+      let plainItem = item.toObject();
+      plainItem.abnormalityId = { id: "", m_spec: [] };
+      cards[i] = plainItem;
+    }
+
+    // Check and update dailyStatusId
+    if (!item.dailyStatusId) {
+      let plainItem = cards[i].toObject ? cards[i].toObject() : item.toObject();
+      plainItem.dailyStatusId = { id: "", status: "" };
+      cards[i] = plainItem;
+    }
+  });
+
 
   if (cards.length === 0) {
     return next(new ErrorHandler("Cards not found", 404));
   }
+
+  // Ensure every card has an abnormalityId
+
+
   const totalCards = cards.length;
-  return res.status(201).json({ success: true, totalCards, cards });
+  return res.status(200).json({ success: true, totalCards, cards });
 });
+
 
 exports.getCard = catchAsyncError(async (req, res, next) => {
   const id = req.params.id;

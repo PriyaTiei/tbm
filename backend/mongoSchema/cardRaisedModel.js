@@ -1,10 +1,23 @@
 const mongoose = require("mongoose");
+const abnormalityModel = require("./abnormalityModel");
 
 const cardRaisedSchema = new mongoose.Schema({
   checkItem: {
     type: mongoose.Schema.ObjectId,
     ref: "checkitems",
     required: true,
+  },
+
+  abnormalityId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "abnormalities",
+    required: false
+  },
+
+  dailyStatusId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "dailystatus",
+    required: false
   },
 
   user: {

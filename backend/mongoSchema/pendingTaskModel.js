@@ -31,6 +31,9 @@ const pendingTaskSchema = new mongoose.Schema(
       enum: ["PENDING", "OK", "NG"],
       default: "PENDING",
     },
+  checkedBy: {
+    type: String,
+  },
     entryDates: {
       type: [Date],
       required: true,

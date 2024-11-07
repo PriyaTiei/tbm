@@ -10,6 +10,8 @@ export function getTitle(pathname) {
       return "Card Details";
     case "/allMachine":
       return "All Cards";
+      case "/delMachine":
+      return "Deleted Cards";
     case "/pendingTasks/cardDetails/":
       return "Pending Card Details";
     default:

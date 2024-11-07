@@ -245,6 +245,9 @@ function SummaryCard() {
               <th>Card Type</th>
               <th>Status</th>
               <th style={{ minWidth: "100px" }}>Image</th>
+              <th style={{ minWidth: "100px" }}>Measurement</th>
+              <th style={{ minWidth: "100px" }}>Standard Value</th>
+              <th style={{ minWidth: "100px" }}>Actual Value</th>
               <th style={{ minWidth: "100px" }}>Delete</th>
               <th style={{ minWidth: "100px" }}>Update</th>
               <th></th>
@@ -329,6 +332,12 @@ function SummaryCard() {
                 />
               </td>
 
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
               <td></td>
               <td></td>
               <td></td>

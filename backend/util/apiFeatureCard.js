@@ -16,9 +16,9 @@ class ApiFeatureCard {
 
     deleteObj.forEach((item) => delete newQueryStr[item]);
 
-    if(this.checkItemArray.length>0 && this.checkItemArray[0]!=""){
+    if (this.checkItemArray.length > 0 && this.checkItemArray[0] != "") {
       this.newQueryStr.checkItem = {
-        $in:this.checkItemArray
+        $in: this.checkItemArray
       }
     }
 
@@ -26,11 +26,13 @@ class ApiFeatureCard {
     for (let key in newQueryStr) {
       this.newQueryStr[key] = { $regex: newQueryStr[key], $options: "i" };
     }
-    console.log({ ...this.newQueryStr, createdAt: { ...this.createdAt } });
+    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaa", { ...this.newQueryStr, createdAt: { ...this.createdAt } });
     this.query = this.query
       .find({ ...this.newQueryStr, createdAt: { ...this.createdAt } })
       .populate("user", "name")
       .populate("checkItem", "workDetail")
+      .populate("abnormalityId", "m_spec")
+      .populate("dailyStatusId", "m_spec")
       .sort({ createdAt: -1 });
 
     // after populate query

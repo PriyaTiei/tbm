@@ -99,6 +99,57 @@ class ApiFeaturePendingTask {
     return this;
   }
 
+  newLine() {
+    let newQueryStr = { ...this.queryStr };
+
+    this.query = this.query.aggregate([
+      {
+        $match: newQueryStr,
+      },
+      {
+        $lookup: {
+          from: "checkitems",
+          localField: "checkItem",
+          foreignField: "_id",
+          as: "itemSpec"
+        }
+      },
+      {
+        $unwind: {
+          path: "$itemSpec"
+        }
+      },
+      {
+        $group: {
+          _id: { line: "$line", processNo: "$processNo" },
+          processList: {
+            $push: {
+              id: "$_id",
+              checkItem: "$checkItem",
+              result: "$result",
+              pS: "$pS",
+              entryDates: "$entryDates",
+              rS: "$rS",
+              itemSpec: "$itemSpec"
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.line",
+          processList: {
+            $push: {
+              processNo: "$_id.processNo",
+              processData: "$processList",
+            },
+          },
+        },
+      }
+    ]);
+    return this;
+  }
+
   lineReport() {
     let newQueryStr = { ...this.queryStr };
 

@@ -262,11 +262,13 @@ function SmileCardDetails({ list, image, setImage }) {
 
   const saveData = (e) => {
     console.log(labelUnits)
-    if (labelUnits[0].m_criteria != "" && labelUnits[0].m_lable != "" && labelUnits[0].m_unit != "" && cycleNew) {
+    if (cycleNew) {
       e.preventDefault();
       const formData = new FormData();
 
-
+      let labelUnitss = labelUnits.filter(item => {
+        return !(item.m_label === undefined && item.m_unit === "" && item.m_criteria === "");
+      });
       // formData.append("image", selectedFile);
 
       formData.append("images", imagesNew);
@@ -303,7 +305,7 @@ function SmileCardDetails({ list, image, setImage }) {
       formData.append("y", yNew);
       formData.append("_id", _id);
       formData.append("group", groupNew);
-      formData.append("m_spec", JSON.stringify(labelUnits));
+      formData.append("m_spec", JSON.stringify(labelUnitss));
       formData.append("tlVerify", tlVerifys);
       formData.append("glVerify", glVerifys);
 
@@ -362,7 +364,7 @@ function SmileCardDetails({ list, image, setImage }) {
 
       <ol
         className="d-flex flex-wrap justify-content-around overflow-auto "
-        style={{ height: "40vh",paddingBottom: "10%" }}
+        style={{ height: "40vh", paddingBottom: "10%" }}
       >
         {/* <FlavorForm /> */}
 
@@ -754,8 +756,8 @@ function SmileCardDetails({ list, image, setImage }) {
           <div className="d-flex">
             <div className="firstCol">
               {" "}
-              Measurement
-              <span className="text-danger">* </span>:
+              Measurement:
+              {/* <span className="text-danger">* </span>: */}
             </div>
             <div className="secondCol">
               {labelUnits?.map((item, index) => (

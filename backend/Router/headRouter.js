@@ -10,6 +10,7 @@ const {
   insertData,
   deleteCheckItem,
   getHeadMachineById,
+  getDeletedCheckItems,
 } = require("../controller/headCheckListController");
 const headRouter = express.Router();
 
@@ -39,5 +40,6 @@ headRouter.route("/uploadImage").post(upload.single("image"), uploadImage);
 headRouter.route("/saveData").post(upload.none(), saveData);
 headRouter.route("/insertData").post(upload.none(), insertData);
 headRouter.route("/delete/:id").delete(deleteCheckItem)
+headRouter.route("/deleted-items").get(getDeletedCheckItems)
 
 module.exports = headRouter;

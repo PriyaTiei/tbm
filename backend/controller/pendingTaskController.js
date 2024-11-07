@@ -131,7 +131,7 @@ exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
     ...req.query,
     result: "PENDING"
   });
-  const pendingTaskObjectWithLine = pendingTaskObject.line();
+  const pendingTaskObjectWithLine = pendingTaskObject.newLine();
   const pendingTaskList = await pendingTaskObjectWithLine.query;
 
   const totalCountBlock = await PendingTask.countDocuments({

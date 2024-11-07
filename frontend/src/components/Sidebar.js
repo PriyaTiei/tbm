@@ -74,6 +74,11 @@ export function AppSidebar({ children }) {
               All CheckItems
             </Button>
           </Link>
+          <Link to="/delMachine">
+            <Button variant="dark" style={menuItemStyle}>
+              Deleted CheckItems
+            </Button>
+          </Link>
         </Offcanvas.Body>
       </Offcanvas>
 

@@ -35,6 +35,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
     const [year, setYear] = useState();
     const dispatch = useDispatch()
     const { reportChartdata } = useSelector(state => state?.report)
+    const { pS } = useSelector(state => state?.filters)
     const [chartData, setChartData] = useState([])
     const [datas, setDatas] = useState([])
     const [optionss, setOptionss] = useState([])
@@ -73,7 +74,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
 
         const years = date.getFullYear();
         setYear(years);
-        dispatch(fetchReportData({ year: years, month: monthNumbers + 1 }))
+        dispatch(fetchReportData({ year: years, month: monthNumbers + 1, pS: pS }))
         function getFirstMonday(year, month) {
             let date = new Date(year, month, 1);
             while (date.getDay() !== 1) {
@@ -300,9 +301,12 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
         const modifypends = (index, newLabel) => {
             pends[index] = newLabel;
         };
-        const modifycpends = (index, newLabel) => {
-            cpends[index] = newLabel;
+        const modifycpends = () => {
+            for (let i = 0; i < cpends.length; i++) {
+                cpends[i] = (i === 0) ? pends[i] : cpends[i - 1] + pends[i];
+            }
         };
+
 
         function roundUpToNearest10(value) {
             return Math.ceil(value / 10) * 10;
@@ -351,33 +355,27 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                         { maxOkCountss: 0, maxOkCountPending: 0, maxNgCountss: 0, maxItemCountss: 0 }
                     );
 
-                    // const maxCount = maxOkCountss + maxOkCountPending + maxNgCountss;
+
                     const maxCount = maxItemCountss
 
                     modifyLabelPending(difference, 0)
 
                     modifypends(difference, pendingCount)
                     modifycpends(difference, cumPendingCount)
-                    // if (totalOkNgCount) {
-                    //     modifyDataHolidayAtIndex(
-                    //         difference,
-                    //         typeof maxCount === "number" && maxCount != -Infinity && maxCount != 0
-                    //             ? roundUpToNearest10(maxCount) - totalOkNgCount
-                    //             : 2
-                    //     );
-                    // } else {
+
                     modifyDataHolidayAtIndex(
                         difference,
                         typeof maxCount === "number" && maxCount != -Infinity && maxCount != 0
-                            ? roundUpToNearest10(maxCount-totalOkNgCount)
+                            ? roundUpToNearest10(maxCount - totalOkNgCount)
                             : 2
                     );
-                    // }
+
 
                 } else {
-                    modifyLabelPending(difference, totalItemCount - (okCount + ngCount))
+                    modifyLabelPending(difference, totalItemCount)
                     // modifyDataAtIndex(difference, ddd.okCount + ddd.ngCount);
-                    modifypends(difference, ddd.pendingCount)
+                    modifypends(difference, totalItemCount - (okCount + ngCount))
+                    console.log(pends)
                     modifycpends(difference, ddd.cumPendingCount)
                 }
                 // Remove other logic for focus on summing
@@ -432,13 +430,10 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
 
 
             <Modal.Body
-                style={{
-                    height: "90%",
-                    overflow: "scroll"
-                }}
+
             >
                 <div
-                    style={{ height: "80vh", width: "100%" }}
+                    style={{ width: "100%", overflowY: "scroll" }}
                     className="d-flex justify-content-center align-item-center "
                     onClick={handleClose}
                 >

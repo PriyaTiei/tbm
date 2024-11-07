@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { getCards } from "../redux/card/cardActions";
@@ -25,12 +25,16 @@ function CardDoc({ item, fromDateSt, toDateSt }) {
     pS
   } = item;
 
-  var workDetail=""
-  if(checkItem==null){
-    workDetail=""
+  useEffect(() => {
+    console.log("itemssssss", item)
+  }, [item])
+
+  var workDetail = ""
+  if (checkItem == null) {
+    workDetail = ""
   }
-  else{
-    workDetail=checkItem.workDetail
+  else {
+    workDetail = checkItem.workDetail
   }
 
   const [showModal, setShowModal] = useState(false);
@@ -46,10 +50,10 @@ function CardDoc({ item, fromDateSt, toDateSt }) {
         `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/card/update/${itemId}`
       )
       .then((result) => {
-       
+
         dispatch(getCards(fromDateSt, toDateSt));
       })
-     
+
   };
 
   const deleteConfirmation = () => {
@@ -66,17 +70,18 @@ function CardDoc({ item, fromDateSt, toDateSt }) {
         status === "complete"
           ? "bg-success"
           : status === "inprogress"
-          ? "bg-warning"
-          : "bg-light"
+            ? "bg-warning"
+            : "bg-light"
       }
     >
       <td>{createdAt.slice(0, 10)}</td>
-      <td>{pS ==="P"? "Maint.":(pS==="S"?"Prod.":"")}</td>
+      <td>{pS === "P" ? "Maint." : (pS === "S" ? "Prod." : "")}</td>
       <td>{line}</td>
       <td>{processNo}</td>
       <td>{workDetail}</td>
       <td>{abnormality}</td>
       <td>{cardType.toUpperCase()}</td>
+
       {/* <td>{countermeasure}</td>
       <td>{spare}</td>
 
@@ -96,6 +101,68 @@ function CardDoc({ item, fromDateSt, toDateSt }) {
           ></i>
           Image
         </button>
+      </td>
+      <td>
+        {item?.abnormalityId?.m_spec?.length > 0 ? (
+          item.abnormalityId.m_spec.map((specItem, index) => (
+            <span key={index}>
+              {specItem.m_lable || ""}
+              ({specItem.m_unit || ""})
+              {index < item.abnormalityId.m_spec.length - 1 && ' '}
+              <br />
+            </span>
+          ))
+        ) : item?.dailyStatusId?.m_spec?.length > 0 ? (
+          item.dailyStatusId.m_spec.map((specItem, index) => (
+            <span key={index}>
+              {specItem.m_lable || ""}
+              ({specItem.m_unit || ""})
+              {index < item.dailyStatusId.m_spec.length - 1 && ' '}
+              <br />
+            </span>
+          ))
+        ) : ""}
+      </td>
+
+      <td>
+        {item?.abnormalityId?.m_spec?.length > 0 ? (
+          item.abnormalityId.m_spec.map((specItem, index) => (
+            <span key={index}>
+              <b>{specItem.m_criteria || ""}</b>
+              {index < item.abnormalityId.m_spec.length - 1 && ' '}
+              <br />
+            </span>
+          ))
+        ) : item?.dailyStatusId?.m_spec?.length > 0 ? (
+          item.dailyStatusId.m_spec.map((specItem, index) => (
+            <span key={index}>
+              <b>{specItem.m_criteria || ""}</b>
+              {index < item.dailyStatusId.m_spec.length - 1 && ' '}
+              <br />
+            </span>
+          ))
+        ) : ""}
+      </td>
+
+      {/* Actual Value */}
+      <td>
+        {item?.abnormalityId?.m_spec?.length > 0 ? (
+          item.abnormalityId.m_spec.map((specItem, index) => (
+            <span key={index}>
+              {specItem.m_value || 0}
+              {index < item.abnormalityId.m_spec.length - 1 && ' '}
+              <br />
+            </span>
+          ))
+        ) : item?.dailyStatusId?.m_spec?.length > 0 ? (
+          item.dailyStatusId.m_spec.map((specItem, index) => (
+            <span key={index}>
+              {specItem.m_value || 0}
+              {index < item.dailyStatusId.m_spec.length - 1 && ' '}
+              <br />
+            </span>
+          ))
+        ) : ""}
       </td>
 
       {level >= 100 && (

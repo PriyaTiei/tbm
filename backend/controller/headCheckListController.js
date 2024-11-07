@@ -162,7 +162,15 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
   req.query = { ...req.query };
 
   const headCheckList = await HeadModel.aggregate([
-    { $match: req.query },
+    // { $match: req.query },
+    {
+      $match: { ...req.query,
+        $or: [
+          { isDeleted: { $exists: false } }
+        ],
+      },
+    },
+
     {
       $group: {
         _id: { line: "$line", processNo: "$processNo" },
@@ -373,6 +381,93 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
   );
 });
 
+
+
+exports.getDeletedCheckItems = catchAsyncError(async (req, res, next) => {
+  const { token } = req.cookies;
+  console.log("cookie form getAllMachinelist");
+  console.log(token);
+  req.query = { ...req.query };
+
+  const headCheckList = await HeadModel.aggregate([
+    { $match: { ...req.query, isDeleted: true } },
+   
+    {
+      $group: {
+        _id: { line: "$line", processNo: "$processNo" },
+        processList: {
+          $push: {
+            id: "$_id",
+            checkItem: "$checkItem",
+            pS: "$pS",
+          },
+        },
+      },
+    },
+    {
+      $group: {
+        _id: "$_id.line",
+        processList: {
+          $push: {
+            processNo: "$_id.processNo",
+            processData: "$processList",
+          },
+        },
+      },
+    },
+  ]);
+
+  if (headCheckList.length === 0) {
+    return next(new ErrorHandler("could not find check list", 404));
+  }
+
+  let machineData = [];
+  // let processCount=[]
+
+  headCheckList.forEach((item) => {
+    let line = item._id;
+
+    const counts = {};
+    item.processList.forEach((el) => {
+      counts[el.processNo] = el.processData.length;
+    });
+
+    let processList = item.processList;
+    processList.sort((a, b) => {
+      let x = a.processNo;
+      let y = b.processNo;
+      if (x < y) {
+        return -1;
+      }
+      if (x > y) {
+        return 1;
+      }
+      return 0;
+    });
+
+    machineData = [...machineData, { line, processList, counts }];
+  });
+
+  //Sorting with respect to line
+  machineData.sort((a, b) => {
+    let x = a.line;
+    let y = b.line;
+    if (x < y) {
+      return -1;
+    }
+    if (x > y) {
+      return 1;
+    }
+    return 0;
+  });
+
+  // return results
+  res.status(200).json({
+    success: true,
+    machineData,
+  });
+});
+
 exports.uploadImage = catchAsyncError(async (req, res, next) => {
   const { _id } = req.body;
   console.log("Id is :", _id);
@@ -514,17 +609,52 @@ exports.insertData = catchAsyncError(async (req, res, next) => {
   );
 });
 
+// exports.deleteCheckItem = catchAsyncError(async (req, res, next) => {
+//   console.log("enterd");
+//   const id = req.params.id;
+//   console.log("Id :", id);
+//   const checkItem = await HeadModel.findById(id);
+//   console.log("checkItem  :", checkItem);
+//   if (!checkItem) {
+//     return next(new ErrorHandler("check item not found", 404));
+//   }
+//   await checkItem.remove();
+//   res
+//     .status(201)
+//     .json({ success: true, message: "Delete checkItem successfully" });
+// });
+
+
+
+
+
+
 exports.deleteCheckItem = catchAsyncError(async (req, res, next) => {
-  console.log("enterd");
+  console.log("entered");
   const id = req.params.id;
   console.log("Id :", id);
+
+
   const checkItem = await HeadModel.findById(id);
   console.log("checkItem  :", checkItem);
+
+ 
   if (!checkItem) {
     return next(new ErrorHandler("check item not found", 404));
   }
-  await checkItem.remove();
-  res
-    .status(201)
-    .json({ success: true, message: "Delete checkItem successfully" });
+
+  
+  checkItem.isDeleted = true;
+
+  
+  try {
+    await checkItem.save();
+    console.log("Check item after soft delete:", checkItem); 
+
+   
+    res.status(200).json({ success: true, message: "Check item soft deleted successfully" });
+  } catch (error) {
+    console.error("Error saving check item:", error);
+    return next(new ErrorHandler("Could not save check item", 500));
+  }
 });

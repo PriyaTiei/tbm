@@ -139,8 +139,8 @@ export default function PendingTask() {
               <Button variant="warning" style={{ position: "absolute", right: 150 }} onClick={handleDownloadExcel}>
                 Download Excel
               </Button>
-            ) : <Button style={{ position: "absolute", right: 150, background: "#666" }}>
-              Download Excel
+            ) : <Button style={{ position: "absolute", right: 150, background: "#666", cursor: "not-allowed" }}>
+              Preparing for Excel to download
             </Button>}
 
 
