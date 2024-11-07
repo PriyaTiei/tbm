@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { Button } from "react-bootstrap";
 
@@ -17,7 +17,8 @@ function ModalForm({
   processNo,
   abnormality,
   image,
-  pS
+  pS,
+  abnormalityId
 }) {
   const optionsCard = [
     { value: "white", label: "White Card" },
@@ -59,6 +60,11 @@ function ModalForm({
   // const [user, setUser] = useState();
   const auth = useSelector((state) => state.auth);
 
+
+  useEffect(() => {
+    console.log("abnormalityId", abnormalityId)
+  }, [])
+
   const user = auth.user._id;
 
   const [abnormalityM, setAbnormalityM] = useState(abnormality);
@@ -96,7 +102,8 @@ function ModalForm({
           processNo,
           status,
           image,
-          pS
+          pS,
+          abnormalityId: abnormalityId
         }
         // , { withCredentials: true }
       )

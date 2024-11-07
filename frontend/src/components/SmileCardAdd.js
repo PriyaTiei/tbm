@@ -173,11 +173,13 @@ function SmileCardAdd() {
 
   const saveData = (e) => {
     console.log(labelUnits)
-    if (labelUnits[0].m_criteria != "" && labelUnits[0].m_lable != "" && labelUnits[0].m_unit != "" && cycleNew) {
+    if (cycleNew) {
       e.preventDefault();
       const formData = new FormData();
 
-
+      let labelUnitss = labelUnits.filter(item => {
+        return !(item.m_label === undefined && item.m_unit === "" && item.m_criteria === "");
+      });
 
       // formData.append("image", selectedFile);
 
@@ -203,7 +205,7 @@ function SmileCardAdd() {
       formData.append("holidayOperation", holidayOperationNew);
       formData.append("m", mNew);
       formData.append("methodWssNo", methodWssNoNew);
-      formData.append("m_spec", JSON.stringify(labelUnits));
+      formData.append("m_spec", JSON.stringify(labelUnitss));
 
 
       //formData.append("pS", pSNew);
@@ -220,8 +222,9 @@ function SmileCardAdd() {
       formData.append("workManpower", workManpowerNew);
       formData.append("workTime", workTimeNew);
       formData.append("y", yNew);
-      formData.append("group", groupNew);
-
+      formData.append("group", groupNew);      
+      
+      console.log(labelUnitss);
       axios
         .post(
           `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/insertData`,
@@ -667,7 +670,7 @@ function SmileCardAdd() {
               <div className="firstCol">
                 {" "}
                 Measurement
-                <span className="text-danger">* </span>:
+                {/* <span className="text-danger">* </span>: */}
               </div>
               <div className="secondCol">
                 {labelUnits.map((item, index) => (

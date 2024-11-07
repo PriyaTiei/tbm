@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { getAbnormality } from "../redux/abnormality/abnormalityActions";
@@ -19,7 +19,6 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
     targetDate,
     status,
     image,
-
     _id,
     pS
   } = item;
@@ -39,7 +38,9 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
   const auth = useSelector((state) => state.auth);
   const level = auth.user ? auth.user.level : 0;
 
-
+  useEffect(() => {
+    console.log(item)
+  }, [item])
 
   const dispatch = useDispatch();
   const deleteItem = (itemId) => {
@@ -50,7 +51,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
       .then((result) => {
         dispatch(getAbnormality(fromDateSt, toDateSt));
       })
-    
+
   };
 
   const deleteConfirmation = () => {
@@ -185,6 +186,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
           status={status}
           image={image}
           pS={pS}
+          abnormalityId={item._id}
         />
       ) : null}
 
