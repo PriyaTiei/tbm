@@ -8,11 +8,11 @@ class ApiFeatureHead {
   search() {
     const keyword = this.queryStr.dept
       ? {
-          pS: {
-            $regex: this.queryStr.dept,
-            $options: "i",
-          },
-        }
+        pS: {
+          $regex: this.queryStr.dept,
+          $options: "i",
+        },
+      }
       : {};
 
     this.query = this.query.find({ ...keyword });
@@ -56,7 +56,7 @@ class ApiFeatureHead {
     let newQueryStr = { ...this.queryStr };
     const removeItems = ["dept", "page", "limit"];
     removeItems.forEach((item) => delete newQueryStr[item]);
-console.log(newQueryStr);
+    console.log(newQueryStr);
 
     newQueryStr = newQueryStr.d
       ? { ...newQueryStr, d: { $in: [9999, Number(newQueryStr.d)] } }
@@ -74,33 +74,33 @@ console.log(newQueryStr);
       ? { ...newQueryStr, y: { $in: [9999, Number(newQueryStr.y)] } }
       : { ...newQueryStr };
 
-         
-    
+
+
     // The below line of code is to search cards based on OP number
     const keyword1 = this.newQueryStr.processNo
-    ? {
+      ? {
         processNo: {
           $regex: this.newQueryStr.processNo,
           $options: "i",
         },
       }
-    : {};
-       // The below line of code is to search cards based on card number
-       const keyword2 = this.newQueryStr.cardNo
-       ? {
-           cardNo: {
-             $regex: this.newQueryStr.cardNo,
-             $options: "i",
-           },
-         }
-       : {};
-   
+      : {};
+    // The below line of code is to search cards based on card number
+    const keyword2 = this.newQueryStr.cardNo
+      ? {
+        cardNo: {
+          $regex: this.newQueryStr.cardNo,
+          $options: "i",
+        },
+      }
+      : {};
+
     // Updating the search query with revised filter parameters
-    newQueryStr= {...newQueryStr, ...keyword1, ...keyword2}
+    newQueryStr = { ...newQueryStr, ...keyword1, ...keyword2 }
 
     this.newQueryStr = { ...newQueryStr };
 
-//    console.log(this.newQueryStr);
+    //    console.log(this.newQueryStr);
 
     this.query = this.query.aggregate([
       { $match: newQueryStr },
@@ -112,7 +112,8 @@ console.log(newQueryStr);
         },
       },
     ]);
-//    console.log(this.query);
+    //    console.log(this.query);
+    console.log("this.newQueryStr", this.newQueryStr)
     return this;
   }
 }

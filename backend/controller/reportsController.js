@@ -28,19 +28,24 @@ async function getEndDate(date) {
     eDate.setUTCDate(eDate.getUTCDate() + 1);
   }
   eDate.setUTCDate(eDate.getUTCDate() - 1);
+
   while (eDate.getUTCDay() != 0) {
     eDate.setUTCDate(eDate.getUTCDate() + 1);
+    console.log("getUTCDay", eDate.getUTCDay(), "eDate", eDate)
   }
   return eDate;
 }
 
 async function fillHolidays(report) {
+  let ed = report.endDate;
+  ed.setDate(ed.getDate() + 1);
   let holidays = await HolidayCalendarModel.find({
     date: {
       $gte: report.startDate,
-      $lte: report.endDate
+      $lte: ed
     }
   });
+
   holidays.forEach((holiday) => {
     report.data.push({ entryFor: holiday.date.toISOString().split('T')[0], holiday: true });
   });
@@ -51,8 +56,14 @@ async function fillHolidays(report) {
 async function getItemsOKCount(report, pS) {
   const dailyStatus = await DailyStatus.aggregate([
     {
+      $addFields: {
+        // Add any new fields or modify existing ones here if needed
+        dateEntryFor: { $dateFromString: { dateString: "$entryFor" } }
+      }
+    },
+    {
       $match: {
-        checkedAt: { $gte: report.startDate, $lte: report.endDate },
+        dateEntryFor: { $gte: report.startDate, $lte: report.endDate },
         result: { $eq: "OK" }, pS: pS
       }
     },
@@ -74,11 +85,18 @@ async function getItemsOKCount(report, pS) {
 async function getItemsNGCount(report, pS) {
   const dailyStatus = await DailyStatus.aggregate([
     {
+      $addFields: {
+        // Add any new fields or modify existing ones here if needed
+        dateEntryFor: { $dateFromString: { dateString: "$entryFor" } }
+      }
+    },
+    {
       $match: {
-        checkedAt: { $gte: report.startDate, $lte: report.endDate },
+        dateEntryFor: { $gte: report.startDate, $lte: report.endDate },
         result: { $eq: "NG" }, pS: pS
       }
     },
+
     {
       $group: {
         _id: '$entryFor',
@@ -224,6 +242,12 @@ function isItemScheduled(date, item) {
   return result;
 }
 
+function getDifferenceInDays(date1, date2) {
+  const diffInMilliseconds = Math.abs(date2 - date1);
+  const millisecondsPerDay = 1000 * 60 * 60 * 24;
+  return Math.trunc(Math.floor(diffInMilliseconds / millisecondsPerDay));
+}
+
 async function fillTotalItems(report, pS) {
   var tDate = report.startDate;
   let dataArray = report.data;
@@ -233,7 +257,10 @@ async function fillTotalItems(report, pS) {
 
   while (tDate <= report.endDate) {
     let d = tDate.getDay();
-    let w = Math.trunc(tDate.getDate() / 7) + 1;
+    d = (d == 0) ? 7 : d;
+    // let w = Math.trunc(tDate.getDate() / 7) + 1;
+    let w = Math.trunc((getDifferenceInDays(tDate, report.startDate) / 7)) + 1;
+
     let m = tDate.getMonth() + 1;
     let y = tDate.getFullYear();
 
@@ -243,7 +270,7 @@ async function fillTotalItems(report, pS) {
 
     const headObject = new ApiFeatureHead(HeadModel, query).match();
     const headCheckList = await headObject.query;
-    //    console.log(headCheckList);
+
     let totalItemCount = 0;
     headCheckList.forEach((item) => {
       totalItemCount += item.processList.length;
@@ -401,8 +428,36 @@ exports.tbmFrequency = catchAsyncError(async (req, res, next) => {
   return res.status(200).json({ success: true, frequencyTasks });
 });
 
+const getPageNumber = async (query, checkitem) => {
+  const checkItemss = checkitem;
+  let pageNo = 1;
+  const headObject = new ApiFeatureHead(HeadModel, query)
+    .search()
+    .filter()
+    .pagination(1);
+  var headCheckList = await headObject.query;
+
+  if (headCheckList.length === 0) {
+    return next(new ErrorHandler("could not find check list", 404));
+  }
+
+  // const totalCount = await HeadModel.countDocuments(headObject.newQueryStr);
+  const pageList = await HeadModel.aggregate([{
+    $match: headObject.newQueryStr
+  }]);
+
+  pageNo = pageList.findIndex((element) => element._id.toString() === checkItemss.toString());
+
+  console.log("pageNo", pageNo + 1)
+  return pageNo + 1;
+  // return totalCount;
+}
+
 exports.tlVerifyItems = catchAsyncError(async (req, res, next) => {
   const tlList = await DailyStatusVerificationModel.aggregate([
+    {
+      $match: { pS: req.query.ps }
+    },
     {
       $match: { $or: [{ tlVerify: true }, { result: "NG" }] }
     },
@@ -443,11 +498,37 @@ exports.tlVerifyItems = catchAsyncError(async (req, res, next) => {
       $sort: { entryForDate: -1 }
     }
   ]);
+
+  const tlListPromises = tlList.map(async (item) => {
+    console.log("allparameters", item.checkItem, item.item[0].processNo, item.item[0].line)
+    const pageNo = await getPageNumber({
+      d: item.item[0].d[0],
+      w: item.item[0].w[0],
+      m: item.item[0].m[0],
+      y: item.item[0].y[0],
+      pS: item.item[0].pS,
+      line: item.item[0].line,
+      processNo: item.item[0].processNo,
+      page: '1'
+    }, item.item[0]._id);
+    console.log("tlList", item.item[0]._id)
+
+    item.pageNo = pageNo;
+  });
+
+  await Promise.all(tlListPromises);
+
   return res.status(200).json({ success: true, tlList });
+
 });
 
 exports.glVerifyItems = catchAsyncError(async (req, res, next) => {
+
+  const ps = req.query.ps
   const glList = await DailyStatusVerificationModel.aggregate([
+    {
+      $match: { pS: req.query.ps }
+    },
     {
       $match: { $or: [{ glVerify: true }, { result: "NG" }] }
     },
@@ -488,13 +569,34 @@ exports.glVerifyItems = catchAsyncError(async (req, res, next) => {
       $sort: { entryForDate: -1 }
     }
   ]);
+
+  const glListPromises = glList.map(async (item) => {
+    console.log("allparameters", item.checkItem, item.item[0].processNo, item.item[0].line)
+    const pageNo = await getPageNumber({
+      d: item.item[0].d[0],
+      w: item.item[0].w[0],
+      m: item.item[0].m[0],
+      y: item.item[0].y[0],
+      pS: item.item[0].pS,
+      line: item.item[0].line,
+      processNo: item.item[0].processNo,
+      page: '1'
+    }, item.item[0]._id);
+    console.log("glList", pageNo)
+
+    item.pageNo = pageNo;
+  });
+
+  await Promise.all(glListPromises);
   return res.status(200).json({ success: true, glList });
 });
 
 exports.getVerifyItems = catchAsyncError(async (req, res, next) => {
   // var dailyItems = await DailyStatus.find({}).populate("checkItem", "glVerify tlVerify");
-
+  const ps = req.query.ps;
   var dailyItems = await DailyStatus.aggregate([{
+    $match: { pS: ps }
+  }, {
     $lookup: {
       from: "checkitems",
       localField: "checkItem",
@@ -533,7 +635,29 @@ exports.getVerifyItems = catchAsyncError(async (req, res, next) => {
       }
     });
   }
+  // const tlListPromises = dailyItemsWithGlTlVerify.map(async (item) => {
+  //   const pageNo = await getPageNumber(item.checkItem._id, item.checkItem.processNo);
+  //   item.pageNo = pageNo;
+  // });
 
+  // await Promise.all(tlListPromises);
+
+  const dailyListPromises = dailyItemsWithGlTlVerify.map(async (item) => {
+    // console.log("allparameters", item.checkItem, item.item[0].processNo, item.item[0].line)
+    const pageNo = await getPageNumber({
+      d: item.checkItem.d[0],
+      w: item.checkItem.w[0],
+      m: item.checkItem.m[0],
+      y: item.checkItem.y[0],
+      pS: item.checkItem.pS,
+      line: item.checkItem.line,
+      processNo: item.checkItem.processNo,
+      page: '1'
+    }, item.checkItem._id);
+
+    item.pageNo = pageNo;
+  });
+
+  await Promise.all(dailyListPromises);
   return res.status(200).json({ success: true, dailyItemsWithGlTlVerify });
 });
-

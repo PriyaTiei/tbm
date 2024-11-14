@@ -52,6 +52,7 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
   // console.log("cookie form getHeadChecklist");
   // console.log("token :", token);
   // console.log( req.query, "group query 1")
+  console.log("req----", req.query)
   const headObject = new ApiFeatureHead(HeadModel, req.query)
     .search()
     .filter()
@@ -82,7 +83,7 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   // console.log( req.query, "group query 2")
   const headObject = new ApiFeatureHead(HeadModel, req.query).match();
   const headCheckList = await headObject.query;
-// console.log(headCheckList);
+  // console.log(headCheckList);
 
   if (headCheckList.length === 0) {
     return next(new ErrorHandler("could not find check list", 404));
@@ -164,7 +165,8 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
   const headCheckList = await HeadModel.aggregate([
     // { $match: req.query },
     {
-      $match: { ...req.query,
+      $match: {
+        ...req.query,
         $or: [
           { isDeleted: { $exists: false } }
         ],
@@ -361,7 +363,7 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
       m_spec: jsonMSpec,
       tlVerify,
       glVerify
-  
+
       // images: [req.file.filename],
     },
     (err, doc) => {
@@ -391,7 +393,7 @@ exports.getDeletedCheckItems = catchAsyncError(async (req, res, next) => {
 
   const headCheckList = await HeadModel.aggregate([
     { $match: { ...req.query, isDeleted: true } },
-   
+
     {
       $group: {
         _id: { line: "$line", processNo: "$processNo" },
@@ -638,20 +640,20 @@ exports.deleteCheckItem = catchAsyncError(async (req, res, next) => {
   const checkItem = await HeadModel.findById(id);
   console.log("checkItem  :", checkItem);
 
- 
+
   if (!checkItem) {
     return next(new ErrorHandler("check item not found", 404));
   }
 
-  
+
   checkItem.isDeleted = true;
 
-  
+
   try {
     await checkItem.save();
-    console.log("Check item after soft delete:", checkItem); 
+    console.log("Check item after soft delete:", checkItem);
 
-   
+
     res.status(200).json({ success: true, message: "Check item soft deleted successfully" });
   } catch (error) {
     console.error("Error saving check item:", error);
