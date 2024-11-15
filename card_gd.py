@@ -8,6 +8,7 @@ from prettytable import PrettyTable
 from openpyxl import Workbook
 import json
 from openpyxl.styles import Font
+import config
 
 today = datetime.now()
 from_date = today-timedelta(days=30)
@@ -44,10 +45,10 @@ d = datetime.now().day
 weekNo = (d//7.1)+1
 
 # generate the url address
-urlForCardRaised = "http://localhost:5051/card/find/fromDate/" + \
+urlForCardRaised = config.server_url +"/card/find/fromDate/" + \
     str(f_y)+"-"+str(f_m)+"-"+str(f_d)+"/toDate/" + \
     str(t_y)+"-"+str(t_m)+"-"+str(t_d)
-urlForCardRaised_4_yesterday = "http://localhost:5051/card/find/fromDate/" + \
+urlForCardRaised_4_yesterday = config.server_url +"/card/find/fromDate/" + \
     str(y_y)+"-"+str(y_m)+"-"+str(y_d)+"/toDate/"+str(y)+"-"+str(m)+"-"+str(d)
 print("URL-last 30 days", urlForCardRaised)
 print("URL-yesterday", urlForCardRaised_4_yesterday)
@@ -267,12 +268,12 @@ ws_pending['D2'].font = Font(bold=True)
 ws_pending['E2'] = "Frequency"
 ws_pending['E2'].font = Font(bold=True)
 
-urlForPendingCardsGreater30days = "http://localhost:5051/reports/pendingForGreater30Days"
+urlForPendingCardsGreater30days = config.server_url +"/reports/pendingForGreater30Days"
 response_pending = requests.get(urlForPendingCardsGreater30days)
 print('response_pending-->',response_pending.status_code)
 penData = response_pending.json()
 
-urlForFrequency = "http://localhost:5051/reports/tbmFrequency"
+urlForFrequency = config.server_url +"/reports/tbmFrequency"
 response_freq = requests.get(urlForFrequency)
 freqData = response_freq.json()
 print('response_frequency-->',response_freq.status_code,freqData)
@@ -332,13 +333,13 @@ weekNo = (d//7.1)+1
 
 # generate the url address
 # print("Year:",y,"Month:",m,"Day:",d,"WeekDay:",weekd,"Week No:",weekNo)
-url4mcDetails = "http://localhost:5051/head/headMachineList?d=" + \
+url4mcDetails = config.server_url +"/head/headMachineList?d=" + \
     str(y_weekd)+"&y="+str(y_y)+"&w="+str(y_weekNo)+"&m="+str(y_m)+"&pS=P"
-url4dailyStatus = "http://localhost:5051/dailyStatus?entryFor=" + \
+url4dailyStatus = config.server_url +"/dailyStatus?entryFor=" + \
     str(y_y)+"-"+str(y_m)+"-"+str(y_d)+"&pS=P"
-url4mcDetails_OM = "http://localhost:5051/head/headMachineList?d=" + \
+url4mcDetails_OM = config.server_url +"/head/headMachineList?d=" + \
     str(y_weekd)+"&y="+str(y_y)+"&w="+str(y_weekNo)+"&m="+str(y_m)+"&pS=S"
-url4dailyStatus_OM = "http://localhost:5051/dailyStatus?entryFor=" + \
+url4dailyStatus_OM = config.server_url +"/dailyStatus?entryFor=" + \
     str(y_y)+"-"+str(y_m)+"-"+str(y_d)+"&pS=S"
 print(url4mcDetails)
 print(url4dailyStatus)
@@ -357,7 +358,7 @@ mcDetails_OM = response3.json()
 dailyStatus_OM = response4.json()
 
 # to get total number of line list
-url = "http://localhost:5051/head/headMachineList"
+url = config.server_url +"/head/headMachineList"
 response5 = requests.get(url)
 res_data = response5.json()
 if res_data['success']:
@@ -484,15 +485,15 @@ print("SM\n", tabular_table)
 
 
 # Connection with the server
-server = smtplib.SMTP(host="smtp.office365.com", port=587)
+server = smtplib.SMTP(host=config.smtp, port=587)
 server.starttls()
-server.login("username", "pass")
+server.login(config.username, config.password)
 
 # Creation of the MIMEMultipart Object
 message = MIMEMultipart()
 # =================================================================================================
 family = [
-    "subham.gupta.26@outlook.com"
+    config.to_email
 ]
 
 # msg['To'] =', '.join(family)
@@ -502,7 +503,7 @@ family = [
 
 
 # Setup of MIMEMultipart Object Header
-message['From'] = "subham.g@dtcinfotech.com"
+message['From'] = config.from_email
 message['To'] = ', '.join(family)
 message['Subject'] = "GD-MNT Daily TBM card status"
 
@@ -569,15 +570,15 @@ server.quit()
 
 
 # Connection with the server
-server = smtplib.SMTP(host="smtp.office365.com", port=587)
+server = smtplib.SMTP(host=config.smtp, port=587)
 server.starttls()
-server.login("username", "pass")
+server.login(config.username, config.password)
 
 # Creation of the MIMEMultipart Object
 message = MIMEMultipart()
 # =================================================================================================
 family = [
-    "subham.gupta.26@outlook.com"
+    config.to_email
 ]
 
 # msg['To'] =', '.join(family)
@@ -587,8 +588,8 @@ family = [
 
 
 # Setup of MIMEMultipart Object Header
-message['From'] = "subham.g@dtcinfotech.com"
-message['To'] = "subham.gupta.26@outlook.com"
+message['From'] = config.from_email
+message['To'] = config.to_email
 # message['To'] = ', '.join(family)
 message['Subject'] = "GD-PROD Daily TBM card status"
 

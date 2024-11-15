@@ -1,0 +1,6 @@
+smtp = 'smtp.gmail.com'
+username= 'user@gmail.com'
+password= 'password123'
+from_email = 'fromuser@gmail.com'
+to_email = 'touser@gmail.com'
+server_url = 'http://localhost:5051'
