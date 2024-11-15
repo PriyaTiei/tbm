@@ -32,13 +32,14 @@ export const getCheckItem = (queryStr, page, entryForQueryStr) => {
     axios
       .get(url)
       .then((result) => {
+        console.log("firstone", result)
         // getting additional data & added to first result
         axios
           .get(
             `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/find/${result.data.headCheckList[0]._id}/entryFor/${entryForQueryStr}`
           )
           .then((result2) => {
-
+            console.log("secondone", result2)
             result.data.headCheckList[0].dailyStatus =
               result2.data.dailyStatus.result;
             result.data.headCheckList[0].judgementRemarks =

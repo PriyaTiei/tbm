@@ -23,8 +23,10 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { downloadExcel } from "react-export-table-to-excel";
 import { getPendingTasks } from "../redux/pendingTasks/pendingActions";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 const todayDate = new Date(Date.now());
+
 
 //getting week no
 // Date.prototype.getWeek = function() {
@@ -38,10 +40,39 @@ function Filters() {
   const selectLineRef = useRef(null);
   const [cookies] = useCookies(['token', 'userId']);
   const [date, setDate] = useState(todayDate);
-  const [showSearch, setShowSearch]= useState(false)
+  const [showSearch, setShowSearch] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [showModals, setShowModals] = useState(false)
-  
+
+  const [relativeUrl, setRelativeUrl] = useState('');
+  const location = useLocation();
+
+  useEffect(() => {
+    // Construct the URL without the host
+    const urlWithoutHost = `${location.pathname}`;
+    setRelativeUrl(urlWithoutHost);
+
+  }, [location]);
+
+
+  useEffect(() => {
+    if (relativeUrl == "/checkList" && "changedDate" in localStorage) {
+      const dateString = localStorage.getItem("changedDate");
+      const date = new Date(dateString);
+
+      // Set a specific time if needed
+      date.setHours(12, 22, 49);
+
+      // Store the Date object, not a string
+      setDate(date);
+      localStorage.removeItem("changedDate")
+    }
+  }, [relativeUrl]);
+
+  useEffect(() => {
+    console.log(date)
+  }, [date])
+
 
   const auth = useSelector((state) => state.auth);
   // const [header, setHeader] = useState([])
@@ -196,8 +227,8 @@ function Filters() {
   //     },
   //   });
   // }
-const filters = useSelector((state) => state.filters);  
-const colorSearchButton = (filters.processNo == "" && filters.cardNo == "")? "btn-primary": "btn-warning"
+  const filters = useSelector((state) => state.filters);
+  const colorSearchButton = (filters.processNo == "" && filters.cardNo == "") ? "btn-primary" : "btn-warning"
   const clearSearchHandler = (e) => {
     dispatch(filterProcessNo(""));
     dispatch(filterCardNo(""));
@@ -282,11 +313,11 @@ const colorSearchButton = (filters.processNo == "" && filters.cardNo == "")? "bt
           defaultValue={groupOptions[0]}
           isSearchable={false}
         />
-          {(filters.processNo == "" && filters.cardNo == "")? <Button  className={`mx-1 ${colorSearchButton}`} onClick={()=>setShowSearch(true)}>
-            <i className="bi bi-search px-1"></i>
-            Search
-          </Button>:
-          <Button  className={`mx-1 ${colorSearchButton}`} onClick={()=>clearSearchHandler()}>
+        {(filters.processNo == "" && filters.cardNo == "") ? <Button className={`mx-1 ${colorSearchButton}`} onClick={() => setShowSearch(true)}>
+          <i className="bi bi-search px-1"></i>
+          Search
+        </Button> :
+          <Button className={`mx-1 ${colorSearchButton}`} onClick={() => clearSearchHandler()}>
             <i className="bi bi-search px-1"></i>
             Clear Search
           </Button>}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Form, Modal } from 'react-bootstrap'
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import DatePicker from "react-date-picker";
 import { useSelector } from 'react-redux';
 import { toast } from "react-toastify";
@@ -22,20 +22,30 @@ const Verification = ({ showModals, setShowModals }) => {
 
     const [tblData, setTblData] = useState([])
     const [activeList, setActiveList] = useState("toBeApproved");
+    const filters = useSelector((state) => state.filters);
 
 
+    const handleNavigate = (date) => {
+        localStorage.setItem("changedDate", date)
+    }
+
+    const handlePages = (date) => {
+        localStorage.setItem("changedPage", date)
+    }
 
     useEffect(() => {
-        axios
-            .get(
-                `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/getVerifyItems`
-            )
-            .then((result) => {
-                setCommon(result?.data?.dailyItemsWithGlTlVerify)
-            })
-            .catch((err) => {
-                toast.error(`${err.message}`);
-            });
+        if (filters.rS == null) {
+            axios
+                .get(
+                    `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/getVerifyItems?ps=${filters.pS}`
+                )
+                .then((result) => {
+                    setCommon(result?.data?.dailyItemsWithGlTlVerify)
+                })
+                .catch((err) => {
+                    toast.error(`${err.message}`);
+                });
+        }
     }, [])
 
     useEffect(() => {
@@ -46,7 +56,7 @@ const Verification = ({ showModals, setShowModals }) => {
         if (level >= 20 && level < 30) {
             axios
                 .get(
-                    `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/tlVerifyItems`
+                    `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/tlVerifyItems?ps=${filters.pS}`
                 )
                 .then((result) => {
                     const extractedData = result?.data?.tlList.map(entry => {
@@ -60,7 +70,8 @@ const Verification = ({ showModals, setShowModals }) => {
                             m_spec: entry.dailystatus.m_spec,
                             remarks: entry.dailystatus.remarks,
                             entryFor: entry.dailystatus.entryFor,
-                            result: entry.result
+                            result: entry.result,
+                            pageNo: entry.pageNo
                         };
                     });
 
@@ -75,7 +86,7 @@ const Verification = ({ showModals, setShowModals }) => {
         else if (level == 30) {
             axios
                 .get(
-                    `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/glVerifyItems`
+                    `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/glVerifyItems?ps=${filters.pS}`
                 )
                 .then((result) => {
                     const extractedData = result?.data?.glList.map(entry => {
@@ -89,7 +100,8 @@ const Verification = ({ showModals, setShowModals }) => {
                             m_spec: entry.dailystatus.m_spec,
                             remarks: entry.dailystatus.remarks,
                             entryFor: entry.dailystatus.entryFor,
-                            result: entry.result
+                            result: entry.result,
+                            pageNo: entry.pageNo
                         };
                     });
                     setTblData(extractedData)
@@ -101,7 +113,7 @@ const Verification = ({ showModals, setShowModals }) => {
                 });
         }
 
-    }, [level])
+    }, [level, filters])
     const handleSelectAll = () => {
         setSelectAll(!selectAll);
         if (!selectAll) {
@@ -146,7 +158,7 @@ const Verification = ({ showModals, setShowModals }) => {
                 .then((result) => {
                     axios
                         .get(
-                            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/tlVerifyItems`
+                            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/tlVerifyItems?ps=${filters.pS}`
                         )
                         .then((result) => {
                             const extractedData = result?.data?.tlList.map(entry => {
@@ -160,7 +172,8 @@ const Verification = ({ showModals, setShowModals }) => {
                                     m_spec: entry.dailystatus.m_spec,
                                     remarks: entry.dailystatus.remarks,
                                     entryFor: entry.dailystatus.entryFor,
-                                    result: entry.result
+                                    result: entry.result,
+                                    pageNo: entry.pageNo
                                 };
                             });
 
@@ -186,7 +199,7 @@ const Verification = ({ showModals, setShowModals }) => {
                 .then((result) => {
                     axios
                         .get(
-                            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/glVerifyItems`
+                            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/glVerifyItems?ps=${filters.pS}`
                         )
                         .then((result) => {
                             const extractedData = result?.data?.glList.map(entry => {
@@ -200,7 +213,8 @@ const Verification = ({ showModals, setShowModals }) => {
                                     m_spec: entry.dailystatus.m_spec,
                                     remarks: entry.dailystatus.remarks,
                                     entryFor: entry.dailystatus.entryFor,
-                                    result: entry.result
+                                    result: entry.result,
+                                    pageNo: entry.pageNo
                                 };
                             });
                             setTblData(extractedData)
@@ -238,7 +252,7 @@ const Verification = ({ showModals, setShowModals }) => {
                     .then((result) => {
                         axios
                             .get(
-                                `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/tlVerifyItems`
+                                `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/tlVerifyItems?ps=${filters.pS}`
                             )
                             .then((result) => {
                                 const extractedData = result?.data?.tlList.map(entry => {
@@ -252,7 +266,8 @@ const Verification = ({ showModals, setShowModals }) => {
                                         m_spec: entry.dailystatus.m_spec,
                                         remarks: entry.dailystatus.remarks,
                                         entryFor: entry.dailystatus.entryFor,
-                                        result: entry.result
+                                        result: entry.result,
+                                        pageNo: entry.pageNo
                                     };
                                 });
 
@@ -278,7 +293,7 @@ const Verification = ({ showModals, setShowModals }) => {
                     .then((result) => {
                         axios
                             .get(
-                                `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/glVerifyItems`
+                                `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/reports/glVerifyItems?ps=${filters.pS}`
                             )
                             .then((result) => {
                                 const extractedData = result?.data?.glList.map(entry => {
@@ -292,7 +307,8 @@ const Verification = ({ showModals, setShowModals }) => {
                                         m_spec: entry.dailystatus.m_spec,
                                         remarks: entry.dailystatus.remarks,
                                         entryFor: entry.dailystatus.entryFor,
-                                        result: entry.result
+                                        result: entry.result,
+                                        pageNo: entry.pageNo
                                     };
                                 });
                                 setTblData(extractedData)
@@ -404,7 +420,7 @@ const Verification = ({ showModals, setShowModals }) => {
                                             <th scope="col">Link For card</th>
                                         </tr>
                                     </thead>
-
+                                    {console.log('tbllll---- ', tblData)}
                                     <tbody>
                                         {tblData.length > 0 ? tblData.map((items, i) => (
                                             <tr key={items?._id}>
@@ -469,8 +485,9 @@ const Verification = ({ showModals, setShowModals }) => {
                                                 </td>
 
                                                 <td style={{ fontSize: "12px" }}>{items?.remarks}</td>
-                                                <td style={{ fontSize: "12px" }}>
-                                                    <NavLink to={`/checkList?line=${items?.line}&processNo=${items?.processNo}`}>Click Here</NavLink>
+                                                {console.log(items)}
+                                                <td style={{ fontSize: "12px" }} onClick={() => { handleNavigate(items?.entryFor); handlePages(items.pageNo) }}>
+                                                    <Link to={`/checkList?line=${items?.line}&processNo=${items?.processNo}`} >Click Here</Link>
                                                 </td>
                                             </tr>
                                         )) : ""}
@@ -567,7 +584,7 @@ const Verification = ({ showModals, setShowModals }) => {
                                                     <td>{items?.remarks}</td>
                                                     <td>{getStatusLabel(items, "tl")}</td>
                                                     <td>{getStatusLabel(items, "gl")}</td>
-                                                    <td><NavLink to={`/checkList?line=${items?.checkItem?.line}&processNo=${items?.checkItem?.processNo}`}>Click Here</NavLink></td>
+                                                    <td onClick={() => { handleNavigate(items?.entryFor); handlePages(items.pageNo) }}><Link to={`/checkList?line=${items?.checkItem?.line}&processNo=${items?.checkItem?.processNo}`}>Click Here</Link></td>
                                                 </tr>
                                             )) : ""}
                                         </tbody>
@@ -579,7 +596,7 @@ const Verification = ({ showModals, setShowModals }) => {
                 </div>
 
             </div>
-        </div>
+        </div >
 
         <Modal show={show} onHide={handleCloses}>
             <Modal.Header closeButton>

@@ -2,7 +2,7 @@ import React, { useEffect, useState, Fragment, useReducer } from "react";
 // import FlowSmileCard from "./FlowSmileCard";
 import { useDispatch, useSelector } from "react-redux";
 import { getCheckItem } from "../redux/checkItem/checkItemsActions";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import Loading from "./Loading";
 import SmileCardDetails from "./SmileCardDetails";
 import SmileCardModify from "./SmileCardModify";
@@ -51,8 +51,14 @@ function SmileCard() {
 
   const dispatch = useDispatch();
   const checkItems = useSelector((state) => state.checkItems);
+  const [relativeUrl, setRelativeUrl] = useState('');
 
-
+  useEffect(() => {
+    if ("changedPage" in localStorage) {
+      setPage(localStorage.getItem("changedPage"))
+      localStorage.removeItem("changedPage")
+    }
+  }, []);
   // const {checkedBy} = checkItems.checkItem.headCheckList[0] ? checkItems.checkItem.headCheckList[0] :""
 
   // console.log("checkItems", checkItems)
