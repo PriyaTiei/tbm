@@ -246,7 +246,7 @@ print('------------------------excel part ends--------------------------')
 # wb_new = Workbook()
 # ws_pending = wb_new.create_sheet("Pending Cards", 0)
 
-ws_pending = wb.create_sheet("Pending Cards", len(line_name_lst))
+ws_pending = wb.create_sheet("Pending Cards(more than 30 days)", len(line_name_lst))
 
 
 ws_pending.column_dimensions['A'].width = 12
@@ -288,7 +288,11 @@ if penData['success']:
         checkItem = ws_pending.cell(row=pen_row, column=3)
         checkItem.value = eachCard['checkItem']
         entryDates = ws_pending.cell(row=pen_row, column=4)
-        entryDates.value = eachCard['entryDates']
+        if eachCard['entryDates']:
+            datetime_obj = datetime.strptime(eachCard['entryDates'], "%Y-%m-%dT%H:%M:%S.%fZ")
+            entryDates.value = datetime_obj.date()
+        else:
+            entryDates.value = 'NA'
 
         if freqData['success']:
             for freqCard in freqData['frequencyTasks']:
@@ -305,6 +309,120 @@ if penData['success']:
 wb.save("card_status_gd.xlsx")
 
 # ==============================pending card details ends===============================
+
+
+# ==============================abnormalities card details starts===============================
+ws_abnormal = wb.create_sheet("Abnormalities Cards", len(line_name_lst)+1)
+
+ws_abnormal.column_dimensions['A'].width = 12
+ws_abnormal.column_dimensions['B'].width = 12
+ws_abnormal.column_dimensions['C'].width = 12
+ws_abnormal.column_dimensions['D'].width = 12
+ws_abnormal.column_dimensions['E'].width = 12
+ws_abnormal.column_dimensions['F'].width = 12
+ws_abnormal.column_dimensions['G'].width = 12
+ws_abnormal.column_dimensions['H'].width = 12
+
+ws_abnormal["A1"] = "Details For Abnormalities Cards"
+ws_abnormal['A1'].font = Font(bold=True)
+ws_abnormal['A2'] = "Line"
+ws_abnormal['A2'].font = Font(bold=True)
+ws_abnormal['B2'] = "Process No"
+ws_abnormal['B2'].font = Font(bold=True)
+ws_abnormal['C2'] = "Item"
+ws_abnormal['C2'].font = Font(bold=True)
+ws_abnormal['D2'] = "Abnormality"
+ws_abnormal['D2'].font = Font(bold=True)
+ws_abnormal['E2'] = "Entry Date"
+ws_abnormal['E2'].font = Font(bold=True)
+ws_abnormal['F2'] = "Target Date"
+ws_abnormal['F2'].font = Font(bold=True)
+ws_abnormal['G2'] = "Status"
+ws_abnormal['G2'].font = Font(bold=True)
+ws_abnormal['H2'] = "m_specs--label(unit)-val(creteria)"
+ws_abnormal['H2'].font = Font(bold=True)
+
+urlForAbnormalities = config.server_url +"/abnormality/find/fromDate/1900-8-1/toDate/3024-9-7?"
+response_ab = requests.get(urlForAbnormalities)
+print('response_pending-->',response_ab.status_code)
+abData = response_ab.json()
+# print(abData)
+
+ab_row = 3
+if abData['success']:
+    for each_card in abData['abnormalities']:
+        line = each_card['line']
+        processNo = each_card['processNo']
+        item = each_card['checkItem']['workDetail']
+        abnormality = each_card['abnormality']
+
+        entryDate = each_card['createdAt']
+        if entryDate:
+            datetime_obj = datetime.strptime(entryDate, "%Y-%m-%dT%H:%M:%S.%fZ")
+            entryDate = datetime_obj.date()
+        else:
+            entryDate = 'NA'
+
+        targetDate = each_card['targetDate']
+        if targetDate:
+            datetime_obj = datetime.strptime(targetDate, "%Y-%m-%dT%H:%M:%S.%fZ")
+            targetDate = datetime_obj.date()
+        else:
+            targetDate = 'NA'
+
+        status = each_card['status']
+
+        m_specs = ''
+        if each_card['m_spec']:
+            for each_spec in each_card['m_spec']:
+        # Safely access 'm_criteria' with a default value
+                m_criteria = each_spec.get('m_criteria', 'N/A')  # Replace 'N/A' with any default value you prefer
+                m_specs += f"{each_spec['m_lable']}({each_spec['m_unit']})-{each_spec['m_value']}({m_criteria}),"
+        
+        m_specs = m_specs.strip(',')
+
+
+        # print('line-', line)
+        # print('processNo-', processNo)
+        # print('item-', item)
+        # print('abnormality-', abnormality)
+        # print('entryDate-', entryDate)
+        # print('targetDate-', targetDate)
+        # print('status-', status)
+        # print('m_specs-', m_specs)
+        # print('---------------------------------------------------------------\n')
+
+        if m_specs:
+            line_cell = ws_abnormal.cell(row=ab_row, column=1)
+            line_cell.value = line
+
+            processNo_cell = ws_abnormal.cell(row=ab_row, column=2)
+            processNo_cell.value = processNo
+
+            item_cell = ws_abnormal.cell(row=ab_row, column=3)
+            item_cell.value = item
+
+            abnormality_cell = ws_abnormal.cell(row=ab_row, column=4)
+            abnormality_cell.value = abnormality
+
+            entryDate_cell = ws_abnormal.cell(row=ab_row, column=5)
+            entryDate_cell.value = entryDate
+
+            targetDate_cell = ws_abnormal.cell(row=ab_row, column=6)
+            targetDate_cell.value = targetDate
+
+            status_cell = ws_abnormal.cell(row=ab_row, column=7)
+            status_cell.value = status
+
+            m_specs_cell = ws_abnormal.cell(row=ab_row, column=8)
+            m_specs_cell.value = m_specs
+
+            ab_row +=1
+
+    wb.save("card_status_gd.xlsx")
+
+# ==============================abnormalities card details ends===============================
+
 
 # ==============================excel part finished=========================================
 
@@ -493,7 +611,7 @@ server.login(config.username, config.password)
 message = MIMEMultipart()
 # =================================================================================================
 family = [
-    config.to_email
+    config.maintainance_to_email
 ]
 
 # msg['To'] =', '.join(family)
@@ -578,7 +696,7 @@ server.login(config.username, config.password)
 message = MIMEMultipart()
 # =================================================================================================
 family = [
-    config.to_email
+    config.production_to_email
 ]
 
 # msg['To'] =', '.join(family)
@@ -589,7 +707,7 @@ family = [
 
 # Setup of MIMEMultipart Object Header
 message['From'] = config.from_email
-message['To'] = config.to_email
+message['To'] = config.production_to_email
 # message['To'] = ', '.join(family)
 message['Subject'] = "GD-PROD Daily TBM card status"
 

@@ -100,11 +100,11 @@ if card["success"] == True:
     for line_name in line_name_lst:
         print('Line name -->',line_name)
         r = 3
-        card_message = "Daily smile card raise status in TNGA is attached."
+        card_message = "Daily TBM card raise status in GD is attached."
         for entry in card_list:
             if entry["line"] == line_name and entry["status"] != "complete":
                 ws = line_sheet_dct[line_name]
-                ws["A1"] = f"Summary of card raised in TNGA {line_name} LINE (last 30 days)"  
+                ws["A1"] = f"Summary of card raised in GD {line_name} LINE (last 30 days)"
                 ws['A1'].font = Font(bold=True)
                 ws["A2"] = "OP No."
                 ws['A2'].font = Font(bold=True)
@@ -134,7 +134,7 @@ if card["success"] == True:
 
     # ================================SUMMARY SHEET-Last 30 days=========================================================
     wsS = line_sheet_dct['Summary']
-    wsS["A1"] = "Summary of card raised in TNGA (last 30 days)"
+    wsS["A1"] = "Summary of card raised in GD (last 30 days)"
     wsS['A1'].font = Font(bold=True)
     wsS["A2"] = "LINE"
     wsS['A2'].font = Font(bold=True)
@@ -187,7 +187,7 @@ if card["success"] == True:
     if card_y["success"] == True:
         summary_row_num = summary_row_num + 5
         row = summary_row_num + 2
-        wsS["A"+str(summary_row_num)] = "Summary of card raised in TNGA (Yesterday)"
+        wsS["A"+str(summary_row_num)] = "Summary of card raised in GD (Yesterday)"
         wsS['A'+str(summary_row_num)].font = Font(bold=True)
         wsS["A"+str(summary_row_num + 1)] = "LINE"
         wsS['A'+str(summary_row_num + 1)].font = Font(bold=True)
@@ -235,16 +235,18 @@ if card["success"] == True:
                 pending_B.value = pending
 
                 row += 1
-    wb.save("card_status_tnga.xlsx")
+    wb.save("card_status_gd.xlsx")
 else:
-    card_message = "No TBM/OM card raised in last 30 days."
+    card_message = "No TBM card raised in last 30 days."
 
 print('------------------------excel part ends--------------------------')
 #--------------------Adding data to respective sheet ends----------------------------------
 
 # ==============================pending card details starts===============================
+# wb_new = Workbook()
+# ws_pending = wb_new.create_sheet("Pending Cards", 0)
 
-ws_pending = wb.create_sheet("Pending Cards", len(line_name_lst))
+ws_pending = wb.create_sheet("Pending Cards(more than 30 days)", len(line_name_lst))
 
 
 ws_pending.column_dimensions['A'].width = 12
@@ -286,7 +288,11 @@ if penData['success']:
         checkItem = ws_pending.cell(row=pen_row, column=3)
         checkItem.value = eachCard['checkItem']
         entryDates = ws_pending.cell(row=pen_row, column=4)
-        entryDates.value = eachCard['entryDates']
+        if eachCard['entryDates']:
+            datetime_obj = datetime.strptime(eachCard['entryDates'], "%Y-%m-%dT%H:%M:%S.%fZ")
+            entryDates.value = datetime_obj.date()
+        else:
+            entryDates.value = 'NA'
 
         if freqData['success']:
             for freqCard in freqData['frequencyTasks']:
@@ -300,9 +306,129 @@ if penData['success']:
         
         pen_row += 1
 
-wb.save("card_status_tnga.xlsx")
+wb.save("card_status_gd.xlsx")
 
 # ==============================pending card details ends===============================
+
+
+# ==============================abnormalities card details starts===============================
+ws_abnormal = wb.create_sheet("Abnormalities Cards", len(line_name_lst)+1)
+
+ws_abnormal.column_dimensions['A'].width = 12
+ws_abnormal.column_dimensions['B'].width = 12
+ws_abnormal.column_dimensions['C'].width = 12
+ws_abnormal.column_dimensions['D'].width = 12
+ws_abnormal.column_dimensions['E'].width = 12
+ws_abnormal.column_dimensions['F'].width = 12
+ws_abnormal.column_dimensions['G'].width = 12
+ws_abnormal.column_dimensions['H'].width = 12
+
+ws_abnormal["A1"] = "Details For Abnormalities Cards"
+ws_abnormal['A1'].font = Font(bold=True)
+ws_abnormal['A2'] = "Line"
+ws_abnormal['A2'].font = Font(bold=True)
+ws_abnormal['B2'] = "Process No"
+ws_abnormal['B2'].font = Font(bold=True)
+ws_abnormal['C2'] = "Item"
+ws_abnormal['C2'].font = Font(bold=True)
+ws_abnormal['D2'] = "Abnormality"
+ws_abnormal['D2'].font = Font(bold=True)
+ws_abnormal['E2'] = "Entry Date"
+ws_abnormal['E2'].font = Font(bold=True)
+ws_abnormal['F2'] = "Target Date"
+ws_abnormal['F2'].font = Font(bold=True)
+ws_abnormal['G2'] = "Status"
+ws_abnormal['G2'].font = Font(bold=True)
+ws_abnormal['H2'] = "m_specs--label(unit)-val(creteria)"
+ws_abnormal['H2'].font = Font(bold=True)
+
+urlForAbnormalities = config.server_url +"/abnormality/find/fromDate/1900-8-1/toDate/3024-9-7?"
+response_ab = requests.get(urlForAbnormalities)
+print('response_pending-->',response_ab.status_code)
+abData = response_ab.json()
+# print(abData)
+
+ab_row = 3
+if abData['success']:
+    for each_card in abData['abnormalities']:
+        line = each_card['line']
+        processNo = each_card['processNo']
+        item = each_card['checkItem']['workDetail']
+        abnormality = each_card['abnormality']
+
+        entryDate = each_card['createdAt']
+        if entryDate:
+            datetime_obj = datetime.strptime(entryDate, "%Y-%m-%dT%H:%M:%S.%fZ")
+            entryDate = datetime_obj.date()
+        else:
+            entryDate = 'NA'
+
+        targetDate = each_card['targetDate']
+        if targetDate:
+            datetime_obj = datetime.strptime(targetDate, "%Y-%m-%dT%H:%M:%S.%fZ")
+            targetDate = datetime_obj.date()
+        else:
+            targetDate = 'NA'
+
+        status = each_card['status']
+
+        m_specs = ''
+        if each_card['m_spec']:
+            for each_spec in each_card['m_spec']:
+        # Safely access all keys, with defaults for missing ones
+                m_lable = each_spec.get('m_lable', 'Unknown')
+                m_unit = each_spec.get('m_unit', 'N/A')
+                m_value = each_spec.get('m_value', 'N/A')
+                m_criteria = each_spec.get('m_criteria', 'N/A')  # Default value for missing 'm_criteria'
+        
+        # Build the string
+                m_specs += f"{m_lable}({m_unit})-{m_value}({m_criteria}),"
+    
+    # Remove the trailing comma
+        m_specs = m_specs.strip(',')
+
+
+        # print('line-', line)
+        # print('processNo-', processNo)
+        # print('item-', item)
+        # print('abnormality-', abnormality)
+        # print('entryDate-', entryDate)
+        # print('targetDate-', targetDate)
+        # print('status-', status)
+        # print('m_specs-', m_specs)
+        # print('---------------------------------------------------------------\n')
+
+        if m_specs:
+            line_cell = ws_abnormal.cell(row=ab_row, column=1)
+            line_cell.value = line
+
+            processNo_cell = ws_abnormal.cell(row=ab_row, column=2)
+            processNo_cell.value = processNo
+
+            item_cell = ws_abnormal.cell(row=ab_row, column=3)
+            item_cell.value = item
+
+            abnormality_cell = ws_abnormal.cell(row=ab_row, column=4)
+            abnormality_cell.value = abnormality
+
+            entryDate_cell = ws_abnormal.cell(row=ab_row, column=5)
+            entryDate_cell.value = entryDate
+
+            targetDate_cell = ws_abnormal.cell(row=ab_row, column=6)
+            targetDate_cell.value = targetDate
+
+            status_cell = ws_abnormal.cell(row=ab_row, column=7)
+            status_cell.value = status
+
+            m_specs_cell = ws_abnormal.cell(row=ab_row, column=8)
+            m_specs_cell.value = m_specs
+
+            ab_row +=1
+
+    wb.save("card_status_gd.xlsx")
+
+# ==============================abnormalities card details ends===============================
+
 
 # ==============================excel part finished=========================================
 
@@ -485,15 +611,13 @@ print("SM\n", tabular_table)
 # Connection with the server
 server = smtplib.SMTP(host=config.smtp, port=587)
 server.starttls()
-print("config.username",config.username)
-print("config.password",config.password)
 server.login(config.username, config.password)
 
 # Creation of the MIMEMultipart Object
 message = MIMEMultipart()
 # =================================================================================================
 family = [
-    config.to_email
+    config.maintainance_to_email
 ]
 
 # msg['To'] =', '.join(family)
@@ -505,7 +629,7 @@ family = [
 # Setup of MIMEMultipart Object Header
 message['From'] = config.from_email
 message['To'] = ', '.join(family)
-message['Subject'] = "TNGA-MNT Daily TBM card status"
+message['Subject'] = "GD-MNT Daily TBM card status"
 
 # Creation of a MIMEText Part
 # textPart1 = MIMEText(f"Good Morning\nSUMMARY OF PREVIOUS DAY ({y_d}-{y_m}-{y_y}) TBM CHECK ACTIVITY\n\nA.PRODUCTION\n\nLine\tTotal\tOK\tNG\tPending\nBlock\t{total_block_OM}\t{ok_Block_OM}\t{ng_Block_OM}\t{total_block_OM-ok_Block_OM-ng_Block_OM}\nCrank\t{total_crank_OM}\t{ok_Crank_OM}\t{ng_Crank_OM}\t{total_crank_OM-ok_Crank_OM-ng_Crank_OM}\nHead\t{total_head_OM}\t{ok_Head_OM}\t{ng_Head_OM}\t{total_head_OM-ok_Head_OM-ng_Head_OM}\n\nB.MAINTENANCE\n\nLine\tTotal\tOK\tNG\tPending\nBlock\t{total_block}\t{ok_Block}\t{ng_Block}\t{total_block-ok_Block-ng_Block}\nCrank\t{total_crank}\t{ok_Crank}\t{ng_Crank}\t{total_crank-ok_Crank-ng_Crank}\nHead\t{total_head}\t{ok_Head}\t{ng_Head}\t{total_head-ok_Head-ng_Head}\n\nDaily TBM card raise status is attached.\nThank You\n\nMNT-MES", 'plain')
@@ -531,7 +655,7 @@ Good Morning<br>
 SUMMARY OF PREVIOUS DAY <b>(%s)</b> TBM CHECK ACTIVITY<br> 
 </p>
 <p>    
-<b>TNGA-MAINTENANCE</b>
+<b>GD-MAINTENANCE</b>
     <br>
     %s
 </p>
@@ -551,7 +675,7 @@ textPart1 = MIMEText(html, 'html')
 # Creation of a MIMEApplication Part
 
 if card["success"] == True:
-    filename = "card_status_tnga.xlsx"
+    filename = "card_status_gd.xlsx"
     filePart = MIMEApplication(open(filename, "rb").read(), Name=filename)
     filePart["Content-Disposition"] = 'attachment; filename="%s' % filename
 
@@ -572,15 +696,13 @@ server.quit()
 # Connection with the server
 server = smtplib.SMTP(host=config.smtp, port=587)
 server.starttls()
-print("config.username",config.username)
-print("config.password",config.password)
 server.login(config.username, config.password)
 
 # Creation of the MIMEMultipart Object
 message = MIMEMultipart()
 # =================================================================================================
 family = [
-    config.to_email
+    config.production_to_email
 ]
 
 # msg['To'] =', '.join(family)
@@ -591,9 +713,9 @@ family = [
 
 # Setup of MIMEMultipart Object Header
 message['From'] = config.from_email
-message['To'] = config.to_email
+message['To'] = config.production_to_email
 # message['To'] = ', '.join(family)
-message['Subject'] = "TNGA-PROD Daily OM card status"
+message['Subject'] = "GD-PROD Daily TBM card status"
 
 # Creation of a MIMEText Part
 # textPart1 = MIMEText(f"Good Morning\nSUMMARY OF PREVIOUS DAY ({y_d}-{y_m}-{y_y}) TBM CHECK ACTIVITY\n\nA.PRODUCTION\n\nLine\tTotal\tOK\tNG\tPending\nBlock\t{total_block_OM}\t{ok_Block_OM}\t{ng_Block_OM}\t{total_block_OM-ok_Block_OM-ng_Block_OM}\nCrank\t{total_crank_OM}\t{ok_Crank_OM}\t{ng_Crank_OM}\t{total_crank_OM-ok_Crank_OM-ng_Crank_OM}\nHead\t{total_head_OM}\t{ok_Head_OM}\t{ng_Head_OM}\t{total_head_OM-ok_Head_OM-ng_Head_OM}\n\nB.MAINTENANCE\n\nLine\tTotal\tOK\tNG\tPending\nBlock\t{total_block}\t{ok_Block}\t{ng_Block}\t{total_block-ok_Block-ng_Block}\nCrank\t{total_crank}\t{ok_Crank}\t{ng_Crank}\t{total_crank-ok_Crank-ng_Crank}\nHead\t{total_head}\t{ok_Head}\t{ng_Head}\t{total_head-ok_Head-ng_Head}\n\nDaily TBM card raise status is attached.\nThank You\n\nMNT-MES", 'plain')
@@ -619,7 +741,7 @@ Good Morning<br>
 SUMMARY OF PREVIOUS DAY <b>(%s)</b> TBM CHECK ACTIVITY<br> 
 </p>
 <p>    
-<b>TNGA-PRODUCTION</b>
+<b>GD-PRODUCTION</b>
     <br>
     %s
 </p>
@@ -639,7 +761,7 @@ textPart1 = MIMEText(html, 'html')
 # Creation of a MIMEApplication Part
 
 if card["success"] == True:
-    filename = "card_status_tnga.xlsx"
+    filename = "card_status_gd.xlsx"
     filePart = MIMEApplication(open(filename, "rb").read(), Name=filename)
     filePart["Content-Disposition"] = 'attachment; filename="%s' % filename
 
