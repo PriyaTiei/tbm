@@ -11,3 +11,6 @@ frontend/package-lock.json
 frontend/package.json
 frontend/yarn.lock
 frontend/node_modules/
+config.py
+card_status_gd.xlsx
+card_status_tnga.xlsx
