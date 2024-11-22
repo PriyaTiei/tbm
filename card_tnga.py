@@ -301,35 +301,37 @@ penData = response_pending.json()
 pen_row = 2
 i = 1
 if penData['success']:
-    card_message = "Daily TBM card raise status in GD is attached."
+    card_message = "Daily TBM card raise status in TNGA is attached."
     pending_data = penData["pendingData"]
     for p, process in enumerate(pending_data):
         process_list = process["processList"]
         for x, data in enumerate(process_list):
             process_data = data["processData"][0]
-            check_items = process_data["checkitems"][0]
-            
-            s_no = ws_pending.cell(row=pen_row, column=1)
-            s_no.alignment = Alignment(horizontal='center')
-            s_no.value = i
-            
-            LATEST_PLAN_D = ws_pending.cell(row=pen_row, column=2)
-            LATEST_PLAN_D.alignment = Alignment(horizontal='center')
-            LATEST_PLAN_D.value = today.strftime("%d/%m/%Y")
-            
-            OP_NO = ws_pending.cell(row=pen_row, column=3)
-            OP_NO.alignment = Alignment(horizontal='center')
-            OP_NO.value = check_items['processNo']
-            
-            WORK_DETAIL = ws_pending.cell(row=pen_row, column=4)
-            WORK_DETAIL.alignment = Alignment(horizontal='center')
-            WORK_DETAIL.value = check_items['workDetail']
-            
-            FREQUENCY = ws_pending.cell(row=pen_row, column=5)
-            FREQUENCY.alignment = Alignment(horizontal='center')
-            FREQUENCY.value = check_items['cycle']
+            if "checkitems" in process_data.keys():
+                check_items = process_data["checkitems"][0]
+                
+                s_no = ws_pending.cell(row=pen_row, column=1)
+                s_no.alignment = Alignment(horizontal='center')
+                s_no.value = i
+                
+                LATEST_PLAN_D = ws_pending.cell(row=pen_row, column=2)
+                LATEST_PLAN_D.alignment = Alignment(horizontal='center')
+                LATEST_PLAN_D.value = today.strftime("%d/%m/%Y")
+                
+                OP_NO = ws_pending.cell(row=pen_row, column=3)
+                OP_NO.alignment = Alignment(horizontal='center')
+                OP_NO.value = check_items['processNo']
+                
+                WORK_DETAIL = ws_pending.cell(row=pen_row, column=4)
+                WORK_DETAIL.alignment = Alignment(horizontal='center')
+                WORK_DETAIL.value = check_items['workDetail']
+                
+                FREQUENCY = ws_pending.cell(row=pen_row, column=5)
+                FREQUENCY.alignment = Alignment(horizontal='center')
+                FREQUENCY.value = check_items['cycle']
 
             items_spec = process_data["itemSpec"] if "itemSpec" in process_data.keys() else None
+            
             if items_spec is not None:
                 mspec = items_spec["m_spec"] if "m_spec" in items_spec.keys() else None
                 if mspec is not None:
@@ -370,7 +372,7 @@ if penData['success']:
 else:
     card_message = "No TBM card raised in last 30 days."
     
-wb.save("card_status_gd.xlsx")
+wb.save("card_status_tnga.xlsx")
 
 # ==============================pending card details ends===============================
 
@@ -739,7 +741,7 @@ textPart1 = MIMEText(html, 'html')
 # Creation of a MIMEApplication Part
 
 if card["success"] == True:
-    filename = "card_status_gd.xlsx"
+    filename = "card_status_tnga.xlsx"
     filePart = MIMEApplication(open(filename, "rb").read(), Name=filename)
     filePart["Content-Disposition"] = 'attachment; filename="%s' % filename
 
@@ -825,7 +827,7 @@ textPart1 = MIMEText(html, 'html')
 # Creation of a MIMEApplication Part
 
 if card["success"] == True:
-    filename = "card_status_gd.xlsx"
+    filename = "card_status_tnga.xlsx"
     filePart = MIMEApplication(open(filename, "rb").read(), Name=filename)
     filePart["Content-Disposition"] = 'attachment; filename="%s' % filename
 
