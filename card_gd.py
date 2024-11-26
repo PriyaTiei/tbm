@@ -252,7 +252,7 @@ card_y = response2.json()
 # ws_pending = wb_new.create_sheet("Pending Cards", 0)
 
 wb = Workbook()
-ws_pending = wb.create_sheet("Pending Cards(more than 30 days)", 0)
+ws_pending = wb.create_sheet("Pending Cards > 30 days", 0)
 
 print("ws_pending:", ws_pending)
 
@@ -265,6 +265,8 @@ ws_pending.column_dimensions['F'].width = 15
 ws_pending.column_dimensions['G'].width = 15
 ws_pending.column_dimensions['H'].width = 15
 ws_pending.column_dimensions['I'].width = 15
+ws_pending.column_dimensions['J'].width = 15
+
 
 # ws_pending["A1"] = "Details For Pending Cards for more than 30 days"
 for i in range(1,10):
@@ -275,22 +277,25 @@ ws_pending['A1'] = "SL NO"
 ws_pending['B1'] = "LATEST PLAN DATE"
 ws_pending['B1'].font = Font(bold=True)
 
-ws_pending['C1'] = "OP NO"
+ws_pending['C1'] = "LINE"
 ws_pending['C1'].font = Font(bold=True)
 
-ws_pending['D1'] = "WORK DETAIL"
+ws_pending['D1'] = "OP NO"
 ws_pending['D1'].font = Font(bold=True)
 
-ws_pending['E1'] = "FREQUENCY"
+ws_pending['E1'] = "WORK DETAIL"
 ws_pending['E1'].font = Font(bold=True)
-ws_pending['F1'] = "MEASUREMENT"
+
+ws_pending['F1'] = "FREQUENCY"
 ws_pending['F1'].font = Font(bold=True)
-ws_pending['G1'] = "STANDARD VALUE"
+ws_pending['G1'] = "MEASUREMENT"
 ws_pending['G1'].font = Font(bold=True)
-ws_pending['H1'] = "LATEST ACTUAL VALUE"
+ws_pending['H1'] = "STANDARD VALUE"
 ws_pending['H1'].font = Font(bold=True)
-ws_pending['I1'] = "LAST COMPLETED DATE"
+ws_pending['I1'] = "LATEST ACTUAL VALUE"
 ws_pending['I1'].font = Font(bold=True)
+ws_pending['J1'] = "LAST COMPLETED DATE"
+ws_pending['J1'].font = Font(bold=True)
 
 urlForPendingCardsGreater30days = config.server_url +"/pendingTasks/getPendingTaskReport"
 response_pending = requests.get(urlForPendingCardsGreater30days)
@@ -318,16 +323,20 @@ if penData['success']:
                     LATEST_PLAN_D = ws_pending.cell(row=pen_row, column=2)
                     LATEST_PLAN_D.alignment = Alignment(horizontal='center')
                     LATEST_PLAN_D.value = today.strftime("%d/%m/%Y")
+
+                    LINE_NO = ws_pending.cell(row=pen_row, column=3)
+                    LINE_NO.alignment = Alignment(horizontal='center')
+                    LINE_NO.value = check_items['line']
                     
-                    OP_NO = ws_pending.cell(row=pen_row, column=3)
+                    OP_NO = ws_pending.cell(row=pen_row, column=4)
                     OP_NO.alignment = Alignment(horizontal='center')
                     OP_NO.value = check_items['processNo']
                     
-                    WORK_DETAIL = ws_pending.cell(row=pen_row, column=4)
+                    WORK_DETAIL = ws_pending.cell(row=pen_row, column=5)
                     WORK_DETAIL.alignment = Alignment(horizontal='center')
                     WORK_DETAIL.value = check_items['workDetail']
                     
-                    FREQUENCY = ws_pending.cell(row=pen_row, column=5)
+                    FREQUENCY = ws_pending.cell(row=pen_row, column=6)
                     FREQUENCY.alignment = Alignment(horizontal='center')
                     FREQUENCY.value = check_items['cycle']
 
@@ -350,19 +359,19 @@ if penData['success']:
                         if 'm_value' in spec.keys():
                             last_actual_data += (f"{spec['m_value']},")
                     
-                    MEASUREMENT = ws_pending.cell(row=pen_row, column=6)
+                    MEASUREMENT = ws_pending.cell(row=pen_row, column=7)
                     MEASUREMENT.alignment = Alignment(horizontal='center')
                     MEASUREMENT.value = measurement_data 
 
-                    STANDARD_VALUE = ws_pending.cell(row=pen_row, column=7)
+                    STANDARD_VALUE = ws_pending.cell(row=pen_row, column=8)
                     STANDARD_VALUE.alignment = Alignment(horizontal='center')
                     STANDARD_VALUE.value = standard_data
                     
-                    LATEST_ACTUAL_VALUE = ws_pending.cell(row=pen_row, column=8)
+                    LATEST_ACTUAL_VALUE = ws_pending.cell(row=pen_row, column=9)
                     LATEST_ACTUAL_VALUE.alignment = Alignment(horizontal='center')
                     LATEST_ACTUAL_VALUE.value = last_actual_data
                     
-                LAST_COMPLETED_DATE = ws_pending.cell(row=pen_row, column=9)
+                LAST_COMPLETED_DATE = ws_pending.cell(row=pen_row, column=10)
                 LAST_COMPLETED_DATE.alignment = Alignment(horizontal='center')
                 LAST_COMPLETED_DATE.value = "/".join(items_spec['checkedAt'].split("T")[0].split("-")[::-1]) if  'checkedAt' in items_spec.keys()  else "Na"
             
