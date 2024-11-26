@@ -27,7 +27,7 @@ export default function PendingTask() {
 
   useEffect(() => {
     axios.get(
-      `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/pendingTasks/getPendingTaskReport?pS=S`)
+      `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/pendingTasks/getPendingTaskReport?pS=${filters.pS}`)
       .then((result) => {
         if (result.data.success) {
 
@@ -42,13 +42,13 @@ export default function PendingTask() {
         // toast.error(`Data could not be saved , ${err.message}`);
       });
 
-  }, [])
+  }, [filters])
 
   useEffect(() => {
     if (exceldata?.pendingData?.length) {
       // console.log("pendingTasksData?.pendingData", pendingTasksData?.pendingData)
       // console.log("exceldata?.pendingData", exceldata?.pendingData)
-      const newHeader = ["SL NO", "LATEST PLAN DATE", "OP NO", "WORK DETAIL", "FREQUENCY", "MEASUREMENT", "STANDARD VALUE", "LATEST ACTUAL VALUE", "LAST COMPLETED DATE"];
+      const newHeader = ["SL NO", "LATEST PLAN DATE", "LINE", "OP NO", "WORK DETAIL", "FREQUENCY", "MEASUREMENT", "STANDARD VALUE", "LATEST ACTUAL VALUE", "LAST COMPLETED DATE"];
       setHeader(newHeader);
 
       let index = 1; // Initialize the index
@@ -87,6 +87,7 @@ export default function PendingTask() {
                 results.push([
                   index++,
                   entryDate?.split("T")[0],
+                  item.line,
                   process.processNo,
                   workDetail,
                   cycle,

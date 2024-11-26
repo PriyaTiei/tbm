@@ -1,7 +1,8 @@
 import requests
 from datetime import datetime, timedelta, date
+import config
 
-host = "localhost"
+host = config.server_url
 port = "5051"
 
 today = datetime.now()
@@ -25,9 +26,9 @@ d = datetime.now().day
 weekNo = (d//7.1)+1
 
 # Get the API endpoint URLs and query parameters
-machine_list_url = f"http://{host}:{port}/head/headMachineList?d=" + \
+machine_list_url = config.server_url +"/head/headMachineList?d=" + \
     str(y_weekd)+"&y="+str(y_y)+"&w="+str(y_weekNo)+"&m="+str(y_m)+"&pS=P"
-daily_status_url = f"http://{host}:{port}/dailyStatus?entryFor=" + \
+daily_status_url = config.server_url +"/dailyStatus?entryFor=" + \
     str(y_y)+"-"+str(y_m)+"-"+str(y_d)+"&pS=P"
 
 
