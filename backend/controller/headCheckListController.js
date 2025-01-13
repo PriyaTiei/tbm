@@ -177,7 +177,8 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
       $match: {
         ...req.query,
         $or: [
-          { isDeleted: { $exists: false } }
+          { isDeleted: { $exists: false } },
+          { isDeleted: false },
         ],
       },
     },
