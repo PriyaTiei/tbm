@@ -427,7 +427,7 @@ function SmileCardAdd() {
             <div className="d-flex">
               <div className="firstCol">
                 {" "}
-                {pS === "S" ? "Time :" : "Total Manhours :"}
+                {pS === "S" ? "Time :" : "Total Time in Mins :"}
               </div>
               <div className="secondCol">
                 <input
@@ -789,7 +789,8 @@ function SmileCardAdd() {
               </li>
               <li>
                 <div className="d-flex">
-                  <div className="firstCol">Prep ManHr :</div>
+                  <div className="firstCol">Preperation time in mins
+                  :</div>
                   <div className="secondCol">
                     <input
                       className="form-control"
@@ -801,7 +802,7 @@ function SmileCardAdd() {
               </li>
               <li>
                 <div className="d-flex">
-                  <div className="firstCol">w Hr :</div>
+                  <div className="firstCol">Work time /Person:</div>
                   <div className="secondCol">
                     <input
                       className="form-control"

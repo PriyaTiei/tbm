@@ -84,15 +84,13 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   // console.log( req.query, "group query 2")
 
 
-  req.query.isDeleted =  { $exists: false } 
-
-  // Use the updated query to filter documents
+ // req.query.isDeleted =  { $exists: false } 
  
   const headObject = new ApiFeatureHead(HeadModel, req.query).match();
 
 
   const headCheckList = await headObject.query;
-  // console.log(headCheckList);
+  console.log(headCheckList);
 
   if (headCheckList.length === 0) {
     return next(new ErrorHandler("could not find check list", 404));
@@ -177,7 +175,8 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
       $match: {
         ...req.query,
         $or: [
-          { isDeleted: { $exists: false } }
+          { isDeleted: { $exists: false } },
+          { isDeleted: false },
         ],
       },
     },
