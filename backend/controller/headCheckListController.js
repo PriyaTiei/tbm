@@ -53,7 +53,19 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
   // console.log("token :", token);
   // console.log( req.query, "group query 1")
   console.log("req----", req.query)
-  req.query.isDeleted =  { $exists: false } 
+  // req.query.isDeleted =  { $exists: false } 
+
+
+  req.query = {
+    ...req.query,
+    $or: [
+      { isDeleted: { $exists: false } },
+      { isDeleted: false },
+    ]
+  };
+
+
+
   const headObject = new ApiFeatureHead(HeadModel, req.query)
     .search()
     .filter()
@@ -84,7 +96,13 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   // console.log( req.query, "group query 2")
 
 
-  req.query.isDeleted =  { $exists: false } 
+ req.query = {
+    ...req.query,
+    $or: [
+      { isDeleted: { $exists: false } },
+      { isDeleted: false },
+    ]
+  };
 
   // Use the updated query to filter documents
  
@@ -177,7 +195,8 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
       $match: {
         ...req.query,
         $or: [
-          { isDeleted: { $exists: false } }
+          { isDeleted: { $exists: false } },
+          { isDeleted: false },
         ],
       },
     },

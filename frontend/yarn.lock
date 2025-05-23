@@ -7302,6 +7302,7 @@ overlay-navbar@^1.2.3:
     redux-devtools-extension "^2.13.9"
     redux-logger "^3.0.6"
     redux-thunk "^2.4.1"
+    xlsx "^0.18.5"
 
 p-limit@^2.0.0, p-limit@^2.2.0:
   version "2.3.0"
