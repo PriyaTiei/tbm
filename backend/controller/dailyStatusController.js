@@ -326,6 +326,34 @@ exports.getDailyStatusAll = catchAsyncError(async (req, res, next) => {
   // });
 });
 
+// exports.getDailyStatusByCheckItem = catchAsyncError(async (req, res, next) => {
+//   const query = {}
+//   console.log("here");
+
+//   console.log(req?.query?.byData === "yes");
+//   const dailyStatusAll = await DailyStatusModel.find(
+//     req?.query?.byData === "yes" ? {
+//       ...req?.query?.query
+//     } : {
+//       checkItem: ObjectId(req.query.checkItem)
+//     }
+//   );
+
+//   console.log(dailyStatusAll);
+
+//   if (!dailyStatusAll) {
+//     return res.status(201).json({
+//       success: false,
+//       dailyStatusAll: []
+//     });
+//   }
+
+//   return res.status(201).json({
+//     success: true,
+//     dailyStatusAll: dailyStatusAll
+//   });
+// });
+
 exports.getDailyStatusByCheckItem = catchAsyncError(async (req, res, next) => {
   const query = {}
   console.log("here");

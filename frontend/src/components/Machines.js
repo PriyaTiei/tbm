@@ -1,41 +1,40 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getDailyStatus } from "../redux/dailyStatus/dailyStatusActions";
 import { getMachines } from "../redux/machine/machineActions";
 import Line from "./Line";
 import Loading from "./Loading";
-import { getLoginCookie } from "../services/getLoginCookie.js"
-import MultiLevelXAxisBarChart from "../BarChart.js";
+import MachineListTable from "./MachineListTable"; // ✅ New component
 
 function Machines() {
   const dispatch = useDispatch();
+  const [viewMode, setViewMode] = useState("card"); // ✅ Toggle state
+
   const machines = useSelector((state) => state.machines);
   const filters = useSelector((state) => state.filters);
   const dailyStatuses = useSelector((state) => state.dailyStatuses);
+
   const dailyStatusData =
     dailyStatuses.loading === false
       ? dailyStatuses.dailyStatus.success
         ? dailyStatuses.dailyStatus.sortedDailyStatus
         : []
       : [];
-  const dailyStatusDataLinewise = {}
+
+  const dailyStatusDataLinewise = {};
   dailyStatusData.forEach((item) => {
-    dailyStatusDataLinewise[item.line] = item.processes
-  })
+    dailyStatusDataLinewise[item.line] = item.processes;
+  });
 
+  // Filters
+  const lineStr = filters.line ? `&line=${filters.line}` : "";
+  const rSStr = filters.rS ? `&rS=${filters.rS}` : "";
+  const groupStr = filters.group ? `&group=${filters.group}` : "";
+  const processNoStr = filters.processNo ? `&processNo=${filters.processNo}` : "";
+  const cardNoStr = filters.cardNo ? `&cardNo=${filters.cardNo}` : "";
 
-  let lineStr = filters.line === null ? '' : `&line=${filters.line}`
-  let rSStr = filters.rS === null ? '' : `&rS=${filters.rS}`
-  let groupStr = filters.group === null ? '' : `&group=${filters.group}`
-  let processNoStr = filters.processNo === null || filters.processNo === "" ? '' : `&processNo=${filters.processNo}`
-  let cardNoStr = filters.cardNo === null || filters.cardNo === "" ? '' : `&cardNo=${filters.cardNo}`
-
-  // let queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` + lineStr + rSStr + groupStr;
-  // let DailyStatusQueryStr = `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}`;
-  let queryStr
-  let DailyStatusQueryStr
+  let queryStr, DailyStatusQueryStr;
   if (filters.processNo === "" && filters.cardNo === "") {
-    console.log("test ********************")
     queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` + lineStr + rSStr + groupStr + processNoStr + cardNoStr;
     DailyStatusQueryStr = `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}` + lineStr + rSStr + groupStr + processNoStr + cardNoStr;
   } else {
@@ -45,43 +44,53 @@ function Machines() {
 
   useEffect(() => {
     dispatch(getMachines(queryStr));
-
     dispatch(getDailyStatus(DailyStatusQueryStr));
-    // dispatch(getDailyStatus());
-  }, [dispatch, filters, queryStr, DailyStatusQueryStr]);
+  }, [dispatch, filters]);
 
   const { loading, machineData } = machines;
-
+  
 
   return (
     <Fragment>
+      <div className="d-flex justify-content-end align-items-center m-2">
+        <button
+          className="btn btn-sm btn-outline-primary me-2"
+          onClick={() => setViewMode("card")}
+        >
+          Card View
+        </button>
+        <button
+          className="btn btn-sm btn-outline-success"
+          onClick={() => setViewMode("list")}
+        >
+          List View
+        </button>
+      </div>
+
       {loading ? (
         <Loading />
       ) : (
-        <Fragment >
-
-          <div className="overflow-auto" style={{ height: "85vh", paddingBottom: "10%" }}>
-            {machineData.success
-              ? machineData.machineData.map((item, i) => {
-                return (<>
-                  {console.log(item)}
-                  <Line
-
-                    line={item.line}
-                    processNos={item.processNos}
-                    counts={item.counts}
-                    key={item.line}
-
-                    dailyStatusDataLinewise={dailyStatusDataLinewise[item.line]}
-                  />
-                </>);
-              })
-              : null}
-
-          </div>
+        <Fragment>
+          {machineData.success && viewMode === "card" ? (
+            <div className="overflow-auto" style={{ height: "85vh", paddingBottom: "10%" }}>
+              {machineData.machineData.map((item) => (
+                <Line
+                  key={item.line}
+                  line={item.line}
+                  processNos={item.processNos}
+                  counts={item.counts}
+                  dailyStatusDataLinewise={dailyStatusDataLinewise[item.line]}
+                />
+              ))}
+            </div>
+          ) : (
+            <MachineListTable
+              machineData={machineData.machineData}
+              dailyStatusDataLinewise={dailyStatusDataLinewise}
+            />
+          )}
         </Fragment>
       )}
-
     </Fragment>
   );
 }

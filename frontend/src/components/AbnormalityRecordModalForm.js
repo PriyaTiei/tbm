@@ -59,7 +59,7 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId, mspecs }) {
     e.preventDefault();
     const formData = new FormData();
     // formData.append("_id", _id);
-    formData.append("image", selectedFile);
+    formData.append("beforeImage", selectedFile);
 
     axios
       .post(
@@ -101,7 +101,7 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId, mspecs }) {
           processNo,
           spare,
           status,
-          image,
+          image:12,
           pS,
           m_spec: mspecs
         }

@@ -16,28 +16,28 @@ const CardStatusGraph = ({ unFilteredData }) => {
         var tempDataSet = [
             {
                 label: "OK",
-                backgroundColor: "rgba(75, 192, 192)",
+                background: "rgba(75, 192, 192)",
                 data: data.okData,
                 grouped: false,
                 stack: '1'
             },
             {
                 label: "NG",
-                backgroundColor: "rgba(255, 0, 0, 0.7)",
+                background: "rgba(255, 0, 0, 0.7)",
                 data: data.ngData,
                 grouped:false,
                 stack: '1'
             },
             {
                 label: "Pending",
-                backgroundColor: "#ff9191dd",
+                background: "#ff9191dd",
                 data: data.pendingData,
                 grouped:false,
                 stack: '1'
             },
             {
                 label: "Total",
-                backgroundColor: "#3498db",
+                background: "#3498db",
                 data: data.totalData,
                 grouped:false
             }

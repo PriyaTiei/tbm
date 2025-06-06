@@ -33,7 +33,8 @@ export const getPendingTasks = (queryStr) => {
     axios
       .get(url)
       .then((result) => {
-    
+        console.log("Fetched pending tasks:", result.data);
+
         dispatch(pendingTaskFetchSuccess(result.data));
       })
       .catch((err) => {

@@ -32,6 +32,9 @@ export const getMachines = (queryStr) => {
     axios
       .get(url)
       .then((result) => {
+          console.log("getMachines API data:", result.data);  // <-- check structure here
+          console.log("One machine entry:", result.data.machineData[0]);
+
         dispatch(machineFetchSuccess(result.data));
       })
       .catch((err) => {

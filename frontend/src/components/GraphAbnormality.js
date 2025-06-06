@@ -11,8 +11,8 @@ function GraphAbnormality(props) {
     datasets: [
       {
         // label: "Machine wise data",
-        backgroundColor: ["rgb(0, 0, 255)", "rgb(0, 255, 0)", "rgb(255, 0,0)", "rgb(255, 110,255)"],
-        // backgroundColor: "rgb(255, 99, 99)",
+        background: ["rgb(0, 0, 255)", "rgb(0, 255, 0)", "rgb(255, 0,0)", "rgb(255, 110,255)"],
+        // background: "rgb(255, 99, 99)",
         borderColor: "rgb(255, 99, 99)",
         data: props.data,
       },

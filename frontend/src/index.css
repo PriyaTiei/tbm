@@ -1,0 +1,6 @@
+/* src/index.css */
+
+html, body {
+  overscroll-behavior-y: contain;
+  scroll-behavior: smooth;
+}

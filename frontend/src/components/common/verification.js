@@ -478,7 +478,7 @@ const Verification = ({ showModals, setShowModals }) => {
                                                 <td style={{ fontSize: "12px" }}>{items?.entryFor}</td>
                                                 <td style={{
                                                     fontSize: "12px",
-                                                    backgroundColor: items?.result === "NG" ? "red" : "transparent",
+                                                    background: items?.result === "NG" ? "red" : "transparent",
                                                     color: items?.result === "NG" ? "white" : "black"
                                                 }}>
                                                     {items?.result}
@@ -576,7 +576,7 @@ const Verification = ({ showModals, setShowModals }) => {
                                                     <td>{items?.entryFor}</td>
                                                     <td style={{
                                                         fontSize: "12px",
-                                                        backgroundColor: items?.result === "NG" ? "red" : "transparent",
+                                                        background: items?.result === "NG" ? "red" : "transparent",
                                                         color: items?.result === "NG" ? "white" : "black"
                                                     }}>
                                                         {items?.result}

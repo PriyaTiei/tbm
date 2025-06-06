@@ -6,10 +6,12 @@ function MachineCard(props) {
   const { processNo, line, count, OK, NG } = props;
 
   let statusColor = "";
-  if (NG > 0) {
+  if (NG === count) {
     statusColor = "rgba(255,0,0,.7)";
   } else if (OK === count) {
     statusColor = "rgba(0,255,0,.7)";
+  } else if (NG > 0 && (count-NG-OK) > 0) {
+    statusColor = "linear-gradient(to right, rgba(255, 0, 0, 0.7) 50%, rgba(76,76,255) 50%)";
   } else {
     statusColor = "rgba(76,76,255)";
   }
@@ -22,7 +24,7 @@ function MachineCard(props) {
       >
         <div
           className={`card  mx-3 mb-3  ${styles.bg} ${styles.translate}`}
-          style={{ width: "8vmax", backgroundColor: statusColor, color:"white" }}
+          style={{ width: "8vmax", background: statusColor, color:"white" }}
         >
           <div className="card-header">
             <h6 className="text-center">{processNo} </h6>

@@ -37,10 +37,45 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
 
   const auth = useSelector((state) => state.auth);
   const level = auth.user ? auth.user.level : 0;
+  const [beforeImageUrl, setBeforeImageUrl] = useState(null);
+const [afterImageUrl, setAfterImageUrl] = useState(null);
+
+useEffect(() => {
+  if (image) {
+    if (image.before instanceof File) {
+      setBeforeImageUrl(URL.createObjectURL(image.before));
+    } else if (typeof image.before === "string") {
+      setBeforeImageUrl(`/abnormalityImage/${image.before}`);
+    } else {
+      setBeforeImageUrl(null);
+    }
+
+    if (image.after instanceof File) {
+      setAfterImageUrl(URL.createObjectURL(image.after));
+    } else if (typeof image.after === "string") {
+      setAfterImageUrl(`/abnormalityImage/${image.after}`);
+    } else {
+      setAfterImageUrl(null);
+    }
+  } else {
+    setBeforeImageUrl(null);
+    setAfterImageUrl(null);
+  }
+
+  // Cleanup blob URLs when component unmounts or image changes:
+  return () => {
+    if (beforeImageUrl) URL.revokeObjectURL(beforeImageUrl);
+    if (afterImageUrl) URL.revokeObjectURL(afterImageUrl);
+  };
+}, [image]);
+
 
   useEffect(() => {
     console.log(item)
   }, [item])
+  useEffect(() => {
+    console.log("Image inside AbnormilityDoc:", image);
+  }, [image]);
 
   const dispatch = useDispatch();
   const deleteItem = (itemId) => {
@@ -86,6 +121,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
       <td>{pic}</td>
       <td>{targetDate ? targetDate.slice(0, 10) : null}</td>
       <td>{status.toUpperCase()}</td>
+
       <td>
         <button
           className="btn btn-primary"
@@ -96,7 +132,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
             className="bi bi-image"
             style={{ fontSize: "1.5rem", color: "white" }}
           ></i>
-          Image
+          Images
         </button>
       </td>
 
@@ -190,13 +226,16 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
         />
       ) : null}
 
-      {showModalImage ? (
+      {showModalImage && (
         <AbnormalityImageModal
           showModal={showModalImage}
           setShowModal={setShowModalImage}
-          image={image}
+          beforeImageUrl={beforeImageUrl}
+          afterImageUrl={afterImageUrl}
         />
-      ) : null}
+      )}
+
+
     </tr>
   );
 }
