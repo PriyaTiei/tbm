@@ -14,18 +14,21 @@ const pendingTaskReducer = (state = initialPendingTaskState, action) => {
   switch (action.type) {
     case PENDING_TASK_FETCH_REQUEST:
       return {
+        ...state,
         loading: true,
         pendingTasksData: {},
         error: "",
       };
     case PENDING_TASK_FETCH_SUCCESS:
       return {
+        ...state,
         loading: false,
         pendingTasksData: action.payload,
         error: "",
       };
     case PENDING_TASK_FETCH_FAIL:
       return {
+        ...state,
         loading: false,
         pendingTasksData: {},
         error: action.error,

@@ -2,13 +2,13 @@ const catchAsyncError = require("../middleware/catchAsyncError");
 const HeadModel = require("../mongoSchema/chekItemModel");
 const ApiFeatureHead = require("../util/apiFeatureHead");
 const ErrorHandler = require("../util/errorHandling");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 async function addMeassurementFieldSpec(headCheckList) {
   /*
-  ** Added By Prasad Munaga
-  ** This is for reading values from the user against each measurement 
-  */
+   ** Added By Prasad Munaga
+   ** This is for reading values from the user against each measurement
+   */
   let tList = [];
   let obj = {};
   obj.m_spec_id = mongoose.Types.ObjectId();
@@ -52,8 +52,14 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
   // console.log("cookie form getHeadChecklist");
   // console.log("token :", token);
   // console.log( req.query, "group query 1")
-  console.log("req----", req.query)
-  req.query.isDeleted =  { $exists: false } 
+  console.log("req----", req.query);
+  req.query.isDeleted = { $exists: false };
+
+  req.query = {
+    ...req.query,
+    $or: [{ isDeleted: { $exists: false } }, { isDeleted: false }],
+  };
+
   const headObject = new ApiFeatureHead(HeadModel, req.query)
     .search()
     .filter()
@@ -78,21 +84,26 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   // const { token } = req.cookies;
   // console.log(req.cookies);
   // console.log("token :", token);
+  console.log("getHeadMachineList called with query:", req.query);
 
   req.query = { ...req.query };
   console.log(req.query);
   // console.log( req.query, "group query 2")
 
-
-  req.query.isDeleted =  { $exists: false } 
+  req.query = {
+    ...req.query,
+    $or: [{ isDeleted: { $exists: false } }, { isDeleted: false }],
+  };
+  console.log("Modified req.query:", req.query);
 
   // Use the updated query to filter documents
- 
-  const headObject = new ApiFeatureHead(HeadModel, req.query).match();
 
+  const headObject = new ApiFeatureHead(HeadModel, req.query).match();
 
   const headCheckList = await headObject.query;
   // console.log(headCheckList);
+  console.log("headCheckList length:", headCheckList.length);
+  console.log("headCheckList sample item:", headCheckList[0]);
 
   if (headCheckList.length === 0) {
     return next(new ErrorHandler("could not find check list", 404));
@@ -122,6 +133,27 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   let machineData = [];
   // let processCount=[]
 
+  // headCheckList.forEach((item) => {
+  //   let line = item._id.line;
+
+  //   const counts = {};
+  //   item.processList.forEach((el) => {
+  //     counts[el] = counts[el] ? (counts[el] += 1) : 1;
+  //   });
+
+  //   item.processList.forEach((e) => {
+  //     let ind = processNosUnique.indexOf(e);
+  //     if (ind === -1) {
+  //       processNosUnique.push(e);
+  //     }
+  //   });
+
+  //   machineData = [
+  //     ...machineData,
+  //     { line, processNos: processNosUnique, counts },
+  //   ];
+  //   processNosUnique = [];
+  // });
   headCheckList.forEach((item) => {
     let line = item._id.line;
 
@@ -139,7 +171,23 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
 
     machineData = [
       ...machineData,
-      { line, processNos: processNosUnique, counts },
+      {
+        line,
+        processNos: processNosUnique,
+        counts,
+        matrixCardNo: item.matrixCardNo,
+        ledgerNo: item.ledgerNo,
+        day: item.day,
+        lineGroup: item.lineGroup,
+        machineNo: item.machineNo,
+        station: item.station,
+        inspectionItem: item.inspectionItem,
+        frequency: item.frequency,
+        areaToInspect: item.areaToInspect,
+        time: item.time,
+        inspectionMethod: item.inspectionMethod,
+        standardValue: item.standardValue,
+      },
     ];
     processNosUnique = [];
   });
@@ -164,25 +212,238 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
     totalCount: { totalCountBlock, totalCountCrank, totalCountHead },
   });
 });
+// exports.getHeadMachineList = async (req, res, next) => {
+//   try {
+//     console.log("getHeadMachineList called with query:", req.query);
 
+//     req.query = { ...req.query };
+//     console.log("Original req.query:", req.query);
+
+//     req.query = {
+//       ...req.query,
+//       $or: [
+//         { isDeleted: { $exists: false } },
+//         { isDeleted: false },
+//       ]
+//     };
+//     console.log("Modified req.query:", req.query);
+
+//     const headObject = new ApiFeatureHead(HeadModel, req.query).match();
+
+//     const headCheckList = await headObject.query;
+//     console.log("headCheckList length:", headCheckList.length);
+//     if (headCheckList.length > 0) {
+//       console.log("headCheckList sample item:", headCheckList[0]);
+//     } else {
+//       console.log("No documents matched the query");
+//     }
+
+//     if (headCheckList.length === 0) {
+//       return next(new ErrorHandler("could not find check list", 404));
+//     }
+
+//     let queryStrClient = await headObject.newQueryStr;
+
+//     const totalCount = await HeadModel.countDocuments({ ...queryStrClient });
+//     const totalCountBlock = await HeadModel.countDocuments({
+//       ...queryStrClient,
+//       line: "Block",
+//     });
+//     const totalCountCrank = await HeadModel.countDocuments({
+//       ...queryStrClient,
+//       line: "Crank",
+//     });
+//     const totalCountHead = await HeadModel.countDocuments({
+//       ...queryStrClient,
+//       line: "Head",
+//     });
+
+//     let processNosUnique = [];
+//     let machineData = [];
+
+//     headCheckList.forEach((item) => {
+//       console.log("Processing item in headCheckList:", item);
+
+//       let line = item._id.line;
+
+//       const counts = {};
+//       item.processList.forEach((el) => {
+//         counts[el] = counts[el] ? counts[el] + 1 : 1;
+//       });
+
+//       item.processList.forEach((e) => {
+//         if (!processNosUnique.includes(e)) {
+//           processNosUnique.push(e);
+//         }
+//       });
+
+//       machineData.push({
+//         line,
+//         processNos: processNosUnique,
+//         counts,
+//         matrixCardNo: item.matrixCardNo,
+//         ledgerNo: item.ledgerNo,
+//         day: item.day,
+//         lineGroup: item.lineGroup,
+//         machineNo: item.machineNo,
+//         station: item.station,
+//         inspectionItem: item.inspectionItem,
+//         frequency: item.frequency,
+//         areaToInspect: item.areaToInspect,
+//         time: item.time,
+//         inspectionMethod: item.inspectionMethod,
+//         standardValue: item.standardValue,
+//       });
+
+//       processNosUnique = [];
+//     });
+
+//     machineData.sort((a, b) => (a.line < b.line ? -1 : a.line > b.line ? 1 : 0));
+
+//     console.log("Sending response with machineData count:", machineData.length);
+
+//     return res.status(200).json({
+//       success: true,
+//       machineData,
+//       totalCount: { totalCountBlock, totalCountCrank, totalCountHead },
+//     });
+//   } catch (error) {
+//     console.error("Error in getHeadMachineList:", error);
+//     next(error);
+//   }
+// };
+
+// exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
+//   const { token } = req.cookies;
+//   console.log("cookie form getAllMachinelist");
+//   console.log(token);
+//   req.query = { ...req.query };
+
+//   const headCheckList = await HeadModel.aggregate([
+//     // { $match: req.query },
+//     {
+//       $match: {
+//         ...req.query,
+//         $or: [
+//           { isDeleted: { $exists: false } },
+//           { isDeleted: false },
+//         ],
+//       },
+//     },
+
+//     {
+//       $group: {
+//         _id: { line: "$line", processNo: "$processNo" },
+//         processList: {
+//           $push: {
+//             id: "$_id",
+//             checkItem: "$checkItem",
+//             pS: "$pS",
+//           },
+//         },
+//       },
+//     },
+//     {
+//       $group: {
+//         _id: "$_id.line",
+//         processList: {
+//           $push: {
+//             processNo: "$_id.processNo",
+//             processData: "$processList",
+//           },
+//         },
+//       },
+//     },
+//   ]);
+
+//   if (headCheckList.length === 0) {
+//     return next(new ErrorHandler("could not find check list", 404));
+//   }
+
+//   let machineData = [];
+//   // let processCount=[]
+
+//   headCheckList.forEach((item) => {
+//     let line = item._id;
+
+//     const counts = {};
+//     item.processList.forEach((el) => {
+//       counts[el.processNo] = el.processData.length;
+//     });
+
+//     let processList = item.processList;
+//     processList.sort((a, b) => {
+//       let x = a.processNo;
+//       let y = b.processNo;
+//       if (x < y) {
+//         return -1;
+//       }
+//       if (x > y) {
+//         return 1;
+//       }
+//       return 0;
+//     });
+
+//     machineData = [...machineData, { line, processList, counts }];
+//   });
+
+//   //Sorting with respect to line
+//   machineData.sort((a, b) => {
+//     let x = a.line;
+//     let y = b.line;
+//     if (x < y) {
+//       return -1;
+//     }
+//     if (x > y) {
+//       return 1;
+//     }
+//     return 0;
+//   });
+
+//   // return results
+//   return res.status(200).json({
+//     success: true,
+//     machineData,
+//   });
+// });
 exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
   const { token } = req.cookies;
   console.log("cookie form getAllMachinelist");
   console.log(token);
-  req.query = { ...req.query };
+
+  // Extract and prepare filter params
+  const { startDate, endDate, status, pS, rS, line } = req.query;
+
+  // Build MongoDB query conditions
+  const matchConditions = {
+    $or: [{ isDeleted: { $exists: false } }, { isDeleted: false }],
+  };
+
+  if (pS) matchConditions.pS = pS;
+  if (rS) matchConditions.rS = rS;
+  if (line) matchConditions.line = line;
+
+  // ✅ Handle date filtering (assuming you have createdAt field in documents)
+  if (startDate && endDate) {
+    matchConditions.createdAt = {
+      $gte: new Date(`${startDate}T00:00:00Z`),
+      $lte: new Date(`${endDate}T23:59:59Z`),
+    };
+  }
+
+  // ✅ Handle status filter (assuming 'rS' or another field indicates result status like OK/NG)
+  if (status) {
+    // Assuming `rS` is used for OK/NG, you may adjust this
+    matchConditions.rS = status.toUpperCase(); // or lowercase if needed
+  }
 
   const headCheckList = await HeadModel.aggregate([
-    // { $match: req.query },
     {
       $match: {
         ...req.query,
-        $or: [
-          { isDeleted: { $exists: false } },
-          { isDeleted: false },
-        ],
+        $or: [{ isDeleted: { $exists: false } }, { isDeleted: false }],
       },
     },
-
     {
       $group: {
         _id: { line: "$line", processNo: "$processNo" },
@@ -191,6 +452,8 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
             id: "$_id",
             checkItem: "$checkItem",
             pS: "$pS",
+            rS: "$rS",
+            createdAt: "$createdAt", // in case you want to debug or use this
           },
         },
       },
@@ -209,15 +472,13 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
   ]);
 
   if (headCheckList.length === 0) {
-    return next(new ErrorHandler("could not find check list", 404));
+    return next(new ErrorHandler("Could not find check list", 404));
   }
 
   let machineData = [];
-  // let processCount=[]
 
   headCheckList.forEach((item) => {
     let line = item._id;
-
     const counts = {};
     item.processList.forEach((el) => {
       counts[el.processNo] = el.processData.length;
@@ -236,23 +497,13 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
       return 0;
     });
 
-    machineData = [...machineData, { line, processList, counts }];
+    machineData.push({ line, processList, counts });
   });
 
-  //Sorting with respect to line
-  machineData.sort((a, b) => {
-    let x = a.line;
-    let y = b.line;
-    if (x < y) {
-      return -1;
-    }
-    if (x > y) {
-      return 1;
-    }
-    return 0;
-  });
+  // Sort lines
+  machineData.sort((a, b) => a.line.localeCompare(b.line));
+  console.log("Received query:", req.query);
 
-  // return results
   return res.status(200).json({
     success: true,
     machineData,
@@ -310,10 +561,10 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
     group,
     m_spec,
     tlVerify,
-    glVerify
+    glVerify,
   } = req.body;
 
-  console.log("group is: ", group)
+  console.log("group is: ", group);
   //conver to int
   function converToInt(y) {
     const splitY = y.split(",");
@@ -372,7 +623,7 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
       group,
       m_spec: jsonMSpec,
       tlVerify,
-      glVerify
+      glVerify,
 
       // images: [req.file.filename],
     },
@@ -392,8 +643,6 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
     }
   );
 });
-
-
 
 exports.getDeletedCheckItems = catchAsyncError(async (req, res, next) => {
   const { token } = req.cookies;
@@ -546,7 +795,7 @@ exports.insertData = catchAsyncError(async (req, res, next) => {
     group,
     m_spec,
     glVerify,
-    tlVerify
+    tlVerify,
   } = req.body;
 
   //conver to int
@@ -601,7 +850,7 @@ exports.insertData = catchAsyncError(async (req, res, next) => {
       group,
       m_spec: jsonMSpec,
       glVerify,
-      tlVerify
+      tlVerify,
       // images: [req.file.filename],
     },
     (err, doc) => {
@@ -636,35 +885,27 @@ exports.insertData = catchAsyncError(async (req, res, next) => {
 //     .json({ success: true, message: "Delete checkItem successfully" });
 // });
 
-
-
-
-
-
 exports.deleteCheckItem = catchAsyncError(async (req, res, next) => {
   console.log("entered");
   const id = req.params.id;
   console.log("Id :", id);
 
-
   const checkItem = await HeadModel.findById(id);
   console.log("checkItem  :", checkItem);
-
 
   if (!checkItem) {
     return next(new ErrorHandler("check item not found", 404));
   }
 
-
   checkItem.isDeleted = true;
-
 
   try {
     await checkItem.save();
     console.log("Check item after soft delete:", checkItem);
 
-
-    res.status(200).json({ success: true, message: "Check item soft deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Check item soft deleted successfully" });
   } catch (error) {
     console.error("Error saving check item:", error);
     return next(new ErrorHandler("Could not save check item", 500));

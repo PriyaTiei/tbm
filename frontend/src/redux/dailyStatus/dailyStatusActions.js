@@ -34,6 +34,8 @@ export const getDailyStatus = (queryStr) => {
         `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus?${queryStr}`
       )
       .then((result) => {
+          console.log("✅ API Response for Daily Status:", result.data); // <- ADD THIS
+
         dispatch(dailyStatusFetchSuccess(result.data));
       })
       .catch((error) => {

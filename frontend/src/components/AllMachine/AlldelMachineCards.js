@@ -22,7 +22,7 @@ export default function AlldelMachineCard(props) {
           className={`card  mx-3 mb-3  ${styles.bg} ${styles.translate}`}
           style={{
             width: "8vmax",
-            backgroundColor: statusColor,
+            background: statusColor,
             color: "white",
           }}
           onClick={onClick}

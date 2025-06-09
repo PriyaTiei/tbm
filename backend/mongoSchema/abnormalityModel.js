@@ -42,9 +42,12 @@ const abnormalityListSchema = new mongoose.Schema({
   spare: {
     type: String,
   },
-  image: {
+  beforeImage: {
     type: String,
   },
+  // afterImage: {
+  //   type: String,
+  // }, 
   pS: {
     type: String,
   },

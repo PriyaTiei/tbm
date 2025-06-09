@@ -203,7 +203,7 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
       <div className="d-sm-flex flex-wrap">
         <div
           className={`${styles.brA} ${styles.center} col-sm-3 align-self-stretch `}
-          style={{ backgroundColor: `${bgColor}` }}
+          style={{ background: `${bgColor}` }}
         >
           <h6 className={`${styles.scTh} h2`}>
             {pS === "P" ? "TBM Card" : `Smile Card `}
@@ -432,7 +432,7 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
                     <span
                       key={index}
                       style={{
-                        backgroundColor: "#f0f0f0", // Change this to your desired background color
+                        background: "#f0f0f0", // Change this to your desired background color
                         padding: "5px 10px",
                         margin: "5px",
                         borderRadius: "5px",

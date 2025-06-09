@@ -22,7 +22,7 @@ export default function TeamLeaderCard(props) {
       >
         <div
           className={`card  mx-3 mb-3  ${styles.bg} ${styles.translate}`}
-          style={{ width: "8vmax", backgroundColor: statusColor, color:"white" }}
+          style={{ width: "8vmax", background: statusColor, color:"white" }}
         >
           <div className="card-header">
             <h6 className="text-center">{processNo} </h6>

@@ -6,7 +6,7 @@ import Loading from "./Loading";
 
 export default function OldPending() {
   const dispatch = useDispatch();
-  const pendingTasks = useSelector((state) => state.pendingTasks);
+  const pendingTasks = useSelector((state) => state.pendingTasks.tasks);
   const filters = useSelector((state) => state.filters);
 
   let lineStr = filters.line === null ? "" : `&line=${filters.line}`;

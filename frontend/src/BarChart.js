@@ -181,7 +181,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     data: labels?.map(label => {
                         return 0;
                     }),
-                    backgroundColor: (context) => {
+                    background: (context) => {
                         return "rgb(40, 167, 69)";
                     },
                 },
@@ -190,7 +190,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     data: labels?.map(label => {
                         return 0;
                     }),
-                    backgroundColor: (context) => {
+                    background: (context) => {
 
                         return "rgb(193,193,193)";
                     },
@@ -206,7 +206,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     data: labels?.map(label => {
                         return 0;
                     }),
-                    backgroundColor: (context) => {
+                    background: (context) => {
                         return "rgb(180,198,231)"
                     },
                     datalabels: {

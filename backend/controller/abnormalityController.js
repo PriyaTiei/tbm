@@ -84,64 +84,66 @@ exports.createAbnormality = catchAsyncError(async (req, res, next) => {
 
 });
 
+exports.uploadAbnormalityImages = catchAsyncError(async (req, res, next) => {
+  try {
+    console.log("🧾 Received image upload request...");
+    console.log("Body:", req.body);
+    console.log("Files:", req.files);
 
+    const { _id } = req.body;
 
-
-exports.uploadAbnormalityImage = catchAsyncError(async (req, res, next) => {
-
-  const { _id } = req.body;
-
-
-
-
-  // save in mongo db
-
-
-
-
-  AbnormalityModel.findByIdAndUpdate(
-
-    _id,
-
-    {
-
-      images: [req.file.filename],
-
-    },
-
-    (err, doc) => {
-
-      if (err) {
-
-        console.log("err ", err);
-
-        return res.status(400).json({
-
-          success: false,
-
-          message: "image upload Failed",
-
-        });
-
-      } else {
-
-        return res.status(200).json({
-
-          success: true,
-
-          message: "image uploaded successfully",
-
-          file: req.file,
-
-        });
-
-      }
-
+    if (!_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing _id in form data",
+      });
     }
 
-  );
+    const beforeImage = req.files?.beforeImage?.[0]?.filename || null;
+    const afterImage = req.files?.afterImage?.[0]?.filename || null;
 
+    if (!beforeImage && !afterImage) {
+      return res.status(400).json({
+        success: false,
+        message: "No image uploaded",
+      });
+    }
+
+    const updateFields = {};
+    if (beforeImage) updateFields.beforeImage = beforeImage;
+    if (afterImage) updateFields.afterImage = afterImage;
+
+    const updatedDoc = await AbnormalityModel.findByIdAndUpdate(
+      _id,
+      { $set: updateFields },
+      { new: true }
+    );
+
+    if (!updatedDoc) {
+      return res.status(404).json({
+        success: false,
+        message: "Abnormality not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Image(s) uploaded successfully",
+      updated: updateFields,
+    });
+  } catch (error) {
+    console.error("❌ Upload error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during image upload",
+      error: error.message,
+    });
+  }
 });
+
+
+
+
 
 
 
