@@ -149,3 +149,27 @@ exports.getCard = catchAsyncError(async (req, res, next) => {
 
   return res.status(201).json({ success: true, card });
 });
+
+// exports.getCard = catchAsyncError(async (req, res, next) => {
+//   const id = req.params.id;
+//   const requestingUser = req.user; // assumes you're using middleware to set req.user
+
+//   const card = await CardRaisedModel.findById(id)
+//     .populate("checkItem", "line workDetail processNo")
+//     .populate("user", "name pS"); // pS = department
+
+//   if (!card) {
+//     return next(new ErrorHandler("Cannot find this card", 404));
+//   }
+
+//   // Check department-based access (assuming card.pS is available)
+//   const userDept = requestingUser.pS;
+//   const allowedDepts = Array.isArray(userDept) ? userDept : [userDept];
+
+//   if (!allowedDepts.includes(card.pS)) {
+//     return next(new ErrorHandler("Access denied: Card not in your department", 403));
+//   }
+
+//   return res.status(200).json({ success: true, card });
+// });
+

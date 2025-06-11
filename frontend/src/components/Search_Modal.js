@@ -75,8 +75,11 @@ function Search_Modal({ showModal, setShowModal, workDetail, itemId }) {
   // };
   const formHandler = (e) => {
     e.preventDefault();
-    dispatch(filterProcessNo(op));
-    dispatch(filterCardNo(cardNo));
+    // dispatch(filterProcessNo(op));
+    // dispatch(filterCardNo(cardNo));
+    if (op.trim()) dispatch(filterProcessNo(op.trim()));
+    if (cardNo.trim()) dispatch(filterCardNo(cardNo.trim()));
+
     setShowModal(false)
     // axios
     //   .post(
@@ -235,7 +238,8 @@ function Search_Modal({ showModal, setShowModal, workDetail, itemId }) {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" type="submit" onClick={formHandler}>
+        {/* <Button variant="primary" type="submit" onClick={formHandler}> */}
+        <Button variant="primary" type="button" onClick={formHandler}>
           Search
         </Button>
       </Modal.Footer>

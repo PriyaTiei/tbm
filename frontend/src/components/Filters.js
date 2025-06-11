@@ -256,7 +256,7 @@ function Filters() {
               type={"info"} handleDownloadExcel={handleDownloadExcel} />  </>) : (<></>)
         } */}
         <Link to="/">
-          <Button className="mx-1 bg-blue px-3">
+          <Button className="mx-1 bg-blue px-3 py-3">
             <i className="bi bi-house"></i> Home
           </Button>
         </Link>
@@ -321,33 +321,79 @@ function Filters() {
             <i className="bi bi-search px-1"></i>
             Clear Search
           </Button>}
-        {date ? (<OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Monthly Report</Tooltip>}><Button className="" onClick={() => setShowModal(true)} style={{ background: "transparent", color: "#000" }}>
-          <i class="bi bi-graph-up bi-2x"></i>
-        </Button></OverlayTrigger>) : (<></>)}
-
-        {level >= 100 ? <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Holiday List</Tooltip>}><Link to="/holidays"><Button className="" style={{ background: "transparent", color: "#000" }}>
-          <i class="bi bi-sunset bi-2x"></i>
-        </Button></Link></OverlayTrigger> : ""}
-        {level >= 20 ? <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">TL/GL Verification</Tooltip>}><Link to="/verification"><Button className="" onClick={() => setShowModals(true)} style={{ background: "transparent", color: "#000" }}>
-          <i class="bi bi-calendar-check bi-2x"></i><span style={{ background: "red", borderRadius: "50%", width: "10px", height: "10px", position: "absolute" }}></span>
-        </Button></Link></OverlayTrigger> : ""}
-        {/* <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Pending cards in brief</Tooltip>}>
-          <Button style={{ background: "transparent", color: "#000", marginRight: '20px' }} onClick={handleDownloadExcel}>
-            <i class="bi bi-file-earmark-excel"></i>
+        {date ? <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Button
+            className=""
+            onClick={() => setShowModal(true)}
+            style={{ background: "transparent", color: "#000" }}
+          >
+            <i className="bi bi-graph-up bi-2x"></i>
           </Button>
-        </OverlayTrigger> */}
-        <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Pending Items</Tooltip>}><Link to="/pendingTasks">
-          <Button style={{ background: "transparent", color: "#000", marginRight: '20px' }}>
-            <i class="bi bi-hourglass-split"></i>
-          </Button>
-        </Link></OverlayTrigger>
+          <div
+            style={{
+              marginTop: '4px',
+              fontSize: '0.8rem',
+              color: '#000',
+              textAlign: 'center',
+            }}
+          >
+            Monthly Report
+          </div>
+        </div> : null}
 
-        {/* <Link to="/judgementHistory">
+        {level >= 100 ? (
+          <Link to="/holidays" style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Button style={{ background: "transparent", color: "#000" }}>
+                <i className="bi bi-sunset bi-2x"></i>
+              </Button>
+              <div style={{ marginTop: '4px', fontSize: '0.8rem', color: '#000', textAlign: 'center' }}>
+                Holiday List
+              </div>
+            </div>
+          </Link>
+        ) : null}
+
+        {level >= 20 ? (
+          <Link to="/verification" style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+              <Button onClick={() => setShowModals(true)} style={{ background: "transparent", color: "#000" }}>
+                <i className="bi bi-calendar-check bi-2x"></i>
+                <span style={{
+                  background: "red",
+                  borderRadius: "50%",
+                  width: "10px",
+                  height: "10px",
+                  position: "absolute",
+                  top: "3px",      
+                  right: "12px", 
+                }}></span>
+              </Button>
+              <div style={{ marginTop: '4px', fontSize: '0.8rem', color: '#000', textAlign: 'center' }}>
+                TL/GL Verification
+              </div>
+            </div>
+          </Link>
+        ) : null}
+
+        <Link to="/pendingTasks" style={{ textDecoration: 'none' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '20px' }}>
+            <Button style={{ background: "transparent", color: "#000" }}>
+              <i className="bi bi-hourglass-split"></i>
+            </Button>
+            <div style={{ marginTop: '4px', fontSize: '0.8rem', color: '#000', textAlign: 'center' }}>
+              Pending Items
+            </div>
+          </div>
+        </Link>
+
+
+        <Link to="/judgementHistory">
           <Button color="blue" className="mx-1">
             <i className="bi bi-card-list px-1"></i>
             Judgement History
           </Button>
-        </Link> */}
+        </Link>
       </div>
       <hr className="my-2"></hr>
       <MultiLevelXAxisBarChart showModal={showModal} setShowModal={setShowModal} chkDate={date} />

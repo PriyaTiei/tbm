@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 const sidebarStyle = {
   width: "100vw",
-  backgroundColor: "#f8f9fa",
+  background: "#f8f9fa",
   height: "100vh",
   position: "fixed",
   top: "0",

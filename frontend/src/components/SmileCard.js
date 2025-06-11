@@ -245,7 +245,7 @@ function SmileCard() {
             />
           )}
 
-          {/* <button
+          <button
             className="btn btn-success"
             onClick={() => setShowJudgementHistoryModel(true)}
             // data-toggle="tooltip"
@@ -253,16 +253,16 @@ function SmileCard() {
             title="History"
           >
             Judgement History
-          </button> */}
-          {/* {console.log("checkItemcheckItem", checkItem?.headCheckList && checkItem?.headCheckList[0])} */}
-          {/* <div className="p-3 bg-light rounded text-center" style={{ fontFamily: "Arial, sans-serif" }}>
+          </button>
+          {console.log("checkItemcheckItem", checkItem?.headCheckList && checkItem?.headCheckList[0])}
+          <div className="p-3 bg-light rounded text-center" style={{ fontFamily: "Arial, sans-serif" }}>
             <p className="mb-2 font-weight-bold text-dark">
               {getStatusLabel(checkItem?.headCheckList, "tl")}
             </p>
             <p className="mb-0 font-weight-bold text-dark">
               
             </p>
-          </div> */}
+          </div>
           <Card className="p-1 text-center" style={{ maxWidth: "400px", margin: "auto" }}>
             <Card.Body>
               <Card.Subtitle className="text-muted" style={{ fontSize: "16px", fontWeight: "500" }}>
