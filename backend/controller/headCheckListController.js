@@ -53,7 +53,7 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
   // console.log("token :", token);
   // console.log( req.query, "group query 1")
   console.log("req----", req.query)
-  // req.query.isDeleted =  { $exists: false } 
+  req.query.isDeleted =  { $exists: false } 
 
 
   req.query = {
@@ -329,137 +329,24 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
 // };
 
 
-// exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
-//   const { token } = req.cookies;
-//   console.log("cookie form getAllMachinelist");
-//   console.log(token);
-//   req.query = { ...req.query };
-
-//   const headCheckList = await HeadModel.aggregate([
-//     // { $match: req.query },
-//     {
-//       $match: {
-//         ...req.query,
-//         $or: [
-//           { isDeleted: { $exists: false } },
-//           { isDeleted: false },
-//         ],
-//       },
-//     },
-
-//     {
-//       $group: {
-//         _id: { line: "$line", processNo: "$processNo" },
-//         processList: {
-//           $push: {
-//             id: "$_id",
-//             checkItem: "$checkItem",
-//             pS: "$pS",
-//           },
-//         },
-//       },
-//     },
-//     {
-//       $group: {
-//         _id: "$_id.line",
-//         processList: {
-//           $push: {
-//             processNo: "$_id.processNo",
-//             processData: "$processList",
-//           },
-//         },
-//       },
-//     },
-//   ]);
-
-//   if (headCheckList.length === 0) {
-//     return next(new ErrorHandler("could not find check list", 404));
-//   }
-
-//   let machineData = [];
-//   // let processCount=[]
-
-//   headCheckList.forEach((item) => {
-//     let line = item._id;
-
-//     const counts = {};
-//     item.processList.forEach((el) => {
-//       counts[el.processNo] = el.processData.length;
-//     });
-
-//     let processList = item.processList;
-//     processList.sort((a, b) => {
-//       let x = a.processNo;
-//       let y = b.processNo;
-//       if (x < y) {
-//         return -1;
-//       }
-//       if (x > y) {
-//         return 1;
-//       }
-//       return 0;
-//     });
-
-//     machineData = [...machineData, { line, processList, counts }];
-//   });
-
-//   //Sorting with respect to line
-//   machineData.sort((a, b) => {
-//     let x = a.line;
-//     let y = b.line;
-//     if (x < y) {
-//       return -1;
-//     }
-//     if (x > y) {
-//       return 1;
-//     }
-//     return 0;
-//   });
-
-//   // return results
-//   return res.status(200).json({
-//     success: true,
-//     machineData,
-//   });
-// });
 exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
   const { token } = req.cookies;
   console.log("cookie form getAllMachinelist");
   console.log(token);
-
-  // Extract and prepare filter params
-  const { startDate, endDate, status, pS, rS, line } = req.query;
-
-  // Build MongoDB query conditions
-  const matchConditions = {
-    $or: [
-      { isDeleted: { $exists: false } },
-      { isDeleted: false },
-    ]
-  };
-
-  if (pS) matchConditions.pS = pS;
-  if (rS) matchConditions.rS = rS;
-  if (line) matchConditions.line = line;
-
-  // ✅ Handle date filtering (assuming you have createdAt field in documents)
-  if (startDate && endDate) {
-    matchConditions.createdAt = {
-      $gte: new Date(`${startDate}T00:00:00Z`),
-      $lte: new Date(`${endDate}T23:59:59Z`),
-    };
-  }
-
-  // ✅ Handle status filter (assuming 'rS' or another field indicates result status like OK/NG)
-  if (status) {
-    // Assuming `rS` is used for OK/NG, you may adjust this
-    matchConditions.rS = status.toUpperCase(); // or lowercase if needed
-  }
+  req.query = { ...req.query };
 
   const headCheckList = await HeadModel.aggregate([
+    // { $match: req.query },
     {
-      $match: matchConditions,
+      $match: {
+        ...req.query,
+        $or: [
+          { isDeleted: { $exists: false } },
+          { isDeleted: false },
+        ],
+      },
     },
+
     {
       $group: {
         _id: { line: "$line", processNo: "$processNo" },
@@ -468,8 +355,6 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
             id: "$_id",
             checkItem: "$checkItem",
             pS: "$pS",
-            rS: "$rS",
-            createdAt: "$createdAt", // in case you want to debug or use this
           },
         },
       },
@@ -488,28 +373,50 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
   ]);
 
   if (headCheckList.length === 0) {
-    return next(new ErrorHandler("Could not find check list", 404));
+    return next(new ErrorHandler("could not find check list", 404));
   }
 
   let machineData = [];
+  // let processCount=[]
 
   headCheckList.forEach((item) => {
     let line = item._id;
+
     const counts = {};
     item.processList.forEach((el) => {
       counts[el.processNo] = el.processData.length;
     });
 
     let processList = item.processList;
-    processList.sort((a, b) => a.processNo.localeCompare(b.processNo));
+    processList.sort((a, b) => {
+      let x = a.processNo;
+      let y = b.processNo;
+      if (x < y) {
+        return -1;
+      }
+      if (x > y) {
+        return 1;
+      }
+      return 0;
+    });
 
-    machineData.push({ line, processList, counts });
+    machineData = [...machineData, { line, processList, counts }];
   });
 
-  // Sort lines
-  machineData.sort((a, b) => a.line.localeCompare(b.line));
-  console.log("Received query:", req.query);
+  //Sorting with respect to line
+  machineData.sort((a, b) => {
+    let x = a.line;
+    let y = b.line;
+    if (x < y) {
+      return -1;
+    }
+    if (x > y) {
+      return 1;
+    }
+    return 0;
+  });
 
+  // return results
   return res.status(200).json({
     success: true,
     machineData,
