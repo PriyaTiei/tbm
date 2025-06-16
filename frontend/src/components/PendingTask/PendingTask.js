@@ -31,12 +31,13 @@ export default function PendingTask() {
 
   const { loading, pendingTasksData, error } = pendingTasks;
 
-  // Fetch Excel data from the report endpoint
+  // Fetch Excel data from the report endpoint with ALL filters applied
   useEffect(() => {
     setIsExcelApiLoaded(false);
     setIsExcelDataReady(false);
     
-    const url = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/pendingTasks/getPendingTaskReport?pS=${filters.pS}`;
+    // Use the same queryStr that's used for display data to ensure consistency
+    const url = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/pendingTasks/getPendingTaskReport?${queryStr}`;
     
     axios
       .get(url)
@@ -62,7 +63,7 @@ export default function PendingTask() {
         });
         setIsExcelApiLoaded(true);
       });
-  }, [filters, pendingTasksData]);
+  }, [queryStr, pendingTasksData]); // Changed dependency from filters to queryStr
 
   // Sanitize and prepare the Excel data with proper createdAt dates
   const sanitizedExcelData = useMemo(() => {
@@ -370,7 +371,13 @@ export default function PendingTask() {
 
     const currentDate = new Date().toISOString().slice(0, 10);
     const filterSuffix = ageFilter !== "ALL" ? `-${ageFilter}-days` : "";
-    const filename = `${currentDate}-pending-cards${filterSuffix}.xlsx`;
+    
+    // Add filter information to filename for better identification
+    let filterInfo = "";
+    if (filters.line) filterInfo += `-line-${filters.line}`;
+    if (filters.rS) filterInfo += `-rS-${filters.rS}`;
+    
+    const filename = `${currentDate}-pending-cards${filterInfo}${filterSuffix}.xlsx`;
     
     const worksheet = XLSX.utils.aoa_to_sheet([header, ...body]);
     const workbook = XLSX.utils.book_new();

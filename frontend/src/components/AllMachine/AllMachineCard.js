@@ -6,6 +6,8 @@ import styles from "../styles/smilecard.module.css";
 export default function AllMachineCard(props) {
   const { processNo, result, processData, onClick } = props;
 
+  console.log("ProcessData for", processNo, ":", processData);
+
   let statusColor = "rgba(76,74,75)";
   const counts = processData.length;
 

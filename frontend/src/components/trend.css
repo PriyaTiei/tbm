@@ -7,3 +7,121 @@
 .modal-height {
   height: 90vh !important;
 }
+
+/* Add these styles to your trend.css file */
+
+.judgement-history-container {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 100%;
+}
+
+.judgement-table-wrapper {
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  background-color: white;
+  position: relative;
+}
+
+/* Custom scrollbar styles */
+.judgement-table-wrapper::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.judgement-table-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 6px;
+}
+
+.judgement-table-wrapper::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 6px;
+  border: 2px solid #f1f1f1;
+}
+
+.judgement-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.judgement-table-wrapper::-webkit-scrollbar-corner {
+  background: #f1f1f1;
+}
+
+/* Sticky header styling */
+.table-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #212529 !important;
+}
+
+.table-sticky-header th {
+  background-color: #212529 !important;
+  border-color: #495057 !important;
+}
+
+/* Better spacing for table cells */
+.judgement-history-container .table td,
+.judgement-history-container .table th {
+  vertical-align: middle;
+  padding: 0.75rem;
+  border-color: #dee2e6;
+  white-space: nowrap;
+}
+
+/* Allow wrapping for remarks column */
+.judgement-history-container .table td:nth-child(4) {
+  white-space: normal;
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+/* Responsive font sizing */
+@media (max-width: 768px) {
+  .judgement-history-container .table {
+    font-size: 0.875rem;
+  }
+  
+  .judgement-history-container .table td,
+  .judgement-history-container .table th {
+    padding: 0.5rem;
+  }
+  
+  .judgement-table-wrapper {
+    max-height: 400px;
+  }
+}
+
+/* Modal specific styles */
+.my-modal .modal-dialog {
+  max-width: 95vw;
+}
+
+.modal-height .modal-body {
+  max-height: 70vh;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+/* Force container visibility in modal */
+.modal-body .judgement-history-container {
+  padding: 1rem;
+  background-color: #f8f9fa !important;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  height: auto;
+  min-height: 300px;
+}
+
+.modal-body .judgement-table-wrapper {
+  max-height: 50vh;
+  min-height: 200px;
+  border: 2px solid #1b1f23 !important;
+  background-color: white !important;
+}
