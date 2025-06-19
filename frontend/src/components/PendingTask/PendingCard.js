@@ -20,7 +20,7 @@ function PendingCard({ processNo, result, processData, onClick }) {
   return (
     <Fragment>
       <Link
-        to={`/pendingTasks/cardDetails/${processNo}`}
+        to={`/pendingTasks/cardDetails/`}
         style={{ textDecoration: "none" }}
       >
         <div

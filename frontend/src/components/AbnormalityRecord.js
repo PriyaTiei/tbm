@@ -50,6 +50,7 @@ function AbnormalityRecord() {
           processNo,
           spare,
           status,
+          // beforeImage,
         }
         // , { withCredentials: true }
       )

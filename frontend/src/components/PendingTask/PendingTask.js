@@ -177,8 +177,41 @@ export default function PendingTask() {
     setHeader(columns);
 
     // Prioritize Excel data over display data - only use display data if Excel data is truly empty
-    const dataToUse = (filteredExcelData.length > 0) ? filteredExcelData : filteredPendingData;
-    
+    // const dataToUse = (filteredExcelData.length > 0) ? filteredExcelData : filteredPendingData;
+    // Filter Excel data to match only displayed items
+    const displayedProcessNos = new Set(
+      filteredPendingData.flatMap(item => 
+        item.processList.map(process => process.processNo)
+      )
+    );
+
+    const syncedExcelData = filteredExcelData.map(item => ({
+      ...item,
+      processList: item.processList.filter(process => 
+        displayedProcessNos.has(process.processNo)
+      )
+    })).filter(item => item.processList.length > 0);
+
+    // Use Excel data (with populated fields) but only for displayed cards
+    // const dataToUse = syncedExcelData.length > 0 ? syncedExcelData : filteredPendingData;
+
+    // Filter to show only the latest entry for each process
+const latestEntriesData = syncedExcelData.map(item => ({
+  ...item,
+  processList: item.processList.map(process => ({
+    ...process,
+    processData: process.processData && process.processData.length > 0 
+      ? [process.processData.reduce((latest, current) => {
+          const latestDate = new Date(latest.entryDate?.[0] || latest.createdAt || 0);
+          const currentDate = new Date(current.entryDate?.[0] || current.createdAt || 0);
+          return currentDate > latestDate ? current : latest;
+        })]
+      : process.processData
+  }))
+}));
+
+// Use Excel data (with populated fields) but only for displayed cards and latest entries
+const dataToUse = latestEntriesData.length > 0 ? latestEntriesData : filteredPendingData;
     // Add a delay to ensure Excel API data is fully processed
     const buildExcelData = () => {
       try {

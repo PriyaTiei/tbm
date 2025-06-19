@@ -92,7 +92,8 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
           pS,
           remarks,
           checkedBy: checkedByNew,
-          m_specs: mspecs
+          m_specs: mspecs,
+          beforeImage:11
         };
 
         if (okNg == "NG") {

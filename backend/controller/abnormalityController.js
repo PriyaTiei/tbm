@@ -16,7 +16,7 @@ const { ObjectId } = require("../util/getObjectType");
 
 
 exports.createAbnormality = catchAsyncError(async (req, res, next) => {
-
+console.log("*******************************************",req.body,"********************************************************");
   const {
 
     checkItem,
@@ -39,7 +39,9 @@ exports.createAbnormality = catchAsyncError(async (req, res, next) => {
 
     user,
 
-    image,
+    beforeImage,
+
+    afterImage,
 
     pS,
 
@@ -71,7 +73,9 @@ exports.createAbnormality = catchAsyncError(async (req, res, next) => {
 
     status,
 
-    image,
+    beforeImage,
+
+    afterImage,
 
     pS,
 
@@ -180,7 +184,9 @@ exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
 
     user,
 
-    image,
+    beforeImage,
+
+    afterImage,
 
     m_spec
 
@@ -205,7 +211,9 @@ exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
 
   abnormalityItem.checkItem = checkItem;
 
-  abnormalityItem.image = image;
+  abnormalityItem.beforeImage = beforeImage;
+
+  abnormalityItem.afterImage = afterImage;
 
   abnormalityItem.m_spec = m_spec;
 

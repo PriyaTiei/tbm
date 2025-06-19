@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { Button } from "react-bootstrap";
-
 import Select from "react-select";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,170 +24,128 @@ function ModalForm(props) {
     status,
     fromDateSt,
     toDateSt,
-    image,
-    
   } = props;
- 
+
   const dispatch = useDispatch();
+  const auth = useSelector((state) => state.auth);
+  const user = auth.user._id;
+
+  // State management
+  const [abnormalityM, setAbnormalityM] = useState(abnormality || "");
+  const [countermeasureM, setCountermeasureM] = useState(countermeasure || "");
+  const [targetM, setTargetM] = useState(targetDate || "");
+  const [picM, setPicM] = useState(pic || "");
+  const [spareM, setSpareM] = useState(spare || "");
+  const [statusM, setStatusM] = useState(status || "");
+  
+  // Simplified image state
+  const [beforeImage, setBeforeImage] = useState(null);
+  const [afterImage, setAfterImage] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+
   const handleClose = () => {
+    // Reset form state when closing
+    setAbnormalityM(abnormality || "");
+    setCountermeasureM(countermeasure || "");
+    setTargetM(targetDate || "");
+    setPicM(pic || "");
+    setSpareM(spare || "");
+    setStatusM(status || "");
+    setBeforeImage(null);
+    setAfterImage(null);
     setShowModal(false);
   };
-
-  const [selectedFile, setSelectedFile] = useState("");
-  const [imageM, setImageM] = useState(image);
-  const [beforeImage, setBeforeImage] = useState("");
-  const [afterImage, setAfterImage] = useState("");
-
-  const [beforeFile, setBeforeFile] = useState(null);
-  const [afterFile, setAfterFile] = useState(null);
-
-
-  const handleBeforeFileChange = (e) => {
-    setBeforeFile(e.target.files[0]);
-  };
-
-  const handleAfterFileChange = (e) => {
-    setAfterFile(e.target.files[0]);
-  };
-
-
-  const auth = useSelector((state) => state.auth);
-
-  const user = auth.user._id
-
-  const [abnormalityM, setAbnormalityM] = useState(abnormality);
-  const [countermeasureM, setCountermeasureM] = useState(countermeasure);
-  const [targetM, setTargetM] = useState(targetDate);
-  const [picM, setPicM] = useState(pic);
-  const [spareM, setSpareM] = useState(spare);
-  const [statusM, setStatusM] = useState(status);
 
   const options = [
     { value: "pending", label: "Pending" },
     { value: "inprogress", label: "Inprogress" },
     { value: "complete", label: "Complete" },
   ];
-  const uploadBeforeAfterImages = async (e) => {
+
+  const formHandler = async (e) => {
     e.preventDefault();
+    setIsUploading(true);
+
     try {
-      if (beforeFile) {
-        const formDataBefore = new FormData();
-        formDataBefore.append("image", beforeFile);
-        const beforeRes = await axios.post(
-          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/uploadImage`,
-          formDataBefore,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
-        setBeforeImage(beforeRes.data.file.filename);
+      // 1. Update the abnormality data first
+      const updateRes = await axios.put(
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/update/${id}`,
+        {
+          _id: id,
+          line,
+          processNo,
+          user,
+          checkItem,
+          abnormality: abnormalityM,
+          countermeasure: countermeasureM,
+          targetDate: targetM,
+          pic: picM,
+          spare: spareM,
+          status: statusM,
+        }
+      );
+
+      console.log("Data update successful:", updateRes.data);
+
+      // 2. Upload images if selected
+      if (beforeImage || afterImage) {
+        try {
+          const formData = new FormData();
+          formData.append("_id", id);
+          
+          if (beforeImage) {
+            console.log("Appending before image:", beforeImage.name);
+            formData.append("beforeImage", beforeImage); // Back to original field name
+          }
+          if (afterImage) {
+            console.log("Appending after image:", afterImage.name);
+            formData.append("afterImage", afterImage); // Back to original field name
+          }
+
+          // Log FormData contents for debugging
+          for (let pair of formData.entries()) {    
+            console.log(pair[0] + ": " + pair[1]);
+          }
+
+          const imageResponse = await axios.post(
+            `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/uploadImage`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+          console.log("Image upload successful:", imageResponse.data);
+          toast.success("Updated successfully with images");
+        } catch (imgErr) {
+          console.error("Image Upload Failed:", imgErr);
+          console.error("Image Upload Error Response:", imgErr.response?.data);
+          toast.error(`Data updated, but image upload failed: ${imgErr.response?.data?.message || imgErr.message}`);
+        }
+      } else {
+        toast.success("Updated successfully");
       }
 
-      if (afterFile) {
-        const formDataAfter = new FormData();
-        formDataAfter.append("image", afterFile);
-        const afterRes = await axios.post(
-          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/uploadImage`,
-          formDataAfter,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
-        setAfterImage(afterRes.data.file.filename);
-      }
-
-      toast.success("Before & After images uploaded successfully");
+      // Don't close modal immediately, let user see the success
+      setTimeout(() => {
+        setShowModal(false);
+        dispatch(getAbnormality(fromDateSt, toDateSt));
+      }, 1500);
     } catch (err) {
-      toast.error("Failed to upload Before/After images");
+      console.error("Update Error:", err);
+      console.error("Update Error Response:", err.response?.data);
+      toast.error(`Update Failed: ${err.response?.data?.message || err.message}`);
+    } finally {
+      setIsUploading(false);
     }
   };
-
-  // const uploadImage = (e) => {
-  //   e.preventDefault();
-  //   const formData = new FormData();
-  //   // formData.append("_id", _id);
-  //   formData.append("image", selectedFile);
-
-  //   axios
-  //     .post(
-  //       `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/uploadImage`,
-  //       formData,
-  //       {
-  //         headers: { "Content-Type": "Multipart/form-data" },
-  //       }
-  //     )
-  //     .then((result) => {
-  //       setImageM(result.data.file.filename);
-  //       if (result.data.success) {
-  //         toast.success(
-  //           `Image uploaded successfully, Name of file ${result.data.file.filename}`
-  //         );
-  //       }
-  //     })
-  //     .catch((err) => {
-        
-  //       toast.error(
-  //         `Failed to upload Image, choose correct Image file with file extension .png/.jpg`
-  //       );
-  //     });
-  // };
-
-
-const formHandler = async (e) => {
-  e.preventDefault();
-
-  try {
-    // 1. Update the abnormality data (without images)
-    const updateRes = await axios.put(
-      `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/update/${id}`,
-      {
-        _id: id,
-        line,
-        processNo,
-        user,
-        checkItem,
-        abnormality: abnormalityM,
-        countermeasure: countermeasureM,
-        targetDate: targetM,
-        pic: picM,
-        spare: spareM,
-        status: statusM,
-      }
-    );
-    console.log("🧾 imageM state:", imageM);
-
-    try {
-      // 2. If images are selected, upload them separately
-      if (imageM?.before || imageM?.after) {
-        const formData = new FormData();
-        formData.append("_id", id);
-        if (imageM.before) formData.append("beforeImage", imageM.before);
-        if (imageM.after) formData.append("afterImage", imageM.after);
-
-        await axios.post(
-          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/uploadImage`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-      }
-    } catch (imgErr) {
-      console.error("Image Upload Failed:", imgErr);
-      toast.warn("Data updated, but image upload failed");
-    }
-
-    toast.success("Updated successfully");
-    setShowModal(false);
-    dispatch(getAbnormality(fromDateSt, toDateSt));
-  } catch (err) {
-    console.error("Update Error:", err);
-    toast.error("Update Failed");
-  }
-};
 
   return (
     <Modal show={showModal} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Update Abnormility</Modal.Title>
+        <Modal.Title>Update Abnormality</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div>
@@ -203,42 +160,51 @@ const formHandler = async (e) => {
               Inspection Item : <span className="h6">{workDetail}</span>
             </span>
           </div>
+          
           <form onSubmit={formHandler} className="form-group mx-3">
-            <label htmlFor="ab">Abnormility Details</label>
-            <textarea
-              className="form-control"
-              type="text"
-              id="ab"
-              value={abnormalityM !== null ? abnormalityM : ""}
-              onChange={(e) => setAbnormalityM(e.target.value)}
-              placeholder="Entry to be Compulsory for saving the record"
-            />
-            <label htmlFor="ac">Countermeasure</label>
-            <textarea
-              className="form-control"
-              type="text"
-              id="ac"
-              value={countermeasureM !== null ? countermeasureM : ""}
-              onChange={(e) => setCountermeasureM(e.target.value)}
-            />
+            <div className="mb-3">
+              <label htmlFor="ab">Abnormality Details</label>
+              <textarea
+                className="form-control"
+                id="ab"
+                value={abnormalityM}
+                onChange={(e) => setAbnormalityM(e.target.value)}
+                placeholder="Entry to be Compulsory for saving the record"
+                required
+              />
+            </div>
 
-            <label htmlFor="spares">Spare Required</label>
-            <input
-              className="form-control"
-              type="text"
-              id="spares"
-              value={spareM !== null ? spareM : ""}
-              onChange={(e) => setSpareM(e.target.value)}
-            />
-            <div className="d-flex justify-content-betweem my-2">
+            <div className="mb-3">
+              <label htmlFor="ac">Countermeasure</label>
+              <textarea
+                className="form-control"
+                id="ac"
+                value={countermeasureM}
+                onChange={(e) => setCountermeasureM(e.target.value)}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="spares">Spare Required</label>
+              <input
+                className="form-control"
+                type="text"
+                id="spares"
+                value={spareM}
+                onChange={(e) => setSpareM(e.target.value)}
+              />
+            </div>
+
+            <div className="d-flex justify-content-between my-3">
               <div className="me-3 d-flex flex-column">
                 <label className="me-1" htmlFor="pic">
                   PIC
                 </label>
                 <input
+                  className="form-control"
                   type="text"
                   id="pic"
-                  value={picM !== null ? picM : ""}
+                  value={picM}
                   onChange={(e) => setPicM(e.target.value)}
                 />
               </div>
@@ -247,86 +213,84 @@ const formHandler = async (e) => {
                   Target Date
                 </label>
                 <input
+                  className="form-control"
                   type="date"
                   id="target"
-                  value={targetM !== null ? targetM : ""}
+                  value={targetM}
                   onChange={(e) => setTargetM(e.target.value)}
                 />
               </div>
             </div>
-            <div className="d-flex flex-column">
-              <label htmlFor="status" className="me-2">
+
+            <div className="mb-3">
+              <label htmlFor="status" className="form-label">
                 Status
               </label>
               <Select
-                className="d-inline"
                 options={options}
-                defaultValue={{ value: `${status}`, label: `${status}` }}
+                value={options.find(option => option.value === statusM)}
                 menuPlacement="top"
-                onChange={(e) => setStatusM(e.value)}
+                onChange={(selectedOption) => setStatusM(selectedOption.value)}
               />
             </div>
 
-            {/* <div className="d-flex justify-content-between mt-2">
-              <div className="secondCol ms-0">
-                <div className="form-group">
-                  <input
-                    type="file"
-                    id="uploadImage"
-                    className="form-control"
-                    onChange={selectedFileHandler}
-                  />
-                </div>
-              </div>
-              <button
-                className="btn btn-outline-primary me-1 "
-                onClick={uploadImage}
-              >
-                Save_Image
-              </button>
-            </div>
-            <div className="my-2">
-              <input
-                className="form-control"
-                value={imageM}
-                onChange={(e) => setImageM(e.target.value)}
-                placeholder="Image Name"
-                disabled
-              />
-            </div> */}
-            <div className="mt-3">
+            <div className="mb-3">
               <label className="form-label">Before Image</label>
               <input
+                className="form-control"
                 type="file"
                 accept="image/*"
-                onChange={(e) =>
-                  setImageM((prev) => ({ ...prev, before: e.target.files[0] }))
-                }
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  console.log("Before image selected:", file);
+                  setBeforeImage(file);
+                }}
               />
-              <label className="form-label">After Image</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) =>
-                  setImageM((prev) => ({ ...prev, after: e.target.files[0] }))
-                }
-              />
-              <button className="btn btn-outline-primary" onClick={uploadBeforeAfterImages}>
-                Upload Images
-              </button>
+              {beforeImage && (
+                <small className="text-success">Selected: {beforeImage.name}</small>
+              )}
             </div>
 
-            {/* </div> */}
+            <div className="mb-3">
+              <label className="form-label">After Image</label>
+              <input
+                className="form-control"
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  console.log("After image selected:", file);
+                  setAfterImage(file);
+                }}
+              />
+              {afterImage && (
+                <small className="text-success">Selected: {afterImage.name}</small>
+              )}
+            </div>
+
+            <div className="d-flex justify-content-end">
+              <Button 
+                variant="secondary" 
+                onClick={handleClose} 
+                className="me-2"
+                disabled={isUploading}
+              >
+                Cancel
+              </Button>
+              <Button 
+                variant="primary" 
+                type="submit"
+                disabled={isUploading}
+              >
+                {isUploading ? "Updating..." : "Submit"}
+              </Button>
+            </div>
           </form>
         </div>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="primary" type="submit" onClick={formHandler}>
-          Submit
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
 }
 
 export default ModalForm;
+

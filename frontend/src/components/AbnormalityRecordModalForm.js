@@ -14,33 +14,25 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId, mspecs }) {
     // setIsOpen(false)
     setShowModal(false);
   };
-
   const { pS } = useSelector(state => state.filters)
-
-
   const [selectedFile, setSelectedFile] = useState("");
-  const [image, setImage] = useState("");
+  const [beforeImage, setImage] = useState("");
 
   const selectedFileHandler = (e) => {
     setSelectedFile(e.target.files[0]);
   };
 
   let info = {};
-
   const [searchParams] = useSearchParams();
   for (const e of searchParams.entries()) {
     let [f, v] = e;
     info[f] = v;
   }
-
   const { line, processNo } = info;
-
   const auth = useSelector((state) => state.auth);
-
   const user = auth.loading === false
     ? auth.user._id
     : null;
-
   const [abnormality, setAbnormality] = useState("");
   const [countermeasure, setCountermeasure] = useState("");
   const [target, setTarget] = useState("");
@@ -54,13 +46,11 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId, mspecs }) {
     { value: "inprogress", label: "Inprogress" },
     { value: "complete", label: "Complete" },
   ];
-
   const uploadImage = (e) => {
     e.preventDefault();
     const formData = new FormData();
     // formData.append("_id", _id);
     formData.append("beforeImage", selectedFile);
-
     axios
       .post(
         `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/uploadImage`,
@@ -84,7 +74,6 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId, mspecs }) {
         );
       });
   };
-
   const formHandler = (e) => {
     e.preventDefault();
     axios
@@ -101,7 +90,7 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId, mspecs }) {
           processNo,
           spare,
           status,
-          image:12,
+          beforeImage,
           pS,
           m_spec: mspecs
         }
@@ -112,11 +101,9 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId, mspecs }) {
         setShowModal(false);
       })
       .catch((err) => {
-
         toast.error("Please fill Abnormility Details");
       });
   };
-
   return (
     <Modal show={showModal} onHide={handleClose}>
       <Modal.Header closeButton>
@@ -227,7 +214,7 @@ function ModalForm({ showModal, setShowModal, workDetail, itemId, mspecs }) {
             <div className="my-2">
               <input
                 className="form-control"
-                value={image}
+                value={beforeImage}
                 onChange={(e) => setImage(e.target.value)}
                 placeholder="Image Name"
                 disabled

@@ -18,11 +18,12 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
     pic,
     targetDate,
     status,
-    image,
+    beforeImage,
+    afterImage,
     _id,
     pS
   } = item;
-
+console.log(item);
   var workDetail = ""
   if (checkItem == null) {
     workDetail = ""
@@ -38,22 +39,22 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
   const auth = useSelector((state) => state.auth);
   const level = auth.user ? auth.user.level : 0;
   const [beforeImageUrl, setBeforeImageUrl] = useState(null);
-const [afterImageUrl, setAfterImageUrl] = useState(null);
+  const [afterImageUrl, setAfterImageUrl] = useState(null);
 
 useEffect(() => {
-  if (image) {
-    if (image.before instanceof File) {
-      setBeforeImageUrl(URL.createObjectURL(image.before));
-    } else if (typeof image.before === "string") {
-      setBeforeImageUrl(`/abnormalityImage/${image.before}`);
+  if (beforeImage) {
+    if (beforeImage instanceof File) {
+      setBeforeImageUrl(URL.createObjectURL(beforeImage));
+    } else if (typeof beforeImage === "string") {
+      setBeforeImageUrl(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${beforeImage}`);
     } else {
       setBeforeImageUrl(null);
     }
 
-    if (image.after instanceof File) {
-      setAfterImageUrl(URL.createObjectURL(image.after));
-    } else if (typeof image.after === "string") {
-      setAfterImageUrl(`/abnormalityImage/${image.after}`);
+    if (afterImage instanceof File) {
+      setAfterImageUrl(URL.createObjectURL(afterImage));
+    } else if (typeof afterImage === "string") {
+      setAfterImageUrl(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${afterImage}`);
     } else {
       setAfterImageUrl(null);
     }
@@ -67,15 +68,15 @@ useEffect(() => {
     if (beforeImageUrl) URL.revokeObjectURL(beforeImageUrl);
     if (afterImageUrl) URL.revokeObjectURL(afterImageUrl);
   };
-}, [image]);
+}, [beforeImage]);
 
 
   useEffect(() => {
     console.log(item)
   }, [item])
   useEffect(() => {
-    console.log("Image inside AbnormilityDoc:", image);
-  }, [image]);
+    console.log("Image inside AbnormilityDoc:", beforeImage);
+  }, [beforeImage]);
 
   const dispatch = useDispatch();
   const deleteItem = (itemId) => {
@@ -202,7 +203,8 @@ useEffect(() => {
           status={status}
           fromDateSt={fromDateSt}
           toDateSt={toDateSt}
-          image={image}
+          beforeImage={beforeImage}
+          afterImage={afterImage}
         />
       ) : null}
       {showModalRaiseCard ? (
@@ -220,7 +222,8 @@ useEffect(() => {
           pic={pic}
           targetDate={targetDate}
           status={status}
-          image={image}
+          beforeImage={beforeImage}
+          afterImage={afterImage}
           pS={pS}
           abnormalityId={item._id}
         />
