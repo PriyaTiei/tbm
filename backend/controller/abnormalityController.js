@@ -151,82 +151,126 @@ exports.uploadAbnormalityImages = catchAsyncError(async (req, res, next) => {
 
 
 
-exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
+// exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
 
+//   const id = req.params.id;
+
+//   const abnormalityItem = await AbnormalityModel.findById(id);
+
+//   if (!abnormalityItem) {
+
+//     return next(new ErrorHandler("cannot find this Abnormality item", 404));
+
+//   }
+
+//   const {
+
+//     abnormality,
+
+//     countermeasure,
+
+//     targetDate,
+
+//     spare,
+
+//     pic,
+
+//     status,
+
+//     checkItem,
+
+//     user,
+
+//     beforeImage,
+
+//     afterImage,
+
+//     m_spec
+
+//   } = req.body;
+
+
+
+
+//   abnormalityItem.abnormality = abnormality;
+
+//   abnormalityItem.countermeasure = countermeasure;
+
+//   abnormalityItem.spare = spare;
+
+//   abnormalityItem.targetDate = targetDate;
+
+//   abnormalityItem.pic = pic;
+
+//   abnormalityItem.status = status;
+
+//   abnormalityItem.user = user;
+
+//   abnormalityItem.checkItem = checkItem;
+
+//   abnormalityItem.beforeImage = beforeImage;
+
+//   abnormalityItem.afterImage = afterImage;
+
+//   abnormalityItem.m_spec = m_spec;
+
+//   await abnormalityItem.save({ validateBeforeSave: false });
+
+//   return res.status(201).json({ success: true, abnormalityItem });
+
+// });
+
+
+
+
+
+exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
   const id = req.params.id;
 
   const abnormalityItem = await AbnormalityModel.findById(id);
 
   if (!abnormalityItem) {
-
     return next(new ErrorHandler("cannot find this Abnormality item", 404));
-
   }
 
-
-
-
   const {
-
     abnormality,
-
     countermeasure,
-
     targetDate,
-
     spare,
-
     pic,
-
     status,
-
     checkItem,
-
     user,
-
     beforeImage,
-
     afterImage,
-
     m_spec
-
   } = req.body;
 
-
-
-
+  // Update basic fields
   abnormalityItem.abnormality = abnormality;
-
   abnormalityItem.countermeasure = countermeasure;
-
   abnormalityItem.spare = spare;
-
   abnormalityItem.targetDate = targetDate;
-
   abnormalityItem.pic = pic;
-
   abnormalityItem.status = status;
-
   abnormalityItem.user = user;
-
   abnormalityItem.checkItem = checkItem;
-
-  abnormalityItem.beforeImage = beforeImage;
-
-  abnormalityItem.afterImage = afterImage;
-
   abnormalityItem.m_spec = m_spec;
 
-
-
+  // ✅ ONLY update image fields if they are actually provided
+  // This prevents overwriting existing images with null/undefined
+  if (beforeImage !== undefined && beforeImage !== null && beforeImage !== '') {
+    abnormalityItem.beforeImage = beforeImage;
+  }
+  
+  if (afterImage !== undefined && afterImage !== null && afterImage !== '') {
+    abnormalityItem.afterImage = afterImage;
+  }
 
   await abnormalityItem.save({ validateBeforeSave: false });
-
   return res.status(201).json({ success: true, abnormalityItem });
-
 });
-
-
 
 
 exports.deleteAbnormality = catchAsyncError(async (req, res, next) => {
