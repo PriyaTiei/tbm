@@ -310,7 +310,7 @@ function SmileCardAdd() {
             </div>
           </li>
 
-          <li>
+          {/* <li>
             <div className="d-flex">
               <div className="firstCol">
                 {pS === "S" ? "Station / Line" : "OP no."}
@@ -320,12 +320,36 @@ function SmileCardAdd() {
                 <input
                   className="form-control"
                   value={processNoNew}
-                  onChange={(e) => setProcessNoNew(e.target.value)}
+                  onChange={(e) => setProcessNoNew(e.target.value.toUpperCase())}
                   placeholder="Please enter OP No., Example OP10"
                 // disabled
                 />
               </div>
             </div>
+          </li> */}
+
+          <li>
+          <div className="d-flex">
+            <div className="firstCol">
+              {pS === "S" ? "Station / Line" : "OP no."}
+              <span className="text-danger">* </span> :
+            </div>
+            <div className="secondCol">
+              <div className="input-group">
+                <span className="input-group-text">OP</span>
+                <input
+                  className="form-control"
+                  type="text"
+                  value={processNoNew.replace('OP', '')}
+                  onChange={(e) => {
+                    const alphanumericValue = e.target.value.toUpperCase();
+                    setProcessNoNew('OP' + alphanumericValue);
+                  }}
+                  placeholder="10A, 100, etc."
+                />
+              </div>
+            </div>
+          </div>
           </li>
           <li>
             <div className="d-flex">
@@ -427,7 +451,9 @@ function SmileCardAdd() {
             <div className="d-flex">
               <div className="firstCol">
                 {" "}
-                {pS === "S" ? "Time :" : "Total Time in Mins :"}
+                {/* {pS === "S" ? "Time :" : "Total Time in Mins :"} */}
+                Total Time in Mins
+
               </div>
               <div className="secondCol">
                 <input
