@@ -25,6 +25,82 @@ export const checkItemFetchFail = (error) => {
   };
 };
 
+export const getCheckItem = (queryStr, page, entryForQueryStr) => {
+  return async (dispatch) => {
+    dispatch(checkItemFetchRequest());
+
+    try {
+      const url = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/headCheckList?${queryStr}&page=${page}`;
+      const result = await axios.get(url);
+      const checklist = result.data.headCheckList || [];
+
+      console.log("Fetched checklist:", checklist);
+
+      const mergedChecklist = await Promise.all(
+        checklist.map(async (item) => {
+          try {
+            const statusRes = await axios.get(
+              `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/find/${item._id}/entryFor/${entryForQueryStr}`
+            );
+
+            const status = statusRes?.data?.dailyStatus || {};
+
+            const mergedItem = {
+              ...item,
+              dailyStatus: status.result || "Pending",
+              judgementRemarks: status.remarks ?? "-",
+              value: status.value ?? "-",
+              checkedBy: status.checkedBy ?? "-",
+              m_spec: status.m_spec ?? item.m_spec ?? "-",
+              tl: status.tl ?? item.tl ?? "-",
+              gl: status.gl ?? item.gl ?? "-",
+              tlBy: status.tlBy ?? item.tlBy ?? "-",
+              glBy: status.glBy ?? item.glBy ?? "-",
+              tlAt: status.tlAt ?? item.tlAt ?? "-",
+              glAt: status.glAt ?? item.glAt ?? "-",
+              tlComment: status.tlComment ?? item.tlComment ?? "-",
+              glComment: status.glComment ?? item.glComment ?? "-",
+            };
+
+            console.log(`Merged item for ${item._id}:`, mergedItem);
+            return mergedItem;
+
+          } catch (error) {
+            console.warn(`Status fetch failed for item ${item._id}:`, error);
+            return {
+              ...item,
+              dailyStatus: "Pending",
+              judgementRemarks: "-",
+              value: "-",
+              checkedBy: "-",
+              m_spec: item.m_spec ?? "-",
+              tl: item.tl ?? "-",
+              gl: item.gl ?? "-",
+              tlBy: item.tlBy ?? "-",
+              glBy: item.glBy ?? "-",
+              tlAt: item.tlAt ?? "-",
+              glAt: item.glAt ?? "-",
+              tlComment: item.tlComment ?? "-",
+              glComment: item.glComment ?? "-",
+            };
+          }
+        })
+      );
+
+      const updatedResult = { ...result.data, headCheckList: mergedChecklist };
+
+      dispatch(checkItemFetchSuccess(updatedResult));
+      return updatedResult;
+
+    } catch (err) {
+      console.error("Fetch failed:", err);
+      dispatch(checkItemFetchFail(err.message));
+      throw err;
+    }
+  };
+};
+
+
 // export const getCheckItem = (queryStr, page, entryForQueryStr) => {
 //   return (dispatch) => {
 //     dispatch(checkItemFetchRequest());
@@ -170,78 +246,3 @@ export const checkItemFetchFail = (error) => {
 //     }
 //   };
 // };
-
-export const getCheckItem = (queryStr, page, entryForQueryStr) => {
-  return async (dispatch) => {
-    dispatch(checkItemFetchRequest());
-
-    try {
-      const url = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/headCheckList?${queryStr}&page=${page}`;
-      const result = await axios.get(url);
-      const checklist = result.data.headCheckList || [];
-
-      console.log("Fetched checklist:", checklist);
-
-      const mergedChecklist = await Promise.all(
-        checklist.map(async (item) => {
-          try {
-            const statusRes = await axios.get(
-              `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/find/${item._id}/entryFor/${entryForQueryStr}`
-            );
-
-            const status = statusRes?.data?.dailyStatus || {};
-
-            const mergedItem = {
-              ...item,
-              dailyStatus: status.result || "Pending",
-              judgementRemarks: status.remarks ?? "-",
-              value: status.value ?? "-",
-              checkedBy: status.checkedBy ?? "-",
-              m_spec: status.m_spec ?? item.m_spec ?? "-",
-              tl: status.tl ?? item.tl ?? "-",
-              gl: status.gl ?? item.gl ?? "-",
-              tlBy: status.tlBy ?? item.tlBy ?? "-",
-              glBy: status.glBy ?? item.glBy ?? "-",
-              tlAt: status.tlAt ?? item.tlAt ?? "-",
-              glAt: status.glAt ?? item.glAt ?? "-",
-              tlComment: status.tlComment ?? item.tlComment ?? "-",
-              glComment: status.glComment ?? item.glComment ?? "-",
-            };
-
-            console.log(`Merged item for ${item._id}:`, mergedItem);
-            return mergedItem;
-
-          } catch (error) {
-            console.warn(`Status fetch failed for item ${item._id}:`, error);
-            return {
-              ...item,
-              dailyStatus: "Pending",
-              judgementRemarks: "-",
-              value: "-",
-              checkedBy: "-",
-              m_spec: item.m_spec ?? "-",
-              tl: item.tl ?? "-",
-              gl: item.gl ?? "-",
-              tlBy: item.tlBy ?? "-",
-              glBy: item.glBy ?? "-",
-              tlAt: item.tlAt ?? "-",
-              glAt: item.glAt ?? "-",
-              tlComment: item.tlComment ?? "-",
-              glComment: item.glComment ?? "-",
-            };
-          }
-        })
-      );
-
-      const updatedResult = { ...result.data, headCheckList: mergedChecklist };
-
-      dispatch(checkItemFetchSuccess(updatedResult));
-      return updatedResult;
-
-    } catch (err) {
-      console.error("Fetch failed:", err);
-      dispatch(checkItemFetchFail(err.message));
-      throw err;
-    }
-  };
-};
