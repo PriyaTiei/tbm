@@ -397,7 +397,7 @@ function ModalForm(props) {
               />
             </div>
 
-            <div className="mb-3">
+            {/* <div className="mb-3">
               <label className="form-label">Before Image</label>
               <input
                 className="form-control"
@@ -412,7 +412,7 @@ function ModalForm(props) {
               {beforeImage && (
                 <small className="text-success">Selected: {beforeImage.name}</small>
               )}
-            </div>
+            </div> */}
 
             <div className="mb-3">
               <label className="form-label">After Image</label>
