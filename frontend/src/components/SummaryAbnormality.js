@@ -549,11 +549,11 @@ function SummaryAbnormality() {
     // Prepare data for Excel
     const excelData = abnormalityList.map((item, index) => ({
       'S.No': index + 1,
-      'Entry Date': item.entryDate ? new Date(item.entryDate).toLocaleDateString() : '',
+      'Entry Date': item.createdAt ? new Date(item.createdAt).toLocaleDateString() : '',
       'Department': item.pS === 'S' ? 'Production' : item.pS === 'P' ? 'Maintenance' : item.pS || '',
       'Line': item.line || '',
       'Process No': item.processNo || '',
-      'Item': item.item || '',
+      'Item': item.workDetail,
       'Abnormality': item.abnormality || '',
       'Countermeasure': item.countermeasure || '',
       'Spare': item.spare || '',
