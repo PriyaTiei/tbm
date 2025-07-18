@@ -37,7 +37,7 @@ const pendingTaskSchema = new mongoose.Schema(
     entryDates: {
       type: [Date],
       required: true,
-    },
+    }
   },
   {
     timestamps: true,

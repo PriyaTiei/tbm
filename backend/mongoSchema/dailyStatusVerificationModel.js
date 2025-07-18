@@ -16,6 +16,10 @@ const dailyStatusVerificationSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
   entryFor: {
     type: String,
     required: true,

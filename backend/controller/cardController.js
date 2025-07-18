@@ -58,6 +58,7 @@ exports.updateCard = catchAsyncError(async (req, res, next) => {
   card.line = line;
   card.processNo = processNo;
   card.image = image;
+  card.updatedAt = new Date();
 
   await card.save({ validateBeforeSave: false });
   return res.status(201).json({ success: true, card });

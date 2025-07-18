@@ -162,6 +162,7 @@ exports.updateDailyStatus = catchAsyncError(async (req, res, next) => {
   dailyStatus.remarks = remarks;
   dailyStatus.checkedBy = checkedBy;
   dailyStatus.m_spec = m_spec;
+    dailyStatus.updatedAt = new Date();
   await dailyStatus.save({ validateBeforeSave: false });
 
   return res.status(201).json({ success: true, message: "Updated Successfully" });

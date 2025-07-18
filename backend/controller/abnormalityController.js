@@ -257,6 +257,7 @@ exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
   abnormalityItem.user = user;
   abnormalityItem.checkItem = checkItem;
   abnormalityItem.m_spec = m_spec;
+  abnormalityItem.updatedAt = new Date();
 
   // ✅ ONLY update image fields if they are actually provided
   // This prevents overwriting existing images with null/undefined
