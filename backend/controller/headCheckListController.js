@@ -1146,7 +1146,8 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
     group,
     m_spec,
     tlVerify,
-    glVerify
+    glVerify,
+    
   } = req.body;
 
   console.log("group is: ", group)
@@ -1208,7 +1209,8 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
       group,
       m_spec: jsonMSpec,
       tlVerify,
-      glVerify
+      glVerify,
+      updatedAt: new Date() 
 
       // images: [req.file.filename],
     },
