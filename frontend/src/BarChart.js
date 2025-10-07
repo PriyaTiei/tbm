@@ -294,6 +294,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
             data.datasets[2].data[index] =  data.datasets[2].data[index] + newValue;
         };
 
+        // added data.datasets[1].data[index] to cumulate the sum
         const modifyLabelPending = (index, newLabel) => {
             data.datasets[1].data[index] =  data.datasets[1].data[index] + newLabel;
         };
