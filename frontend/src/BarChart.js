@@ -300,7 +300,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
         };
 
         const modifypends = (index, newLabel) => {
-            pends[index] = newLabel;
+            pends[index] = pends[index]  + newLabel;
         };
         const modifycpends = () => {
             for (let i = 0; i < cpends.length; i++) {
