@@ -288,14 +288,14 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
         };
 
         const modifyDataAtIndex = (index, newValue) => {
-            data.datasets[0].data[index] = newValue;
+            data.datasets[0].data[index] = data.datasets[0].data[index] + newValue;
         };
         const modifyDataHolidayAtIndex = (index, newValue) => {
-            data.datasets[2].data[index] = newValue;
+            data.datasets[2].data[index] =  data.datasets[2].data[index] + newValue;
         };
 
         const modifyLabelPending = (index, newLabel) => {
-            data.datasets[1].data[index] = newLabel;
+            data.datasets[1].data[index] =  data.datasets[1].data[index] + newLabel;
         };
 
         const modifypends = (index, newLabel) => {
