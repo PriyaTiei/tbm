@@ -7,23 +7,23 @@
 // const getApiBaseUrl = () => {
 //   const host = process.env.REACT_APP_HOST || 'localhost';
 //   const port = process.env.REACT_APP_PORT || '5051';
-  
+
 //   // Check if we're in development (localhost)
 //   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
 //     return `http://${host}:${port}`;
 //   }
-  
+
 //   // For production, use the same host as the current page
 //   // This assumes your API is served from the same domain
 //   return `${window.location.protocol}//${window.location.hostname}:${port}`;
-  
+
 //   // Alternative options:
 //   // 1. Use environment variable if available
 //   // return process.env.REACT_APP_API_BASE_URL || `http://${host}:${port}`;
-  
+
 //   // 2. Use a specific production URL
 //   // return 'http://your-production-server:5051';
-  
+
 //   // 3. Use relative URLs (if API is on same server)
 //   // return '';
 // };
@@ -58,7 +58,7 @@
 //       console.log("Response type:", typeof response.data);
 //       console.log("Is response.data an array?", Array.isArray(response.data));
 //       console.log("Response keys:", response.data ? Object.keys(response.data) : 'null response');
-      
+
 //       // Handle both response formats - return the checklist array
 //       let result;
 //       if (response.data && response.data.headCheckList) {
@@ -76,7 +76,7 @@
 //         result = [];
 //         console.log("No valid data found, returning empty array");
 //       }
-      
+
 //       return result;
 //     } catch (error) {
 //       console.error("API Error Details:", {
@@ -93,10 +93,10 @@
 //   // Helper function to check if a processNo matches the current filter
 //   const isProcessNoFiltered = (processNo) => {
 //     if (!processNoFilter.trim()) return true;
-    
+
 //     const filterValue = processNoFilter.toLowerCase().replace(/\s+/g, '');
 //     const processValue = processNo.toLowerCase().replace(/\s+/g, '');
-    
+
 //     if (exactMatch) {
 //       // Exact match - must be exactly the same
 //       return processValue === filterValue;
@@ -120,7 +120,7 @@
 //         if (storageLine.startsWith(" ")) {
 //           storageLine = storageLine.substring(1);
 //         }
-        
+
 //         console.log("Processing line:", item.line, "-> Storage key:", storageLine);
 
 //         results[storageLine] = results[storageLine] || {};
@@ -138,15 +138,15 @@
 //               } else {
 //                 keyProcessNo = normalizedProcessNo; // Store without space for other lines
 //               }
-              
+
 //               const key = `${keyProcessNo}-${pageNum}`;
 //               console.log(`Creating storage key for ${storageLine}: "${key}"`);
 
 //               let queryParams;
-              
+
 //               // Use consistent parameter format for all lines
 //               const date = item.date || new Date().toISOString().split('T')[0]; // Fallback to today's date if undefined
-              
+
 //               if (storageLine === "Main 2-1" || storageLine === "Main 1-2") {
 //                 console.log("Using parameters for Main line:", storageLine);
 //                 queryParams = {
@@ -166,7 +166,7 @@
 //                   page: pageNum.toString()
 //                 };
 //               }
-              
+
 //               console.log(`Query params for ${storageLine}:`, queryParams);
 
 //               const checklist = await fetchCheckList(queryParams);
@@ -209,7 +209,7 @@
 //     const worksheet = workbook.addWorksheet("Machine Data");
 
 //     worksheet.addRow([
-//       "Line", "Process No", "Page", "Card No.", "Model", 
+//       "Line", "Process No", "Page", "Card No.", "Model",
 //       "Day", "Line/Group", "Machine No.", "Station/Process", "Work Detail",
 //       "Cycle", "Work Time", "Work Hours", "Method", "Criterion"
 //     ]);
@@ -230,7 +230,7 @@
 //             } else {
 //               keyProcessNo = normalizedProcessNo; // No space for other lines
 //             }
-            
+
 //             const key = `${keyProcessNo}-${pageNum}`;
 //             console.log(`Excel export - looking for key: "${key}" in line: "${item.line}"`);
 //             const details = detailedItems?.[item.line]?.[key] || [];
@@ -342,7 +342,7 @@
 //                 if (storageLine.startsWith(" ")) {
 //                   storageLine = storageLine.substring(1);
 //                 }
-                
+
 //                 return (item.processNos || [])
 //                   .filter((processNo) => isProcessNoFiltered(processNo))
 //                   .flatMap((processNo) => {
@@ -357,7 +357,7 @@
 //                       } else {
 //                         keyProcessNo = normalizedProcessNo; // No space for other lines
 //                       }
-                      
+
 //                       const key = `${keyProcessNo}-${pageNum}`;
 //                       const details = detailedItems?.[storageLine]?.[key] || [];
 //                       console.log(`Table render - Original Line: "${item.line}", Storage Line: "${storageLine}", ProcessNo: "${processNo}", Key: "${key}"`);
@@ -410,50 +410,37 @@
 
 // export default MachineListTable;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+
 import axios from "axios";
 
 // API Configuration - automatically detects environment
 const getApiBaseUrl = () => {
-  const host = process.env.REACT_APP_HOST || 'localhost';
-  const port = process.env.REACT_APP_PORT || '5051';
-  
+  const host = process.env.REACT_APP_HOST || "localhost";
+  const port = process.env.REACT_APP_PORT || "5051";
+
   // Check if we're in development (localhost)
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+  if (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+  ) {
     return `http://${host}:${port}`;
   }
-  
+
   // For production, use the same host as the current page
   // This assumes your API is served from the same domain
   return `${window.location.protocol}//${window.location.hostname}:${port}`;
-  
+
   // Alternative options:
   // 1. Use environment variable if available
   // return process.env.REACT_APP_API_BASE_URL || `http://${host}:${port}`;
-  
+
   // 2. Use a specific production URL
   // return 'http://your-production-server:5051';
-  
+
   // 3. Use relative URLs (if API is on same server)
   // return '';
 };
@@ -465,7 +452,7 @@ function MachineListTable({ machineData, dailyStatusActions }) {
   const [loading, setLoading] = useState(false);
   const [processNoFilter, setProcessNoFilter] = useState("");
   const [exactMatch, setExactMatch] = useState(false);
-
+  const filters = useSelector((state) => state?.filters);
   // Unified function for fetching checklist data
   const fetchCheckList = async (queryParams) => {
     try {
@@ -481,14 +468,17 @@ function MachineListTable({ machineData, dailyStatusActions }) {
 
       const response = await axios.get(apiUrl, {
         params: queryParams,
-        timeout: 10000
+        timeout: 10000,
       });
 
       console.log("Full API Response:", response.data);
       console.log("Response type:", typeof response.data);
       console.log("Is response.data an array?", Array.isArray(response.data));
-      console.log("Response keys:", response.data ? Object.keys(response.data) : 'null response');
-      
+      console.log(
+        "Response keys:",
+        response.data ? Object.keys(response.data) : "null response"
+      );
+
       // Handle both response formats - return the checklist array
       let result;
       if (response.data && response.data.headCheckList) {
@@ -500,13 +490,16 @@ function MachineListTable({ machineData, dailyStatusActions }) {
       } else if (response.data) {
         // Maybe the data is nested differently, let's check
         console.log("Unknown response structure, trying to find array data...");
-        console.log("Full response.data:", JSON.stringify(response.data, null, 2));
+        console.log(
+          "Full response.data:",
+          JSON.stringify(response.data, null, 2)
+        );
         result = [];
       } else {
         result = [];
         console.log("No valid data found, returning empty array");
       }
-      
+
       return result;
     } catch (error) {
       console.error("API Error Details:", {
@@ -514,7 +507,7 @@ function MachineListTable({ machineData, dailyStatusActions }) {
         response: error.response?.data,
         status: error.response?.status,
         config: error.config,
-        url: error.config?.url
+        url: error.config?.url,
       });
       return [];
     }
@@ -523,10 +516,10 @@ function MachineListTable({ machineData, dailyStatusActions }) {
   // Helper function to check if a processNo matches the current filter
   const isProcessNoFiltered = (processNo) => {
     if (!processNoFilter.trim()) return true;
-    
-    const filterValue = processNoFilter.toLowerCase().replace(/\s+/g, '');
-    const processValue = processNo.toLowerCase().replace(/\s+/g, '');
-    
+
+    const filterValue = processNoFilter.toLowerCase().replace(/\s+/g, "");
+    const processValue = processNo.toLowerCase().replace(/\s+/g, "");
+
     if (exactMatch) {
       // Exact match - must be exactly the same
       return processValue === filterValue;
@@ -550,8 +543,13 @@ function MachineListTable({ machineData, dailyStatusActions }) {
         if (storageLine.startsWith(" ")) {
           storageLine = storageLine.substring(1);
         }
-        
-        console.log("Processing line:", item.line, "-> Storage key:", storageLine);
+
+        console.log(
+          "Processing line:",
+          item.line,
+          "-> Storage key:",
+          storageLine
+        );
 
         results[storageLine] = results[storageLine] || {};
 
@@ -568,51 +566,81 @@ function MachineListTable({ machineData, dailyStatusActions }) {
               } else {
                 keyProcessNo = normalizedProcessNo; // Store without space for other lines
               }
-              
+
               const key = `${keyProcessNo}-${pageNum}`;
               console.log(`Creating storage key for ${storageLine}: "${key}"`);
 
               let queryParams;
-              
+
               // Use consistent parameter format for all lines
-              const date = item.date || new Date().toISOString().split('T')[0]; // Fallback to today's date if undefined
-              
+              const date = item.date || new Date().toISOString().split("T")[0]; // Fallback to today's date if undefined
+
               if (storageLine === "Main 2-1" || storageLine === "Main 1-2") {
                 console.log("Using parameters for Main line:", storageLine);
                 queryParams = {
                   date: date,
-                  shift: 'S',
-                  line: ` ${storageLine}`,  // Keep space prefix if needed for Main lines
-                  processNo: ` ${normalizedProcessNo}`,  // Keep space prefix if needed for Main lines
-                  page: pageNum.toString()
+                  d: filters.d,
+                  w: filters.w,
+                  m: filters.m,
+                  y: filters.y,
+                  pS: filters.pS,
+                  shift: "S",
+                  line: ` ${storageLine}`, // Keep space prefix if needed for Main lines
+                  processNo: ` ${normalizedProcessNo}`, // Keep space prefix if needed for Main lines
+                  page: pageNum.toString(),
                 };
               } else {
                 console.log("Using standard parameters for line:", storageLine);
                 queryParams = {
                   date: date,
-                  shift: 'S',
+                  d: filters.d,
+                  w: filters.w,
+                  m: filters.m,
+                  y: filters.y,
+                  pS: filters.pS,
+                  shift: "S",
                   line: storageLine,
                   processNo: normalizedProcessNo,
-                  page: pageNum.toString()
+                  page: pageNum.toString(),
                 };
               }
-              
+
               console.log(`Query params for ${storageLine}:`, queryParams);
 
               const checklist = await fetchCheckList(queryParams);
-              console.log(`Raw API response for ${storageLine} - ${key}:`, checklist);
-              console.log(`Is array? ${Array.isArray(checklist)}, Length: ${checklist?.length}`);
+              console.log(
+                `Raw API response for ${storageLine} - ${key}:`,
+                checklist
+              );
+              console.log(
+                `Is array? ${Array.isArray(checklist)}, Length: ${
+                  checklist?.length
+                }`
+              );
 
               if (checklist && checklist.length > 0) {
                 results[storageLine][key] = checklist;
-                console.log(`✅ Successfully stored data for ${storageLine} - ${key}:`, checklist.length, "items");
+                console.log(
+                  `✅ Successfully stored data for ${storageLine} - ${key}:`,
+                  checklist.length,
+                  "items"
+                );
                 console.log(`First item sample:`, checklist[0]);
               } else {
-                console.log(`❌ No data received for ${storageLine} - ${key}, checklist:`, checklist);
+                console.log(
+                  `❌ No data received for ${storageLine} - ${key}, checklist:`,
+                  checklist
+                );
                 console.log(`Query params used:`, queryParams);
               }
             } catch (error) {
-              console.error("Failed to fetch detail for", storageLine, processNo, pageNum, error);
+              console.error(
+                "Failed to fetch detail for",
+                storageLine,
+                processNo,
+                pageNum,
+                error
+              );
             }
           }
         }
@@ -620,13 +648,21 @@ function MachineListTable({ machineData, dailyStatusActions }) {
 
       setDetailedItems(results);
       console.log("📊 Final results summary:");
-      Object.keys(results).forEach(line => {
+      Object.keys(results).forEach((line) => {
         const lineData = results[line];
         const totalItems = Object.keys(lineData).reduce((sum, key) => {
           return sum + (lineData[key]?.length || 0);
         }, 0);
-        console.log(`  ${line}: ${Object.keys(lineData).length} keys, ${totalItems} total items`);
-        console.log(`    Keys: [${Object.keys(lineData).map(k => `"${k}"`).join(', ')}]`);
+        console.log(
+          `  ${line}: ${
+            Object.keys(lineData).length
+          } keys, ${totalItems} total items`
+        );
+        console.log(
+          `    Keys: [${Object.keys(lineData)
+            .map((k) => `"${k}"`)
+            .join(", ")}]`
+        );
       });
       setLoading(false);
     };
@@ -639,9 +675,22 @@ function MachineListTable({ machineData, dailyStatusActions }) {
     const worksheet = workbook.addWorksheet("Machine Data");
 
     worksheet.addRow([
-      "Line", "Process No", "Page", "Card No.", "Model", 
-      "Day", "Week", "Line/Group", "Machine No.", "Station/Process", "Work Detail",
-      "Cycle", "Work Time", "Work Hours", "Method", "Criterion"
+      "Line",
+      "Process No",
+      "Page",
+      "Card No.",
+      "Model",
+      "Day",
+      "Week",
+      "Line/Group",
+      "Machine No.",
+      "Station/Process",
+      "Work Detail",
+      "Cycle",
+      "Work Time",
+      "Work Hours",
+      "Method",
+      "Criterion",
     ]);
 
     // Apply the same filtering logic as the table display
@@ -660,26 +709,51 @@ function MachineListTable({ machineData, dailyStatusActions }) {
             } else {
               keyProcessNo = normalizedProcessNo; // No space for other lines
             }
-            
+
             const key = `${keyProcessNo}-${pageNum}`;
-            console.log(`Excel export - looking for key: "${key}" in line: "${item.line}"`);
+            console.log(
+              `Excel export - looking for key: "${key}" in line: "${item.line}"`
+            );
             const details = detailedItems?.[item.line]?.[key] || [];
 
             if (details.length === 0) {
               worksheet.addRow([
-                item.line, processNo, pageNum,
-                "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-"
+                item.line,
+                processNo,
+                pageNum,
+                "-",
+                "-",
+                "-",
+                "-",
+                "-",
+                "-",
+                "-",
+                "-",
+                "-",
+                "-",
+                "-",
+                "-",
+                "-",
               ]);
             } else {
               details.forEach((detail) => {
                 worksheet.addRow([
-                  item.line, processNo, pageNum,
-                  detail?.cardNo ?? "-", detail?.model ?? "-", 
+                  item.line,
+                  processNo,
+                  pageNum,
+                  detail?.cardNo ?? "-",
+                  detail?.model ?? "-",
                   detail?.d?.[0] !== 9999 ? detail.d[0] : "-",
                   detail?.w?.[0] !== 9999 ? detail.w[0] : "-",
-                  detail?.line ?? "-", detail?.model ?? "-", detail?.processNo ?? "-",
-                  detail?.workDetail ?? "-", detail?.cycle ?? "-", detail?.workTime ?? "-",
-                  detail?.wHr ?? "-", detail?.methodWssNo ?? "-", detail?.criterion ?? "-"
+                  detail?.line ?? "-",
+                  detail?.model ?? "-",
+                  detail?.processNo ?? "-",
+                  detail?.workDetail ?? "-",
+                  detail?.cycle ?? "-",
+                  detail?.workTime ?? "-",
+                  detail?.wHr ?? "-",
+                  detail?.methodWssNo ?? "-",
+                  detail?.criterion ?? "-",
                 ]);
               });
             }
@@ -699,7 +773,10 @@ function MachineListTable({ machineData, dailyStatusActions }) {
   if (loading) {
     return (
       <div className="p-3">
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "200px" }}>
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ minHeight: "200px" }}
+        >
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
@@ -745,10 +822,23 @@ function MachineListTable({ machineData, dailyStatusActions }) {
         </div>
       </div>
 
-      <div className="container-fluid border rounded p-3" style={{ backgroundColor: "#f8f9fa" }}>
-        <div className="table-responsive" style={{ maxHeight: "calc(100vh - 300px)", overflowY: "auto", overflowX: "auto" }}>
+      <div
+        className="container-fluid border rounded p-3"
+        style={{ backgroundColor: "#f8f9fa" }}
+      >
+        <div
+          className="table-responsive"
+          style={{
+            maxHeight: "calc(100vh - 300px)",
+            overflowY: "auto",
+            overflowX: "auto",
+          }}
+        >
           <table className="table table-bordered table-striped table-hover">
-            <thead className="table-primary" style={{ position: "sticky", top: 0, backgroundColor: "#cfe2ff" }}>
+            <thead
+              className="table-primary"
+              style={{ position: "sticky", top: 0, backgroundColor: "#cfe2ff" }}
+            >
               <tr>
                 <th>Line</th>
                 <th>Process No</th>
@@ -775,7 +865,7 @@ function MachineListTable({ machineData, dailyStatusActions }) {
                 if (storageLine.startsWith(" ")) {
                   storageLine = storageLine.substring(1);
                 }
-                
+
                 return (item.processNos || [])
                   .filter((processNo) => isProcessNoFiltered(processNo))
                   .flatMap((processNo) => {
@@ -785,17 +875,29 @@ function MachineListTable({ machineData, dailyStatusActions }) {
                       // Use consistent key generation - same logic as storage
                       const normalizedProcessNo = processNo.trim();
                       let keyProcessNo;
-                      if (storageLine === "Main 2-1" || storageLine === "Main 1-2") {
+                      if (
+                        storageLine === "Main 2-1" ||
+                        storageLine === "Main 1-2"
+                      ) {
                         keyProcessNo = ` ${normalizedProcessNo}`; // Use space prefix for Main lines
                       } else {
                         keyProcessNo = normalizedProcessNo; // No space for other lines
                       }
-                      
+
                       const key = `${keyProcessNo}-${pageNum}`;
                       const details = detailedItems?.[storageLine]?.[key] || [];
-                      console.log(`Table render - Original Line: "${item.line}", Storage Line: "${storageLine}", ProcessNo: "${processNo}", Key: "${key}"`);
-                      console.log(`Available keys for ${storageLine}:`, Object.keys(detailedItems?.[storageLine] || {}));
-                      console.log(`Details found for key "${key}":`, details.length, "items");
+                      console.log(
+                        `Table render - Original Line: "${item.line}", Storage Line: "${storageLine}", ProcessNo: "${processNo}", Key: "${key}"`
+                      );
+                      console.log(
+                        `Available keys for ${storageLine}:`,
+                        Object.keys(detailedItems?.[storageLine] || {})
+                      );
+                      console.log(
+                        `Details found for key "${key}":`,
+                        details.length,
+                        "items"
+                      );
 
                       if (details.length === 0) {
                         rows.push(
@@ -803,7 +905,9 @@ function MachineListTable({ machineData, dailyStatusActions }) {
                             <td>{item.line}</td>
                             <td>{processNo}</td>
                             <td>{pageNum}</td>
-                            <td colSpan={13} className="text-muted">No inspection data available</td>
+                            <td colSpan={13} className="text-muted">
+                              No inspection data available
+                            </td>
                           </tr>
                         );
                       } else {
@@ -815,8 +919,16 @@ function MachineListTable({ machineData, dailyStatusActions }) {
                               <td>{pageNum}</td>
                               <td>{detail?.cardNo ?? "-"}</td>
                               <td>{detail?.model ?? "-"}</td>
-                              <td>{detail?.d?.[0] !== 9999 ? detail.d[0] : "All Days"}</td>
-                              <td>{detail?.w?.[0] !== 9999 ? detail.w[0] : "All Weeks"}</td>
+                              <td>
+                                {detail?.d?.[0] !== 9999
+                                  ? detail.d[0]
+                                  : "All Days"}
+                              </td>
+                              <td>
+                                {detail?.w?.[0] !== 9999
+                                  ? detail.w[0]
+                                  : "All Weeks"}
+                              </td>
                               <td>{detail?.line ?? "-"}</td>
                               <td>{detail?.model ?? "-"}</td>
                               <td>{detail?.processNo ?? "-"}</td>
