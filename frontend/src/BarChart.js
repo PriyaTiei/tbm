@@ -14,6 +14,13 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchReportData } from "./redux/reportChart/reportChartActions";
 import DatePicker from "react-date-picker";
+import Select from "react-select";
+import {
+
+  filterLine,
+
+} from "./redux/filter/filterActions";
+
 
 ChartJS.register(
     CategoryScale,
@@ -24,6 +31,7 @@ ChartJS.register(
     Legend,
     ChartDataLabels
 );
+
 
 const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
     const [firstMondayCurrent, setFirstMondayCurrent] = useState(null);
@@ -45,7 +53,22 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
     const [cpendings, setCPending] = useState([])
     const [monthYear, setMonthYear] = useState("");
     const [monthYearS, setMonthYearS] = useState("");
+    const [selectLineRef, setSelectLineRef] = useState("test");
 
+    var lineOptions = [{ value: null, label: "All Lines" }];
+    var lineOptions2 = [];
+    const { machineData } = useSelector((state) => state.machines);
+    if (machineData.machineData != undefined) {
+    lineOptions2 = machineData.machineData.map((element) => {
+        return { value: element.line, label: element.line };
+    });
+    lineOptions = [...lineOptions, ...lineOptions2];
+    }
+
+    const selectLineHandler = (e) => {
+        dispatch(filterLine(e.value));
+        setSelectLineRef(e.value);
+      };
 
     const handleMonthYearChange = (e) => {
         // Define the input date
@@ -112,7 +135,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
         const daysInCurrentMonth = daysInMonth(monthNumbers, years);
         setDaysInMonth(daysInCurrentMonth);
 
-    }, [chkDate, showModal, monthYear]);
+    }, [chkDate, showModal, monthYear, selectLineRef]);
 
 
     useEffect(() => {
@@ -428,6 +451,15 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                         onChange={handleMonthYearChange}
                     />
                 </div>
+                 <Select
+       
+          options={lineOptions}
+          onChange={selectLineHandler}
+          className="mx-4 secondary"
+          defaultValue={lineOptions[0]}
+          isSearchable={false}
+        />
+       
             </Modal.Header>
 
 

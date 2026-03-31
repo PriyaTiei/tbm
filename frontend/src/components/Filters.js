@@ -296,7 +296,7 @@ function Filters() {
           onChange={selectLineHandler}
           className="mx-1 secondary"
           defaultValue={lineOptions[0]}
-          isSearchable={false}
+          isSearchable={true}
         />
 
         <Select
