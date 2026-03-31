@@ -36,6 +36,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
     const dispatch = useDispatch()
     const { reportChartdata } = useSelector(state => state?.report)
     const { pS } = useSelector(state => state?.filters)
+    const {line} = useSelector(state => state?.filters)
     const [chartData, setChartData] = useState([])
     const [datas, setDatas] = useState([])
     const [optionss, setOptionss] = useState([])
@@ -74,7 +75,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
 
         const years = date.getFullYear();
         setYear(years);
-        dispatch(fetchReportData({ year: years, month: monthNumbers + 1, pS: pS }))
+        dispatch(fetchReportData({ year: years, month: monthNumbers + 1, pS: pS , line: line}))
         function getFirstMonday(year, month) {
             let date = new Date(year, month, 1);
             while (date.getDay() !== 1) {

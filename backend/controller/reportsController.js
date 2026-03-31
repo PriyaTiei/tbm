@@ -662,21 +662,6 @@
 //   return res.status(200).json({ success: true, dailyItemsWithGlTlVerify });
 // });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const catchAsyncError = require("../middleware/catchAsyncError");
 const HeadModel = require("../mongoSchema/chekItemModel");
 const DailyStatus = require("../mongoSchema/dailyStatusModel");
@@ -696,7 +681,7 @@ async function getStartDate(month, year) {
   }
   do {
     tDate.setUTCDate(tDate.getUTCDate() + 1);
-  } while (tDate.getUTCDay() != 1)
+  } while (tDate.getUTCDay() != 1);
   return tDate;
 }
 
@@ -710,7 +695,7 @@ async function getEndDate(date) {
 
   while (eDate.getUTCDay() != 0) {
     eDate.setUTCDate(eDate.getUTCDate() + 1);
-    console.log("getUTCDay", eDate.getUTCDay(), "eDate", eDate)
+    console.log("getUTCDay", eDate.getUTCDay(), "eDate", eDate);
   }
   return eDate;
 }
@@ -721,157 +706,191 @@ async function fillHolidays(report) {
   let holidays = await HolidayCalendarModel.find({
     date: {
       $gte: report.startDate,
-      $lte: ed
-    }
+      $lte: ed,
+    },
   });
 
   holidays.forEach((holiday) => {
-    report.data.push({ entryFor: holiday.date.toISOString().split('T')[0], holiday: true });
+    report.data.push({
+      entryFor: holiday.date.toISOString().split("T")[0],
+      holiday: true,
+    });
   });
 
   return report;
 }
 
-async function getItemsOKCountByLine(report, pS) {
-  const dailyStatus = await DailyStatus.aggregate([
+async function getItemsOKCountByLine(report, pS, line) {
+  const pipeline = [
     {
       $addFields: {
-        dateEntryFor: { $dateFromString: { dateString: "$entryFor" } }
-      }
+        dateEntryFor: { $dateFromString: { dateString: "$entryFor" } },
+      },
     },
     {
       $match: {
         dateEntryFor: { $gte: report.startDate, $lte: report.endDate },
-        result: { $eq: "OK" }, 
-        pS: pS
-      }
+        result: { $eq: "OK" },
+        pS: pS,
+      },
     },
     {
       $lookup: {
         from: "checkitems",
         localField: "checkItem",
         foreignField: "_id",
-        as: "checkItemData"
-      }
+        as: "checkItemData",
+      },
     },
     {
-      $unwind: "$checkItemData"
+      $unwind: "$checkItemData",
     },
-    {
-      $group: {
-        _id: { 
-          entryFor: '$entryFor',
-          line: '$checkItemData.line'
-        },
-        count: { $sum: 1 }
-      }
-    }
-  ]);
+  ];
+
+  if (line) {
+    pipeline.push({
+      $match: {
+        "checkItemData.line": line,
+      },
+    });
+  }
+
+  pipeline.push({
+    $group: {
+      _id: {
+        entryFor: "$entryFor",
+        line: "$checkItemData.line",
+      },
+      count: { $sum: 1 },
+    },
+  });
+
+  const dailyStatus = await DailyStatus.aggregate(pipeline);
 
   dailyStatus.forEach((task) => {
     let date = new Date(task._id.entryFor);
-    date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    const dateStr = date.toISOString().split('T')[0];
-    report.data.push({ 
-      entryFor: dateStr, 
+    date = new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+    );
+    const dateStr = date.toISOString().split("T")[0];
+    report.data.push({
+      entryFor: dateStr,
       line: task._id.line,
-      okCount: task.count 
+      okCount: task.count,
     });
   });
 }
 
-async function getItemsNGCountByLine(report, pS) {
-  const dailyStatus = await DailyStatus.aggregate([
+async function getItemsNGCountByLine(report, pS, line) {
+  const pipeline = [
     {
       $addFields: {
-        dateEntryFor: { $dateFromString: { dateString: "$entryFor" } }
-      }
+        dateEntryFor: { $dateFromString: { dateString: "$entryFor" } },
+      },
     },
     {
       $match: {
         dateEntryFor: { $gte: report.startDate, $lte: report.endDate },
-        result: { $eq: "NG" }, 
-        pS: pS
-      }
+        result: { $eq: "NG" },
+        pS: pS,
+      },
     },
     {
       $lookup: {
         from: "checkitems",
         localField: "checkItem",
         foreignField: "_id",
-        as: "checkItemData"
-      }
+        as: "checkItemData",
+      },
     },
     {
-      $unwind: "$checkItemData"
+      $unwind: "$checkItemData",
     },
-    {
-      $group: {
-        _id: { 
-          entryFor: '$entryFor',
-          line: '$checkItemData.line'
-        },
-        count: { $sum: 1 }
-      }
-    }
-  ]);
+  ];
+
+  pipeline.push({
+    $match: {
+      "checkItemData.line": line,
+    },
+  });
+  pipeline.push({
+    $group: {
+      _id: {
+        entryFor: "$entryFor",
+        line: "$checkItemData.line",
+      },
+      count: { $sum: 1 },
+    },
+  });
+
+  const dailyStatus = await DailyStatus.aggregate(pipeline);
 
   dailyStatus.forEach((task) => {
     let date = new Date(task._id.entryFor);
-    date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    const dateStr = date.toISOString().split('T')[0];
-    report.data.push({ 
-      entryFor: dateStr, 
+    date = new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+    );
+    const dateStr = date.toISOString().split("T")[0];
+    report.data.push({
+      entryFor: dateStr,
       line: task._id.line,
-      ngCount: task.count 
+      ngCount: task.count,
     });
   });
 }
 
-async function getItemsPendingCountByLine(report) {
-  const pendingTasks = await PendingTask.aggregate([
+async function getItemsPendingCountByLine(report, line) {
+  const pipeline = [
     {
       $match: {
         updatedAt: { $gte: report.startDate, $lte: report.endDate },
-        result: { $eq: "PENDING" }
-      }
+        result: { $eq: "PENDING" },
+      },
     },
     {
       $lookup: {
         from: "checkitems",
         localField: "checkItem",
         foreignField: "_id",
-        as: "checkItemData"
-      }
+        as: "checkItemData",
+      },
     },
     {
-      $unwind: "$checkItemData"
+      $unwind: "$checkItemData",
     },
-    {
-      $group: {
-        _id: { 
-          date: { $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" } },
-          line: '$checkItemData.line'
-        },
-        count: { $sum: 1 }
-      }
-    }
-  ]);
+  ];
+  pipeline.push({
+    $match: {
+      "checkItemData.line": line,
+    },
+  });
+  pipeline.push({
+    $group: {
+      _id: {
+        date: { $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" } },
+        line: "$checkItemData.line",
+      },
+      count: { $sum: 1 },
+    },
+  });
+  const pendingTasks = await PendingTask.aggregate(pipeline);
 
   pendingTasks.forEach((task) => {
     let date = new Date(task._id.date);
-    date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    const dateStr = date.toISOString().split('T')[0];
-    report.data.push({ 
-      entryFor: dateStr, 
+    date = new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+    );
+    const dateStr = date.toISOString().split("T")[0];
+    report.data.push({
+      entryFor: dateStr,
       line: task._id.line,
-      pendingCount: task.count 
+      pendingCount: task.count,
     });
   });
 }
 
 function findAndSetDataByLine(dataArray, strDate, line) {
-  let tObj = dataArray.find(o => o.entryFor == strDate && o.line == line);
+  let tObj = dataArray.find((o) => o.entryFor == strDate && o.line == line);
   if (tObj) {
     return tObj;
   } else {
@@ -888,12 +907,14 @@ async function refineDataByLine(report) {
   let dataArray = [];
 
   // Get all unique lines from the data
-  const allLines = [...new Set(report.data.map(item => item.line).filter(line => line))];
+  const allLines = [
+    ...new Set(report.data.map((item) => item.line).filter((line) => line)),
+  ];
 
   // Fill holidays for each line
-  const holidays = report.data.filter(o => o.holiday == true);
+  const holidays = report.data.filter((o) => o.holiday == true);
   holidays.forEach((holiday) => {
-    allLines.forEach(line => {
+    allLines.forEach((line) => {
       let hObj = {};
       hObj.holiday = holiday.holiday;
       hObj.entryFor = holiday.entryFor;
@@ -908,15 +929,20 @@ async function refineDataByLine(report) {
   });
 
   // Fill Other Data
-  for (var iDate = new Date(report.startDate); iDate <= report.endDate; iDate.setUTCDate(iDate.getUTCDate() + 1)) {
-    strDate = iDate.toISOString().split('T')[0];
-    const tStrDate = strDate.replaceAll('-0', '-');
+  for (
+    var iDate = new Date(report.startDate);
+    iDate <= report.endDate;
+    iDate.setUTCDate(iDate.getUTCDate() + 1)
+  ) {
+    strDate = iDate.toISOString().split("T")[0];
+    const tStrDate = strDate.replaceAll("-0", "-");
 
-    allLines.forEach(line => {
-      const obj = report.data.filter(o => 
-        o.entryFor && 
-        (o.entryFor == strDate || o.entryFor == tStrDate) && 
-        o.line == line
+    allLines.forEach((line) => {
+      const obj = report.data.filter(
+        (o) =>
+          o.entryFor &&
+          (o.entryFor == strDate || o.entryFor == tStrDate) &&
+          o.line == line,
       );
 
       if (obj && obj.length > 0) {
@@ -924,11 +950,13 @@ async function refineDataByLine(report) {
           let tObj = findAndSetDataByLine(dataArray, strDate, line);
           tObj.entryFor = strDate;
           tObj.line = line;
-          if (o.hasOwnProperty('okCount')) tObj.okCount = o.okCount;
-          if (o.hasOwnProperty('ngCount')) tObj.ngCount = o.ngCount;
-          if (o.hasOwnProperty('pendingCount')) tObj.pendingCount = o.pendingCount;
+          if (o.hasOwnProperty("okCount")) tObj.okCount = o.okCount;
+          if (o.hasOwnProperty("ngCount")) tObj.ngCount = o.ngCount;
+          if (o.hasOwnProperty("pendingCount"))
+            tObj.pendingCount = o.pendingCount;
           if (o.hasOwnProperty("holiday")) tObj.holiday = o.holiday;
-          if (o.hasOwnProperty("totalItemCount")) tObj.totalItemCount = o.totalItemCount;
+          if (o.hasOwnProperty("totalItemCount"))
+            tObj.totalItemCount = o.totalItemCount;
         });
       } else {
         let tObj = findAndSetDataByLine(dataArray, strDate, line);
@@ -953,12 +981,12 @@ async function refineDataByLine(report) {
   // Calculate cumulative pending by line
   const lineCumPending = {};
   dataArray.forEach((o) => {
-    if (!o.hasOwnProperty('okCount')) o.okCount = 0;
-    if (!o.hasOwnProperty('ngCount')) o.ngCount = 0;
-    if (!o.hasOwnProperty('pendingCount')) o.pendingCount = 0;
-    if (!o.hasOwnProperty('totalItemCount')) o.totalItemCount = 0;
+    if (!o.hasOwnProperty("okCount")) o.okCount = 0;
+    if (!o.hasOwnProperty("ngCount")) o.ngCount = 0;
+    if (!o.hasOwnProperty("pendingCount")) o.pendingCount = 0;
+    if (!o.hasOwnProperty("totalItemCount")) o.totalItemCount = 0;
     if (!o.hasOwnProperty("holiday")) o.holiday = false;
-    
+
     if (!lineCumPending[o.line]) lineCumPending[o.line] = 0;
     lineCumPending[o.line] += o.pendingCount;
     o.cumPendingCount = lineCumPending[o.line];
@@ -970,9 +998,22 @@ async function refineDataByLine(report) {
 function isItemScheduled(date, item) {
   var result = false;
   if (item.y && (item.y[0] == 9999 || item.y[0] == date.getUTCFullYear())) {
-    if (item.m && (item.m[0] == 9999 || item.m[0] == 99 || item.m[0] == (date.getUTCMonth() + 1))) {
-      if (item.w && (item.w[0] == 9999 || item.w[0] == 9 || item.w[0] == date.getUTCDate() / 7)) {
-        if (item.d && (item.d[0] == 9999 || item.d[0] == 9 || item.d[0] == date.getUTCDay())) {
+    if (
+      item.m &&
+      (item.m[0] == 9999 ||
+        item.m[0] == 99 ||
+        item.m[0] == date.getUTCMonth() + 1)
+    ) {
+      if (
+        item.w &&
+        (item.w[0] == 9999 ||
+          item.w[0] == 9 ||
+          item.w[0] == date.getUTCDate() / 7)
+      ) {
+        if (
+          item.d &&
+          (item.d[0] == 9999 || item.d[0] == 9 || item.d[0] == date.getUTCDay())
+        ) {
           return true;
         }
       }
@@ -987,20 +1028,26 @@ function getDifferenceInDays(date1, date2) {
   return Math.trunc(Math.floor(diffInMilliseconds / millisecondsPerDay));
 }
 
-async function fillTotalItemsByLine(report, pS) {
+async function fillTotalItemsByLine(report, pS, line) {
   var tDate = new Date(report.startDate);
   let dataArray = report.data;
 
   while (tDate <= report.endDate) {
     let d = tDate.getDay();
-    d = (d == 0) ? 7 : d;
-    let w = Math.trunc((getDifferenceInDays(tDate, report.startDate) / 7)) + 1;
+    d = d == 0 ? 7 : d;
+    let w = Math.trunc(getDifferenceInDays(tDate, report.startDate) / 7) + 1;
     let m = tDate.getMonth() + 1;
     let y = tDate.getFullYear();
-
     let query = {
-      d: d, w: w, m: m, y: y, pS: pS
+      d: d,
+      w: w,
+      m: m,
+      y: y,
+      pS: pS,
     };
+    if (line) {
+      query.line = line;
+    }
 
     const headObject = new ApiFeatureHead(HeadModel, query).match();
     const headCheckList = await headObject.query;
@@ -1014,19 +1061,20 @@ async function fillTotalItemsByLine(report, pS) {
       lineGroups[item.line] += item.processList.length;
     });
 
-    let strDate = tDate.toISOString().split('T')[0];
-    
+    let strDate = tDate.toISOString().split("T")[0];
+
     // Add data for each line
-    Object.keys(lineGroups).forEach(line => {
-      let tmpStrDate = strDate.replaceAll('-0', '-');
-      let tObj = dataArray.find((o) => 
-        (o.entryFor == strDate || o.entryFor == tmpStrDate) && 
-        o.line == line
+    Object.keys(lineGroups).forEach((line) => {
+      let tmpStrDate = strDate.replaceAll("-0", "-");
+      let tObj = dataArray.find(
+        (o) =>
+          (o.entryFor == strDate || o.entryFor == tmpStrDate) && o.line == line,
       );
-      
+
       if (tObj != null && typeof tObj !== "undefined") {
-        tObj.totalItemCount = (tObj.hasOwnProperty("totalItemCount")) ? 
-          tObj.totalItemCount + lineGroups[line] : lineGroups[line];
+        tObj.totalItemCount = tObj.hasOwnProperty("totalItemCount")
+          ? tObj.totalItemCount + lineGroups[line]
+          : lineGroups[line];
       } else {
         tObj = {};
         tObj.entryFor = strDate;
@@ -1044,7 +1092,7 @@ async function fillTotalItemsByLine(report, pS) {
 }
 
 exports.reportTBMStatus = catchAsyncError(async (req, res, next) => {
-  var { user, month, year, pS } = req.body;
+  var { user, month, year, pS, line } = req.body;
 
   let report = {};
 
@@ -1065,10 +1113,10 @@ exports.reportTBMStatus = catchAsyncError(async (req, res, next) => {
   report.data = [];
 
   await fillHolidays(report);
-  await getItemsOKCountByLine(report, pS);
-  await getItemsNGCountByLine(report, pS);
-  await getItemsPendingCountByLine(report);
-  await fillTotalItemsByLine(report, pS);
+  await getItemsOKCountByLine(report, pS, line);
+  await getItemsNGCountByLine(report, pS, line);
+  await getItemsPendingCountByLine(report, line);
+  await fillTotalItemsByLine(report, pS, line);
   await refineDataByLine(report);
 
   return res.status(200).json({ success: true, report });
@@ -1078,14 +1126,14 @@ exports.pendingForLesser30Days = catchAsyncError(async (req, res, next) => {
   const pendingTasks = await PendingTask.aggregate([
     {
       $unwind: {
-        path: "$entryDates"
-      }
+        path: "$entryDates",
+      },
     },
     {
       $sort: {
         checkItem: 1,
-        updatedAt: 1
-      }
+        updatedAt: 1,
+      },
     },
     {
       $addFields: {
@@ -1093,18 +1141,17 @@ exports.pendingForLesser30Days = catchAsyncError(async (req, res, next) => {
           $dateDiff: {
             startDate: "$entryDates",
             endDate: "$$NOW",
-            unit: "day"
-          }
-        }
-      }
+            unit: "day",
+          },
+        },
+      },
     },
     {
       $match: {
-        days: { $lte: 30 }
-      }
-    }
-  ]
-  );
+        days: { $lte: 30 },
+      },
+    },
+  ]);
   return res.status(200).json({ success: true, pendingTasks });
 });
 
@@ -1112,14 +1159,14 @@ exports.pendingForGreater30Days = catchAsyncError(async (req, res, next) => {
   const pendingTasks = await PendingTask.aggregate([
     {
       $unwind: {
-        path: "$entryDates"
-      }
+        path: "$entryDates",
+      },
     },
     {
       $sort: {
         checkItem: 1,
-        updatedAt: 1
-      }
+        updatedAt: 1,
+      },
     },
     {
       $addFields: {
@@ -1127,18 +1174,17 @@ exports.pendingForGreater30Days = catchAsyncError(async (req, res, next) => {
           $dateDiff: {
             startDate: "$entryDates",
             endDate: "$$NOW",
-            unit: "day"
-          }
-        }
-      }
+            unit: "day",
+          },
+        },
+      },
     },
     {
       $match: {
-        days: { $gte: 30 }
-      }
-    }
-  ]
-  );
+        days: { $gte: 30 },
+      },
+    },
+  ]);
   return res.status(200).json({ success: true, pendingTasks });
 });
 
@@ -1149,30 +1195,35 @@ exports.tbmFrequency = catchAsyncError(async (req, res, next) => {
         from: "dailystatuses",
         localField: "checkItem",
         foreignField: "checkItem",
-        as: "dialyStaus"
-      }
+        as: "dialyStaus",
+      },
     },
     {
       $lookup: {
         from: "checkitems",
         localField: "checkItem",
         foreignField: "_id",
-        as: "items"
-      }
+        as: "items",
+      },
     },
     {
       $group: {
         _id: "$checkItem",
         top: {
           $top: {
-            output: { "checkItem": "$checkItem", "opNo": "$processNo", "workDetail": "$workDetail", "entryFor": "$dialyStaus.entryFor", "frequency": "$items.cycle" },
-            sortBy: { "dialyStaus.entryFor": -1 }
-          }
-        }
-      }
-    }
-  ]
-  );
+            output: {
+              checkItem: "$checkItem",
+              opNo: "$processNo",
+              workDetail: "$workDetail",
+              entryFor: "$dialyStaus.entryFor",
+              frequency: "$items.cycle",
+            },
+            sortBy: { "dialyStaus.entryFor": -1 },
+          },
+        },
+      },
+    },
+  ]);
   return res.status(200).json({ success: true, frequencyTasks });
 });
 
@@ -1190,76 +1241,88 @@ const getPageNumber = async (query, checkitem) => {
   }
 
   // const totalCount = await HeadModel.countDocuments(headObject.newQueryStr);
-  const pageList = await HeadModel.aggregate([{
-    $match: headObject.newQueryStr
-  }]);
+  const pageList = await HeadModel.aggregate([
+    {
+      $match: headObject.newQueryStr,
+    },
+  ]);
 
-  pageNo = pageList.findIndex((element) => element._id.toString() === checkItemss.toString());
+  pageNo = pageList.findIndex(
+    (element) => element._id.toString() === checkItemss.toString(),
+  );
 
-  console.log("pageNo", pageNo + 1)
+  console.log("pageNo", pageNo + 1);
   return pageNo + 1;
   // return totalCount;
-}
+};
 
 exports.tlVerifyItems = catchAsyncError(async (req, res, next) => {
   const tlList = await DailyStatusVerificationModel.aggregate([
     {
-      $match: { pS: req.query.ps }
+      $match: { pS: req.query.ps },
     },
     {
-      $match: { $or: [{ tlVerify: true }, { result: "NG" }] }
+      $match: { $or: [{ tlVerify: true }, { result: "NG" }] },
     },
     {
       $lookup: {
         from: "dailystatuses",
         localField: "checkItem",
         foreignField: "checkItem",
-        as: "dailystatus"
-      }
+        as: "dailystatus",
+      },
     },
     {
       $lookup: {
         from: "checkitems",
         localField: "checkItem",
         foreignField: "_id",
-        as: "item"
-      }
+        as: "item",
+      },
     },
     {
       $unwind: {
-        path: "$dailystatus"
-      }
+        path: "$dailystatus",
+      },
     },
     {
       $match: {
         $expr: {
-          $eq: ["$entryFor", "$dailystatus.entryFor"]
-        }
-      }
+          $eq: ["$entryFor", "$dailystatus.entryFor"],
+        },
+      },
     },
     {
       $addFields: {
-        "entryForDate": { $dateFromString: { dateString: "$entryFor" } }
-      }
+        entryForDate: { $dateFromString: { dateString: "$entryFor" } },
+      },
     },
     {
-      $sort: { entryForDate: -1 }
-    }
+      $sort: { entryForDate: -1 },
+    },
   ]);
 
   const tlListPromises = tlList.map(async (item) => {
-    console.log("allparameters", item.checkItem, item.item[0].processNo, item.item[0].line)
-    const pageNo = await getPageNumber({
-      d: item.item[0].d[0],
-      w: item.item[0].w[0],
-      m: item.item[0].m[0],
-      y: item.item[0].y[0],
-      pS: item.item[0].pS,
-      line: item.item[0].line,
-      processNo: item.item[0].processNo,
-      page: '1'
-    }, item.item[0]._id);
-    console.log("tlList", item.item[0]._id)
+    console.log(
+      "allparameters",
+      item.checkItem,
+      item.item[0].processNo,
+      item.item[0].line,
+    );
+    const pageNo = await getPageNumber(
+      {
+        d: item.item[0].d[0],
+        w: item.item[0].w[0],
+        m: item.item[0].m[0],
+        y: item.item[0].y[0],
+        pS: item.item[0].pS,
+        line: item.item[0].line,
+        processNo: item.item[0].processNo,
+        page: "1",
+      },
+      item.item[0]._id,
+    );
+    console.log("tlList", item.item[0]._id);
 
     item.pageNo = pageNo;
   });
@@ -1267,70 +1330,76 @@ exports.tlVerifyItems = catchAsyncError(async (req, res, next) => {
   await Promise.all(tlListPromises);
 
   return res.status(200).json({ success: true, tlList });
-
 });
 
 exports.glVerifyItems = catchAsyncError(async (req, res, next) => {
-
-  const ps = req.query.ps
+  const ps = req.query.ps;
   const glList = await DailyStatusVerificationModel.aggregate([
     {
-      $match: { pS: req.query.ps }
+      $match: { pS: req.query.ps },
     },
     {
-      $match: { $or: [{ glVerify: true }, { result: "NG" }] }
+      $match: { $or: [{ glVerify: true }, { result: "NG" }] },
     },
     {
       $lookup: {
         from: "dailystatuses",
         localField: "checkItem",
         foreignField: "checkItem",
-        as: "dailystatus"
-      }
+        as: "dailystatus",
+      },
     },
     {
       $lookup: {
         from: "checkitems",
         localField: "checkItem",
         foreignField: "_id",
-        as: "item"
-      }
+        as: "item",
+      },
     },
     {
       $unwind: {
-        path: "$dailystatus"
-      }
+        path: "$dailystatus",
+      },
     },
     {
       $match: {
         $expr: {
-          $eq: ["$entryFor", "$dailystatus.entryFor"]
-        }
-      }
+          $eq: ["$entryFor", "$dailystatus.entryFor"],
+        },
+      },
     },
     {
       $addFields: {
-        "entryForDate": { $dateFromString: { dateString: "$entryFor" } }
-      }
+        entryForDate: { $dateFromString: { dateString: "$entryFor" } },
+      },
     },
     {
-      $sort: { entryForDate: -1 }
-    }
+      $sort: { entryForDate: -1 },
+    },
   ]);
 
   const glListPromises = glList.map(async (item) => {
-    console.log("allparameters", item.checkItem, item.item[0].processNo, item.item[0].line)
-    const pageNo = await getPageNumber({
-      d: item.item[0].d[0],
-      w: item.item[0].w[0],
-      m: item.item[0].m[0],
-      y: item.item[0].y[0],
-      pS: item.item[0].pS,
-      line: item.item[0].line,
-      processNo: item.item[0].processNo,
-      page: '1'
-    }, item.item[0]._id);
-    console.log("glList", pageNo)
+    console.log(
+      "allparameters",
+      item.checkItem,
+      item.item[0].processNo,
+      item.item[0].line,
+    );
+    const pageNo = await getPageNumber(
+      {
+        d: item.item[0].d[0],
+        w: item.item[0].w[0],
+        m: item.item[0].m[0],
+        y: item.item[0].y[0],
+        pS: item.item[0].pS,
+        line: item.item[0].line,
+        processNo: item.item[0].processNo,
+        page: "1",
+      },
+      item.item[0]._id,
+    );
+    console.log("glList", pageNo);
 
     item.pageNo = pageNo;
   });
@@ -1342,38 +1411,45 @@ exports.glVerifyItems = catchAsyncError(async (req, res, next) => {
 exports.getVerifyItems = catchAsyncError(async (req, res, next) => {
   // var dailyItems = await DailyStatus.find({}).populate("checkItem", "glVerify tlVerify");
   const ps = req.query.ps;
-  var dailyItems = await DailyStatus.aggregate([{
-    $match: { pS: ps }
-  }, {
-    $lookup: {
-      from: "checkitems",
-      localField: "checkItem",
-      foreignField: "_id",
-      as: "checkItem"
-    }
-  },
-  {
-    $unwind: {
-      path: "$checkItem",
-      preserveNullAndEmptyArrays: true
-    }
-  },
-  {
-    $addFields: {
-      "entryForDate": { $dateFromString: { dateString: "$entryFor" } }
-    }
-  },
-  {
-    $sort: { entryForDate: -1 }
-  }
+  var dailyItems = await DailyStatus.aggregate([
+    {
+      $match: { pS: ps },
+    },
+    {
+      $lookup: {
+        from: "checkitems",
+        localField: "checkItem",
+        foreignField: "_id",
+        as: "checkItem",
+      },
+    },
+    {
+      $unwind: {
+        path: "$checkItem",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $addFields: {
+        entryForDate: { $dateFromString: { dateString: "$entryFor" } },
+      },
+    },
+    {
+      $sort: { entryForDate: -1 },
+    },
   ]);
 
   if (dailyItems == null || (dailyItems != null && dailyItems.length == 0)) {
-    return res.status(200).json({ success: true, dailyItemsWithGlTlVerify: [] });
+    return res
+      .status(200)
+      .json({ success: true, dailyItemsWithGlTlVerify: [] });
   }
 
   var dailyItemsWithGlTlVerify = dailyItems.filter((dItem) => {
-    return (dItem.checkItem && (dItem.checkItem.glVerify == true || dItem.checkItem.tlVerify));
+    return (
+      dItem.checkItem &&
+      (dItem.checkItem.glVerify == true || dItem.checkItem.tlVerify)
+    );
   });
 
   if (dailyItemsWithGlTlVerify && Array.isArray(dailyItemsWithGlTlVerify)) {
@@ -1392,16 +1468,19 @@ exports.getVerifyItems = catchAsyncError(async (req, res, next) => {
 
   const dailyListPromises = dailyItemsWithGlTlVerify.map(async (item) => {
     // console.log("allparameters", item.checkItem, item.item[0].processNo, item.item[0].line)
-    const pageNo = await getPageNumber({
-      d: item.checkItem.d[0],
-      w: item.checkItem.w[0],
-      m: item.checkItem.m[0],
-      y: item.checkItem.y[0],
-      pS: item.checkItem.pS,
-      line: item.checkItem.line,
-      processNo: item.checkItem.processNo,
-      page: '1'
-    }, item.checkItem._id);
+    const pageNo = await getPageNumber(
+      {
+        d: item.checkItem.d[0],
+        w: item.checkItem.w[0],
+        m: item.checkItem.m[0],
+        y: item.checkItem.y[0],
+        pS: item.checkItem.pS,
+        line: item.checkItem.line,
+        processNo: item.checkItem.processNo,
+        page: "1",
+      },
+      item.checkItem._id,
+    );
 
     item.pageNo = pageNo;
   });
