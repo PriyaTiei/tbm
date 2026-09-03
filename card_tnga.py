@@ -685,7 +685,7 @@ print("SM\n", tabular_table)
 
 
 # Connection with the server
-server = smtplib.SMTP(host=config.smtp, port=587)
+server = smtplib.(host=config.smtp, port=587)
 server.starttls()
 server.login(config.username, config.password)
 
