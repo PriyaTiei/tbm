@@ -210,7 +210,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     },
                 },
                 {
-                    label: "Planned",
+                    label: "Pending",
                     data: labels?.map(label => {
                         return 0;
                     }),
@@ -397,11 +397,12 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
 
 
                 } else {
-                    modifyLabelPending(difference, totalItemCount)
+                    const pendingForDay = Math.max(0, totalItemCount - totalOkNgCount);
+                    modifyLabelPending(difference, pendingForDay);
                     // modifyDataAtIndex(difference, ddd.okCount + ddd.ngCount);
-                    modifypends(difference, totalItemCount - (okCount + ngCount))
-                    console.log(pends)
-                    modifycpends(difference, ddd.cumPendingCount)
+                    modifypends(difference, pendingForDay);
+                    console.log(pends);
+                    modifycpends(difference, ddd.cumPendingCount);
                 }
                 // Remove other logic for focus on summing
                 modifyDataAtIndex(difference, totalOkNgCount ? totalOkNgCount : 0);
