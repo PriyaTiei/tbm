@@ -36,14 +36,11 @@ exports.createDailyStatus = catchAsyncError(async (req, res, next) => {
   const cItem = await HeadModel.findOne({ _id: checkItem });
   if (result == "OK" || result == "NG") {
     if (cItem) {
-      const abItem = AbnormalityModel.find({ checkItem: dailystatusAvailable.checkItem });
+      const abItem = await AbnormalityModel.findOne({ checkItem: dailystatusAvailable.checkItem });
       if (cItem.tlVerify == true || cItem.glVerify == true || abItem) {
-        var dsv = DailyStatusVerificationModel.find({ dailyStatusItemId: dailystatusAvailable._id });
-        if (dsv) {
-          await dsv.remove();
-        }
+        await DailyStatusVerificationModel.deleteMany({ dailyStatusItemId: dailystatusAvailable._id });
         var obj = dailystatusAvailable.toObject();
-        obj._id = mongoose.Types.ObjectId();
+        obj._id = new mongoose.Types.ObjectId();
         obj.result = result;
         obj.checkItem = cItem.id;
         obj.glVerify = cItem.glVerify;

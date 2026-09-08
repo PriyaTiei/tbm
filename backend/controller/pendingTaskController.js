@@ -190,7 +190,7 @@ exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
       processNo: task.processNo,
       workDetail: task.workDetail,
       pS: task.pS,
-      result: task.result,
+      result: "PENDING",
       entryDates: [date], // Start with current date
       rS: task.rS,
     };
@@ -216,11 +216,15 @@ exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
           // Remove duplicates by converting to Set and back to Array
           newTask.entryDates = [...new Set(allDates.map(d => new Date(d).toISOString()))].map(d => new Date(d));
         }
-        // If no existing task, entryDates stays as [date]
       }
-    } else if (existingPendingTask && existingPendingTask.entryDates) {
-      // If no daily status but existing pending task, preserve entryDates
-      newTask.entryDates = [...existingPendingTask.entryDates, date];
+    } else {
+      // No daily status record exists for scheduled day -> unperformed check is PENDING
+      newTask.result = "PENDING";
+      if (existingPendingTask && existingPendingTask.entryDates) {
+        const existingDates = existingPendingTask.entryDates;
+        const allDates = [...existingDates, date];
+        newTask.entryDates = [...new Set(allDates.map(d => new Date(d).toISOString()))].map(d => new Date(d));
+      }
     }
     
     pendingTaskList.push(newTask);
@@ -243,17 +247,18 @@ exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
   );
 
   // Only delete OK and NG tasks, not pending ones
-  deleteOkTasks();
+  await deleteOkTasks();
 
-  PendingTask.bulkWrite(bulkOps, (err, result) => {
-    if (err) {
-      console.error(err);
-    } else {
+  if (bulkOps.length > 0) {
+    try {
+      const result = await PendingTask.bulkWrite(bulkOps);
       console.log(
         `Updated ${result.modifiedCount} documents and inserted ${result.upsertedCount} documents in the Pending collection`
       );
+    } catch (err) {
+      console.error("PendingTask bulkWrite error:", err);
     }
-  });
+  }
 
   return res.status(200).json({
     success: true,

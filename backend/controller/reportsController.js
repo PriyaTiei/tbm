@@ -902,14 +902,17 @@ function findAndSetDataByLine(dataArray, strDate, line) {
   }
 }
 
-async function refineDataByLine(report) {
+async function refineDataByLine(report, selectedLine) {
   let strDate = null;
   let dataArray = [];
 
   // Get all unique lines from the data
-  const allLines = [
-    ...new Set(report.data.map((item) => item.line).filter((line) => line)),
+  let allLines = [
+    ...new Set(report.data.map((item) => item.line).filter((l) => l && l !== "undefined")),
   ];
+  if (selectedLine && !allLines.includes(selectedLine)) {
+    allLines.push(selectedLine);
+  }
 
   // Fill holidays for each line
   const holidays = report.data.filter((o) => o.holiday == true);
@@ -1055,31 +1058,34 @@ async function fillTotalItemsByLine(report, pS, line) {
     // Group by line
     const lineGroups = {};
     headCheckList.forEach((item) => {
-      if (!lineGroups[item.line]) {
-        lineGroups[item.line] = 0;
+      const lineName = item._id && item._id.line ? item._id.line : item.line;
+      if (lineName && lineName !== "undefined") {
+        if (!lineGroups[lineName]) {
+          lineGroups[lineName] = 0;
+        }
+        lineGroups[lineName] += item.processList ? item.processList.length : 0;
       }
-      lineGroups[item.line] += item.processList.length;
     });
 
     let strDate = tDate.toISOString().split("T")[0];
 
     // Add data for each line
-    Object.keys(lineGroups).forEach((line) => {
+    Object.keys(lineGroups).forEach((lineName) => {
       let tmpStrDate = strDate.replaceAll("-0", "-");
       let tObj = dataArray.find(
         (o) =>
-          (o.entryFor == strDate || o.entryFor == tmpStrDate) && o.line == line,
+          (o.entryFor == strDate || o.entryFor == tmpStrDate) && o.line == lineName,
       );
 
       if (tObj != null && typeof tObj !== "undefined") {
         tObj.totalItemCount = tObj.hasOwnProperty("totalItemCount")
-          ? tObj.totalItemCount + lineGroups[line]
-          : lineGroups[line];
+          ? tObj.totalItemCount + lineGroups[lineName]
+          : lineGroups[lineName];
       } else {
         tObj = {};
         tObj.entryFor = strDate;
-        tObj.line = line;
-        tObj.totalItemCount = lineGroups[line];
+        tObj.line = lineName;
+        tObj.totalItemCount = lineGroups[lineName];
         dataArray.push(tObj);
       }
     });
@@ -1117,7 +1123,7 @@ exports.reportTBMStatus = catchAsyncError(async (req, res, next) => {
   await getItemsNGCountByLine(report, pS, line);
   await getItemsPendingCountByLine(report, line);
   await fillTotalItemsByLine(report, pS, line);
-  await refineDataByLine(report);
+  await refineDataByLine(report, line);
 
   return res.status(200).json({ success: true, report });
 });
