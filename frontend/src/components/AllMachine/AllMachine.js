@@ -1061,10 +1061,11 @@ export default function AllMachine() {
   };
 
   const isProcessNoFiltered = (processNo) => {
-    if (!processNoFilter.trim()) return true;
+    if (!processNoFilter || !processNoFilter.trim()) return true;
+    if (processNo == null) return false;
     
     const filterValue = processNoFilter.toLowerCase().replace(/\s+/g, '');
-    const processValue = processNo.toLowerCase().replace(/\s+/g, '');
+    const processValue = String(processNo).toLowerCase().replace(/\s+/g, '');
     
     if (exactMatch) {
       return processValue === filterValue;
@@ -1076,77 +1077,87 @@ export default function AllMachine() {
   // Convert machineData to table format
   const convertToTableFormat = () => {
     const filteredData = getFilteredMachineData();
-    if (!filteredData.success || !filteredData.machineData) return [];
+    if (!filteredData || !filteredData.success || !Array.isArray(filteredData.machineData)) return [];
     
     return filteredData.machineData.map(item => ({
-      line: item.line,
+      line: item.line || "",
+      processList: item.processList || [],
       processNos: item.processList ? item.processList.map(p => p.processNo) : [],
       counts: item.counts || {},
-      date: new Date().toISOString().split('T')[0] // Current date fallback
+      date: new Date().toISOString().split('T')[0]
     }));
+  };
+
+  // Safe helper to format day array display
+  const formatDayDisplay = (dayArray) => {
+    if (!Array.isArray(dayArray) || dayArray.length === 0) return "-";
+    if (dayArray.includes(9999)) return "All Days";
+    return dayArray.filter(d => d !== 9999).join(", ") || "All Days";
+  };
+
+  // Safe helper to format week array display
+  const formatWeekDisplay = (weekArray) => {
+    if (!Array.isArray(weekArray) || weekArray.length === 0) return "-";
+    const validWeeks = weekArray.filter(week => week !== 9999);
+    if (validWeeks.length === 0) return "All Weeks";
+    return validWeeks.join(", ");
   };
 
   useEffect(() => {
     if (viewMode === "table") {
       const filteredData = getFilteredMachineData();
-      if (filteredData.success) {
-        const fetchAllDetails = async () => {
-          const tableData = convertToTableFormat();
-          if (!Array.isArray(tableData)) return;
+      if (filteredData && filteredData.success && Array.isArray(filteredData.machineData)) {
+        const tableData = convertToTableFormat();
+        
+        // Check if card details (workDetail or cardNo) already exist in processData
+        const hasCardDetails = tableData.some(item => 
+          item.processList.some(p => p.processData && p.processData.length > 0 && (p.processData[0].workDetail || p.processData[0].cardNo))
+        );
 
+        if (hasCardDetails) {
+          // Data is already loaded from backend aggregation!
+          setTableLoading(false);
+          return;
+        }
+
+        // Fallback: fetch details via API only if not already loaded
+        const fetchAllDetails = async () => {
           setTableLoading(true);
           const results = {};
 
           for (const item of tableData) {
-            let storageLine = item.line.trim();
+            let storageLine = String(item.line || "").trim();
             if (storageLine.startsWith(" ")) {
               storageLine = storageLine.substring(1);
             }
             
             results[storageLine] = results[storageLine] || {};
 
-            for (const processNo of item.processNos || []) {
-              const totalCount = item.counts?.[processNo] || 0;
+            for (const processItem of item.processList || []) {
+              const processNo = processItem.processNo;
+              const totalCount = item.counts?.[processNo] || (processItem.processData ? processItem.processData.length : 0);
 
               for (let pageNum = 1; pageNum <= totalCount; pageNum++) {
                 try {
-                  const normalizedProcessNo = processNo.trim();
-                  let keyProcessNo;
-                  if (storageLine === "Main 2-1" || storageLine === "Main 1-2") {
-                    keyProcessNo = ` ${normalizedProcessNo}`;
-                  } else {
-                    keyProcessNo = normalizedProcessNo;
-                  }
-                  
+                  const normalizedProcessNo = String(processNo || "").trim();
+                  const keyProcessNo = (storageLine === "Main 2-1" || storageLine === "Main 1-2")
+                    ? ` ${normalizedProcessNo}`
+                    : normalizedProcessNo;
                   const key = `${keyProcessNo}-${pageNum}`;
 
-                  let queryParams;
-                  const date = item.date || new Date().toISOString().split('T')[0];
-                  
-                  if (storageLine === "Main 2-1" || storageLine === "Main 1-2") {
-                    queryParams = {
-                      date: date,
-                      shift: 'S',
-                      line: ` ${storageLine}`,
-                      processNo: ` ${normalizedProcessNo}`,
-                      page: pageNum.toString()
-                    };
-                  } else {
-                    queryParams = {
-                      date: date,
-                      shift: 'S',
-                      line: storageLine,
-                      processNo: normalizedProcessNo,
-                      page: pageNum.toString()
-                    };
-                  }
+                  const queryParams = {
+                    pS: filters?.pS || 'S',
+                    line: storageLine,
+                    processNo: normalizedProcessNo,
+                    page: pageNum.toString()
+                  };
 
                   const checklist = await fetchCheckList(queryParams);
                   if (checklist && checklist.length > 0) {
                     results[storageLine][key] = checklist;
                   }
                 } catch (error) {
-                  console.error("Failed to fetch detail for", storageLine, processNo, pageNum, error);
+                  console.error("Failed to fetch detail:", error);
                 }
               }
             }
@@ -1161,17 +1172,6 @@ export default function AllMachine() {
     }
   }, [viewMode, dateRangeFilter.applied, machineData]);
 
-  // Helper function to format week display
-  const formatWeekDisplay = (weekArray) => {
-    if (!Array.isArray(weekArray) || weekArray.length === 0) return "-";
-    
-    // Filter out 9999 values and format the remaining weeks
-    const validWeeks = weekArray.filter(week => week !== 9999);
-    if (validWeeks.length === 0) return "All Weeks";
-    
-    return validWeeks.join(", ");
-  };
-
   const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Machine Data");
@@ -1185,50 +1185,57 @@ export default function AllMachine() {
     const tableData = convertToTableFormat();
     
     tableData.forEach((item) => {
-      (item.processNos || [])
-        .filter((processNo) => isProcessNoFiltered(processNo))
-        .forEach((processNo) => {
-          const totalCount = item.counts?.[processNo] || 0;
+      const lineName = String(item.line || "").trim();
+      const storageLine = lineName.startsWith(" ") ? lineName.substring(1) : lineName;
 
-          for (let pageNum = 1; pageNum <= totalCount; pageNum++) {
-            const normalizedProcessNo = processNo.trim();
-            let keyProcessNo;
-            if (item.line === "Main 2-1" || item.line === "Main 1-2") {
-              keyProcessNo = ` ${normalizedProcessNo}`;
-            } else {
-              keyProcessNo = normalizedProcessNo;
-            }
-            
+      (item.processList || []).forEach((processItem) => {
+        const processNo = processItem.processNo;
+        if (!isProcessNoFiltered(processNo)) return;
+
+        const normalizedProcessNo = String(processNo || "").trim();
+        const cards = Array.isArray(processItem.processData) && processItem.processData.length > 0 
+          ? processItem.processData 
+          : [];
+
+        if (cards.length === 0) {
+          worksheet.addRow([
+            lineName, normalizedProcessNo, 1,
+            "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-"
+          ]);
+        } else {
+          cards.forEach((card, idx) => {
+            const pageNum = idx + 1;
+            const keyProcessNo = (storageLine === "Main 2-1" || storageLine === "Main 1-2") 
+              ? ` ${normalizedProcessNo}` 
+              : normalizedProcessNo;
             const key = `${keyProcessNo}-${pageNum}`;
-            const details = detailedItems?.[item.line]?.[key] || [];
+            const detailedCard = (detailedItems?.[storageLine]?.[key] && detailedItems[storageLine][key][0]) 
+              ? detailedItems[storageLine][key][0] 
+              : null;
+            
+            const detail = (card.workDetail || card.cardNo) ? card : (detailedCard || card);
 
-            if (details.length === 0) {
-              worksheet.addRow([
-                item.line, processNo, pageNum,
-                "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-"
-              ]);
-            } else {
-              details.forEach((detail) => {
-                worksheet.addRow([
-                  item.line, processNo, pageNum,
-                  detail?.cardNo ?? "-", 
-                  detail?.model ?? "-", 
-                  detail?.d?.[0] !== 9999 ? detail.d[0] : "-",
-                  formatWeekDisplay(detail?.w), // Use the helper function for week formatting
-                  detail?.line ?? "-", 
-                  detail?.model ?? "-", 
-                  detail?.processNo ?? "-",
-                  detail?.workDetail ?? "-", 
-                  detail?.cycle ?? "-", 
-                  detail?.workTime ?? "-",
-                  detail?.wHr ?? "-", 
-                  detail?.methodWssNo ?? "-", 
-                  detail?.criterion ?? "-"
-                ]);
-              });
-            }
-          }
-        });
+            worksheet.addRow([
+              detail?.line || lineName,
+              detail?.processNo || normalizedProcessNo,
+              pageNum,
+              detail?.cardNo ?? "-", 
+              detail?.model ?? "-", 
+              formatDayDisplay(detail?.d),
+              formatWeekDisplay(detail?.w),
+              detail?.line || lineName, 
+              detail?.model ?? "-", 
+              detail?.processNo || normalizedProcessNo,
+              detail?.workDetail ?? "-", 
+              detail?.cycle ?? "-", 
+              detail?.workTime ?? "-",
+              detail?.wHr ?? "-", 
+              detail?.methodWssNo ?? "-", 
+              detail?.criterion ?? "-"
+            ]);
+          });
+        }
+      });
     });
 
     const buffer = await workbook.xlsx.writeBuffer();
@@ -1395,6 +1402,70 @@ export default function AllMachine() {
       );
     }
 
+    const rows = [];
+
+    tableData.forEach((item, lineIndex) => {
+      const lineName = String(item.line || "Unknown Line").trim();
+      const storageLine = lineName.startsWith(" ") ? lineName.substring(1) : lineName;
+      const processList = Array.isArray(item.processList) ? item.processList : [];
+
+      processList.forEach((processItem, processIndex) => {
+        const rawProcessNo = processItem.processNo != null ? processItem.processNo : "";
+        if (!isProcessNoFiltered(rawProcessNo)) return;
+
+        const processNoStr = String(rawProcessNo).trim();
+        const cards = Array.isArray(processItem.processData) && processItem.processData.length > 0 
+          ? processItem.processData 
+          : [];
+
+        if (cards.length === 0) {
+          rows.push(
+            <tr key={`empty-${lineIndex}-${processIndex}`}>
+              <td>{lineName}</td>
+              <td>{processNoStr}</td>
+              <td>1</td>
+              <td colSpan={13} className="text-muted">No inspection data available</td>
+            </tr>
+          );
+          return;
+        }
+
+        cards.forEach((card, cardIndex) => {
+          const pageNum = cardIndex + 1;
+          const keyProcessNo = (storageLine === "Main 2-1" || storageLine === "Main 1-2")
+            ? ` ${processNoStr}`
+            : processNoStr;
+          const key = `${keyProcessNo}-${pageNum}`;
+          const detailedCard = (detailedItems?.[storageLine]?.[key] && detailedItems[storageLine][key][0])
+            ? detailedItems[storageLine][key][0]
+            : null;
+
+          const detail = (card.workDetail || card.cardNo) ? card : (detailedCard || card);
+
+          rows.push(
+            <tr key={`row-${lineIndex}-${processIndex}-${cardIndex}`}>
+              <td>{detail?.line || lineName}</td>
+              <td>{processNoStr}</td>
+              <td>{pageNum}</td>
+              <td>{detail?.cardNo ?? "-"}</td>
+              <td>{detail?.model ?? "-"}</td>
+              <td>{formatDayDisplay(detail?.d)}</td>
+              <td>{formatWeekDisplay(detail?.w)}</td>
+              <td>{detail?.line || lineName}</td>
+              <td>{detail?.model ?? "-"}</td>
+              <td>{detail?.processNo || processNoStr}</td>
+              <td>{detail?.workDetail ?? "-"}</td>
+              <td>{detail?.cycle ?? "-"}</td>
+              <td>{detail?.workTime ?? "-"}</td>
+              <td>{detail?.wHr ?? "-"}</td>
+              <td>{detail?.methodWssNo ?? "-"}</td>
+              <td>{detail?.criterion ?? "-"}</td>
+            </tr>
+          );
+        });
+      });
+    });
+
     return (
       <div className="p-3">
         <div className="d-flex align-items-center gap-3 mb-3">
@@ -1454,66 +1525,13 @@ export default function AllMachine() {
                 </tr>
               </thead>
               <tbody>
-                {tableData.map((item, index) => {
-                  let storageLine = item.line.trim();
-                  if (storageLine.startsWith(" ")) {
-                    storageLine = storageLine.substring(1);
-                  }
-                  
-                  return (item.processNos || [])
-                    .filter((processNo) => isProcessNoFiltered(processNo))
-                    .flatMap((processNo) => {
-                      const totalCount = item.counts?.[processNo] || 0;
-                      const rows = [];
-                      for (let pageNum = 1; pageNum <= totalCount; pageNum++) {
-                        const normalizedProcessNo = processNo.trim();
-                        let keyProcessNo;
-                        if (storageLine === "Main 2-1" || storageLine === "Main 1-2") {
-                          keyProcessNo = ` ${normalizedProcessNo}`;
-                        } else {
-                          keyProcessNo = normalizedProcessNo;
-                        }
-                        
-                        const key = `${keyProcessNo}-${pageNum}`;
-                        const details = detailedItems?.[storageLine]?.[key] || [];
-
-                        if (details.length === 0) {
-                          rows.push(
-                            <tr key={`${item.line}-${key}-${index}`}>
-                              <td>{item.line}</td>
-                              <td>{processNo}</td>
-                              <td>{pageNum}</td>
-                              <td colSpan={13} className="text-muted">No inspection data available</td>
-                            </tr>
-                          );
-                        } else {
-                          details.forEach((detail, i) => {
-                            rows.push(
-                              <tr key={`${item.line}-${key}-${index}-${i}`}>
-                                <td>{item.line}</td>
-                                <td>{processNo}</td>
-                                <td>{pageNum}</td>
-                                <td>{detail?.cardNo ?? "-"}</td>
-                                <td>{detail?.model ?? "-"}</td>
-                                <td>{detail?.d?.[0] !== 9999 ? detail.d[0] : "All Days"}</td>
-                                <td>{formatWeekDisplay(detail?.w)}</td>
-                                <td>{detail?.line ?? "-"}</td>
-                                <td>{detail?.model ?? "-"}</td>
-                                <td>{detail?.processNo ?? "-"}</td>
-                                <td>{detail?.workDetail ?? "-"}</td>
-                                <td>{detail?.cycle ?? "-"}</td>
-                                <td>{detail?.workTime ?? "-"}</td>
-                                <td>{detail?.wHr ?? "-"}</td>
-                                <td>{detail?.methodWssNo ?? "-"}</td>
-                                <td>{detail?.criterion ?? "-"}</td>
-                              </tr>
-                            );
-                          });
-                        }
-                      }
-                      return rows;
-                    });
-                })}
+                {rows.length > 0 ? rows : (
+                  <tr>
+                    <td colSpan={16} className="text-center text-muted py-4">
+                      No inspection items available
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
