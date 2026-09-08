@@ -62,11 +62,12 @@ export default function AllMachineSmileCard() {
         `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/delete/${itemId}`
       )
       .then((result) => {
-      
         toast.success("deleted check item ");
+        setTimeout(() => {
+          window.location.href = "/allMachine";
+        }, 1000);
       })
       .catch((err) => {
-        
         toast.error("error deleting check item ");
       });
   };

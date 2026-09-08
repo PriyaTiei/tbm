@@ -817,6 +817,7 @@ const HeadModel = require("../mongoSchema/chekItemModel");
 const ApiFeatureHead = require("../util/apiFeatureHead");
 const ErrorHandler = require("../util/errorHandling");
 const mongoose = require('mongoose');
+const PendingTask = require("../mongoSchema/pendingTaskModel");
 
 async function addMeassurementFieldSpec(headCheckList) {
   /*
@@ -1501,6 +1502,8 @@ exports.deleteCheckItem = catchAsyncError(async (req, res, next) => {
     await checkItem.save();
     console.log("Check item after soft delete:", checkItem);
 
+    // Remove any existing pending task for this check item
+    await PendingTask.deleteMany({ checkItem: id });
 
     res.status(200).json({ success: true, message: "Check item soft deleted successfully" });
   } catch (error) {

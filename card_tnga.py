@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, date
 from time import strftime
 import requests
 from prettytable import PrettyTable
+
 from openpyxl import Workbook
 import json
 from openpyxl.styles import Font
@@ -685,7 +686,7 @@ print("SM\n", tabular_table)
 
 
 # Connection with the server
-server = smtplib.(host=config.smtp, port=587)
+server = smtplib.SMTP(host=config.smtp, port=587)
 server.starttls()
 server.login(config.username, config.password)
 

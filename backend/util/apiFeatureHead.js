@@ -41,6 +41,13 @@ class ApiFeatureHead {
       ? { ...newQueryStr, y: { $in: [9999, Number(newQueryStr.y)] } }
       : { ...newQueryStr };
 
+    if (!newQueryStr.hasOwnProperty("isDeleted") && !newQueryStr.$or) {
+      newQueryStr.$or = [
+        { isDeleted: { $exists: false } },
+        { isDeleted: false },
+      ];
+    }
+
     this.query = this.query.find(newQueryStr);
     this.newQueryStr = { ...newQueryStr };
     return this;
@@ -96,7 +103,14 @@ class ApiFeatureHead {
       : {};
 
     // Updating the search query with revised filter parameters
-    newQueryStr = { ...newQueryStr, ...keyword1, ...keyword2 }
+    newQueryStr = { ...newQueryStr, ...keyword1, ...keyword2 };
+
+    if (!newQueryStr.hasOwnProperty("isDeleted") && !newQueryStr.$or) {
+      newQueryStr.$or = [
+        { isDeleted: { $exists: false } },
+        { isDeleted: false },
+      ];
+    }
 
     this.newQueryStr = { ...newQueryStr };
 

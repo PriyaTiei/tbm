@@ -26,6 +26,14 @@ class ApiFeaturePendingTask {
       ? { ...newQueryStr, y: { $in: [9999, Number(newQueryStr.y)] } }
       : { ...newQueryStr };
 
+    newQueryStr = {
+      ...newQueryStr,
+      $or: [
+        { isDeleted: { $exists: false } },
+        { isDeleted: false },
+      ],
+    };
+
     this.newQueryStr = { ...newQueryStr };
 
     console.log(this.newQueryStr);
@@ -67,6 +75,14 @@ class ApiFeaturePendingTask {
         $unwind: {
           path: "$itemSpec"
         }
+      },
+      {
+        $match: {
+          $or: [
+            { "itemSpec.isDeleted": { $exists: false } },
+            { "itemSpec.isDeleted": false },
+          ],
+        },
       },
       {
         $group: {
@@ -118,6 +134,14 @@ class ApiFeaturePendingTask {
         $unwind: {
           path: "$itemSpec"
         }
+      },
+      {
+        $match: {
+          $or: [
+            { "itemSpec.isDeleted": { $exists: false } },
+            { "itemSpec.isDeleted": false },
+          ],
+        },
       },
       {
         $group: {
