@@ -93,14 +93,49 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
     const [monthYearS, setMonthYearS] = useState("");
     const [selectLineRef, setSelectLineRef] = useState("test");
 
+    const getLineGroup = (line) => {
+        if (!line) return "Other Lines";
+        const lower = String(line).toLowerCase();
+        if (lower.includes("assembly")) return "Assembly";
+        if (
+            lower.includes("block") ||
+            lower.includes("crank") ||
+            lower.includes("head") ||
+            lower.includes("cam")
+        ) {
+            return "Machining";
+        }
+        return "Other Lines";
+    };
+
     var lineOptions = [{ value: null, label: "All Lines" }];
-    var lineOptions2 = [];
     const { machineData } = useSelector((state) => state.machines);
-    if (machineData.machineData != undefined) {
-    lineOptions2 = machineData.machineData.map((element) => {
-        return { value: element.line, label: element.line };
-    });
-    lineOptions = [...lineOptions, ...lineOptions2];
+    if (machineData && machineData.machineData != undefined) {
+        const groupedMap = {};
+        machineData.machineData.forEach((element) => {
+            if (!element || !element.line) return;
+            const group = getLineGroup(element.line);
+            if (!groupedMap[group]) {
+                groupedMap[group] = [];
+            }
+            groupedMap[group].push({ value: element.line, label: element.line });
+        });
+
+        const preferredOrder = ["Assembly", "Machining"];
+        const otherGroups = Object.keys(groupedMap).filter(
+            (g) => !preferredOrder.includes(g)
+        );
+        const sortedGroupNames = [
+            ...preferredOrder.filter((g) => groupedMap[g]),
+            ...otherGroups,
+        ];
+
+        sortedGroupNames.forEach((groupName) => {
+            lineOptions.push({
+                label: groupName,
+                options: groupedMap[groupName],
+            });
+        });
     }
 
     const selectLineHandler = (e) => {
