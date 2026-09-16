@@ -22,6 +22,43 @@ import {
 } from "./redux/filter/filterActions";
 
 
+const totalCountPlugin = {
+    id: "totalCountPlugin",
+    afterDatasetsDraw(chart) {
+        if (!chart.options?.plugins?.totalCount?.display) return;
+        const { ctx, data } = chart;
+        const metaCompleted = chart.getDatasetMeta(0);
+        const metaPending = chart.getDatasetMeta(1);
+        if (!metaCompleted || !metaCompleted.data) return;
+
+        ctx.save();
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillStyle = "#000000";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+
+        metaCompleted.data.forEach((bar, index) => {
+            const completedVal = Number(data.datasets[0]?.data[index]) || 0;
+            const pendingVal = Number(data.datasets[1]?.data[index]) || 0;
+            const total = completedVal + pendingVal;
+
+            if (total > 0) {
+                let topY = bar.y;
+                let x = bar.x;
+                if (pendingVal > 0 && metaPending?.data && metaPending.data[index]) {
+                    topY = metaPending.data[index].y;
+                    x = metaPending.data[index].x;
+                } else if (completedVal > 0) {
+                    topY = bar.y;
+                    x = bar.x;
+                }
+                ctx.fillText(String(total), x, topY - 4);
+            }
+        });
+        ctx.restore();
+    }
+};
+
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -29,7 +66,8 @@ ChartJS.register(
     Title,
     Tooltip,
     Legend,
-    ChartDataLabels
+    ChartDataLabels,
+    totalCountPlugin
 );
 
 
@@ -208,6 +246,21 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     backgroundColor: (context) => {
                         return "rgb(40, 167, 69)";
                     },
+                    datalabels: {
+                        anchor: 'center',
+                        align: 'center',
+                        color: '#ffffff',
+                        font: {
+                            weight: 'bold',
+                            size: 11
+                        },
+                        formatter: function (value) {
+                            return value > 0 ? value : '';
+                        },
+                        display: function (context) {
+                            return context.dataset.data[context.dataIndex] > 0;
+                        }
+                    }
                 },
                 {
                     label: "Pending",
@@ -219,8 +272,18 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                         return "rgb(193,193,193)";
                     },
                     datalabels: {
+                        anchor: 'center',
+                        align: 'center',
+                        color: '#000000',
+                        font: {
+                            weight: 'bold',
+                            size: 11
+                        },
+                        formatter: function (value) {
+                            return value > 0 ? value : '';
+                        },
                         display: function (context) {
-                            return context.dataset.data[context.dataIndex] !== 0; // Show label only if the value is not 0
+                            return context.dataset.data[context.dataIndex] > 0;
                         }
                     }
 
@@ -247,7 +310,15 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
 
         let options = {
             responsive: true,
+            layout: {
+                padding: {
+                    top: 25
+                }
+            },
             plugins: {
+                totalCount: {
+                    display: true
+                },
                 tooltip: {
                     callbacks: {
                         title: function () {
@@ -274,12 +345,9 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     enabled: false
                 },
                 datalabels: {
-                    align: 'end',
-                    anchor: 'end',
-                    color: 'black',
                     font: {
                         weight: 'bold',
-                        size: 12
+                        size: 11
                     }
                 }
             },
@@ -302,6 +370,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                 y: {
                     stacked: true,
                     beginAtZero: true,
+                    grace: '8%',
                     ticks: {
                         callback: function (value) {
                             return value === 0 ? '0' : value;
@@ -473,9 +542,18 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     onClick={handleClose}
                 >
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "70vw" }}>
-                        <div style={{ width: "100%" }}>
-
-                            <Bar data={datas} options={optionss} />
+                        <div
+                            style={{
+                                width: "100%",
+                                border: "2px solid #0d6efd",
+                                borderRadius: "8px",
+                                padding: "16px",
+                                backgroundColor: "#ffffff",
+                                marginBottom: "16px",
+                                boxShadow: "0 2px 8px rgba(13, 110, 253, 0.1)"
+                            }}
+                        >
+                            <Bar data={datas} options={optionss} plugins={[totalCountPlugin]} />
                         </div>
                         <div style={{ width: "100%", overflowX: "auto" }}>
                             <table className="table table-bordered" style={{ width: "100%", tableLayout: "fixed" }}>
