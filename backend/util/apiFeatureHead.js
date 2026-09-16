@@ -41,6 +41,15 @@ class ApiFeatureHead {
       ? { ...newQueryStr, y: { $in: [9999, Number(newQueryStr.y)] } }
       : { ...newQueryStr };
 
+    if (newQueryStr.line) {
+      const lineLower = String(newQueryStr.line).toLowerCase().trim();
+      if (lineLower === "assembly" || lineLower === "all assembly") {
+        newQueryStr.line = { $regex: "assembly", $options: "i" };
+      } else if (lineLower === "machining" || lineLower === "all machining") {
+        newQueryStr.line = { $regex: "block|crank|head|cam", $options: "i" };
+      }
+    }
+
     if (!newQueryStr.hasOwnProperty("isDeleted") && !newQueryStr.$or) {
       newQueryStr.$or = [
         { isDeleted: { $exists: false } },
@@ -104,6 +113,15 @@ class ApiFeatureHead {
 
     // Updating the search query with revised filter parameters
     newQueryStr = { ...newQueryStr, ...keyword1, ...keyword2 };
+
+    if (newQueryStr.line) {
+      const lineLower = String(newQueryStr.line).toLowerCase().trim();
+      if (lineLower === "assembly" || lineLower === "all assembly") {
+        newQueryStr.line = { $regex: "assembly", $options: "i" };
+      } else if (lineLower === "machining" || lineLower === "all machining") {
+        newQueryStr.line = { $regex: "block|crank|head|cam", $options: "i" };
+      }
+    }
 
     if (!newQueryStr.hasOwnProperty("isDeleted") && !newQueryStr.$or) {
       newQueryStr.$or = [

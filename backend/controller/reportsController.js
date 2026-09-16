@@ -720,6 +720,18 @@ async function fillHolidays(report) {
   return report;
 }
 
+function getLineMatchCondition(line) {
+  if (!line) return null;
+  const lineLower = String(line).toLowerCase().trim();
+  if (lineLower === "assembly" || lineLower === "all assembly") {
+    return { $regex: "assembly", $options: "i" };
+  }
+  if (lineLower === "machining" || lineLower === "all machining") {
+    return { $regex: "block|crank|head|cam", $options: "i" };
+  }
+  return line;
+}
+
 async function getItemsOKCountByLine(report, pS, line) {
   const pipeline = [
     {
@@ -750,7 +762,7 @@ async function getItemsOKCountByLine(report, pS, line) {
   if (line) {
     pipeline.push({
       $match: {
-        "checkItemData.line": line,
+        "checkItemData.line": getLineMatchCondition(line),
       },
     });
   }
@@ -808,11 +820,13 @@ async function getItemsNGCountByLine(report, pS, line) {
     },
   ];
 
-  pipeline.push({
-    $match: {
-      "checkItemData.line": line,
-    },
-  });
+  if (line) {
+    pipeline.push({
+      $match: {
+        "checkItemData.line": getLineMatchCondition(line),
+      },
+    });
+  }
   pipeline.push({
     $group: {
       _id: {
@@ -859,11 +873,13 @@ async function getItemsPendingCountByLine(report, line) {
       $unwind: "$checkItemData",
     },
   ];
-  pipeline.push({
-    $match: {
-      "checkItemData.line": line,
-    },
-  });
+  if (line) {
+    pipeline.push({
+      $match: {
+        "checkItemData.line": getLineMatchCondition(line),
+      },
+    });
+  }
   pipeline.push({
     $group: {
       _id: {
@@ -911,7 +927,10 @@ async function refineDataByLine(report, selectedLine) {
     ...new Set(report.data.map((item) => item.line).filter((l) => l && l !== "undefined")),
   ];
   if (selectedLine && !allLines.includes(selectedLine)) {
-    allLines.push(selectedLine);
+    const lineLower = String(selectedLine).toLowerCase().trim();
+    if (lineLower !== "assembly" && lineLower !== "all assembly" && lineLower !== "machining" && lineLower !== "all machining") {
+      allLines.push(selectedLine);
+    }
   }
 
   // Fill holidays for each line

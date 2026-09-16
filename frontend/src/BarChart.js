@@ -133,7 +133,10 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
         sortedGroupNames.forEach((groupName) => {
             lineOptions.push({
                 label: groupName,
-                options: groupedMap[groupName],
+                options: [
+                    { value: groupName, label: `All ${groupName}` },
+                    ...groupedMap[groupName],
+                ],
             });
         });
     }

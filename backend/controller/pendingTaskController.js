@@ -329,7 +329,16 @@ exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
     
     // Apply filters from query parameters
     if (req.query.pS) matchCriteria.pS = req.query.pS;
-    if (req.query.line) matchCriteria.line = req.query.line;
+    if (req.query.line) {
+      const lineLower = String(req.query.line).toLowerCase().trim();
+      if (lineLower === "assembly" || lineLower === "all assembly") {
+        matchCriteria.line = { $regex: "assembly", $options: "i" };
+      } else if (lineLower === "machining" || lineLower === "all machining") {
+        matchCriteria.line = { $regex: "block|crank|head|cam", $options: "i" };
+      } else {
+        matchCriteria.line = req.query.line;
+      }
+    }
     if (req.query.rS) matchCriteria.rS = req.query.rS;
 
     console.log('Match criteria:', matchCriteria);
@@ -957,7 +966,16 @@ exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
     
     // Apply filters from query parameters
     if (req.query.pS) matchCriteria.pS = req.query.pS;
-    if (req.query.line) matchCriteria.line = req.query.line;
+    if (req.query.line) {
+      const lineLower = String(req.query.line).toLowerCase().trim();
+      if (lineLower === "assembly" || lineLower === "all assembly") {
+        matchCriteria.line = { $regex: "assembly", $options: "i" };
+      } else if (lineLower === "machining" || lineLower === "all machining") {
+        matchCriteria.line = { $regex: "block|crank|head|cam", $options: "i" };
+      } else {
+        matchCriteria.line = req.query.line;
+      }
+    }
     if (req.query.rS) matchCriteria.rS = req.query.rS;
 
     console.log('Match criteria:', matchCriteria);

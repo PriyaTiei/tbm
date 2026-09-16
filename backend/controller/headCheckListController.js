@@ -1004,6 +1004,15 @@ exports.getAllMachineList = catchAsyncError(async (req, res, next) => {
   console.log(token);
   req.query = { ...req.query };
 
+  if (req.query.line) {
+    const lineLower = String(req.query.line).toLowerCase().trim();
+    if (lineLower === "assembly" || lineLower === "all assembly") {
+      req.query.line = { $regex: "assembly", $options: "i" };
+    } else if (lineLower === "machining" || lineLower === "all machining") {
+      req.query.line = { $regex: "block|crank|head|cam", $options: "i" };
+    }
+  }
+
   const headCheckList = await HeadModel.aggregate([
     // { $match: req.query },
     {
