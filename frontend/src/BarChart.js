@@ -246,6 +246,8 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     backgroundColor: (context) => {
                         return "rgb(40, 167, 69)";
                     },
+                    borderColor: "#0d6efd",
+                    borderWidth: 1.5,
                     datalabels: {
                         anchor: 'center',
                         align: 'center',
@@ -271,6 +273,8 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
 
                         return "rgb(193,193,193)";
                     },
+                    borderColor: "#0d6efd",
+                    borderWidth: 1.5,
                     datalabels: {
                         anchor: 'center',
                         align: 'center',
@@ -296,6 +300,8 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     backgroundColor: (context) => {
                         return "rgb(180,198,231)"
                     },
+                    borderColor: "#0d6efd",
+                    borderWidth: 1.5,
                     datalabels: {
                         display: false, // Disable data labels for "Pending"
                     },
