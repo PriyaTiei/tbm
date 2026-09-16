@@ -934,7 +934,23 @@ export default function AllMachine() {
   const [processNoFilter, setProcessNoFilter] = useState("");
   const [exactMatch, setExactMatch] = useState(false);
 
-  let lineStr = filters.line === null ? '' : `&line=${filters.line}`;
+  const getLineGroup = (line) => {
+    if (!line) return "Other Lines";
+    const lower = String(line).toLowerCase();
+    if (lower.includes("assembly")) return "Assembly";
+    if (
+      lower.includes("block") ||
+      lower.includes("crank") ||
+      lower.includes("head") ||
+      lower.includes("cam")
+    ) {
+      return "Machining";
+    }
+    return "Other Lines";
+  };
+
+  const isCategoryFilter = filters.line === "Assembly" || filters.line === "Machining";
+  let lineStr = filters.line === null || isCategoryFilter ? '' : `&line=${filters.line}`;
   let rSStr = filters.rS === null ? '' : `&rS=${filters.rS}`;
   let queryStr = `&pS=${filters.pS}` + lineStr + rSStr;
 
@@ -981,8 +997,21 @@ export default function AllMachine() {
 
   // Apply date range filter to machine data
   const getFilteredMachineData = () => {
-    if (!machineData.success || !dateRangeFilter.enabled || !dateRangeFilter.applied || !dateRangeFilter.startDate || !dateRangeFilter.endDate) {
-      return machineData;
+    let baseData = machineData;
+    if (isCategoryFilter && machineData.success && Array.isArray(machineData.machineData)) {
+      baseData = {
+        ...machineData,
+        machineData: machineData.machineData.filter((item) => {
+          const group = getLineGroup(item.line);
+          if (filters.line === "Assembly") return group === "Assembly";
+          if (filters.line === "Machining") return group === "Machining";
+          return item.line === filters.line;
+        }),
+      };
+    }
+
+    if (!baseData.success || !dateRangeFilter.enabled || !dateRangeFilter.applied || !dateRangeFilter.startDate || !dateRangeFilter.endDate) {
+      return baseData;
     }
 
     const startDate = new Date(dateRangeFilter.startDate);

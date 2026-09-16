@@ -26,8 +26,24 @@ function Machines() {
     dailyStatusDataLinewise[item.line] = item.processes;
   });
 
-  // Filters
-  const lineStr = filters.line ? `&line=${filters.line}` : "";
+  const getLineGroup = (line) => {
+    if (!line) return "Other Lines";
+    const lower = String(line).toLowerCase();
+    if (lower.includes("assembly")) return "Assembly";
+    if (
+      lower.includes("block") ||
+      lower.includes("crank") ||
+      lower.includes("head") ||
+      lower.includes("cam")
+    ) {
+      return "Machining";
+    }
+    return "Other Lines";
+  };
+
+  // Filters: do not pass category names directly to backend query to prevent 404
+  const isCategoryFilter = filters.line === "Assembly" || filters.line === "Machining";
+  const lineStr = filters.line && !isCategoryFilter ? `&line=${filters.line}` : "";
   const rSStr = filters.rS ? `&rS=${filters.rS}` : "";
   const groupStr = filters.group ? `&group=${filters.group}` : "";
   const processNoStr = filters.processNo ? `&processNo=${filters.processNo}` : "";
@@ -48,7 +64,14 @@ function Machines() {
   }, [dispatch, filters]);
 
   const { loading, machineData } = machines;
-  
+
+  const filteredMachines = (machineData?.machineData || []).filter((item) => {
+    if (!filters.line) return true;
+    const group = getLineGroup(item.line);
+    if (filters.line === "Assembly") return group === "Assembly";
+    if (filters.line === "Machining") return group === "Machining";
+    return item.line === filters.line;
+  });
 
   return (
     <Fragment>
@@ -73,19 +96,23 @@ function Machines() {
         <Fragment>
           {machineData.success && viewMode === "card" ? (
             <div className="overflow-auto" style={{ height: "85vh", paddingBottom: "10%" }}>
-              {machineData.machineData.map((item) => (
-                <Line
-                  key={item.line}
-                  line={item.line}
-                  processNos={item.processNos}
-                  counts={item.counts}
-                  dailyStatusDataLinewise={dailyStatusDataLinewise[item.line]}
-                />
-              ))}
+              {filteredMachines.length > 0 ? (
+                filteredMachines.map((item) => (
+                  <Line
+                    key={item.line}
+                    line={item.line}
+                    processNos={item.processNos}
+                    counts={item.counts}
+                    dailyStatusDataLinewise={dailyStatusDataLinewise[item.line]}
+                  />
+                ))
+              ) : (
+                <div className="p-3 text-center">No machine data available for {filters.line}.</div>
+              )}
             </div>
           ) : (
             <MachineListTable
-              machineData={machineData.machineData}
+              machineData={filteredMachines}
               dailyStatusDataLinewise={dailyStatusDataLinewise}
             />
           )}
