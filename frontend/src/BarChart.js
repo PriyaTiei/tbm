@@ -111,32 +111,25 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
     var lineOptions = [{ value: null, label: "All Lines" }];
     const { machineData } = useSelector((state) => state.machines);
     if (machineData && machineData.machineData != undefined) {
-        const groupedMap = {};
+        const uniqueGroups = new Set();
         machineData.machineData.forEach((element) => {
             if (!element || !element.line) return;
-            const group = getLineGroup(element.line);
-            if (!groupedMap[group]) {
-                groupedMap[group] = [];
-            }
-            groupedMap[group].push({ value: element.line, label: element.line });
+            uniqueGroups.add(getLineGroup(element.line));
         });
 
         const preferredOrder = ["Assembly", "Machining"];
-        const otherGroups = Object.keys(groupedMap).filter(
+        const otherGroups = Array.from(uniqueGroups).filter(
             (g) => !preferredOrder.includes(g)
         );
         const sortedGroupNames = [
-            ...preferredOrder.filter((g) => groupedMap[g]),
+            ...preferredOrder.filter((g) => uniqueGroups.has(g)),
             ...otherGroups,
         ];
 
         sortedGroupNames.forEach((groupName) => {
             lineOptions.push({
+                value: groupName,
                 label: groupName,
-                options: [
-                    { value: groupName, label: `All ${groupName}` },
-                    ...groupedMap[groupName],
-                ],
             });
         });
     }
