@@ -70,6 +70,21 @@ ChartJS.register(
     totalCountPlugin
 );
 
+const getCurrentMonthYear = (d) => {
+    const baseDate = d ? new Date(d) : new Date();
+    const validDate = isNaN(baseDate.getTime()) ? new Date() : baseDate;
+    const year = validDate.getFullYear();
+    const month = String(validDate.getMonth() + 1).padStart(2, "0");
+    return `${year}-${month}`;
+};
+
+const convertDate = (inputDate) => {
+    if (!inputDate) return "";
+    const [year, month] = inputDate.split('-').map(Number);
+    const date = new Date(year, month - 1, 1); // Months are 0-indexed in JavaScript
+    const formattedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 11, 14, 0).toString();
+    return formattedDate;
+};
 
 const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
     const [firstMondayCurrent, setFirstMondayCurrent] = useState(null);
@@ -89,9 +104,17 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
     const [labelss, setlabelss] = useState([])
     const [pendings, setPending] = useState([])
     const [cpendings, setCPending] = useState([])
-    const [monthYear, setMonthYear] = useState("");
-    const [monthYearS, setMonthYearS] = useState("");
+    const [monthYear, setMonthYear] = useState(() => getCurrentMonthYear(chkDate));
+    const [monthYearS, setMonthYearS] = useState(() => convertDate(getCurrentMonthYear(chkDate)));
     const [selectLineRef, setSelectLineRef] = useState("test");
+
+    useEffect(() => {
+        if (chkDate) {
+            const formatted = getCurrentMonthYear(chkDate);
+            setMonthYear(formatted);
+            setMonthYearS(convertDate(formatted));
+        }
+    }, [chkDate]);
 
     const getLineGroup = (line) => {
         if (!line) return "Other Lines";
@@ -140,21 +163,16 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
       };
 
     const handleMonthYearChange = (e) => {
-        // Define the input date
-        function convertDate(inputDate) {
-
-            const [year, month] = inputDate.split('-').map(Number);
-
-
-            const date = new Date(year, month - 1, 1); // Months are 0-indexed in JavaScript
-
-            const formattedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 11, 14, 0).toString();
-
-            return formattedDate;
+        const val = e.target.value;
+        if (val) {
+            const converted = convertDate(val);
+            setMonthYearS(converted);
+            setMonthYear(val);
+        } else {
+            const current = getCurrentMonthYear();
+            setMonthYearS(convertDate(current));
+            setMonthYear(current);
         }
-        const converted = convertDate(e.target.value)
-        setMonthYearS(converted);
-        setMonthYear(e.target.value);
     };
 
     useEffect(() => {
