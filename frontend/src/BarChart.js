@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Bar } from "react-chartjs-2";
 import Modal from "react-bootstrap/Modal";
 import {
@@ -132,22 +132,34 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
         return "Other Lines";
     };
 
-        const groupedLines = {};
-        const uniqueGroups = new Set();
-        const allSubLines = new Set();
+        const allDiscoveredLinesRef = useRef(new Set());
+        const prevDeptRef = useRef(pS);
+
+        if (prevDeptRef.current !== pS) {
+            prevDeptRef.current = pS;
+            allDiscoveredLinesRef.current.clear();
+        }
 
         if (machineData && machineData.machineData != undefined) {
             machineData.machineData.forEach((element) => {
                 if (!element || !element.line) return;
-                const group = getLineGroup(element.line);
-                uniqueGroups.add(group);
-                if (!groupedLines[group]) {
-                    groupedLines[group] = new Set();
-                }
-                groupedLines[group].add(element.line);
-                allSubLines.add(element.line);
+                allDiscoveredLinesRef.current.add(element.line);
             });
         }
+
+        const groupedLines = {};
+        const uniqueGroups = new Set();
+        const allSubLines = new Set();
+
+        allDiscoveredLinesRef.current.forEach((lineName) => {
+            const group = getLineGroup(lineName);
+            uniqueGroups.add(group);
+            if (!groupedLines[group]) {
+                groupedLines[group] = new Set();
+            }
+            groupedLines[group].add(lineName);
+            allSubLines.add(lineName);
+        });
 
         const preferredOrder = ["Assembly", "Machining"];
         const otherGroups = Array.from(uniqueGroups).filter(

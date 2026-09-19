@@ -41,9 +41,9 @@ function Machines() {
     return "Other Lines";
   };
 
-  // Filters: do not pass category names directly to backend query to prevent 404
-  const isCategoryFilter = filters.line === "Assembly" || filters.line === "Machining" || filters.line === "Other Lines";
-  const lineStr = filters.line && !isCategoryFilter ? `&line=${filters.line}` : "";
+  // Filters: do not pass category names or line filter directly to backend getMachines query
+  // so that machineData in Redux retains all lines, preventing the sub-line dropdown from collapsing.
+  // Frontend filteredMachines handles line/category filtering cleanly and instantly.
   const rSStr = filters.rS ? `&rS=${filters.rS}` : "";
   const groupStr = filters.group ? `&group=${filters.group}` : "";
   const processNoStr = filters.processNo ? `&processNo=${filters.processNo}` : "";
@@ -51,17 +51,17 @@ function Machines() {
 
   let queryStr, DailyStatusQueryStr;
   if (filters.processNo === "" && filters.cardNo === "") {
-    queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` + lineStr + rSStr + groupStr + processNoStr + cardNoStr;
-    DailyStatusQueryStr = `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}` + lineStr + rSStr + groupStr + processNoStr + cardNoStr;
+    queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` + rSStr + groupStr + processNoStr + cardNoStr;
+    DailyStatusQueryStr = `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}` + rSStr + groupStr + processNoStr + cardNoStr;
   } else {
-    queryStr = `pS=${filters.pS}` + lineStr + processNoStr + cardNoStr;
-    DailyStatusQueryStr = `pS=${filters.pS}` + lineStr + processNoStr + cardNoStr;
+    queryStr = `pS=${filters.pS}` + processNoStr + cardNoStr;
+    DailyStatusQueryStr = `pS=${filters.pS}` + processNoStr + cardNoStr;
   }
 
   useEffect(() => {
     dispatch(getMachines(queryStr));
     dispatch(getDailyStatus(DailyStatusQueryStr));
-  }, [dispatch, filters]);
+  }, [dispatch, queryStr, DailyStatusQueryStr]);
 
   const { loading, machineData } = machines;
 

@@ -949,14 +949,12 @@ export default function AllMachine() {
     return "Other Lines";
   };
 
-  const isCategoryFilter = filters.line === "Assembly" || filters.line === "Machining" || filters.line === "Other Lines";
-  let lineStr = filters.line === null || isCategoryFilter ? '' : `&line=${filters.line}`;
   let rSStr = filters.rS === null ? '' : `&rS=${filters.rS}`;
-  let queryStr = `&pS=${filters.pS}` + lineStr + rSStr;
+  let queryStr = `&pS=${filters.pS}` + rSStr;
 
   useEffect(() => {
     dispatch(getAllMachines(queryStr));
-  }, [dispatch, filters, queryStr]);
+  }, [dispatch, queryStr]);
 
   const { loading, machineData } = machines;
 
