@@ -16,9 +16,9 @@ import { fetchReportData } from "./redux/reportChart/reportChartActions";
 import DatePicker from "react-date-picker";
 import Select from "react-select";
 import {
-
   filterLine,
-
+  filterMainLine,
+  filterSubLine,
 } from "./redux/filter/filterActions";
 
 
@@ -96,8 +96,9 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
     const [year, setYear] = useState();
     const dispatch = useDispatch()
     const { reportChartdata } = useSelector(state => state?.report)
-    const { pS } = useSelector(state => state?.filters)
-    const {line} = useSelector(state => state?.filters)
+    const { machineData } = useSelector((state) => state.machines);
+    const filters = useSelector(state => state?.filters)
+    const { pS, line } = filters || {}
     const [chartData, setChartData] = useState([])
     const [datas, setDatas] = useState([])
     const [optionss, setOptionss] = useState([])
@@ -131,14 +132,22 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
         return "Other Lines";
     };
 
-    var lineOptions = [{ value: null, label: "All Lines" }];
-    const { machineData } = useSelector((state) => state.machines);
-    if (machineData && machineData.machineData != undefined) {
+        const groupedLines = {};
         const uniqueGroups = new Set();
-        machineData.machineData.forEach((element) => {
-            if (!element || !element.line) return;
-            uniqueGroups.add(getLineGroup(element.line));
-        });
+        const allSubLines = new Set();
+
+        if (machineData && machineData.machineData != undefined) {
+            machineData.machineData.forEach((element) => {
+                if (!element || !element.line) return;
+                const group = getLineGroup(element.line);
+                uniqueGroups.add(group);
+                if (!groupedLines[group]) {
+                    groupedLines[group] = new Set();
+                }
+                groupedLines[group].add(element.line);
+                allSubLines.add(element.line);
+            });
+        }
 
         const preferredOrder = ["Assembly", "Machining"];
         const otherGroups = Array.from(uniqueGroups).filter(
@@ -149,18 +158,68 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
             ...otherGroups,
         ];
 
+        var lineOptions = [{ value: null, label: "All Lines" }];
         sortedGroupNames.forEach((groupName) => {
             lineOptions.push({
                 value: groupName,
                 label: groupName,
             });
         });
-    }
 
-    const selectLineHandler = (e) => {
-        dispatch(filterLine(e.value));
-        setSelectLineRef(e.value);
-      };
+        const selectedMainLine = filters?.mainLine ?? null;
+        let subLineOptions = [];
+
+        if (selectedMainLine && groupedLines[selectedMainLine]) {
+            subLineOptions = [
+                { value: null, label: `All ${selectedMainLine} Sub-lines` },
+                ...Array.from(groupedLines[selectedMainLine]).sort().map((subLine) => ({
+                    value: subLine,
+                    label: subLine,
+                })),
+            ];
+        } else {
+            const groupedCategoryOptions = sortedGroupNames
+                .map((groupName) => ({
+                    label: groupName,
+                    options: Array.from(groupedLines[groupName] || [])
+                        .sort()
+                        .map((subLine) => ({
+                            value: subLine,
+                            label: subLine,
+                        })),
+                }))
+                .filter((group) => group.options.length > 0);
+
+            subLineOptions = [
+                { value: null, label: "All Sub-lines" },
+                ...groupedCategoryOptions,
+            ];
+        }
+
+        const selectLineHandler = (e) => {
+            const val = e ? e.value : null;
+            dispatch(filterMainLine(val));
+            setSelectLineRef(val);
+        };
+
+        const selectSubLineHandler = (e) => {
+            const val = e ? e.value : null;
+            dispatch(filterSubLine(val));
+            setSelectLineRef(val);
+        };
+
+        const selectedMainLineOption =
+            lineOptions.find((opt) => opt.value === selectedMainLine) || lineOptions[0];
+
+        let selectedSubLineOption = null;
+        if (filters?.subLine) {
+            selectedSubLineOption = { value: filters.subLine, label: filters.subLine };
+        } else {
+            selectedSubLineOption = {
+                value: null,
+                label: selectedMainLine ? `All ${selectedMainLine} Sub-lines` : "All Sub-lines",
+            };
+        }
 
     const handleMonthYearChange = (e) => {
         const val = e.target.value;
@@ -222,7 +281,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
         const daysInCurrentMonth = daysInMonth(monthNumbers, years);
         setDaysInMonth(daysInCurrentMonth);
 
-    }, [chkDate, showModal, monthYear, selectLineRef]);
+    }, [chkDate, showModal, monthYear, selectLineRef, line]);
 
 
     useEffect(() => {
@@ -577,13 +636,21 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     />
                 </div>
                  <Select
-       
-          options={lineOptions}
-          onChange={selectLineHandler}
-          className="mx-4 secondary"
-          defaultValue={lineOptions[0]}
-          isSearchable={false}
-        />
+                    options={lineOptions}
+                    value={selectedMainLineOption}
+                    onChange={selectLineHandler}
+                    className="mx-2 secondary"
+                    isSearchable={true}
+                    placeholder="Main Line"
+                />
+                <Select
+                    options={subLineOptions}
+                    value={selectedSubLineOption}
+                    onChange={selectSubLineHandler}
+                    className="mx-2 secondary"
+                    isSearchable={true}
+                    placeholder="Sub Line"
+                />
        
             </Modal.Header>
 

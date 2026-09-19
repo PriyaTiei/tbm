@@ -5,6 +5,8 @@ import {
   filterDate,
   filterDept,
   filterLine,
+  filterMainLine,
+  filterSubLine,
   filterCheck,
   filterGroup,
   filterProcessNo,
@@ -83,6 +85,9 @@ function Filters() {
   const level = auth.user ? auth.user.level : 0;
   // const { loading, pendingTasksData } = pendingTasks;
   // const [pendingTasksData, setPendingTasksData] = useState([])
+  const filters = useSelector((state) => state.filters);
+  const { machineData } = useSelector((state) => state.machines);
+
   const getLineGroup = (line) => {
     if (!line) return "Other Lines";
     const lower = String(line).toLowerCase();
@@ -98,30 +103,68 @@ function Filters() {
     return "Other Lines";
   };
 
-  var lineOptions = [{ value: null, label: "All Lines" }];
-  const { machineData } = useSelector((state) => state.machines);
+  const groupedLines = {};
+  const uniqueGroups = new Set();
+  const allSubLines = new Set();
+
   if (machineData && machineData.machineData != undefined) {
-    const uniqueGroups = new Set();
     machineData.machineData.forEach((element) => {
       if (!element || !element.line) return;
-      uniqueGroups.add(getLineGroup(element.line));
+      const group = getLineGroup(element.line);
+      uniqueGroups.add(group);
+      if (!groupedLines[group]) {
+        groupedLines[group] = new Set();
+      }
+      groupedLines[group].add(element.line);
+      allSubLines.add(element.line);
     });
+  }
 
-    const preferredOrder = ["Assembly", "Machining"];
-    const otherGroups = Array.from(uniqueGroups).filter(
-      (g) => !preferredOrder.includes(g)
-    );
-    const sortedGroupNames = [
-      ...preferredOrder.filter((g) => uniqueGroups.has(g)),
-      ...otherGroups,
+  const preferredOrder = ["Assembly", "Machining"];
+  const otherGroups = Array.from(uniqueGroups).filter(
+    (g) => !preferredOrder.includes(g)
+  );
+  const sortedGroupNames = [
+    ...preferredOrder.filter((g) => uniqueGroups.has(g)),
+    ...otherGroups,
+  ];
+
+  const lineOptions = [{ value: null, label: "All Lines" }];
+  sortedGroupNames.forEach((groupName) => {
+    lineOptions.push({
+      value: groupName,
+      label: groupName,
+    });
+  });
+
+  const selectedMainLine = filters.mainLine ?? null;
+  let subLineOptions = [];
+
+  if (selectedMainLine && groupedLines[selectedMainLine]) {
+    subLineOptions = [
+      { value: null, label: `All ${selectedMainLine} Sub-lines` },
+      ...Array.from(groupedLines[selectedMainLine]).sort().map((subLine) => ({
+        value: subLine,
+        label: subLine,
+      })),
     ];
-
-    sortedGroupNames.forEach((groupName) => {
-      lineOptions.push({
-        value: groupName,
+  } else {
+    const groupedCategoryOptions = sortedGroupNames
+      .map((groupName) => ({
         label: groupName,
-      });
-    });
+        options: Array.from(groupedLines[groupName] || [])
+          .sort()
+          .map((subLine) => ({
+            value: subLine,
+            label: subLine,
+          })),
+      }))
+      .filter((group) => group.options.length > 0);
+
+    subLineOptions = [
+      { value: null, label: "All Sub-lines" },
+      ...groupedCategoryOptions,
+    ];
   }
 
   // const totalCount = machines.loading
@@ -232,7 +275,11 @@ function Filters() {
   };
 
   const selectLineHandler = (e) => {
-    dispatch(filterLine(e.value));
+    dispatch(filterMainLine(e ? e.value : null));
+  };
+
+  const selectSubLineHandler = (e) => {
+    dispatch(filterSubLine(e ? e.value : null));
   };
 
   const selectCheckHandler = (e) => {
@@ -257,17 +304,29 @@ function Filters() {
   //     },
   //   });
   // }
-  const filters = useSelector((state) => state.filters);
   const colorSearchButton = (filters.processNo == "" && filters.cardNo == "") ? "btn-primary" : "btn-warning"
   const clearSearchHandler = (e) => {
     dispatch(filterProcessNo(""));
     dispatch(filterCardNo(""));
   }
 
+  const selectedMainLineOption =
+    lineOptions.find((opt) => opt.value === selectedMainLine) || lineOptions[0];
+
+  let selectedSubLineOption = null;
+  if (filters.subLine) {
+    selectedSubLineOption = { value: filters.subLine, label: filters.subLine };
+  } else {
+    selectedSubLineOption = {
+      value: null,
+      label: selectedMainLine ? `All ${selectedMainLine} Sub-lines` : "All Sub-lines",
+    };
+  }
+
   return (
     <Fragment>
       <hr className="my-2"></hr>
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between align-items-center flex-wrap gap-1">
         <div className="d-flex">
           <DatePicker
             value={date}
@@ -323,9 +382,19 @@ function Filters() {
         <Select
           ref={selectLineRef}
           options={lineOptions}
+          value={selectedMainLineOption}
           onChange={selectLineHandler}
           className="mx-1 secondary"
-          defaultValue={lineOptions[0]}
+          placeholder="Main Line"
+          isSearchable={true}
+        />
+
+        <Select
+          options={subLineOptions}
+          value={selectedSubLineOption}
+          onChange={selectSubLineHandler}
+          className="mx-1 secondary"
+          placeholder="Sub Line"
           isSearchable={true}
         />
 

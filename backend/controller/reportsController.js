@@ -729,6 +729,9 @@ function getLineMatchCondition(line) {
   if (lineLower === "machining" || lineLower === "all machining") {
     return { $regex: "block|crank|head|cam", $options: "i" };
   }
+  if (lineLower === "other lines" || lineLower === "other parts") {
+    return { $not: { $regex: "assembly|block|crank|head|cam", $options: "i" } };
+  }
   return line;
 }
 
@@ -928,7 +931,14 @@ async function refineDataByLine(report, selectedLine) {
   ];
   if (selectedLine && !allLines.includes(selectedLine)) {
     const lineLower = String(selectedLine).toLowerCase().trim();
-    if (lineLower !== "assembly" && lineLower !== "all assembly" && lineLower !== "machining" && lineLower !== "all machining") {
+    if (
+      lineLower !== "assembly" &&
+      lineLower !== "all assembly" &&
+      lineLower !== "machining" &&
+      lineLower !== "all machining" &&
+      lineLower !== "other lines" &&
+      lineLower !== "other parts"
+    ) {
       allLines.push(selectedLine);
     }
   }

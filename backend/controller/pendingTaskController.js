@@ -335,6 +335,8 @@ exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
         matchCriteria.line = { $regex: "assembly", $options: "i" };
       } else if (lineLower === "machining" || lineLower === "all machining") {
         matchCriteria.line = { $regex: "block|crank|head|cam", $options: "i" };
+      } else if (lineLower === "other lines" || lineLower === "other parts") {
+        matchCriteria.line = { $not: { $regex: "assembly|block|crank|head|cam", $options: "i" } };
       } else {
         matchCriteria.line = req.query.line;
       }
@@ -972,6 +974,8 @@ exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
         matchCriteria.line = { $regex: "assembly", $options: "i" };
       } else if (lineLower === "machining" || lineLower === "all machining") {
         matchCriteria.line = { $regex: "block|crank|head|cam", $options: "i" };
+      } else if (lineLower === "other lines" || lineLower === "other parts") {
+        matchCriteria.line = { $not: { $regex: "assembly|block|crank|head|cam", $options: "i" } };
       } else {
         matchCriteria.line = req.query.line;
       }

@@ -42,7 +42,7 @@ function Machines() {
   };
 
   // Filters: do not pass category names directly to backend query to prevent 404
-  const isCategoryFilter = filters.line === "Assembly" || filters.line === "Machining";
+  const isCategoryFilter = filters.line === "Assembly" || filters.line === "Machining" || filters.line === "Other Lines";
   const lineStr = filters.line && !isCategoryFilter ? `&line=${filters.line}` : "";
   const rSStr = filters.rS ? `&rS=${filters.rS}` : "";
   const groupStr = filters.group ? `&group=${filters.group}` : "";
@@ -70,6 +70,7 @@ function Machines() {
     const group = getLineGroup(item.line);
     if (filters.line === "Assembly") return group === "Assembly";
     if (filters.line === "Machining") return group === "Machining";
+    if (filters.line === "Other Lines") return group === "Other Lines";
     return item.line === filters.line;
   });
 

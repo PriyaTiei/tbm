@@ -3,6 +3,8 @@ import {
   FILTER_DATE,
   FILTER_DEPT,
   FILTER_LINE,
+  FILTER_MAIN_LINE,
+  FILTER_SUB_LINE,
   FILTER_GROUP,
   FILTER_PROCESS_NO,
   FILTER_CARD_NO
@@ -15,6 +17,8 @@ const y = todayDate.getFullYear();
 const w = Math.floor(dt / 7.1) + 1;
 const pS = "S";
 const line = null;
+const mainLine = null;
+const subLine = null;
 const rS = null;
 const group = null;
 const processNo ="";
@@ -27,6 +31,8 @@ const initialFilterState = {
   pS,
   dt,
   line,
+  mainLine,
+  subLine,
   rS, 
   group,
   processNo,
@@ -45,11 +51,29 @@ const filterReducer = (state = initialFilterState, action) => {
         ...state,
         pS: action.payload,
       };
-    case FILTER_LINE:
+    case FILTER_MAIN_LINE:
       return {
         ...state,
+        mainLine: action.payload,
+        subLine: null,
         line: action.payload,
       };
+    case FILTER_SUB_LINE:
+      return {
+        ...state,
+        subLine: action.payload,
+        line: action.payload !== null ? action.payload : state.mainLine,
+      };
+    case FILTER_LINE: {
+      const val = action.payload;
+      const isMainCategory = val === "Assembly" || val === "Machining" || val === "Other Lines";
+      return {
+        ...state,
+        line: val,
+        mainLine: isMainCategory ? val : (val === null ? null : state.mainLine),
+        subLine: isMainCategory ? null : val,
+      };
+    }
     case FILTER_CHECK:
       return {
         ...state,

@@ -47,6 +47,8 @@ class ApiFeatureHead {
         newQueryStr.line = { $regex: "assembly", $options: "i" };
       } else if (lineLower === "machining" || lineLower === "all machining") {
         newQueryStr.line = { $regex: "block|crank|head|cam", $options: "i" };
+      } else if (lineLower === "other lines" || lineLower === "other parts") {
+        newQueryStr.line = { $not: { $regex: "assembly|block|crank|head|cam", $options: "i" } };
       }
     }
 
@@ -120,6 +122,8 @@ class ApiFeatureHead {
         newQueryStr.line = { $regex: "assembly", $options: "i" };
       } else if (lineLower === "machining" || lineLower === "all machining") {
         newQueryStr.line = { $regex: "block|crank|head|cam", $options: "i" };
+      } else if (lineLower === "other lines" || lineLower === "other parts") {
+        newQueryStr.line = { $not: { $regex: "assembly|block|crank|head|cam", $options: "i" } };
       }
     }
 

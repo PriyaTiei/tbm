@@ -1,6 +1,8 @@
 export const FILTER_DATE = "FILTER_DATE";
 export const FILTER_DEPT = "FILTER_DEPT";
 export const FILTER_LINE = "FILTER_LINE";
+export const FILTER_MAIN_LINE = "FILTER_MAIN_LINE";
+export const FILTER_SUB_LINE = "FILTER_SUB_LINE";
 export const FILTER_CHECK = "FILTER_CHECK";
 export const FILTER_GROUP = "FILTER_GROUP";
 export const FILTER_PROCESS_NO= "FILTER_PROCESS_NO";

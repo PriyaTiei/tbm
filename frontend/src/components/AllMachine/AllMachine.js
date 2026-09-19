@@ -949,7 +949,7 @@ export default function AllMachine() {
     return "Other Lines";
   };
 
-  const isCategoryFilter = filters.line === "Assembly" || filters.line === "Machining";
+  const isCategoryFilter = filters.line === "Assembly" || filters.line === "Machining" || filters.line === "Other Lines";
   let lineStr = filters.line === null || isCategoryFilter ? '' : `&line=${filters.line}`;
   let rSStr = filters.rS === null ? '' : `&rS=${filters.rS}`;
   let queryStr = `&pS=${filters.pS}` + lineStr + rSStr;
@@ -998,13 +998,14 @@ export default function AllMachine() {
   // Apply date range filter to machine data
   const getFilteredMachineData = () => {
     let baseData = machineData;
-    if (isCategoryFilter && machineData.success && Array.isArray(machineData.machineData)) {
+    if (machineData.success && Array.isArray(machineData.machineData) && filters.line) {
       baseData = {
         ...machineData,
         machineData: machineData.machineData.filter((item) => {
           const group = getLineGroup(item.line);
           if (filters.line === "Assembly") return group === "Assembly";
           if (filters.line === "Machining") return group === "Machining";
+          if (filters.line === "Other Lines") return group === "Other Lines";
           return item.line === filters.line;
         }),
       };

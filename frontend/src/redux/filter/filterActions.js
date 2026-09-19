@@ -1,6 +1,8 @@
 import {
   FILTER_DATE,
   FILTER_LINE,
+  FILTER_MAIN_LINE,
+  FILTER_SUB_LINE,
   FILTER_DEPT,
   FILTER_CHECK,
   FILTER_GROUP,
@@ -27,6 +29,20 @@ export const filterLine = (line) => {
   return {
     type: FILTER_LINE,
     payload: line,
+  };
+};
+
+export const filterMainLine = (mainLine) => {
+  return {
+    type: FILTER_MAIN_LINE,
+    payload: mainLine,
+  };
+};
+
+export const filterSubLine = (subLine) => {
+  return {
+    type: FILTER_SUB_LINE,
+    payload: subLine,
   };
 };
 
