@@ -885,12 +885,15 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
     }
   }
 
-  console.log("req----", req.query);
+  req.query = {
+    ...req.query,
     $or: [
       { isDeleted: { $exists: false } },
       { isDeleted: false },
-    ]
+    ],
   };
+
+  console.log("req----", req.query);
 
 
 
