@@ -24,25 +24,65 @@ function SmileCard() {
 
   // get query string from link
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const [showModal, setShowModal] = useState(false);
-  const [showJudgementHistoryModel, setShowJudgementHistoryModel] = useState(false)
+  const [showJudgementHistoryModel, setShowJudgementHistoryModel] = useState(false);
 
   const filters = useSelector((state) => state.filters);
 
-
-
-  let queryStr;
-  if (filters.rS == null) {
-    queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}`;
-  } else {
-    queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}&rS=${filters.rS}`;
+  // If processNo was cut off by an unencoded '#' into location.hash, or unencoded '&' in location.search, recover it:
+  let processNoParam = searchParams.get("processNo");
+  if ((!processNoParam || processNoParam === "") && location.hash) {
+    processNoParam = location.hash;
+  }
+  if (location.search && location.search.includes("processNo=")) {
+    try {
+      const searchRaw = location.search.substring(1);
+      const idx = searchRaw.indexOf("processNo=");
+      if (idx !== -1) {
+        const afterProcess = searchRaw.substring(idx + "processNo=".length);
+        const nextParamMatch = afterProcess.match(/&(?:line|d|w|m|y|pS|rS|page)=/i);
+        let extracted = nextParamMatch ? afterProcess.substring(0, nextParamMatch.index) : afterProcess;
+        extracted = decodeURIComponent(extracted.replace(/\+/g, " "));
+        if (extracted && extracted.length > (processNoParam || "").length) {
+          processNoParam = extracted;
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
   }
 
+  const queryParams = [];
+  if (filters.d !== undefined && filters.d !== null && filters.d !== "") queryParams.push(`d=${filters.d}`);
+  if (filters.w !== undefined && filters.w !== null && filters.w !== "") queryParams.push(`w=${filters.w}`);
+  if (filters.m !== undefined && filters.m !== null && filters.m !== "") queryParams.push(`m=${filters.m}`);
+  if (filters.y !== undefined && filters.y !== null && filters.y !== "") queryParams.push(`y=${filters.y}`);
+  if (filters.pS !== undefined && filters.pS !== null && filters.pS !== "") queryParams.push(`pS=${filters.pS}`);
+  if (filters.rS !== undefined && filters.rS !== null && filters.rS !== "") queryParams.push(`rS=${filters.rS}`);
+
+  let processNoAdded = false;
+  for (const [key, val] of searchParams.entries()) {
+    if (key === "processNo") {
+      const pVal = processNoParam || val;
+      if (pVal !== "" && pVal !== undefined && pVal !== null) {
+        queryParams.push(`processNo=${encodeURIComponent(pVal)}`);
+        processNoAdded = true;
+      }
+    } else if (val !== "" && val !== undefined && val !== null) {
+      // Avoid pushing leftover fragment keys caused by unencoded '&' in processNo
+      if (!processNoParam || !processNoParam.includes(key)) {
+        queryParams.push(`${key}=${encodeURIComponent(val)}`);
+      }
+    }
+  }
+
+  if (!processNoAdded && processNoParam) {
+    queryParams.push(`processNo=${encodeURIComponent(processNoParam)}`);
+  }
+
+  const queryStr = queryParams.join("&");
   let entryForQueryStr = `${filters.y}-${filters.m}-${filters.dt}`;
-  for (const e of searchParams.entries()) {
-    let [f, v] = e;
-    queryStr = queryStr + "&" + f + "=" + v;
-  }
 
   //use hooks
   const [page, setPage] = useState(1);
@@ -69,6 +109,7 @@ function SmileCard() {
     dispatch,
     page,
     searchParams,
+    location.hash,
     filters,
     modify,
     entryForQueryStr,
@@ -88,13 +129,13 @@ function SmileCard() {
   let list = loading
     ? {}
     : checkItem.success
-      ? checkItems.checkItem.headCheckList[0]
+      ? (checkItems.checkItem.headCheckList && checkItems.checkItem.headCheckList[0]) || {}
       : {};
 
   let totalCount = loading
     ? 0
     : checkItem.success
-      ? checkItems.checkItem.totalCount
+      ? checkItems.checkItem.totalCount || 0
       : 0;
   let disabledNext = page < totalCount ? null : "disabled";
   const changePage = () => {
@@ -278,7 +319,7 @@ function SmileCard() {
           <Loading />
         ) : (
           <Fragment>
-            {checkItem.success ? (
+            {checkItem.success && totalCount > 0 ? (
               modify ? (
                 <SmileCardModify list={list} image={image} setImage={setImage} />
               ) : (
@@ -308,7 +349,15 @@ function SmileCard() {
                   }
                 </div>
               )
-            ) : null}
+            ) : (
+              <div className="alert alert-warning text-center m-4 p-4 shadow-sm">
+                <i className="bi bi-exclamation-triangle-fill text-warning" style={{ fontSize: "2rem" }}></i>
+                <h5 className="mt-2">No Checklist Cards Found</h5>
+                <p className="text-muted mb-0">
+                  No cards found matching current filters (Line: {searchParams.get("line") || "All"}, Process: {searchParams.get("processNo") || location.hash || "All"}).
+                </p>
+              </div>
+            )}
           </Fragment>
         )}
       </div>

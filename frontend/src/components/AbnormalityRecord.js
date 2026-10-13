@@ -56,7 +56,7 @@ function AbnormalityRecord() {
       )
       .then((result) => {
         toast.success("Saved Successfully");
-        navigate(`/checkList?line=${line}&processNo=${processNo}`);
+        navigate(`/checkList?line=${encodeURIComponent(line || "")}&processNo=${encodeURIComponent(processNo || "")}`);
       })
       .catch((err) => {
 

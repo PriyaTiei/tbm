@@ -487,7 +487,7 @@ const Verification = ({ showModals, setShowModals }) => {
                                                 <td style={{ fontSize: "12px" }}>{items?.remarks}</td>
                                                 {console.log(items)}
                                                 <td style={{ fontSize: "12px" }} onClick={() => { handleNavigate(items?.entryFor); handlePages(items.pageNo) }}>
-                                                    <Link to={`/checkList?line=${items?.line}&processNo=${items?.processNo}`} >Click Here</Link>
+                                                    <Link to={`/checkList?line=${encodeURIComponent(items?.line || "")}&processNo=${encodeURIComponent(items?.processNo || "")}`} >Click Here</Link>
                                                 </td>
                                             </tr>
                                         )) : ""}
@@ -584,7 +584,7 @@ const Verification = ({ showModals, setShowModals }) => {
                                                     <td>{items?.remarks}</td>
                                                     <td>{getStatusLabel(items, "tl")}</td>
                                                     <td>{getStatusLabel(items, "gl")}</td>
-                                                    <td onClick={() => { handleNavigate(items?.entryFor); handlePages(items.pageNo) }}><Link to={`/checkList?line=${items?.checkItem?.line}&processNo=${items?.checkItem?.processNo}`}>Click Here</Link></td>
+                                                    <td onClick={() => { handleNavigate(items?.entryFor); handlePages(items.pageNo) }}><Link to={`/checkList?line=${encodeURIComponent(items?.checkItem?.line || "")}&processNo=${encodeURIComponent(items?.checkItem?.processNo || "")}`}>Click Here</Link></td>
                                                 </tr>
                                             )) : ""}
                                         </tbody>
