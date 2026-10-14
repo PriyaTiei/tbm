@@ -46,7 +46,9 @@ function Machines() {
   // Frontend filteredMachines handles line/category filtering cleanly and instantly.
   const rSStr = filters.rS ? `&rS=${filters.rS}` : "";
   const groupStr = filters.group ? `&group=${filters.group}` : "";
-  const processNoStr = filters.processNo ? `&processNo=${filters.processNo}` : "";
+  const processNoStr = filters.processNo
+    ? `&processNo=${encodeURIComponent(filters.processNo)}`
+    : "";
   const cardNoStr = filters.cardNo ? `&cardNo=${filters.cardNo}` : "";
 
   let queryStr, DailyStatusQueryStr;

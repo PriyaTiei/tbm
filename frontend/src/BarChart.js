@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Bar } from "react-chartjs-2";
 import Modal from "react-bootstrap/Modal";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -16,9 +18,9 @@ import { fetchReportData } from "./redux/reportChart/reportChartActions";
 import DatePicker from "react-date-picker";
 import Select from "react-select";
 import {
-  filterLine,
-  filterMainLine,
-  filterSubLine,
+    filterLine,
+    filterMainLine,
+    filterSubLine,
 } from "./redux/filter/filterActions";
 
 
@@ -105,6 +107,32 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
     const [labelss, setlabelss] = useState([])
     const [pendings, setPending] = useState([])
     const [cpendings, setCPending] = useState([])
+    const exportToExcel = () => {
+    const completed = datas?.datasets?.[0]?.data || [];
+    const pending = datas?.datasets?.[1]?.data || [];
+
+    const exportData = labelss.map((label, index) => ({
+        Day: label.replace(/\n/g, " "),
+        Completed: completed[index] || 0,
+        Pending: pending[index] || 0,
+        CumulativePending: cpendings[index] || 0,
+        Total: (completed[index] || 0) + (pending[index] || 0)
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "Monthly Report"
+    );
+
+    XLSX.writeFile(
+        workbook,
+        `Monthly_Report_${monthName}_${year}.xlsx`
+    );
+};
     const [monthYear, setMonthYear] = useState(() => getCurrentMonthYear(chkDate));
     const [monthYearS, setMonthYearS] = useState(() => convertDate(getCurrentMonthYear(chkDate)));
     const [selectLineRef, setSelectLineRef] = useState("test");
@@ -132,106 +160,106 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
         return "Other Lines";
     };
 
-        const allDiscoveredLinesRef = useRef(new Set());
-        const prevDeptRef = useRef(pS);
+    const allDiscoveredLinesRef = useRef(new Set());
+    const prevDeptRef = useRef(pS);
 
-        if (prevDeptRef.current !== pS) {
-            prevDeptRef.current = pS;
-            allDiscoveredLinesRef.current.clear();
-        }
+    if (prevDeptRef.current !== pS) {
+        prevDeptRef.current = pS;
+        allDiscoveredLinesRef.current.clear();
+    }
 
-        if (machineData && machineData.machineData != undefined) {
-            machineData.machineData.forEach((element) => {
-                if (!element || !element.line) return;
-                allDiscoveredLinesRef.current.add(element.line);
-            });
-        }
-
-        const groupedLines = {};
-        const uniqueGroups = new Set();
-        const allSubLines = new Set();
-
-        allDiscoveredLinesRef.current.forEach((lineName) => {
-            const group = getLineGroup(lineName);
-            uniqueGroups.add(group);
-            if (!groupedLines[group]) {
-                groupedLines[group] = new Set();
-            }
-            groupedLines[group].add(lineName);
-            allSubLines.add(lineName);
+    if (machineData && machineData.machineData != undefined) {
+        machineData.machineData.forEach((element) => {
+            if (!element || !element.line) return;
+            allDiscoveredLinesRef.current.add(element.line);
         });
+    }
 
-        const preferredOrder = ["Assembly", "Machining"];
-        const otherGroups = Array.from(uniqueGroups).filter(
-            (g) => !preferredOrder.includes(g)
-        );
-        const sortedGroupNames = [
-            ...preferredOrder.filter((g) => uniqueGroups.has(g)),
-            ...otherGroups,
+    const groupedLines = {};
+    const uniqueGroups = new Set();
+    const allSubLines = new Set();
+
+    allDiscoveredLinesRef.current.forEach((lineName) => {
+        const group = getLineGroup(lineName);
+        uniqueGroups.add(group);
+        if (!groupedLines[group]) {
+            groupedLines[group] = new Set();
+        }
+        groupedLines[group].add(lineName);
+        allSubLines.add(lineName);
+    });
+
+    const preferredOrder = ["Assembly", "Machining"];
+    const otherGroups = Array.from(uniqueGroups).filter(
+        (g) => !preferredOrder.includes(g)
+    );
+    const sortedGroupNames = [
+        ...preferredOrder.filter((g) => uniqueGroups.has(g)),
+        ...otherGroups,
+    ];
+
+    var lineOptions = [{ value: null, label: "All Lines" }];
+    sortedGroupNames.forEach((groupName) => {
+        lineOptions.push({
+            value: groupName,
+            label: groupName,
+        });
+    });
+
+    const selectedMainLine = filters?.mainLine ?? null;
+    let subLineOptions = [];
+
+    if (selectedMainLine && groupedLines[selectedMainLine]) {
+        subLineOptions = [
+            { value: null, label: `All ${selectedMainLine} Sub-lines` },
+            ...Array.from(groupedLines[selectedMainLine]).sort().map((subLine) => ({
+                value: subLine,
+                label: subLine,
+            })),
         ];
-
-        var lineOptions = [{ value: null, label: "All Lines" }];
-        sortedGroupNames.forEach((groupName) => {
-            lineOptions.push({
-                value: groupName,
+    } else {
+        const groupedCategoryOptions = sortedGroupNames
+            .map((groupName) => ({
                 label: groupName,
-            });
-        });
+                options: Array.from(groupedLines[groupName] || [])
+                    .sort()
+                    .map((subLine) => ({
+                        value: subLine,
+                        label: subLine,
+                    })),
+            }))
+            .filter((group) => group.options.length > 0);
 
-        const selectedMainLine = filters?.mainLine ?? null;
-        let subLineOptions = [];
+        subLineOptions = [
+            { value: null, label: "All Sub-lines" },
+            ...groupedCategoryOptions,
+        ];
+    }
 
-        if (selectedMainLine && groupedLines[selectedMainLine]) {
-            subLineOptions = [
-                { value: null, label: `All ${selectedMainLine} Sub-lines` },
-                ...Array.from(groupedLines[selectedMainLine]).sort().map((subLine) => ({
-                    value: subLine,
-                    label: subLine,
-                })),
-            ];
-        } else {
-            const groupedCategoryOptions = sortedGroupNames
-                .map((groupName) => ({
-                    label: groupName,
-                    options: Array.from(groupedLines[groupName] || [])
-                        .sort()
-                        .map((subLine) => ({
-                            value: subLine,
-                            label: subLine,
-                        })),
-                }))
-                .filter((group) => group.options.length > 0);
+    const selectLineHandler = (e) => {
+        const val = e ? e.value : null;
+        dispatch(filterMainLine(val));
+        setSelectLineRef(val);
+    };
 
-            subLineOptions = [
-                { value: null, label: "All Sub-lines" },
-                ...groupedCategoryOptions,
-            ];
-        }
+    const selectSubLineHandler = (e) => {
+        const val = e ? e.value : null;
+        dispatch(filterSubLine(val));
+        setSelectLineRef(val);
+    };
 
-        const selectLineHandler = (e) => {
-            const val = e ? e.value : null;
-            dispatch(filterMainLine(val));
-            setSelectLineRef(val);
+    const selectedMainLineOption =
+        lineOptions.find((opt) => opt.value === selectedMainLine) || lineOptions[0];
+
+    let selectedSubLineOption = null;
+    if (filters?.subLine) {
+        selectedSubLineOption = { value: filters.subLine, label: filters.subLine };
+    } else {
+        selectedSubLineOption = {
+            value: null,
+            label: selectedMainLine ? `All ${selectedMainLine} Sub-lines` : "All Sub-lines",
         };
-
-        const selectSubLineHandler = (e) => {
-            const val = e ? e.value : null;
-            dispatch(filterSubLine(val));
-            setSelectLineRef(val);
-        };
-
-        const selectedMainLineOption =
-            lineOptions.find((opt) => opt.value === selectedMainLine) || lineOptions[0];
-
-        let selectedSubLineOption = null;
-        if (filters?.subLine) {
-            selectedSubLineOption = { value: filters.subLine, label: filters.subLine };
-        } else {
-            selectedSubLineOption = {
-                value: null,
-                label: selectedMainLine ? `All ${selectedMainLine} Sub-lines` : "All Sub-lines",
-            };
-        }
+    }
 
     const handleMonthYearChange = (e) => {
         const val = e.target.value;
@@ -256,7 +284,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
 
         const years = date.getFullYear();
         setYear(years);
-        dispatch(fetchReportData({ year: years, month: monthNumbers + 1, pS: pS , line: line}))
+        dispatch(fetchReportData({ year: years, month: monthNumbers + 1, pS: pS, line: line }))
         function getFirstMonday(year, month) {
             let date = new Date(year, month, 1);
             while (date.getDay() !== 1) {
@@ -510,16 +538,16 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
             data.datasets[0].data[index] = data.datasets[0].data[index] + newValue;
         };
         const modifyDataHolidayAtIndex = (index, newValue) => {
-            data.datasets[2].data[index] =  data.datasets[2].data[index] + newValue;
+            data.datasets[2].data[index] = data.datasets[2].data[index] + newValue;
         };
 
         // added data.datasets[1].data[index] to cumulate the sum
         const modifyLabelPending = (index, newLabel) => {
-            data.datasets[1].data[index] =  data.datasets[1].data[index] + newLabel;
+            data.datasets[1].data[index] = data.datasets[1].data[index] + newLabel;
         };
 
         const modifypends = (index, newLabel) => {
-            pends[index] = pends[index]  + newLabel;
+            pends[index] = pends[index] + newLabel;
         };
         const modifycpends = () => {
             for (let i = 0; i < cpends.length; i++) {
@@ -638,7 +666,14 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     Monthly Chart ({monthName}-{year})
                 </Modal.Title>
 
-                <div style={{ marginLeft: 'auto' }}>
+                <div
+                    style={{
+                        marginLeft: "auto",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px"
+                    }}
+                >
                     <input
                         type="month"
                         id="monthYear"
@@ -646,8 +681,15 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                         value={monthYear}
                         onChange={handleMonthYearChange}
                     />
+
+                    <button
+                        className="btn btn-success"
+                        onClick={exportToExcel}
+                    >
+                        Download Excel
+                    </button>
                 </div>
-                 <Select
+                <Select
                     options={lineOptions}
                     value={selectedMainLineOption}
                     onChange={selectLineHandler}
@@ -663,7 +705,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     isSearchable={true}
                     placeholder="Sub Line"
                 />
-       
+
             </Modal.Header>
 
 

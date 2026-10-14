@@ -54,7 +54,7 @@
 //       }
 //     }
 //   }
-  
+
 //   useEffect(() => {
 //     dispatch(getAbnormality(fromDateSt, toDateSt, queryStr));
 //   }, [dispatch, fromDate, toDate, filterObject]);
@@ -99,7 +99,7 @@
 
 //   const labels = ["Total", "Complete", "Pending", "Inprogress"];
 //   const data = [total, complete, pending, inprogress];
- 
+
 
 //   const filterHandler = (e) => {
 //     setFilterObject((filterObject) => {
@@ -191,7 +191,7 @@
 //           </button>
 //         )}
 
-   
+
 //         <div className="ms-auto me-3">
 //           <span>From</span>
 //           <DatePicker
@@ -216,8 +216,8 @@
 //         </div>
 
 //       <div className="overflow-auto " style={{ height: "65vh", width: "97vw", paddingBottom: "10%" }}>
-      
-         
+
+
 //         <table className="m-3   table table-bordered table-sm table-hover text-dark ">
 //           {/* <table className="m-5 border border-black-50 text-light"> */}
 //           <thead>
@@ -420,7 +420,7 @@ function SummaryAbnormality() {
       }
     }
   }
-  
+
   useEffect(() => {
     dispatch(getAbnormality(fromDateSt, toDateSt, queryStr));
   }, [dispatch, fromDate, toDate, filterObject]);
@@ -430,8 +430,8 @@ function SummaryAbnormality() {
   const abnormalityList = abnormalities.loading
     ? []
     : abnormalities.abnormalities.success
-    ? abnormalities.abnormalities.abnormalities
-    : [];
+      ? abnormalities.abnormalities.abnormalities
+      : [];
 
   const list = abnormalityList.map((item) => {
     return (
@@ -465,7 +465,7 @@ function SummaryAbnormality() {
 
   const labels = ["Total", "Complete", "Pending", "Inprogress"];
   const data = [total, complete, pending, inprogress];
- 
+
 
   const filterHandler = (e) => {
     setFilterObject((filterObject) => {
@@ -522,7 +522,7 @@ function SummaryAbnormality() {
       };
     });
   };
-  
+
   const clearFilterHandler = () => {
     setFilterObject({
       entryDate: "",
@@ -599,7 +599,7 @@ function SummaryAbnormality() {
 
     // Generate filename with date range
     const filename = `Abnormalities_${fromDate.toISOString().split('T')[0]}_to_${toDate.toISOString().split('T')[0]}.xlsx`;
-    
+
     // Download file
     XLSX.writeFile(wb, filename);
   };
@@ -624,7 +624,7 @@ function SummaryAbnormality() {
           </button>
         )}
 
-   
+
         <div className="ms-auto me-3">
           <span>From</span>
           <DatePicker
@@ -640,10 +640,10 @@ function SummaryAbnormality() {
 
       <div className="d-flex justify-content-between " >
         {showGraph ? <GraphAbnormality labels={labels} data={data} /> : null}
-        <div className="d-flex gap-2" style={{"marginBottom":"16px", "marginTop":"auto" , "marginLeft":"auto", "marginRight":"16px" }}>
+        <div className="d-flex gap-2" style={{ "marginBottom": "16px", "marginTop": "auto", "marginLeft": "auto", "marginRight": "16px" }}>
           <button
             className="btn btn-success"
-            style={{"height":"40px"}}
+            style={{ "height": "40px" }}
             onClick={downloadExcel}
             disabled={abnormalityList.length === 0}
           >
@@ -651,22 +651,23 @@ function SummaryAbnormality() {
           </button>
           <button
             className="btn btn-primary"
-            style={{"height":"40px"}}
+            style={{ "height": "40px" }}
             onClick={clearFilterHandler}
-          > 
+          >
             Clear Filters
           </button>
         </div>
       </div>
 
       <div className="overflow-auto " style={{ height: "65vh", width: "97vw", paddingBottom: "10%" }}>
-      
-         
+
+
         <table className="m-3   table table-bordered table-sm table-hover text-dark ">
           {/* <table className="m-5 border border-black-50 text-light"> */}
           <thead>
             <tr>
               <th>Entry Date</th>
+              <th>Card Created Date</th>
               <th>Dept.</th>
               <th>Line</th>
               <th>OP</th>
@@ -691,12 +692,11 @@ function SummaryAbnormality() {
                   // className="px-3"
                 /> */}
               </td>
-
+              <td></td>
               <td>
                 <Select
                   className="d-inline"
                   options={deptOptions}
-                  // defaultValue={{ value: "", label: "" }}
                   menuPlacement="bottom"
                   onChange={deptHandler}
                 />

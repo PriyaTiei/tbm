@@ -41,7 +41,7 @@ function SmileCard() {
   let entryForQueryStr = `${filters.y}-${filters.m}-${filters.dt}`;
   for (const e of searchParams.entries()) {
     let [f, v] = e;
-    queryStr = queryStr + "&" + f + "=" + v;
+   queryStr = queryStr + "&" + f + "=" + encodeURIComponent(v);
   }
 
   //use hooks

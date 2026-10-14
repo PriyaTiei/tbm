@@ -2,6 +2,8 @@ const catchAsyncError = require("../middleware/catchAsyncError");
 
 const AbnormalityModel = require("../mongoSchema/abnormalityModel");
 
+const CardRaisedModel = require("../mongoSchema/cardRaisedModel");
+
 const HeadModel = require("../mongoSchema/chekItemModel");
 
 const ApiFeatureAbnormality = require("../util/apiFeatureAbnormality");
@@ -16,7 +18,7 @@ const { ObjectId } = require("../util/getObjectType");
 
 
 exports.createAbnormality = catchAsyncError(async (req, res, next) => {
-console.log("*******************************************",req.body,"********************************************************");
+  console.log("*******************************************", req.body, "********************************************************");
   const {
 
     checkItem,
@@ -264,7 +266,7 @@ exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
   if (beforeImage !== undefined && beforeImage !== null && beforeImage !== '') {
     abnormalityItem.beforeImage = beforeImage;
   }
-  
+
   if (afterImage !== undefined && afterImage !== null && afterImage !== '') {
     abnormalityItem.afterImage = afterImage;
   }
@@ -304,11 +306,6 @@ exports.deleteAbnormality = catchAsyncError(async (req, res, next) => {
 
 exports.getAbnormalityAll = catchAsyncError(async (req, res, next) => {
 
-  //test
-
-
-
-
   const fromDate = req.params.fromDate;
 
   var toDate = req.params.toDate;
@@ -319,7 +316,7 @@ exports.getAbnormalityAll = catchAsyncError(async (req, res, next) => {
 
   let checkItemArray = [""]
 
-  if (queryStr?.item){
+  if (queryStr?.item) {
 
     checkItemArray = []
 
@@ -335,7 +332,7 @@ exports.getAbnormalityAll = catchAsyncError(async (req, res, next) => {
 
     })
 
-    checkItems.map(item=>{
+    checkItems.map(item => {
 
       checkItemArray.push(item._id.toString())
 
@@ -346,13 +343,13 @@ exports.getAbnormalityAll = catchAsyncError(async (req, res, next) => {
 
 
 
-  if(queryStr.item  && !checkItemArray.length){
+  if (queryStr.item && !checkItemArray.length) {
 
     return []
 
   }
 
-    
+
 
   const abnormailityFeature = new ApiFeatureAbnormality(AbnormalityModel.find(), queryStr, createdAt, checkItemArray).filter()
 
@@ -369,7 +366,22 @@ exports.getAbnormalityAll = catchAsyncError(async (req, res, next) => {
 
 
   })
+  for (let i = 0; i < abnormalities.length; i++) {
+    const card = await CardRaisedModel.findOne({
+      checkItem: abnormalities[i].checkItem
+    }).sort({ createdAt: -1 });
 
+    abnormalities[i] = abnormalities[i].toObject();
+    console.log(
+      "Abnormality ID:",
+      abnormalities[i]._id.toString(),
+      "Card Found:",
+      card ? card.createdAt : "NOT FOUND"
+    );
+    abnormalities[i].cardCreatedDate = card
+      ? card.createdAt
+      : null;
+  }
 
 
 
@@ -433,9 +445,9 @@ exports.getAbnormalityByIdAndDate = catchAsyncError(async (req, res, next) => {
 
     newQueryStr["createdAt"] = {
 
-      $lte:new Date(getEndDate(date)),
+      $lte: new Date(getEndDate(date)),
 
-      $gte:new Date(getStartDate(date)),
+      $gte: new Date(getStartDate(date)),
 
     }
 
@@ -444,7 +456,7 @@ exports.getAbnormalityByIdAndDate = catchAsyncError(async (req, res, next) => {
 
 
 
-  newQueryStr['checkItem']=ObjectId(id)
+  newQueryStr['checkItem'] = ObjectId(id)
 
 
 
@@ -453,9 +465,9 @@ exports.getAbnormalityByIdAndDate = catchAsyncError(async (req, res, next) => {
 
   const abnormalityItem = await AbnormalityModel.findOne(newQueryStr)
 
-  
 
-  if (abnormalityItem==null) {
+
+  if (abnormalityItem == null) {
 
     return res.status(201).json({ success: false });
 

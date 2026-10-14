@@ -353,30 +353,25 @@ exports.getDailyStatusAll = catchAsyncError(async (req, res, next) => {
 // });
 
 exports.getDailyStatusByCheckItem = catchAsyncError(async (req, res, next) => {
-  const query = {}
-  console.log("here");
+  console.log("=== Judgement History API ===");
 
-  console.log(req?.query?.byData === "yes");
-  const dailyStatusAll = await DailyStatusModel.find(
-    req?.query?.byData === "yes" ? {
-      ...req?.query?.query
-    } : {
-      checkItem: ObjectId(req.query.checkItem)
-    }
-  );
+  const filter =
+    req?.query?.byData === "yes"
+      ? {}
+      : {
+          checkItem: ObjectId(req.query.checkItem),
+        };
 
-  console.log(dailyStatusAll);
+  const dailyStatusAll = await DailyStatusModel.find(filter)
+    .sort({ checkedAt: -1 }) // latest first
+    .limit(200)              // fetch only 200 records
+    .lean();
 
-  if (!dailyStatusAll) {
-    return res.status(201).json({
-      success: false,
-      dailyStatusAll: []
-    });
-  }
+  console.log("Records returned:", dailyStatusAll.length);
 
-  return res.status(201).json({
+  return res.status(200).json({
     success: true,
-    dailyStatusAll: dailyStatusAll
+    dailyStatusAll,
   });
 });
 

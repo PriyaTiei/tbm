@@ -30,6 +30,7 @@ export const getCheckItem = (queryStr, page, entryForQueryStr) => {
     dispatch(checkItemFetchRequest());
 
     try {
+      console.log("FINAL QUERY STRING =", queryStr);
       const url = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/headCheckList?${queryStr}&page=${page}`;
       const result = await axios.get(url);
       const checklist = result.data.headCheckList || [];

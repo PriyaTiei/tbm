@@ -23,7 +23,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
     _id,
     pS
   } = item;
-console.log(item);
+  console.log(item);
   var workDetail = ""
   if (checkItem == null) {
     workDetail = ""
@@ -41,34 +41,34 @@ console.log(item);
   const [beforeImageUrl, setBeforeImageUrl] = useState(null);
   const [afterImageUrl, setAfterImageUrl] = useState(null);
 
-useEffect(() => {
-  if (beforeImage) {
-    if (beforeImage instanceof File) {
-      setBeforeImageUrl(URL.createObjectURL(beforeImage));
-    } else if (typeof beforeImage === "string") {
-      setBeforeImageUrl(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${beforeImage}`);
+  useEffect(() => {
+    if (beforeImage) {
+      if (beforeImage instanceof File) {
+        setBeforeImageUrl(URL.createObjectURL(beforeImage));
+      } else if (typeof beforeImage === "string") {
+        setBeforeImageUrl(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${beforeImage}`);
+      } else {
+        setBeforeImageUrl(null);
+      }
+
+      if (afterImage instanceof File) {
+        setAfterImageUrl(URL.createObjectURL(afterImage));
+      } else if (typeof afterImage === "string") {
+        setAfterImageUrl(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${afterImage}`);
+      } else {
+        setAfterImageUrl(null);
+      }
     } else {
       setBeforeImageUrl(null);
-    }
-
-    if (afterImage instanceof File) {
-      setAfterImageUrl(URL.createObjectURL(afterImage));
-    } else if (typeof afterImage === "string") {
-      setAfterImageUrl(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${afterImage}`);
-    } else {
       setAfterImageUrl(null);
     }
-  } else {
-    setBeforeImageUrl(null);
-    setAfterImageUrl(null);
-  }
 
-  // Cleanup blob URLs when component unmounts or image changes:
-  return () => {
-    if (beforeImageUrl) URL.revokeObjectURL(beforeImageUrl);
-    if (afterImageUrl) URL.revokeObjectURL(afterImageUrl);
-  };
-}, [beforeImage]);
+    // Cleanup blob URLs when component unmounts or image changes:
+    return () => {
+      if (beforeImageUrl) URL.revokeObjectURL(beforeImageUrl);
+      if (afterImageUrl) URL.revokeObjectURL(afterImageUrl);
+    };
+  }, [beforeImage]);
 
 
   useEffect(() => {
@@ -111,7 +111,15 @@ useEffect(() => {
       }
     >
       <td>{createdAt.slice(0, 10)}</td>
+
+      <td>
+        {item.cardCreatedDate
+          ? item.cardCreatedDate.slice(0, 10)
+          : "-"}
+      </td>
+
       <td>{pS === "P" ? "Maint." : (pS === "S" ? "Prod." : "")}</td>
+      ``
       <td>{line}</td>
       <td>{processNo}</td>
       <td>{workDetail}</td>

@@ -19,7 +19,7 @@ function MachineCard(props) {
   return (
     <Fragment>
       <Link
-        to={`/checkList?line=${line}&processNo=${processNo}`}
+        to={`/checkList?line=${encodeURIComponent(line || "")}&processNo=${encodeURIComponent(processNo || "")}`}
         style={{ textDecoration: "none" }}
       >
         <div
