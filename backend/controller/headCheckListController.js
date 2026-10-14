@@ -866,18 +866,34 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
   // const { token } = req.cookies;
   // console.log("cookie form getHeadChecklist");
   // console.log("token :", token);
-  // console.log( req.query, "group query 1")
-  console.log("req----", req.query)
-  // req.query.isDeleted =  { $exists: false } 
+  req.query = { ...req.query };
 
+  // Auto-heal processNo if split by unencoded ampersand (e.g. processNo="E/G NO.", "Type Engraving"="")
+  if (req.query.processNo) {
+    const knownKeys = ["d", "w", "m", "y", "pS", "rS", "line", "page", "limit", "dept", "group", "cardNo", "isDeleted", "$or"];
+    const queryKeys = Object.keys(req.query);
+    const pIdx = queryKeys.indexOf("processNo");
+    if (pIdx !== -1) {
+      for (let i = pIdx + 1; i < queryKeys.length; i++) {
+        const key = queryKeys[i];
+        if (knownKeys.includes(key)) break;
+        if (req.query[key] === "" || req.query[key] === undefined) {
+          req.query.processNo += "&" + key;
+          delete req.query[key];
+        }
+      }
+    }
+  }
 
   req.query = {
     ...req.query,
     $or: [
       { isDeleted: { $exists: false } },
       { isDeleted: false },
-    ]
+    ],
   };
+
+  console.log("req----", req.query);
 
 
 
@@ -907,6 +923,23 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   // console.log("token :", token);
 
   req.query = { ...req.query };
+
+  if (req.query.processNo) {
+    const knownKeys = ["d", "w", "m", "y", "pS", "rS", "line", "page", "limit", "dept", "group", "cardNo", "isDeleted", "$or"];
+    const queryKeys = Object.keys(req.query);
+    const pIdx = queryKeys.indexOf("processNo");
+    if (pIdx !== -1) {
+      for (let i = pIdx + 1; i < queryKeys.length; i++) {
+        const key = queryKeys[i];
+        if (knownKeys.includes(key)) break;
+        if (req.query[key] === "" || req.query[key] === undefined) {
+          req.query.processNo += "&" + key;
+          delete req.query[key];
+        }
+      }
+    }
+  }
+
   console.log(req.query);
   // console.log( req.query, "group query 2")
 
