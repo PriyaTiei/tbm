@@ -444,17 +444,51 @@ exports.getTrendDailyStatus = catchAsyncError(async (req, res, next) => {
 });
 
 
+function parseDateParam(val) {
+  if (!val) return new Date();
+  if (val instanceof Date) return val;
+  if (typeof val === "string") {
+    if (/^\d{4}-\d{1,2}-\d{1,2}/.test(val)) {
+      const parts = val.split("T")[0].split("-").map(Number);
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+    if (val.includes("/")) {
+      const parts = val.split("/").map(Number);
+      if (parts[2] > 1000) {
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+      }
+      if (parts[0] > 1000) {
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+      }
+    }
+    const d = new Date(val);
+    if (!isNaN(d.getTime())) return d;
+  }
+  return new Date();
+}
+
 function getDatesInRange(startDate, endDate) {
-  const date = new Date(startDate.getTime());
+  const d1 = parseDateParam(startDate);
+  const d2 = parseDateParam(endDate);
+  d1.setHours(0, 0, 0, 0);
+  d2.setHours(0, 0, 0, 0);
+
+  const start = d1 <= d2 ? d1 : d2;
+  const end = d1 <= d2 ? d2 : d1;
+  const curr = new Date(start.getTime());
 
   const dates = [];
-
-  while (date <= endDate) {
-    var cdate = new Date(date).toLocaleDateString()
-    var fdate = cdate.split("/")
-    fdate = fdate[1] + "-" + fdate[0] + "-" + fdate[2]
-    dates.push(fdate);
-    date.setDate(date.getDate() + 1);
+  while (curr <= end) {
+    const yyyy = curr.getFullYear();
+    const mm = String(curr.getMonth() + 1).padStart(2, "0");
+    const dd = String(curr.getDate()).padStart(2, "0");
+    dates.push({
+      dateObj: new Date(curr.getTime()),
+      time: curr.getTime(),
+      yyyyMMdd: `${yyyy}-${mm}-${dd}`,
+      ddMMyyyy: `${dd}-${mm}-${yyyy}`,
+    });
+    curr.setDate(curr.getDate() + 1);
   }
 
   return dates;
@@ -481,46 +515,143 @@ exports.changeVerified = catchAsyncError(async (req, res, next) => {
 })
 
 exports.getGraphData = catchAsyncError(async (req, res, next) => {
-
   const { startDate, endDate, pS, line } = req.body;
-  var start = startDate.split("/")
-  start = start[2] + "-" + start[1] + "-" + start[0]
-  var end = endDate.split("/")
-  end = end[2] + "-" + end[1] + "-" + end[0]
-  const d1 = new Date(start);
-  const d2 = new Date(end);
+  const dateRangeList = getDatesInRange(startDate, endDate);
 
-  var dates = getDatesInRange(d1, d2)
+  if (dateRangeList.length === 0) {
+    return res.json({ totalData: {} });
+  }
 
+  const d1 = dateRangeList[0].dateObj;
+  const d2 = dateRangeList[dateRangeList.length - 1].dateObj;
+  const minDateStr = dateRangeList[0].yyyyMMdd;
+  const maxDateStr = dateRangeList[dateRangeList.length - 1].yyyyMMdd;
+
+  const dateStringsDDMM = dateRangeList.map((d) => d.ddMMyyyy);
+  const dateStringsYYYYMM = dateRangeList.map((d) => d.yyyyMMdd);
+
+  // 1. Fetch from DailyGraphModel if any pre-aggregated records exist
   const dailyGraphData = await DailyGraphModel.find({
     pS: pS,
     line: line,
-    dateString: {
-      $in: dates
+    $or: [
+      { graphFor: { $gte: d1, $lte: new Date(d2.getTime() + 86400000) } },
+      { dateString: { $in: dateStringsDDMM } },
+      { dateString: { $in: dateStringsYYYYMM } }
+    ]
+  });
+
+  const graphDataMap = {};
+  dailyGraphData.forEach((item) => {
+    if (item.dateString) {
+      graphDataMap[item.dateString] = item;
     }
-  })
-
-  var totalData = {}
-
-  console.log(dates);
-
-  dailyGraphData.map(data => {
-    const dd = new Date(data.graphFor)
-    totalData[dd.getTime()] = {
-      date: data.dateString,
-      total: data.total,
-      totalOK: data.totalOK,
-      totalNG: data.totalNG,
-      totalPending: data.totalPending
+    if (item.graphFor) {
+      const gDate = new Date(item.graphFor);
+      const yyyy = gDate.getFullYear();
+      const mm = String(gDate.getMonth() + 1).padStart(2, "0");
+      const dd = String(gDate.getDate()).padStart(2, "0");
+      graphDataMap[`${yyyy}-${mm}-${dd}`] = item;
+      graphDataMap[`${dd}-${mm}-${yyyy}`] = item;
     }
-  })
+  });
 
-  console.log(totalData);
+  // 2. Count total cards (unique processes) on this line
+  const checkItems = await HeadModel.find({
+    pS: pS,
+    line: line
+  }).select("processNo");
+
+  const uniqueProcesses = new Set();
+  checkItems.forEach((ci) => {
+    if (ci.processNo) uniqueProcesses.add(ci.processNo);
+  });
+  const lineTotalCards = uniqueProcesses.size;
+
+  // 3. Query real-time DailyStatus aggregations for the date range
+  const statuses = await DailyStatusModel.aggregate([
+    {
+      $match: {
+        pS: pS,
+        entryFor: { $gte: minDateStr, $lte: maxDateStr }
+      }
+    },
+    {
+      $lookup: {
+        from: "checkitems",
+        localField: "checkItem",
+        foreignField: "_id",
+        as: "checkItemData"
+      }
+    },
+    {
+      $unwind: "$checkItemData"
+    },
+    {
+      $match: {
+        "checkItemData.line": line
+      }
+    },
+    {
+      $group: {
+        _id: {
+          entryFor: "$entryFor",
+          result: "$result",
+          processNo: "$checkItemData.processNo"
+        }
+      }
+    }
+  ]);
+
+  const statusByDate = {};
+  statuses.forEach((st) => {
+    const dateKey = st._id.entryFor;
+    if (!statusByDate[dateKey]) {
+      statusByDate[dateKey] = { okSet: new Set(), ngSet: new Set() };
+    }
+    if (st._id.result === "OK") {
+      statusByDate[dateKey].okSet.add(st._id.processNo);
+    } else if (st._id.result === "NG") {
+      statusByDate[dateKey].ngSet.add(st._id.processNo);
+    }
+  });
+
+  const now = new Date();
+  const todayYyyyMmDd = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
+  const totalData = {};
+  dateRangeList.forEach((d) => {
+    const isToday = d.yyyyMMdd === todayYyyyMmDd;
+    const existing = graphDataMap[d.yyyyMMdd] || graphDataMap[d.ddMMyyyy];
+
+    if (existing && !isToday && existing.total !== undefined) {
+      totalData[d.time] = {
+        date: d.ddMMyyyy,
+        total: existing.total,
+        totalOK: existing.totalOK || 0,
+        totalNG: existing.totalNG || 0,
+        totalPending: existing.totalPending || 0,
+      };
+    } else {
+      const okCount = statusByDate[d.yyyyMMdd]?.okSet.size || 0;
+      const ngCount = statusByDate[d.yyyyMMdd]?.ngSet.size || 0;
+      const total = lineTotalCards;
+      const pendingCount = Math.max(0, total - (okCount + ngCount));
+
+      totalData[d.time] = {
+        date: d.ddMMyyyy,
+        total: total,
+        totalOK: okCount,
+        totalNG: ngCount,
+        totalPending: pendingCount,
+      };
+    }
+  });
 
   res.json({
     totalData: totalData
-  })
-})
+  });
+});
 
 exports.generateDailyGraph = async (req, res, next) => {
   const { pS, reqDate } = req.query;
@@ -550,12 +681,11 @@ exports.generateDailyGraph = async (req, res, next) => {
     "pS": pS
   }
 
-  var cdate = dateType.toLocaleDateString()
-  var fdate = cdate.split("/")
-  fdate = fdate[2] + "-" + fdate[0] + "-" + fdate[1]
-  var dbDateString = fdate.split("-").reverse().join("-")
-
-  // console.log(dbDateString);
+  const yyyy = dateType.getFullYear();
+  const mm = String(dateType.getMonth() + 1).padStart(2, "0");
+  const dd = String(dateType.getDate()).padStart(2, "0");
+  const fdate = `${yyyy}-${mm}-${dd}`;
+  const dbDateString = `${dd}-${mm}-${yyyy}`;
 
   const deleted = await DailyGraphModel.deleteMany({
     dateString: dbDateString,

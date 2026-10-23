@@ -16,35 +16,39 @@ const CardStatusGraph = ({ unFilteredData }) => {
         var tempDataSet = [
             {
                 label: "OK",
-                background: "rgba(75, 192, 192)",
+                backgroundColor: "rgba(75, 192, 192, 0.8)",
+                background: "rgba(75, 192, 192, 0.8)",
                 data: data.okData,
                 grouped: false,
                 stack: '1'
             },
             {
                 label: "NG",
-                background: "rgba(255, 0, 0, 0.7)",
+                backgroundColor: "rgba(255, 99, 132, 0.8)",
+                background: "rgba(255, 99, 132, 0.8)",
                 data: data.ngData,
-                grouped:false,
+                grouped: false,
                 stack: '1'
             },
             {
                 label: "Pending",
-                background: "#ff9191dd",
+                backgroundColor: "rgba(255, 159, 64, 0.8)",
+                background: "rgba(255, 159, 64, 0.8)",
                 data: data.pendingData,
-                grouped:false,
+                grouped: false,
                 stack: '1'
             },
             {
                 label: "Total",
+                backgroundColor: "#3498db",
                 background: "#3498db",
                 data: data.totalData,
-                grouped:false
+                grouped: false
             }
         ]
         setChartData(({
-            datasets:tempDataSet,
-            labels:data.dates
+            datasets: tempDataSet,
+            labels: data.dates || []
         }))
     }, [data]);
 
@@ -55,20 +59,24 @@ const CardStatusGraph = ({ unFilteredData }) => {
         var totalData = []
         var pendingData = []
         
-        Object.keys(unFilteredData).sort().map((val,i)=>{
-            dates.push(unFilteredData[val].date)
-            totalData.push(unFilteredData[val].total)
-            okData.push(unFilteredData[val].totalOK)
-            ngData.push(unFilteredData[val].totalNG)
-            pendingData.push(unFilteredData[val].totalPending)
-        })
+        if (unFilteredData && typeof unFilteredData === "object") {
+            Object.keys(unFilteredData).sort().forEach((val)=>{
+                if (unFilteredData[val]) {
+                    dates.push(unFilteredData[val].date)
+                    totalData.push(unFilteredData[val].total)
+                    okData.push(unFilteredData[val].totalOK)
+                    ngData.push(unFilteredData[val].totalNG)
+                    pendingData.push(unFilteredData[val].totalPending)
+                }
+            })
+        }
 
         setData({
-            dates:dates,
-            ngData:ngData,
-            okData:okData,
-            totalData:totalData,
-            pendingData:pendingData
+            dates: dates,
+            ngData: ngData,
+            okData: okData,
+            totalData: totalData,
+            pendingData: pendingData
         })
     }, [unFilteredData])
 
