@@ -543,7 +543,7 @@ exports.generateDailyGraph = async (req, res, next) => {
   }
 
   const headVal = {
-    "d": dateType.getDate(),
+    "d": dateType.getDay(),
     "w": Math.floor(dateType.getDate() / 7.1) + 1,
     "m": dateType.getMonth() + 1,
     "y": dateType.getFullYear(),

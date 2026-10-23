@@ -856,12 +856,17 @@ async function getItemsNGCountByLine(report, pS, line) {
   });
 }
 
-async function getItemsPendingCountByLine(report, line) {
+async function getItemsPendingCountByLine(report, pS, line) {
+  const matchCriteria = {
+    updatedAt: { $gte: report.startDate, $lte: report.endDate },
+    result: { $eq: "PENDING" },
+  };
+  if (pS) {
+    matchCriteria.pS = pS;
+  }
   const pipeline = [
     {
-      $match: {
-        result: { $eq: "PENDING" },
-      }
+      $match: matchCriteria,
     },
     {
       $lookup: {
@@ -1064,11 +1069,8 @@ async function fillTotalItemsByLine(report, pS, line) {
   let dataArray = report.data;
 
   while (tDate <= report.endDate) {
-    let d = tDate.getDate();
-
-    let w = Math.floor(
-      tDate.getDate() / 7.1
-    ) + 1;
+    let d = tDate.getDay();
+    let w = Math.floor(tDate.getDate() / 7.1) + 1;
     let m = tDate.getMonth() + 1;
     let y = tDate.getFullYear();
     let query = {
@@ -1082,30 +1084,12 @@ async function fillTotalItemsByLine(report, pS, line) {
       query.line = line;
     }
 
-    if (tDate.toISOString().split("T")[0] === "2026-10-16") {
-      console.log("GRAPH QUERY", query);
-    }
-
     const headObject = new ApiFeatureHead(HeadModel, query).match();
     const headCheckList = await headObject.query;
-    if (tDate.toISOString().split("T")[0] === "2026-10-16") {
-      console.log("GRAPH QUERY", query);
-      console.log(
-        "GRAPH FIRST ITEM",
-        JSON.stringify(headCheckList[0], null, 2)
-      );
-    }
-
 
     // Group by line
     const lineGroups = {};
     headCheckList.forEach((item) => {
-      console.log(
-        "LINE:",
-        item.line || item._id?.line,
-        "PROCESS COUNT:",
-        item.processList?.length
-      );
       const lineName = item._id && item._id.line ? item._id.line : item.line;
       if (lineName && lineName !== "undefined") {
         if (!lineGroups[lineName]) {
@@ -1170,7 +1154,7 @@ exports.reportTBMStatus = catchAsyncError(async (req, res, next) => {
   await fillHolidays(report);
   await getItemsOKCountByLine(report, pS, line);
   await getItemsNGCountByLine(report, pS, line);
-  await getItemsPendingCountByLine(report, line);
+  await getItemsPendingCountByLine(report, pS, line);
   await fillTotalItemsByLine(report, pS, line);
   await refineDataByLine(report, line);
 

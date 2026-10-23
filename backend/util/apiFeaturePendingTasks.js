@@ -10,9 +10,13 @@ class ApiFeaturePendingTask {
     const removeItems = ["dept", "page", "limit"];
     removeItems.forEach((item) => delete newQueryStr[item]);
 
-    newQueryStr = newQueryStr.d
-      ? { ...newQueryStr, d: { $in: [9999, Number(newQueryStr.d)] } }
-      : { ...newQueryStr };
+    if (newQueryStr.d !== undefined && newQueryStr.d !== null && newQueryStr.d !== "") {
+      const dNum = Number(newQueryStr.d);
+      const dArr = [9999, dNum];
+      if (dNum === 0 && !dArr.includes(7)) dArr.push(7);
+      if (dNum === 7 && !dArr.includes(0)) dArr.push(0);
+      newQueryStr = { ...newQueryStr, d: { $in: dArr } };
+    }
 
     newQueryStr = newQueryStr.w
       ? { ...newQueryStr, w: { $in: [9999, Number(newQueryStr.w)] } }
