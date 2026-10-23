@@ -598,12 +598,7 @@ exports.generateDailyGraph = async (req, res, next) => {
   var totalGraphData = {};
 
   machineData.map((machine) => {
-    var total = 0
-    Object.values(machine?.counts).map(val => {
-      if (val) {
-        total += val
-      }
-    });
+    var total = machine?.processNos ? machine.processNos.length : 0;
     totalGraphData[machine.line] = {
       total: total,
       totalOK: 0,
@@ -629,19 +624,19 @@ exports.generateDailyGraph = async (req, res, next) => {
   sortedDailyStatus.map(dailystat => {
     var totalOK = 0, totalNG = 0;
     dailystat?.processes.map(process => {
-      if (process?.result?.OK) {
-        totalOK += process.result.OK
+      if (process?.result?.OK && process?.result?.OK > 0) {
+        totalOK += 1;
       }
-      if (process?.result?.NG) {
-        totalNG += process.result.NG
+      if (process?.result?.NG && process?.result?.NG > 0) {
+        totalNG += 1;
       }
     })
-    var total = totalGraphData && totalGraphData.length > 0 && totalGraphData[dailystat.line] ? totalGraphData[dailystat.line].total : 0;
+    var total = totalGraphData && totalGraphData[dailystat.line] ? totalGraphData[dailystat.line].total : 0;
     totalGraphData[dailystat.line] = {
       total: total,
       totalOK: totalOK,
       totalNG: totalNG,
-      totalPending: total - (totalOK + totalNG)
+      totalPending: Math.max(0, total - (totalOK + totalNG))
     }
   })
 

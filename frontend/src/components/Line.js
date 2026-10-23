@@ -16,7 +16,7 @@ function Line({ line, processNos, counts, dailyStatusDataLinewise }) {
     };
   }); 
 
-  let totalSum = Object.values(counts).reduce((acc, curr) => acc + curr, 0);
+  let totalSum = processNos ? processNos.length : 0;
  
 
   return (

@@ -13,7 +13,7 @@ export default function AlldelMachineLine({ line, processList , counts  }) {
     dispatch(setProcessData(processData)); 
   };
 
-  let totalSum = Object.values(counts).reduce((acc, curr) => acc + curr, 0);
+  let totalSum = processList ? processList.length : 0;
 
   return (
     <Fragment>

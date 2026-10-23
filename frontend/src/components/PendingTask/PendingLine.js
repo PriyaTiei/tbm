@@ -9,7 +9,7 @@ function PendingLine({ line, processList, counts }) {
     dispatch(setProcessData(processData));
   };
 
-  const totalSum = counts && typeof counts === "object" ? Object.values(counts).reduce((acc, curr) => acc + curr, 0) : 0;
+  const totalSum = processList ? processList.length : 0;
 
   return (
     <Fragment>

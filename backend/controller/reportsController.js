@@ -770,15 +770,23 @@ async function getItemsOKCountByLine(report, pS, line) {
     });
   }
 
-  pipeline.push({
-    $group: {
-      _id: {
-        entryFor: "$entryFor",
-        line: "$checkItemData.line",
+  pipeline.push(
+    {
+      $group: {
+        _id: {
+          entryFor: "$entryFor",
+          line: "$checkItemData.line",
+        },
+        processes: { $addToSet: "$checkItemData.processNo" },
       },
-      count: { $sum: 1 },
     },
-  });
+    {
+      $project: {
+        _id: 1,
+        count: { $size: "$processes" },
+      },
+    }
+  );
 
   const dailyStatus = await DailyStatus.aggregate(pipeline);
 
@@ -830,15 +838,23 @@ async function getItemsNGCountByLine(report, pS, line) {
       },
     });
   }
-  pipeline.push({
-    $group: {
-      _id: {
-        entryFor: "$entryFor",
-        line: "$checkItemData.line",
+  pipeline.push(
+    {
+      $group: {
+        _id: {
+          entryFor: "$entryFor",
+          line: "$checkItemData.line",
+        },
+        processes: { $addToSet: "$checkItemData.processNo" },
       },
-      count: { $sum: 1 },
     },
-  });
+    {
+      $project: {
+        _id: 1,
+        count: { $size: "$processes" },
+      },
+    }
+  );
 
   const dailyStatus = await DailyStatus.aggregate(pipeline);
 
@@ -887,15 +903,23 @@ async function getItemsPendingCountByLine(report, pS, line) {
       },
     });
   }
-  pipeline.push({
-    $group: {
-      _id: {
-        date: { $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" } },
-        line: "$checkItemData.line",
+  pipeline.push(
+    {
+      $group: {
+        _id: {
+          date: { $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" } },
+          line: "$checkItemData.line",
+        },
+        processes: { $addToSet: "$checkItemData.processNo" },
       },
-      count: { $sum: 1 },
     },
-  });
+    {
+      $project: {
+        _id: 1,
+        count: { $size: "$processes" },
+      },
+    }
+  );
   const pendingTasks = await PendingTask.aggregate(pipeline);
 
   pendingTasks.forEach((task) => {
@@ -1095,7 +1119,8 @@ async function fillTotalItemsByLine(report, pS, line) {
         if (!lineGroups[lineName]) {
           lineGroups[lineName] = 0;
         }
-        lineGroups[lineName] += item.processList ? item.processList.length : 0;
+        const uniqueProcesses = new Set(item.processList || []);
+        lineGroups[lineName] += uniqueProcesses.size;
       }
     });
 
