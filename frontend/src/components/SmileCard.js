@@ -81,11 +81,12 @@ function SmileCard() {
     queryParams.push(`processNo=${encodeURIComponent(processNoParam)}`);
   }
 
-  const queryStr = queryParams.join("&");
+  let queryStr = queryParams.join("&");
   let entryForQueryStr = `${filters.y}-${filters.m}-${filters.dt}`;
-  for (const e of searchParams.entries()) {
-    let [f, v] = e;
-   queryStr = queryStr + "&" + f + "=" + encodeURIComponent(v);
+  for (const [f, v] of searchParams.entries()) {
+    if (!queryParams.some((item) => item.startsWith(`${f}=`))) {
+      queryStr = queryStr + (queryStr ? "&" : "") + f + "=" + encodeURIComponent(v);
+    }
   }
 
   //use hooks
