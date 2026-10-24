@@ -957,6 +957,7 @@ export default function PendingTask() {
 
     const columns = [
       "SL NO",
+      "FIRST MISSED DATE",
       "LATEST PLAN DATE", 
       "LINE",
       "OP NO",
@@ -1073,11 +1074,13 @@ function buildExcelRowsFromData(data) {
 
     pending.processList.forEach((process) => {
       if (!process.processData || process.processData.length === 0) {
+        const fallbackDate = process.createdAt?.split("T")[0] || "";
         rows.push([
           index++,
-          process.createdAt?.split("T")[0] || "",
+          fallbackDate,
+          fallbackDate,
           pending.line || "",
-          process.processNo || "",
+          process.processNo || "N/A",
           "No process data available",
           "",
           "",
@@ -1109,16 +1112,30 @@ function buildExcelRowsFromData(data) {
           }
         }
         
-        // Use the first entry date or fallback to empty string
-        const latestPlanDate = dataItem.entryDates?.[0] 
-          ? new Date(dataItem.entryDates[0]).toISOString().split("T")[0] 
-          : "";
+        // Extract and sort all plan dates from entryDates to accurately find first missed date and latest plan date
+        const sortedDates = (dataItem.entryDates || [])
+          .map((d) => (d ? new Date(d) : null))
+          .filter((d) => d && !isNaN(d.getTime()))
+          .sort((a, b) => a.getTime() - b.getTime());
+
+        const firstMissedDate = sortedDates.length > 0
+          ? sortedDates[0].toISOString().split("T")[0]
+          : (dataItem.createdAt ? new Date(dataItem.createdAt).toISOString().split("T")[0] : "");
+
+        const latestPlanDate = sortedDates.length > 0
+          ? sortedDates[sortedDates.length - 1].toISOString().split("T")[0]
+          : firstMissedDate;
+
+        const opNo = (process.processNo && process.processNo !== "#N/A" && process.processNo !== "N/A")
+          ? process.processNo
+          : (dataItem.processNo || dataItem.checkItem?.processNo || process.processNo || "N/A");
         
         rows.push([
           index++,
+          firstMissedDate,
           latestPlanDate,
           pending.line || "",
-          process.processNo || "",
+          opNo,
           workDetail,
           frequency,
           measurement,
