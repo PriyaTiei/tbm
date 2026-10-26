@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import * as XLSX from "xlsx";
@@ -15,6 +15,11 @@ export default function TbmOverallStatus() {
   };
 
   const [selectedDate, setSelectedDate] = useState(getTodayStr());
+  // Department: 'P' = Maintenance (TBM), 'S' = Production (Smile Card)
+  const [department, setDepartment] = useState("P");
+  // Line Filter: 'ALL' | '3C' (Machining) | 'ASSEMBLY'
+  const [lineFilter, setLineFilter] = useState("ALL");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [dashboardData, setDashboardData] = useState(null);
@@ -38,11 +43,10 @@ export default function TbmOverallStatus() {
     setError(null);
 
     try {
-      // 1. Call dedicated backend endpoint for TBM (pS = "P")
       const res = await axios.get(`${apiBaseUrl}/reports/overallTbmStatus`, {
         params: {
           date: selectedDate,
-          pS: "P",
+          pS: department,
         },
         timeout: 8000,
       });
@@ -53,10 +57,10 @@ export default function TbmOverallStatus() {
         return;
       }
     } catch (apiErr) {
-      console.warn("Backend /reports/overallTbmStatus failed, falling back to local aggregation:", apiErr.message);
+      console.warn("Backend /reports/overallTbmStatus error, falling back:", apiErr.message);
     }
 
-    // 2. Client-side fallback using /head/headMachineList & /dailyStatus/getGraphData
+    // Client-side fallback
     try {
       const parts = selectedDate.split(/[-/]/).map(Number);
       const year = parts[0] > 1000 ? parts[0] : parts[2];
@@ -89,12 +93,11 @@ export default function TbmOverallStatus() {
         let cumActualMonth = 0;
 
         try {
-          // Normalize line string for DB query ("Block", "Crank", "Head")
           const titleLine = lineName.charAt(0).toUpperCase() + lineName.slice(1).toLowerCase();
           const graphRes = await axios.post(`${apiBaseUrl}/dailyStatus/getGraphData`, {
             startDate: startOfMonth,
             endDate: endOfMonth,
-            pS: "P",
+            pS: department,
             line: titleLine,
           });
 
@@ -124,7 +127,7 @@ export default function TbmOverallStatus() {
             cumActualMonth += actual;
           });
         } catch (lineErr) {
-          console.warn(`Fallback failed for line ${lineName}:`, lineErr.message);
+          console.warn(`Fallback error for line ${lineName}:`, lineErr.message);
         }
 
         const cumPendingAod = Math.max(0, cumPlanAod - cumActualAod);
@@ -155,8 +158,8 @@ export default function TbmOverallStatus() {
       setDashboardData({
         success: true,
         date: selectedDate,
-        pS: "P",
-        departmentName: "Maintenance (TBM)",
+        pS: department,
+        departmentName: department === "P" ? "Maintenance (TBM)" : "Production (Smile Card)",
         lines: linesData,
         total: totals,
         todaysTbmStatus: {
@@ -170,16 +173,69 @@ export default function TbmOverallStatus() {
         },
       });
     } catch (fallbackErr) {
-      console.error("Aggregation fallback failed:", fallbackErr);
       setError("Failed to load dashboard data. Please verify your connection.");
     } finally {
       setLoading(false);
     }
-  }, [selectedDate, apiBaseUrl]);
+  }, [selectedDate, department, apiBaseUrl]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Group lines into Machining (3C) vs Assembly
+  const { machiningLines, assemblyLines, visibleLines, computedTotals } = useMemo(() => {
+    const all = dashboardData?.lines || [];
+
+    const is3C = (lineStr) => {
+      const lower = String(lineStr || "").toLowerCase();
+      return lower.includes("block") || lower.includes("crank") || lower.includes("head");
+    };
+
+    const mLines = all.filter((l) => is3C(l.line));
+    const aLines = all.filter((l) => !is3C(l.line));
+
+    let active;
+    if (lineFilter === "3C") {
+      active = mLines;
+    } else if (lineFilter === "ASSEMBLY") {
+      active = aLines;
+    } else {
+      active = all;
+    }
+
+    const calcTotal = (lineArr) => {
+      return lineArr.reduce(
+        (acc, row) => ({
+          todaysPlan: acc.todaysPlan + (row.todaysPlan || 0),
+          todaysActual: acc.todaysActual + (row.todaysActual || 0),
+          cumPlanAod: acc.cumPlanAod + (row.cumPlanAod || 0),
+          cumActualAod: acc.cumActualAod + (row.cumActualAod || 0),
+          cumPendingAod: acc.cumPendingAod + (row.cumPendingAod || 0),
+          cumPlanMonth: acc.cumPlanMonth + (row.cumPlanMonth || 0),
+          cumActualMonth: acc.cumActualMonth + (row.cumActualMonth || 0),
+          cumPendingMonth: acc.cumPendingMonth + (row.cumPendingMonth || 0),
+        }),
+        {
+          todaysPlan: 0,
+          todaysActual: 0,
+          cumPlanAod: 0,
+          cumActualAod: 0,
+          cumPendingAod: 0,
+          cumPlanMonth: 0,
+          cumActualMonth: 0,
+          cumPendingMonth: 0,
+        }
+      );
+    };
+
+    return {
+      machiningLines: mLines,
+      assemblyLines: aLines,
+      visibleLines: active,
+      computedTotals: calcTotal(active),
+    };
+  }, [dashboardData, lineFilter]);
 
   // Export matching Excel Workbook
   const handleExportExcel = () => {
@@ -191,6 +247,7 @@ export default function TbmOverallStatus() {
       ["TBM DASHBOARD"],
       [],
       ["ENTER DATE HERE", dashboardData.date],
+      ["DEPARTMENT", department === "P" ? "Maintenance (TBM)" : "Production (Smile Card)"],
       [],
       [
         "Line",
@@ -205,7 +262,7 @@ export default function TbmOverallStatus() {
       ],
     ];
 
-    (dashboardData.lines || []).forEach((row) => {
+    visibleLines.forEach((row) => {
       wsData.push([
         row.line,
         row.todaysPlan,
@@ -219,30 +276,23 @@ export default function TbmOverallStatus() {
       ]);
     });
 
-    if (dashboardData.total) {
-      const tot = dashboardData.total;
-      wsData.push([
-        "TOTAL",
-        tot.todaysPlan,
-        tot.todaysActual,
-        tot.cumPlanAod,
-        tot.cumActualAod,
-        tot.cumPendingAod,
-        tot.cumPlanMonth,
-        tot.cumActualMonth,
-        tot.cumPendingMonth,
-      ]);
-    }
+    wsData.push([
+      "TOTAL",
+      computedTotals.todaysPlan,
+      computedTotals.todaysActual,
+      computedTotals.cumPlanAod,
+      computedTotals.cumActualAod,
+      computedTotals.cumPendingAod,
+      computedTotals.cumPlanMonth,
+      computedTotals.cumActualMonth,
+      computedTotals.cumPendingMonth,
+    ]);
 
     wsData.push([]);
     wsData.push(["Todays TBM STATUS"]);
-    wsData.push([
-      "",
-      "BLOCK",
-      "CRANK",
-      "HEAD",
-      "TOTAL",
-    ]);
+
+    const cols = ["", "BLOCK", "CRANK", "HEAD", "TOTAL"];
+    wsData.push(cols);
 
     const todaysMap = dashboardData.todaysTbmStatus?.todaysCompleted || {};
     const otherMap = dashboardData.todaysTbmStatus?.otherDaysCompleted || {};
@@ -270,18 +320,76 @@ export default function TbmOverallStatus() {
 
   return (
     <div className="excel-dashboard-container">
-      {/* Top Header & Actions */}
+      {/* Top Bar: All Controls in One Single Compact Row */}
       <div className="excel-top-bar">
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <div className="excel-header-left">
           <Link to="/" className="excel-btn" style={{ textDecoration: "none" }}>
             <i className="bi bi-arrow-left"></i> Home
           </Link>
           <h1 className="excel-main-title">TBM DASHBOARD</h1>
+
+          {/* Department Segmented Switch */}
+          <div className="segmented-group">
+            <button
+              className={`segmented-btn ${department === "P" ? "active" : ""}`}
+              onClick={() => setDepartment("P")}
+              title="Maintenance TBM"
+            >
+              <i className="bi bi-tools"></i> Mnt (TBM)
+            </button>
+            <button
+              className={`segmented-btn ${department === "S" ? "active-blue" : ""}`}
+              onClick={() => setDepartment("S")}
+              title="Production Smile Card"
+            >
+              <i className="bi bi-person-check"></i> Prod (Smile Card)
+            </button>
+          </div>
+
+          {/* Quick Line Filter Tabs */}
+          <div className="segmented-group">
+            <button
+              className={`segmented-btn ${lineFilter === "ALL" ? "active" : ""}`}
+              onClick={() => setLineFilter("ALL")}
+            >
+              All Lines
+            </button>
+            <button
+              className={`segmented-btn ${lineFilter === "3C" ? "active" : ""}`}
+              onClick={() => setLineFilter("3C")}
+            >
+              3C Machining
+            </button>
+            <button
+              className={`segmented-btn ${lineFilter === "ASSEMBLY" ? "active" : ""}`}
+              onClick={() => setLineFilter("ASSEMBLY")}
+            >
+              Assembly
+            </button>
+          </div>
         </div>
 
         <div className="excel-actions">
+          {/* Date Picker Box */}
+          <div className="excel-date-box">
+            <span className="excel-date-label">Date:</span>
+            <input
+              type="date"
+              className="excel-date-input"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+            />
+            <button
+              className="excel-btn"
+              style={{ padding: "2px 8px", fontSize: "11px" }}
+              onClick={() => setSelectedDate(getTodayStr())}
+            >
+              Today
+            </button>
+          </div>
+
           <button className="excel-btn excel-btn-success" onClick={handleExportExcel}>
-            <i className="bi bi-file-earmark-excel"></i> Export Excel
+            <i className="bi bi-file-earmark-excel"></i> Export
           </button>
           <button className="excel-btn" onClick={fetchData} disabled={loading}>
             <i className={`bi bi-arrow-clockwise ${loading ? "spin" : ""}`}></i> Refresh
@@ -289,40 +397,22 @@ export default function TbmOverallStatus() {
         </div>
       </div>
 
-      {error && <div className="alert alert-danger py-2">{error}</div>}
+      {error && <div className="alert alert-danger py-1 mb-2 font-13">{error}</div>}
 
       {/* Main Sheet Container */}
       <div className="excel-sheet-card">
-        {/* Date Row (Excel cell A3/B3) */}
-        <div className="excel-date-row">
-          <span className="excel-date-label">ENTER DATE HERE:</span>
-          <input
-            type="date"
-            className="excel-date-input"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-          />
-          <button
-            className="excel-btn"
-            style={{ padding: "4px 10px", fontSize: "12px" }}
-            onClick={() => setSelectedDate(getTodayStr())}
-          >
-            Today
-          </button>
-        </div>
-
         {/* Table 1: Overall Line Status Matrix */}
         <table className="excel-grid-table">
           <thead>
             <tr>
-              <th rowSpan={2} style={{ width: "13%" }}>Line</th>
-              <th colSpan={2} className="header-dark" style={{ width: "22%" }}>
+              <th rowSpan={2} style={{ width: "16%" }}>Line</th>
+              <th colSpan={2} className="header-dark" style={{ width: "20%" }}>
                 TODAY'S TARGET
               </th>
               <th colSpan={3} className="header-dark" style={{ width: "32%" }}>
                 CUMULATIVE AS OF DATE (AOD)
               </th>
-              <th colSpan={3} className="header-dark" style={{ width: "33%" }}>
+              <th colSpan={3} className="header-dark" style={{ width: "32%" }}>
                 CUMULATIVE FULL MONTH HORIZON
               </th>
             </tr>
@@ -338,99 +428,136 @@ export default function TbmOverallStatus() {
             </tr>
           </thead>
           <tbody>
-            {(dashboardData?.lines || []).map((row) => (
-              <tr key={row.line}>
-                <td className="cell-line">{row.line}</td>
-                <td className="cell-num">{row.todaysPlan}</td>
-                <td className="cell-num">{row.todaysActual}</td>
-                <td className="cell-num">{row.cumPlanAod}</td>
-                <td className="cell-num">{row.cumActualAod}</td>
-                <td className="cell-num cell-pending">{row.cumPendingAod}</td>
-                <td className="cell-num">{row.cumPlanMonth}</td>
-                <td className="cell-num">{row.cumActualMonth}</td>
-                <td className="cell-num cell-pending">{row.cumPendingMonth}</td>
-              </tr>
-            ))}
+            {/* If lineFilter === 'ALL' and we have both machining and assembly, show clear section groups */}
+            {lineFilter === "ALL" && machiningLines.length > 0 && (
+              <>
+                <tr className="excel-section-header">
+                  <td colSpan={9}>Machining Lines (3C)</td>
+                </tr>
+                {machiningLines.map((row) => (
+                  <tr key={row.line}>
+                    <td className="cell-line">{row.line}</td>
+                    <td className="cell-num">{row.todaysPlan}</td>
+                    <td className="cell-num">{row.todaysActual}</td>
+                    <td className="cell-num">{row.cumPlanAod}</td>
+                    <td className="cell-num">{row.cumActualAod}</td>
+                    <td className="cell-num cell-pending">{row.cumPendingAod}</td>
+                    <td className="cell-num">{row.cumPlanMonth}</td>
+                    <td className="cell-num">{row.cumActualMonth}</td>
+                    <td className="cell-num cell-pending">{row.cumPendingMonth}</td>
+                  </tr>
+                ))}
+              </>
+            )}
+
+            {lineFilter === "ALL" && assemblyLines.length > 0 && (
+              <>
+                <tr className="excel-section-header">
+                  <td colSpan={9}>Assembly Sublines</td>
+                </tr>
+                {assemblyLines.map((row) => (
+                  <tr key={row.line}>
+                    <td className="cell-line">{row.line}</td>
+                    <td className="cell-num">{row.todaysPlan}</td>
+                    <td className="cell-num">{row.todaysActual}</td>
+                    <td className="cell-num">{row.cumPlanAod}</td>
+                    <td className="cell-num">{row.cumActualAod}</td>
+                    <td className="cell-num cell-pending">{row.cumPendingAod}</td>
+                    <td className="cell-num">{row.cumPlanMonth}</td>
+                    <td className="cell-num">{row.cumActualMonth}</td>
+                    <td className="cell-num cell-pending">{row.cumPendingMonth}</td>
+                  </tr>
+                ))}
+              </>
+            )}
+
+            {/* If filtered to 3C or ASSEMBLY specifically, render visible lines directly */}
+            {lineFilter !== "ALL" &&
+              visibleLines.map((row) => (
+                <tr key={row.line}>
+                  <td className="cell-line">{row.line}</td>
+                  <td className="cell-num">{row.todaysPlan}</td>
+                  <td className="cell-num">{row.todaysActual}</td>
+                  <td className="cell-num">{row.cumPlanAod}</td>
+                  <td className="cell-num">{row.cumActualAod}</td>
+                  <td className="cell-num cell-pending">{row.cumPendingAod}</td>
+                  <td className="cell-num">{row.cumPlanMonth}</td>
+                  <td className="cell-num">{row.cumActualMonth}</td>
+                  <td className="cell-num cell-pending">{row.cumPendingMonth}</td>
+                </tr>
+              ))}
 
             {/* Total Row */}
-            {dashboardData?.total && (
-              <tr className="excel-total-row">
-                <td className="cell-line font-bold">TOTAL</td>
-                <td className="cell-num">{dashboardData.total.todaysPlan}</td>
-                <td className="cell-num">{dashboardData.total.todaysActual}</td>
-                <td className="cell-num">{dashboardData.total.cumPlanAod}</td>
-                <td className="cell-num">{dashboardData.total.cumActualAod}</td>
-                <td className="cell-num cell-pending">{dashboardData.total.cumPendingAod}</td>
-                <td className="cell-num">{dashboardData.total.cumPlanMonth}</td>
-                <td className="cell-num">{dashboardData.total.cumActualMonth}</td>
-                <td className="cell-num cell-pending">{dashboardData.total.cumPendingMonth}</td>
-              </tr>
-            )}
+            <tr className="excel-total-row">
+              <td className="cell-line font-bold">TOTAL ({lineFilter})</td>
+              <td className="cell-num">{computedTotals.todaysPlan}</td>
+              <td className="cell-num">{computedTotals.todaysActual}</td>
+              <td className="cell-num">{computedTotals.cumPlanAod}</td>
+              <td className="cell-num">{computedTotals.cumActualAod}</td>
+              <td className="cell-num cell-pending">{computedTotals.cumPendingAod}</td>
+              <td className="cell-num">{computedTotals.cumPlanMonth}</td>
+              <td className="cell-num">{computedTotals.cumActualMonth}</td>
+              <td className="cell-num cell-pending">{computedTotals.cumPendingMonth}</td>
+            </tr>
           </tbody>
         </table>
 
         {/* Table 2: Today's TBM Execution Status Breakdown (Rows 10-12) */}
-        <div style={{ marginTop: "32px" }}>
-          <h3
-            style={{
-              fontSize: "15px",
-              fontWeight: 800,
-              textTransform: "uppercase",
-              marginBottom: "10px",
-              color: "#1e293b",
-            }}
-          >
-            Todays TBM STATUS
-          </h3>
-          <table className="excel-grid-table" style={{ maxWidth: "800px" }}>
-            <thead>
-              <tr>
-                <th style={{ width: "40%", textAlign: "left", paddingLeft: "16px" }}>
-                  Status Category
-                </th>
-                <th style={{ width: "15%" }}>BLOCK</th>
-                <th style={{ width: "15%" }}>CRANK</th>
-                <th style={{ width: "15%" }}>HEAD</th>
-                <th style={{ width: "15%" }}>TOTAL</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="cell-line" style={{ fontWeight: 600 }}>
-                  Todays: No of cards completed
-                </td>
-                <td className="cell-num">
-                  {dashboardData?.todaysTbmStatus?.todaysCompleted?.["BLOCK"] || 0}
-                </td>
-                <td className="cell-num">
-                  {dashboardData?.todaysTbmStatus?.todaysCompleted?.["CRANK"] || 0}
-                </td>
-                <td className="cell-num">
-                  {dashboardData?.todaysTbmStatus?.todaysCompleted?.["HEAD"] || 0}
-                </td>
-                <td className="cell-num font-bold">
-                  {dashboardData?.todaysTbmStatus?.todaysCompleted?.["TOTAL"] || 0}
-                </td>
-              </tr>
-              <tr>
-                <td className="cell-line" style={{ fontWeight: 600 }}>
-                  Other days: No of cards completed
-                </td>
-                <td className="cell-num">
-                  {dashboardData?.todaysTbmStatus?.otherDaysCompleted?.["BLOCK"] || 0}
-                </td>
-                <td className="cell-num">
-                  {dashboardData?.todaysTbmStatus?.otherDaysCompleted?.["CRANK"] || 0}
-                </td>
-                <td className="cell-num">
-                  {dashboardData?.todaysTbmStatus?.otherDaysCompleted?.["HEAD"] || 0}
-                </td>
-                <td className="cell-num font-bold">
-                  {dashboardData?.todaysTbmStatus?.otherDaysCompleted?.["TOTAL"] || 0}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="excel-sub-section">
+          <div style={{ flex: "1 1 500px", maxWidth: "680px" }}>
+            <h3 className="excel-sub-title">
+              <i className="bi bi-card-checklist text-success"></i> Todays TBM STATUS
+            </h3>
+            <table className="excel-grid-table" style={{ marginBottom: 0 }}>
+              <thead>
+                <tr>
+                  <th style={{ width: "40%", textAlign: "left", paddingLeft: "12px" }}>
+                    Status Category
+                  </th>
+                  <th style={{ width: "15%" }}>BLOCK</th>
+                  <th style={{ width: "15%" }}>CRANK</th>
+                  <th style={{ width: "15%" }}>HEAD</th>
+                  <th style={{ width: "15%" }}>TOTAL</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="cell-line" style={{ fontWeight: 600 }}>
+                    Todays: No of cards completed
+                  </td>
+                  <td className="cell-num">
+                    {dashboardData?.todaysTbmStatus?.todaysCompleted?.["BLOCK"] || 0}
+                  </td>
+                  <td className="cell-num">
+                    {dashboardData?.todaysTbmStatus?.todaysCompleted?.["CRANK"] || 0}
+                  </td>
+                  <td className="cell-num">
+                    {dashboardData?.todaysTbmStatus?.todaysCompleted?.["HEAD"] || 0}
+                  </td>
+                  <td className="cell-num font-bold">
+                    {dashboardData?.todaysTbmStatus?.todaysCompleted?.["TOTAL"] || 0}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="cell-line" style={{ fontWeight: 600 }}>
+                    Other days: No of cards completed
+                  </td>
+                  <td className="cell-num">
+                    {dashboardData?.todaysTbmStatus?.otherDaysCompleted?.["BLOCK"] || 0}
+                  </td>
+                  <td className="cell-num">
+                    {dashboardData?.todaysTbmStatus?.otherDaysCompleted?.["CRANK"] || 0}
+                  </td>
+                  <td className="cell-num">
+                    {dashboardData?.todaysTbmStatus?.otherDaysCompleted?.["HEAD"] || 0}
+                  </td>
+                  <td className="cell-num font-bold">
+                    {dashboardData?.todaysTbmStatus?.otherDaysCompleted?.["TOTAL"] || 0}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

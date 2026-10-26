@@ -1,36 +1,132 @@
-/* Exact Excel Sheet 2 Layout Styling */
+/* 100% Viewport Responsive Excel Layout */
 .excel-dashboard-container {
-  padding: 24px;
+  padding: 12px 18px;
   background-color: #f1f5f9;
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - 56px);
+  max-width: 100vw;
   font-family: Calibri, "Segoe UI", Arial, sans-serif;
-  color: #000000;
+  color: #0f172a;
+  box-sizing: border-box;
 }
 
+/* Single-line Top Control Toolbar */
 .excel-top-bar {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 10px;
+  background-color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.excel-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .excel-main-title {
-  font-size: 26px;
+  font-size: 18px;
   font-weight: 800;
-  color: #000000;
-  letter-spacing: 0.05em;
+  color: #1e293b;
+  letter-spacing: 0.04em;
   margin: 0;
   text-transform: uppercase;
 }
 
+.excel-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Segmented Pill Buttons (Depts & Line Groups) */
+.segmented-group {
+  display: inline-flex;
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  padding: 2px;
+}
+
+.segmented-btn {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: #475569;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.segmented-btn.active {
+  background-color: #107c41;
+  color: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.segmented-btn.active-blue {
+  background-color: #0d6efd;
+  color: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Date Input Cell in Top Bar */
+.excel-date-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f8fafc;
+  border: 1px solid #cbd5e1;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.excel-date-label {
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: #475569;
+  text-transform: uppercase;
+}
+
+.excel-date-input {
+  border: 1px solid #94a3b8;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  outline: none;
+  background-color: #ffffff;
+}
+
+.excel-date-input:focus {
+  border-color: #107c41;
+}
+
+/* Action Buttons */
 .excel-actions {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 8px;
 }
 
 .excel-btn {
-  padding: 6px 16px;
-  font-size: 14px;
+  padding: 4px 12px;
+  font-size: 13px;
   font-weight: 600;
   border-radius: 4px;
   cursor: pointer;
@@ -41,6 +137,7 @@
   background-color: #ffffff;
   color: #334155;
   transition: all 0.15s ease;
+  line-height: 1.4;
 }
 
 .excel-btn:hover {
@@ -59,74 +156,40 @@
   border-color: #0b5a2f;
 }
 
-/* Excel Sheet Card */
+/* Main Sheet Content Card */
 .excel-sheet-card {
   background-color: #ffffff;
   border: 1px solid #d1d5db;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  padding: 24px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07);
+  padding: 12px 14px;
   border-radius: 6px;
-  margin-bottom: 24px;
   overflow-x: auto;
 }
 
-/* Date Input Cell */
-.excel-date-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 18px;
-  padding: 8px 12px;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 4px;
-  width: fit-content;
-}
-
-.excel-date-label {
-  font-weight: 800;
-  font-size: 13px;
-  letter-spacing: 0.04em;
-  color: #1e293b;
-  text-transform: uppercase;
-}
-
-.excel-date-input {
-  border: 1px solid #94a3b8;
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f172a;
-  outline: none;
-}
-
-.excel-date-input:focus {
-  border-color: #107c41;
-  box-shadow: 0 0 0 1px #107c41;
-}
-
-/* Excel Grid Table */
+/* Excel Grid Table - Ultra Compact */
 .excel-grid-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
-  margin-bottom: 20px;
+  font-size: 13px;
+  margin-bottom: 12px;
+  table-layout: auto;
 }
 
 .excel-grid-table th,
 .excel-grid-table td {
   border: 1px solid #b4b4b4;
-  padding: 10px 14px;
+  padding: 5px 8px;
   text-align: center;
   vertical-align: middle;
+  line-height: 1.25;
 }
 
 .excel-grid-table th {
   background-color: #e2efda; /* Excel light green theme */
   color: #000000;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 12px;
+  text-transform: uppercase;
 }
 
 .excel-grid-table .header-dark {
@@ -134,13 +197,28 @@
   font-weight: 800;
 }
 
-.excel-grid-table td.cell-line {
+/* Section Header Rows (e.g. 3C Machining vs Assembly) */
+.excel-section-header td {
+  background-color: #e9ecef;
   font-weight: 800;
+  font-size: 12px;
   text-align: left;
-  background-color: #f2f2f2;
+  padding-left: 12px;
+  color: #1e293b;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border-top: 2px solid #64748b;
+  border-bottom: 1px solid #94a3b8;
+}
+
+.excel-grid-table td.cell-line {
+  font-weight: 700;
+  text-align: left;
+  background-color: #f8fafc;
   color: #000000;
-  font-size: 14px;
-  padding-left: 18px;
+  font-size: 13px;
+  padding-left: 14px;
+  white-space: nowrap;
 }
 
 .excel-grid-table td.cell-num {
@@ -155,6 +233,15 @@
   background-color: #fce4d6;
 }
 
+/* Total and Subtotal Rows */
+.excel-grid-table tr.excel-subtotal-row td {
+  background-color: #e8eef8;
+  font-weight: 800;
+  border-top: 1px solid #64748b;
+  border-bottom: 1px solid #64748b;
+  color: #1e293b;
+}
+
 .excel-grid-table tr.total-row td,
 .excel-grid-table tr.excel-total-row td {
   background-color: #d9e1f2; /* Light blue accent for Total */
@@ -164,9 +251,24 @@
   color: #000000;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+/* Table 2 - Bottom Status Breakdown */
+.excel-sub-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.excel-sub-title {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin: 0 0 6px 0;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .spin {
@@ -174,40 +276,17 @@
   display: inline-block;
 }
 
-/* Sub Table: Today's TBM Status */
-.excel-sub-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-  margin-top: 10px;
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-.excel-sub-table th,
-.excel-sub-table td {
-  border: 1px solid #b4b4b4;
-  padding: 10px 14px;
-  text-align: center;
-  vertical-align: middle;
-}
-
-.excel-sub-table th {
-  background-color: #fff2cc; /* Light yellow excel accent */
-  color: #000000;
-  font-weight: 700;
-}
-
-.excel-sub-table td.sub-cat {
-  font-weight: 800;
-  text-align: left;
-  background-color: #f2f2f2;
-}
-
-.excel-sub-table td.sub-metric {
-  text-align: left;
-  font-weight: 600;
-  background-color: #fafafa;
-}
-
-.excel-sub-table td.sub-val {
-  font-weight: 700;
+@media (max-width: 992px) {
+  .excel-top-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .excel-actions {
+    justify-content: flex-end;
+  }
 }
