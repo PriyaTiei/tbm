@@ -1,6 +1,7 @@
 import React, { useEffect, Suspense, lazy } from "react";
 import { useDispatch } from 'react-redux';
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+
 import Title from "./components/Title";
 import SmileCard from "./components/SmileCard";
 import Machines from "./components/Machines";
@@ -33,6 +34,7 @@ import Verification from "./components/common/verification";
 
 function App() {
   const dispatch = useDispatch();
+  const location = useLocation();
   const [cookies] = useCookies(['token', 'userId']);
   const { token, userId } = cookies;
 
@@ -72,8 +74,9 @@ function App() {
       <AppSidebar>
 
         <Title />
-        <Filters />
+        {location.pathname !== "/overallStatus" && <Filters />}
         {/* <MultiLevelXAxisBarChart /> */}
+
         <Routes>
           <Route path="/" element={<Machines />} />
           <Route path="/checkList" element={<SmileCard />} />

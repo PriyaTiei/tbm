@@ -1,384 +1,213 @@
-/* TBM Overall Status Dashboard CSS */
-.tbm-status-container {
-  padding: 1.5rem;
-  background-color: #f8fafc;
-  min-height: calc(100vh - 70px);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  color: #1e293b;
+/* Exact Excel Sheet 2 Layout Styling */
+.excel-dashboard-container {
+  padding: 24px;
+  background-color: #f1f5f9;
+  min-height: calc(100vh - 60px);
+  font-family: Calibri, "Segoe UI", Arial, sans-serif;
+  color: #000000;
 }
 
-/* Header & Control Banner */
-.tbm-header-card {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e2e8f0;
-  padding: 1.25rem 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.tbm-title-section {
+.excel-top-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
+  margin-bottom: 20px;
 }
 
-.tbm-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.tbm-badge-plant {
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
+.excel-main-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #000000;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.badge-plant-tnga {
-  background-color: #fee2e2;
-  color: #dc2626;
-  border: 1px solid #fca5a5;
-}
-
-.badge-plant-gd {
-  background-color: #fef3c7;
-  color: #d97706;
-  border: 1px solid #fde68a;
-}
-
-.tbm-subtitle {
-  font-size: 0.85rem;
-  color: #64748b;
-  margin: 0.2rem 0 0 0;
-}
-
-/* Filter Controls Toolbar */
-.tbm-controls-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1.25rem;
-  padding-top: 1rem;
-  border-top: 1px solid #f1f5f9;
-}
-
-.control-group {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.control-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #475569;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
   margin: 0;
+  text-transform: uppercase;
 }
 
-/* Date Selector Box */
-.date-selector-box {
+.excel-actions {
   display: flex;
-  align-items: center;
-  background: #f8fafc;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 2px 6px;
+  gap: 10px;
 }
 
-.date-input {
-  border: none;
-  background: transparent;
-  font-size: 0.875rem;
+.excel-btn {
+  padding: 6px 16px;
+  font-size: 14px;
   font-weight: 600;
-  color: #1e293b;
-  padding: 4px 8px;
-  outline: none;
-}
-
-.date-nav-btn {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  color: #475569;
-  border-radius: 6px;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 4px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #334155;
   transition: all 0.15s ease;
 }
 
-.date-nav-btn:hover {
-  background: #0d6efd;
+.excel-btn:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.excel-btn-success {
+  background-color: #107c41;
   color: #ffffff;
-  border-color: #0d6efd;
+  border-color: #107c41;
 }
 
-/* KPI Summary Cards */
-.kpi-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+.excel-btn-success:hover {
+  background-color: #0b5a2f;
+  border-color: #0b5a2f;
 }
 
-.kpi-stat-card {
-  background: #ffffff;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
-  padding: 1rem 1.25rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+/* Excel Sheet Card */
+.excel-sheet-card {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  border-radius: 6px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+/* Date Input Cell */
+.excel-date-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  position: relative;
-  overflow: hidden;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  width: fit-content;
 }
 
-.kpi-stat-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 4px;
-}
-
-.kpi-stat-card.card-blue::before { background: #0284c7; }
-.kpi-stat-card.card-green::before { background: #16a34a; }
-.kpi-stat-card.card-amber::before { background: #d97706; }
-.kpi-stat-card.card-purple::before { background: #7c3aed; }
-
-.kpi-stat-info h4 {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #64748b;
-  text-transform: uppercase;
-  margin: 0 0 0.35rem 0;
-}
-
-.kpi-stat-number {
-  font-size: 1.65rem;
+.excel-date-label {
   font-weight: 800;
-  color: #0f172a;
-  line-height: 1;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: #1e293b;
+  text-transform: uppercase;
 }
 
-.kpi-stat-subtext {
-  font-size: 0.75rem;
-  color: #94a3b8;
-  margin-top: 0.25rem;
-}
-
-.kpi-stat-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-}
-
-.card-blue .kpi-stat-icon { background: #e0f2fe; color: #0284c7; }
-.card-green .kpi-stat-icon { background: #dcfce7; color: #16a34a; }
-.card-amber .kpi-stat-icon { background: #fef3c7; color: #d97706; }
-.card-purple .kpi-stat-icon { background: #f3e8ff; color: #7c3aed; }
-
-/* Main Table Container */
-.tbm-table-wrapper {
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  margin-bottom: 1.5rem;
-  overflow: hidden;
-}
-
-.tbm-table-header-bar {
-  padding: 1rem 1.25rem;
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.tbm-table-header-title {
-  font-size: 1.1rem;
+.excel-date-input {
+  border: 1px solid #94a3b8;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 14px;
   font-weight: 700;
   color: #0f172a;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  outline: none;
 }
 
-.tbm-table-header-meta {
-  font-size: 0.8rem;
-  color: #64748b;
+.excel-date-input:focus {
+  border-color: #107c41;
+  box-shadow: 0 0 0 1px #107c41;
 }
 
-/* Styled Excel Matrix Table */
-.tbm-matrix-table {
+/* Excel Grid Table */
+.excel-grid-table {
   width: 100%;
   border-collapse: collapse;
-  margin: 0;
-  font-size: 0.875rem;
+  font-size: 14px;
+  margin-bottom: 20px;
 }
 
-.tbm-matrix-table thead tr th {
-  background: #f1f5f9;
-  color: #334155;
-  font-weight: 700;
-  padding: 12px 14px;
-  border: 1px solid #cbd5e1;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
-}
-
-.tbm-matrix-table thead tr.group-header th {
-  background: #e2e8f0;
-  color: #1e293b;
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.tbm-matrix-table tbody tr td {
-  padding: 12px 14px;
-  border: 1px solid #e2e8f0;
+.excel-grid-table th,
+.excel-grid-table td {
+  border: 1px solid #b4b4b4;
+  padding: 10px 14px;
   text-align: center;
   vertical-align: middle;
-  font-variant-numeric: tabular-nums;
-  font-size: 0.9rem;
 }
 
-.tbm-matrix-table tbody tr:hover {
-  background-color: #f8fafc;
-}
-
-/* Highlighting specific columns */
-.line-cell {
+.excel-grid-table th {
+  background-color: #e2efda; /* Excel light green theme */
+  color: #000000;
   font-weight: 700;
-  text-align: left !important;
-  color: #0f172a;
-  background-color: #f8fafc;
+  font-size: 13px;
 }
 
-.col-plan {
-  color: #0369a1;
-  font-weight: 600;
-}
-
-.col-actual {
-  color: #15803d;
-  font-weight: 700;
-}
-
-.col-pending {
-  color: #b91c1c;
-  font-weight: 700;
-  background-color: #fef2f2 !important;
-}
-
-.tbm-matrix-table tfoot tr td {
-  background-color: #f1f5f9;
+.excel-grid-table .header-dark {
+  background-color: #c6e0b4;
   font-weight: 800;
-  border-top: 2px solid #0f172a;
-  border-bottom: 2px solid #0f172a;
-  color: #0f172a;
-  padding: 14px;
-  font-size: 0.95rem;
-  text-align: center;
 }
 
-.tfoot-label {
-  text-align: left !important;
-  letter-spacing: 0.05em;
+.excel-grid-table td.cell-line {
+  font-weight: 800;
+  text-align: left;
+  background-color: #f2f2f2;
+  color: #000000;
+  font-size: 14px;
+  padding-left: 18px;
 }
 
-/* Today's TBM Execution Status Table */
-.status-breakdown-card {
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  margin-bottom: 1.5rem;
-  overflow: hidden;
-}
-
-.status-breakdown-header {
-  padding: 1rem 1.25rem;
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #0f172a;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Progress bar inside table */
-.progress-container {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.progress-bar-bg {
-  flex-grow: 1;
-  height: 8px;
-  background-color: #e2e8f0;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.4s ease;
-}
-
-.progress-pct {
-  font-size: 0.8rem;
-  font-weight: 700;
-  min-width: 38px;
-  text-align: right;
-}
-
-/* Loading and error state */
-.loading-box {
-  padding: 3rem;
-  text-align: center;
-  color: #64748b;
+.excel-grid-table td.cell-num {
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #000000;
 }
 
-.error-banner {
-  background-color: #fee2e2;
-  border: 1px solid #fca5a5;
-  color: #991b1b;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.excel-grid-table td.cell-pending {
+  color: #c00000;
+  font-weight: 800;
+  background-color: #fce4d6;
+}
+
+.excel-grid-table tr.total-row td,
+.excel-grid-table tr.excel-total-row td {
+  background-color: #d9e1f2; /* Light blue accent for Total */
+  font-weight: 800;
+  border-top: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+  color: #000000;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+/* Sub Table: Today's TBM Status */
+.excel-sub-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.excel-sub-table th,
+.excel-sub-table td {
+  border: 1px solid #b4b4b4;
+  padding: 10px 14px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.excel-sub-table th {
+  background-color: #fff2cc; /* Light yellow excel accent */
+  color: #000000;
+  font-weight: 700;
+}
+
+.excel-sub-table td.sub-cat {
+  font-weight: 800;
+  text-align: left;
+  background-color: #f2f2f2;
+}
+
+.excel-sub-table td.sub-metric {
+  text-align: left;
+  font-weight: 600;
+  background-color: #fafafa;
+}
+
+.excel-sub-table td.sub-val {
+  font-weight: 700;
 }
