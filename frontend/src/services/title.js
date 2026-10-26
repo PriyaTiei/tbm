@@ -12,6 +12,8 @@ export function getTitle(pathname) {
       return "All Cards";
       case "/delMachine":
       return "Deleted Cards";
+    case "/overallStatus":
+      return "TBM Overall Status";
     case "/pendingTasks/cardDetails/":
       return "Pending Card Details";
     default:

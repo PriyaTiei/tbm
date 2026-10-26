@@ -48,6 +48,11 @@ export function AppSidebar({ children }) {
           <h2 style={menuTitleStyle}>Menu</h2>
         </Offcanvas.Header>
         <Offcanvas.Body>
+          <Link to="/overallStatus" onClick={handleClose}>
+            <Button variant="dark" style={menuItemStyle}>
+              <i className="bi bi-speedometer2 px-1 text-warning"></i>TBM Overall Status
+            </Button>
+          </Link>
           {level >= 0 && (
             <Link to="/summaryAbnormality">
               <Button variant="dark" style={menuItemStyle}>

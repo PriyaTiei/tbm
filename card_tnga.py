@@ -47,12 +47,14 @@ d = datetime.now().day
 # to fetch week no.
 weekNo = (d//7.1)+1
 
+server_url = getattr(config, 'tnga_server_url', config.server_url)
+
 # generate the url address
-urlForCardRaised = config.server_url +"/card/find/fromDate/" + \
+urlForCardRaised = server_url +"/card/find/fromDate/" + \
     str(f_y)+"-"+str(f_m)+"-"+str(f_d)+"/toDate/" + \
     str(t_y)+"-"+str(t_m)+"-"+str(t_d)
     
-urlForCardRaised_4_yesterday = config.server_url +"/card/find/fromDate/" + \
+urlForCardRaised_4_yesterday = server_url +"/card/find/fromDate/" + \
     str(y_y)+"-"+str(y_m)+"-"+str(y_d)+"/toDate/"+str(y)+"-"+str(m)+"-"+str(d)
     
 print("URL-last 30 days", urlForCardRaised)
@@ -298,7 +300,7 @@ ws_pending['I1'].font = Font(bold=True)
 ws_pending['J1'] = "LAST COMPLETED DATE"
 ws_pending['J1'].font = Font(bold=True)
 
-urlForPendingCardsGreater30days = config.server_url +"/pendingTasks/getPendingTaskReport"
+urlForPendingCardsGreater30days = server_url +"/pendingTasks/getPendingTaskReport"
 response_pending = requests.get(urlForPendingCardsGreater30days)
 print('response_pending-->',response_pending.status_code)
 penData = response_pending.json()

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense, lazy } from "react";
 import { useDispatch } from 'react-redux';
 import { Routes, Route } from "react-router-dom";
 import Title from "./components/Title";
@@ -12,6 +12,9 @@ import SummaryCard from "./components/SummaryCard";
 import SmileCardAdd from "./components/SmileCardAdd";
 import PendingTask from "./components/PendingTask/PendingTask";
 import TeamLeader from "./components/TeamLeader/TeamLeader"
+
+const TbmOverallStatus = lazy(() => import("./components/TbmStatus/TbmOverallStatus"));
+
 import PendingSmileCard from "./components/PendingTask/PendingSmileCard"
 import AllMachineSmileCard from "./components/AllMachine/AllMachineSmileCard"
 import AlldelMachineSmileCard from "./components/AllMachine/AlldelMachineSmileCard"
@@ -75,6 +78,14 @@ function App() {
           <Route path="/" element={<Machines />} />
           <Route path="/checkList" element={<SmileCard />} />
           <Route path="/pendingTasks" element={<PendingTask />} />
+          <Route
+            path="/overallStatus"
+            element={
+              <Suspense fallback={<div className="p-4 text-center">Loading TBM Status...</div>}>
+                <TbmOverallStatus />
+              </Suspense>
+            }
+          />
           <Route path="/judgementHistory" element={<JudgementHistoryPage />} />
           <Route path="/pendingTasks/cardDetails" element={<PendingSmileCard />}></Route>
           <Route path="/allMachine/cardDetails" element={<AllMachineSmileCard />}></Route>

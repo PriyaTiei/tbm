@@ -38,7 +38,11 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:tnga": "node scripts/start-plant.js tnga",
+    "start:gd": "node scripts/start-plant.js gd",
     "build": "react-scripts build",
+    "build:tnga": "node scripts/build-plant.js tnga",
+    "build:gd": "node scripts/build-plant.js gd",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

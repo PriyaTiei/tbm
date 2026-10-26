@@ -489,12 +489,23 @@ function Filters() {
         ) : null}
 
         <Link to="/pendingTasks" style={{ textDecoration: 'none' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '20px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '15px' }}>
             <Button style={{ background: "transparent", color: "#000" }}>
               <i className="bi bi-hourglass-split"></i>
             </Button>
             <div style={{ marginTop: '4px', fontSize: '0.8rem', color: '#000', textAlign: 'center' }}>
               Pending Items
+            </div>
+          </div>
+        </Link>
+
+        <Link to="/overallStatus" style={{ textDecoration: 'none' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '20px' }}>
+            <Button style={{ background: "transparent", color: "#0d6efd" }}>
+              <i className="bi bi-speedometer2"></i>
+            </Button>
+            <div style={{ marginTop: '4px', fontSize: '0.8rem', color: '#0d6efd', fontWeight: 'bold', textAlign: 'center' }}>
+              TBM Status
             </div>
           </div>
         </Link>

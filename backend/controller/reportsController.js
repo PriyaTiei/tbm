@@ -1552,3 +1552,195 @@ exports.getVerifyItems = catchAsyncError(async (req, res, next) => {
   await Promise.all(dailyListPromises);
   return res.status(200).json({ success: true, dailyItemsWithGlTlVerify });
 });
+
+exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
+  const pS = req.query.pS || "P";
+  const dateStr = req.query.date;
+
+  let targetDate;
+  if (dateStr && dateStr.trim()) {
+    const parts = dateStr.split("-").map(Number);
+    targetDate = new Date(parts[0], parts[1] - 1, parts[2]);
+  } else {
+    targetDate = new Date();
+  }
+
+  const year = targetDate.getFullYear();
+  const month = targetDate.getMonth() + 1;
+  const day = targetDate.getDate();
+  const daysInMonth = new Date(year, month, 0).getDate();
+
+  const formattedSelectedDate = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  const startOfMonthStr = `${year}-${String(month).padStart(2, "0")}-01`;
+  const endOfMonthStr = `${year}-${String(month).padStart(2, "0")}-${String(daysInMonth).padStart(2, "0")}`;
+
+  // 1. Discover all active lines for this pS
+  const allLines = await HeadModel.distinct("line", {
+    pS: pS,
+    $or: [{ isDeleted: { $exists: false } }, { isDeleted: false }]
+  });
+
+  const priority = ["block", "crank", "head", "assembly"];
+  allLines.sort((a, b) => {
+    const aLower = (a || "").toLowerCase();
+    const bLower = (b || "").toLowerCase();
+    const aIdx = priority.findIndex(p => aLower.includes(p));
+    const bIdx = priority.findIndex(p => bLower.includes(p));
+    if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+    if (aIdx !== -1) return -1;
+    if (bIdx !== -1) return 1;
+    return (a || "").localeCompare(b || "");
+  });
+
+  const linesToProcess = allLines.length > 0 ? allLines : ["BLOCK", "CRANK", "HEAD"];
+
+  // 2. Fetch checkitems for this pS across lines
+  const checkItems = await HeadModel.find({
+    pS: pS,
+    $or: [{ isDeleted: { $exists: false } }, { isDeleted: false }]
+  }).select("_id line processNo d m w y cycle");
+
+  const checkItemsByLine = {};
+  linesToProcess.forEach(l => { checkItemsByLine[l] = []; });
+  checkItems.forEach(ci => {
+    if (!checkItemsByLine[ci.line]) {
+      checkItemsByLine[ci.line] = [];
+    }
+    checkItemsByLine[ci.line].push(ci);
+  });
+
+  // 3. Query DailyStatus for the current month
+  const monthDailyStatuses = await DailyStatus.aggregate([
+    {
+      $match: {
+        pS: pS,
+        entryFor: { $gte: startOfMonthStr, $lte: endOfMonthStr },
+        result: { $in: ["OK", "NG"] }
+      }
+    },
+    {
+      $lookup: {
+        from: "checkitems",
+        localField: "checkItem",
+        foreignField: "_id",
+        as: "ci"
+      }
+    },
+    { $unwind: "$ci" },
+    {
+      $project: {
+        entryFor: 1,
+        result: 1,
+        line: "$ci.line",
+        processNo: "$ci.processNo",
+        checkItem: 1,
+        scheduledDays: "$ci.d"
+      }
+    }
+  ]);
+
+  const linesData = [];
+  const totals = {
+    todaysPlan: 0,
+    todaysActual: 0,
+    cumPlanAod: 0,
+    cumActualAod: 0,
+    cumPendingAod: 0,
+    cumPlanMonth: 0,
+    cumActualMonth: 0,
+    cumPendingMonth: 0
+  };
+
+  const todaysTbmStatus = {
+    todaysCompleted: {},
+    otherDaysCompleted: {}
+  };
+
+  linesToProcess.forEach(lineName => {
+    const items = checkItemsByLine[lineName] || [];
+    const uniqueProcesses = new Set(items.map(it => it.processNo).filter(Boolean));
+    const baseCardCount = uniqueProcesses.size > 0 ? uniqueProcesses.size : items.length;
+
+    let todaysPlan = 0;
+    let cumPlanAod = 0;
+    let cumPlanMonth = 0;
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dayScheduledCount = items.filter(it => {
+        if (Array.isArray(it.d) && it.d.length > 0) {
+          return it.d.includes(d);
+        }
+        return true;
+      }).length;
+
+      const effectiveDayPlan = dayScheduledCount > 0 ? dayScheduledCount : (items.length > 0 ? items.length : 0);
+
+      if (d === day) {
+        todaysPlan = effectiveDayPlan;
+      }
+      if (d <= day) {
+        cumPlanAod += effectiveDayPlan;
+      }
+      cumPlanMonth += effectiveDayPlan;
+    }
+
+    const lineStatuses = monthDailyStatuses.filter(s => s.line === lineName);
+    const todaysStatuses = lineStatuses.filter(s => s.entryFor === formattedSelectedDate);
+    const todaysActual = todaysStatuses.length;
+
+    const aodStatuses = lineStatuses.filter(s => s.entryFor <= formattedSelectedDate);
+    const cumActualAod = aodStatuses.length;
+    const cumActualMonth = lineStatuses.length;
+
+    const cumPendingAod = Math.max(0, cumPlanAod - cumActualAod);
+    const cumPendingMonth = Math.max(0, cumPlanMonth - cumActualMonth);
+
+    let todaysOnTimeCount = 0;
+    let otherDaysCount = 0;
+    todaysStatuses.forEach(st => {
+      if (Array.isArray(st.scheduledDays) && st.scheduledDays.includes(day)) {
+        todaysOnTimeCount++;
+      } else {
+        otherDaysCount++;
+      }
+    });
+
+    todaysTbmStatus.todaysCompleted[lineName] = todaysOnTimeCount;
+    todaysTbmStatus.otherDaysCompleted[lineName] = otherDaysCount;
+
+    totals.todaysPlan += todaysPlan;
+    totals.todaysActual += todaysActual;
+    totals.cumPlanAod += cumPlanAod;
+    totals.cumActualAod += cumActualAod;
+    totals.cumPendingAod += cumPendingAod;
+    totals.cumPlanMonth += cumPlanMonth;
+    totals.cumActualMonth += cumActualMonth;
+    totals.cumPendingMonth += cumPendingMonth;
+
+    linesData.push({
+      line: lineName,
+      todaysPlan,
+      todaysActual,
+      cumPlanAod,
+      cumActualAod,
+      cumPendingAod,
+      cumPlanMonth,
+      cumActualMonth,
+      cumPendingMonth
+    });
+  });
+
+  todaysTbmStatus.todaysCompleted["TOTAL"] = Object.values(todaysTbmStatus.todaysCompleted).reduce((a, b) => a + b, 0);
+  todaysTbmStatus.otherDaysCompleted["TOTAL"] = Object.values(todaysTbmStatus.otherDaysCompleted).reduce((a, b) => a + b, 0);
+
+  return res.status(200).json({
+    success: true,
+    date: formattedSelectedDate,
+    pS: pS,
+    departmentName: pS === "P" ? "Maintenance (TBM)" : "Production (Smile Card)",
+    lines: linesData,
+    total: totals,
+    todaysTbmStatus: todaysTbmStatus
+  });
+});
+
