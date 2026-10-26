@@ -184,7 +184,14 @@ export default function TbmOverallStatus() {
   }, [fetchData]);
 
   // Group lines into Machining (3C) vs Assembly
-  const { machiningLines, assemblyLines, visibleLines, computedTotals } = useMemo(() => {
+  const {
+    machiningLines,
+    assemblyLines,
+    visibleLines,
+    machiningTotals,
+    assemblyTotals,
+    computedTotals,
+  } = useMemo(() => {
     const all = dashboardData?.lines || [];
 
     const is3C = (lineStr) => {
@@ -233,9 +240,32 @@ export default function TbmOverallStatus() {
       machiningLines: mLines,
       assemblyLines: aLines,
       visibleLines: active,
+      machiningTotals: calcTotal(mLines),
+      assemblyTotals: calcTotal(aLines),
       computedTotals: calcTotal(active),
     };
   }, [dashboardData, lineFilter]);
+
+  // Dynamic Table 2 Columns based on active filter
+  const table2Columns = useMemo(() => {
+    if (lineFilter === "3C") {
+      return ["BLOCK", "CRANK", "HEAD"];
+    }
+    if (lineFilter === "ASSEMBLY") {
+      return assemblyLines.map((l) => l.line);
+    }
+    // ALL: show 3C lines first, then assembly lines
+    return [...machiningLines.map((l) => l.line), ...assemblyLines.map((l) => l.line)];
+  }, [lineFilter, machiningLines, assemblyLines]);
+
+  const todaysCompletedMap = dashboardData?.todaysTbmStatus?.todaysCompleted || {};
+  const otherDaysCompletedMap = dashboardData?.todaysTbmStatus?.otherDaysCompleted || {};
+
+  const table2Totals = useMemo(() => {
+    const todays = table2Columns.reduce((sum, col) => sum + (todaysCompletedMap[col] || 0), 0);
+    const other = table2Columns.reduce((sum, col) => sum + (otherDaysCompletedMap[col] || 0), 0);
+    return { todays, other };
+  }, [table2Columns, todaysCompletedMap, otherDaysCompletedMap]);
 
   // Export matching Excel Workbook
   const handleExportExcel = () => {
@@ -248,6 +278,7 @@ export default function TbmOverallStatus() {
       [],
       ["ENTER DATE HERE", dashboardData.date],
       ["DEPARTMENT", department === "P" ? "Maintenance (TBM)" : "Production (Smile Card)"],
+      ["FILTER VIEW", lineFilter],
       [],
       [
         "Line",
@@ -277,7 +308,7 @@ export default function TbmOverallStatus() {
     });
 
     wsData.push([
-      "TOTAL",
+      `TOTAL (${lineFilter})`,
       computedTotals.todaysPlan,
       computedTotals.todaysActual,
       computedTotals.cumPlanAod,
@@ -291,26 +322,19 @@ export default function TbmOverallStatus() {
     wsData.push([]);
     wsData.push(["Todays TBM STATUS"]);
 
-    const cols = ["", "BLOCK", "CRANK", "HEAD", "TOTAL"];
+    const cols = ["Status Category", ...table2Columns, "TOTAL"];
     wsData.push(cols);
-
-    const todaysMap = dashboardData.todaysTbmStatus?.todaysCompleted || {};
-    const otherMap = dashboardData.todaysTbmStatus?.otherDaysCompleted || {};
 
     wsData.push([
       "Todays: No of cards completed",
-      todaysMap["BLOCK"] || 0,
-      todaysMap["CRANK"] || 0,
-      todaysMap["HEAD"] || 0,
-      todaysMap["TOTAL"] || 0,
+      ...table2Columns.map((c) => todaysCompletedMap[c] || 0),
+      table2Totals.todays,
     ]);
 
     wsData.push([
       "Other days: No of cards completed",
-      otherMap["BLOCK"] || 0,
-      otherMap["CRANK"] || 0,
-      otherMap["HEAD"] || 0,
-      otherMap["TOTAL"] || 0,
+      ...table2Columns.map((c) => otherDaysCompletedMap[c] || 0),
+      table2Totals.other,
     ]);
 
     const ws = XLSX.utils.aoa_to_sheet(wsData);
@@ -428,7 +452,7 @@ export default function TbmOverallStatus() {
             </tr>
           </thead>
           <tbody>
-            {/* If lineFilter === 'ALL' and we have both machining and assembly, show clear section groups */}
+            {/* If lineFilter === 'ALL', render Machining with Subtotal, then Assembly with Subtotal */}
             {lineFilter === "ALL" && machiningLines.length > 0 && (
               <>
                 <tr className="excel-section-header">
@@ -447,6 +471,17 @@ export default function TbmOverallStatus() {
                     <td className="cell-num cell-pending">{row.cumPendingMonth}</td>
                   </tr>
                 ))}
+                <tr className="excel-subtotal-row">
+                  <td className="cell-line font-bold">SUBTOTAL (3C MACHINING)</td>
+                  <td className="cell-num">{machiningTotals.todaysPlan}</td>
+                  <td className="cell-num">{machiningTotals.todaysActual}</td>
+                  <td className="cell-num">{machiningTotals.cumPlanAod}</td>
+                  <td className="cell-num">{machiningTotals.cumActualAod}</td>
+                  <td className="cell-num cell-pending">{machiningTotals.cumPendingAod}</td>
+                  <td className="cell-num">{machiningTotals.cumPlanMonth}</td>
+                  <td className="cell-num">{machiningTotals.cumActualMonth}</td>
+                  <td className="cell-num cell-pending">{machiningTotals.cumPendingMonth}</td>
+                </tr>
               </>
             )}
 
@@ -468,6 +503,17 @@ export default function TbmOverallStatus() {
                     <td className="cell-num cell-pending">{row.cumPendingMonth}</td>
                   </tr>
                 ))}
+                <tr className="excel-subtotal-row">
+                  <td className="cell-line font-bold">SUBTOTAL (ASSEMBLY)</td>
+                  <td className="cell-num">{assemblyTotals.todaysPlan}</td>
+                  <td className="cell-num">{assemblyTotals.todaysActual}</td>
+                  <td className="cell-num">{assemblyTotals.cumPlanAod}</td>
+                  <td className="cell-num">{assemblyTotals.cumActualAod}</td>
+                  <td className="cell-num cell-pending">{assemblyTotals.cumPendingAod}</td>
+                  <td className="cell-num">{assemblyTotals.cumPlanMonth}</td>
+                  <td className="cell-num">{assemblyTotals.cumActualMonth}</td>
+                  <td className="cell-num cell-pending">{assemblyTotals.cumPendingMonth}</td>
+                </tr>
               </>
             )}
 
@@ -487,9 +533,11 @@ export default function TbmOverallStatus() {
                 </tr>
               ))}
 
-            {/* Total Row */}
+            {/* Grand Total Row */}
             <tr className="excel-total-row">
-              <td className="cell-line font-bold">TOTAL ({lineFilter})</td>
+              <td className="cell-line font-bold">
+                {lineFilter === "ALL" ? "GRAND TOTAL" : `TOTAL (${lineFilter})`}
+              </td>
               <td className="cell-num">{computedTotals.todaysPlan}</td>
               <td className="cell-num">{computedTotals.todaysActual}</td>
               <td className="cell-num">{computedTotals.cumPlanAod}</td>
@@ -504,20 +552,22 @@ export default function TbmOverallStatus() {
 
         {/* Table 2: Today's TBM Execution Status Breakdown (Rows 10-12) */}
         <div className="excel-sub-section">
-          <div style={{ flex: "1 1 500px", maxWidth: "680px" }}>
+          <div style={{ flex: "1 1 auto", maxWidth: "100%", overflowX: "auto" }}>
             <h3 className="excel-sub-title">
               <i className="bi bi-card-checklist text-success"></i> Todays TBM STATUS
             </h3>
-            <table className="excel-grid-table" style={{ marginBottom: 0 }}>
+            <table className="excel-grid-table" style={{ marginBottom: 0, width: "auto", minWidth: "500px" }}>
               <thead>
                 <tr>
-                  <th style={{ width: "40%", textAlign: "left", paddingLeft: "12px" }}>
+                  <th style={{ textAlign: "left", paddingLeft: "12px", minWidth: "180px" }}>
                     Status Category
                   </th>
-                  <th style={{ width: "15%" }}>BLOCK</th>
-                  <th style={{ width: "15%" }}>CRANK</th>
-                  <th style={{ width: "15%" }}>HEAD</th>
-                  <th style={{ width: "15%" }}>TOTAL</th>
+                  {table2Columns.map((col) => (
+                    <th key={col} style={{ minWidth: "75px" }}>
+                      {col}
+                    </th>
+                  ))}
+                  <th style={{ minWidth: "75px" }}>TOTAL</th>
                 </tr>
               </thead>
               <tbody>
@@ -525,35 +575,23 @@ export default function TbmOverallStatus() {
                   <td className="cell-line" style={{ fontWeight: 600 }}>
                     Todays: No of cards completed
                   </td>
-                  <td className="cell-num">
-                    {dashboardData?.todaysTbmStatus?.todaysCompleted?.["BLOCK"] || 0}
-                  </td>
-                  <td className="cell-num">
-                    {dashboardData?.todaysTbmStatus?.todaysCompleted?.["CRANK"] || 0}
-                  </td>
-                  <td className="cell-num">
-                    {dashboardData?.todaysTbmStatus?.todaysCompleted?.["HEAD"] || 0}
-                  </td>
-                  <td className="cell-num font-bold">
-                    {dashboardData?.todaysTbmStatus?.todaysCompleted?.["TOTAL"] || 0}
-                  </td>
+                  {table2Columns.map((col) => (
+                    <td key={col} className="cell-num">
+                      {todaysCompletedMap[col] || 0}
+                    </td>
+                  ))}
+                  <td className="cell-num font-bold">{table2Totals.todays}</td>
                 </tr>
                 <tr>
                   <td className="cell-line" style={{ fontWeight: 600 }}>
                     Other days: No of cards completed
                   </td>
-                  <td className="cell-num">
-                    {dashboardData?.todaysTbmStatus?.otherDaysCompleted?.["BLOCK"] || 0}
-                  </td>
-                  <td className="cell-num">
-                    {dashboardData?.todaysTbmStatus?.otherDaysCompleted?.["CRANK"] || 0}
-                  </td>
-                  <td className="cell-num">
-                    {dashboardData?.todaysTbmStatus?.otherDaysCompleted?.["HEAD"] || 0}
-                  </td>
-                  <td className="cell-num font-bold">
-                    {dashboardData?.todaysTbmStatus?.otherDaysCompleted?.["TOTAL"] || 0}
-                  </td>
+                  {table2Columns.map((col) => (
+                    <td key={col} className="cell-num">
+                      {otherDaysCompletedMap[col] || 0}
+                    </td>
+                  ))}
+                  <td className="cell-num font-bold">{table2Totals.other}</td>
                 </tr>
               </tbody>
             </table>
