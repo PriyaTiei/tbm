@@ -12,13 +12,10 @@ import SummaryAbnormality from "./components/SummaryAbnormality";
 import SummaryCard from "./components/SummaryCard";
 import SmileCardAdd from "./components/SmileCardAdd";
 import PendingTask from "./components/PendingTask/PendingTask";
-import TeamLeader from "./components/TeamLeader/TeamLeader"
-
-const TbmOverallStatus = lazy(() => import("./components/TbmStatus/TbmOverallStatus"));
-
-import PendingSmileCard from "./components/PendingTask/PendingSmileCard"
-import AllMachineSmileCard from "./components/AllMachine/AllMachineSmileCard"
-import AlldelMachineSmileCard from "./components/AllMachine/AlldelMachineSmileCard"
+import TeamLeader from "./components/TeamLeader/TeamLeader";
+import PendingSmileCard from "./components/PendingTask/PendingSmileCard";
+import AllMachineSmileCard from "./components/AllMachine/AllMachineSmileCard";
+import AlldelMachineSmileCard from "./components/AllMachine/AlldelMachineSmileCard";
 import { AppSidebar } from "./components/Sidebar";
 import AllMachine from "./components/AllMachine/AllMachine";
 import DelMachine from "./components/AllMachine/DeletedCheckitems";
@@ -31,6 +28,8 @@ import MultiLevelXAxisBarChart from "./BarChart";
 import OldPending from "./components/oldPending";
 import { AddHoliday } from "./components/holiday/addHoliday";
 import Verification from "./components/common/verification";
+
+const TbmOverallStatus = lazy(() => import("./components/TbmStatus/TbmOverallStatus"));
 
 function App() {
   const dispatch = useDispatch();
