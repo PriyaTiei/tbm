@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import Card from 'react-bootstrap/Card';
 import { useDispatch, useSelector } from 'react-redux';
 import DatePicker from "react-date-picker";
@@ -14,6 +14,8 @@ export const AddHoliday = () => {
   const [toDate, setToDate] = useState(new Date(Date.now()));
   const [showInput, setShowInput] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [natureFilter, setNatureFilter] = useState("all");
   const dispatch = useDispatch();
   const textareaRef = useRef(null);
   const [hdata, setHdata] = useState({
@@ -166,10 +168,31 @@ export const AddHoliday = () => {
     }
   };
 
+  // Filtered holiday list based on search query and nature filter
+  const filteredHolidays = useMemo(() => {
+    if (!complete || !Array.isArray(complete)) return [];
+    return complete.filter((item) => {
+      const dateStr = formatDateSafely(item?.date);
+      const reasonStr = (item?.reason || "").toLowerCase();
+      const query = searchQuery.toLowerCase().trim();
+
+      const matchesQuery = !query || dateStr.includes(query) || reasonStr.includes(query);
+
+      let matchesNature = true;
+      if (natureFilter === "scheduled") {
+        matchesNature = !item?.adhoc;
+      } else if (natureFilter === "spontaneous") {
+        matchesNature = !!item?.adhoc;
+      }
+
+      return matchesQuery && matchesNature;
+    });
+  }, [complete, searchQuery, natureFilter]);
+
   return (
     <div className="container-fluid px-3 px-md-4 py-3" style={{ minHeight: "85vh" }}>
       {/* Top Header Card */}
-      <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom">
+      <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 pb-3 border-bottom">
         <div className="d-flex align-items-center gap-2">
           <div className="bg-primary bg-opacity-10 text-primary p-2 rounded-3 d-inline-flex align-items-center justify-content-center">
             <i className="bi bi-calendar-event fs-5"></i>
@@ -177,38 +200,76 @@ export const AddHoliday = () => {
           <div>
             <h4 className="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
               Holidays List
-              <span className="badge bg-light text-secondary border fs-6 fw-normal rounded-pill">
-                {complete?.length || 0}
+              <span className="badge bg-light text-primary border fs-6 fw-normal rounded-pill">
+                {filteredHolidays.length} / {complete?.length || 0}
               </span>
             </h4>
-            <p className="text-muted small mb-0">
-              Manage organization holidays, factory shutdowns, and adhoc days.
-            </p>
+            <small className="text-muted">
+              Organization holidays, scheduled weekends, and factory shutdowns.
+            </small>
           </div>
         </div>
 
-        {/* Action Controls */}
+        {/* Action Controls & Filters */}
         <div className="d-flex flex-wrap align-items-center gap-2">
+          {/* Quick Search */}
+          <div className="d-flex align-items-center bg-white border rounded-pill px-3 py-1 shadow-sm" style={{ height: "36px" }}>
+            <i className="bi bi-search text-muted me-2 small"></i>
+            <input
+              type="text"
+              placeholder="Filter by date or reason..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border-0 bg-transparent p-0"
+              style={{ fontSize: "13px", outline: "none", width: "160px" }}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                className="btn btn-sm btn-link text-muted p-0 ms-1 border-0"
+                onClick={() => setSearchQuery("")}
+                title="Clear"
+              >
+                <i className="bi bi-x-circle-fill"></i>
+              </button>
+            )}
+          </div>
+
+          {/* Nature filter pill */}
+          <select
+            className="form-select form-select-sm border rounded-pill shadow-sm"
+            style={{ width: "140px", height: "36px", fontSize: "13px" }}
+            value={natureFilter}
+            onChange={(e) => setNatureFilter(e.target.value)}
+          >
+            <option value="all">All Types</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="spontaneous">Spontaneous</option>
+          </select>
+
+          {/* Auto Generate */}
           {!showInput ? (
             <button
-              className="btn btn-sm btn-outline-warning text-dark border rounded-pill px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm"
+              className="btn btn-sm btn-outline-warning text-dark border rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm"
+              style={{ height: "36px" }}
               onClick={handleAutoGenerateClick}
             >
               <i className="bi bi-magic text-warning fs-6"></i>
               <span>Auto Generate</span>
             </button>
           ) : (
-            <div className="d-flex align-items-center gap-1 bg-light border p-1 rounded-pill shadow-sm">
+            <div className="d-flex align-items-center gap-1 bg-light border p-1 rounded-pill shadow-sm" style={{ height: "36px" }}>
               <input
                 type="number"
                 placeholder="Year (e.g. 2026)"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 className="form-control form-control-sm border-0 bg-transparent px-2"
-                style={{ width: "130px", fontSize: "13px" }}
+                style={{ width: "120px", fontSize: "13px" }}
               />
               <button
                 className="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-semibold"
+                style={{ fontSize: "12px" }}
                 onClick={handleSubmitClick}
               >
                 Generate
@@ -223,9 +284,11 @@ export const AddHoliday = () => {
             </div>
           )}
 
+          {/* Add Holiday Button */}
           {cards !== 'add' && (
             <button
-              className="btn btn-sm btn-warning text-dark rounded-pill px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm"
+              className="btn btn-sm btn-warning text-dark rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm"
+              style={{ height: "36px" }}
               onClick={() => setCards("add")}
             >
               <i className="bi bi-plus-lg fs-6"></i>
@@ -322,39 +385,107 @@ export const AddHoliday = () => {
         </div>
       )}
 
-      {/* Holidays Table Card */}
-      <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-        <div className="table-responsive" style={{ maxHeight: "70vh" }}>
+      {/* Holidays Table Card with Internal Scrolling & Sticky Header */}
+      <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-3">
+        <div
+          className="holiday-table-wrapper"
+          style={{
+            maxHeight: "520px",
+            overflowY: "auto",
+            overflowX: "auto",
+            position: "relative"
+          }}
+        >
           <Table hover className="align-middle mb-0" style={{ fontSize: "13px" }}>
-            <thead
-              className="table-light text-uppercase sticky-top"
-              style={{
-                fontSize: "11px",
-                letterSpacing: "0.5px",
-                backgroundColor: "#f8fafc",
-                borderBottom: "2px solid #e2e8f0",
-                zIndex: 1
-              }}
-            >
+            <thead>
               <tr>
-                <th scope="col" style={{ width: "160px" }}>Date</th>
-                <th scope="col">Reason</th>
-                <th scope="col" style={{ width: "180px", textAlign: "center" }}>Adhoc Type</th>
-                <th scope="col" style={{ width: "120px", textAlign: "center" }}>Actions</th>
+                <th
+                  scope="col"
+                  style={{
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 10,
+                    backgroundColor: "#f8fafc",
+                    borderBottom: "2px solid #e2e8f0",
+                    fontSize: "11px",
+                    letterSpacing: "0.5px",
+                    textTransform: "uppercase",
+                    color: "#475569",
+                    width: "160px",
+                    padding: "12px 16px"
+                  }}
+                >
+                  Date
+                </th>
+                <th
+                  scope="col"
+                  style={{
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 10,
+                    backgroundColor: "#f8fafc",
+                    borderBottom: "2px solid #e2e8f0",
+                    fontSize: "11px",
+                    letterSpacing: "0.5px",
+                    textTransform: "uppercase",
+                    color: "#475569",
+                    padding: "12px 16px"
+                  }}
+                >
+                  Reason
+                </th>
+                <th
+                  scope="col"
+                  style={{
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 10,
+                    backgroundColor: "#f8fafc",
+                    borderBottom: "2px solid #e2e8f0",
+                    fontSize: "11px",
+                    letterSpacing: "0.5px",
+                    textTransform: "uppercase",
+                    color: "#475569",
+                    width: "180px",
+                    textAlign: "center",
+                    padding: "12px 16px"
+                  }}
+                >
+                  Adhoc Type
+                </th>
+                <th
+                  scope="col"
+                  style={{
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 10,
+                    backgroundColor: "#f8fafc",
+                    borderBottom: "2px solid #e2e8f0",
+                    fontSize: "11px",
+                    letterSpacing: "0.5px",
+                    textTransform: "uppercase",
+                    color: "#475569",
+                    width: "120px",
+                    textAlign: "center",
+                    padding: "12px 16px"
+                  }}
+                >
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
-              {complete && complete.length > 0 ? (
-                complete.map((item, i) => (
+              {filteredHolidays.length > 0 ? (
+                filteredHolidays.map((item, i) => (
                   <tr key={item?._id || i}>
-                    <td className="font-monospace fw-medium text-dark">
+                    <td className="font-monospace fw-medium text-dark px-3 py-2">
                       <i className="bi bi-calendar3 me-2 text-muted"></i>
                       {formatDateSafely(item?.date)}
                     </td>
-                    <td className="fw-semibold text-dark">
+                    <td className="fw-semibold text-dark px-3 py-2">
                       {item?.reason || "--"}
                     </td>
-                    <td style={{ textAlign: "center" }}>
+                    <td style={{ textAlign: "center" }} className="px-3 py-2">
                       {item.adhoc ? (
                         <span className="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 rounded-pill fw-semibold">
                           <i className="bi bi-lightning-charge me-1"></i> Spontaneous
@@ -365,11 +496,11 @@ export const AddHoliday = () => {
                         </span>
                       )}
                     </td>
-                    <td style={{ textAlign: "center" }}>
+                    <td style={{ textAlign: "center" }} className="px-3 py-2">
                       <div className="d-inline-flex align-items-center gap-1">
                         <button
                           type="button"
-                          className="btn btn-sm btn-light border text-primary rounded-circle p-1 d-inline-flex align-items-center justify-content-center"
+                          className="btn btn-sm btn-light border text-primary rounded-circle p-1 d-inline-flex align-items-center justify-content-center shadow-sm"
                           style={{ width: "30px", height: "30px" }}
                           onClick={() => handleEditClick(item?._id)}
                           title="Edit Holiday"
@@ -378,7 +509,7 @@ export const AddHoliday = () => {
                         </button>
                         <button
                           type="button"
-                          className="btn btn-sm btn-light border text-danger rounded-circle p-1 d-inline-flex align-items-center justify-content-center"
+                          className="btn btn-sm btn-light border text-danger rounded-circle p-1 d-inline-flex align-items-center justify-content-center shadow-sm"
                           style={{ width: "30px", height: "30px" }}
                           onClick={() => handleDeleteClick(item?._id)}
                           title="Delete Holiday"
@@ -397,7 +528,11 @@ export const AddHoliday = () => {
                         <i className="bi bi-calendar-x fs-2"></i>
                       </div>
                       <h6 className="fw-bold text-dark mb-1">No Holidays Found</h6>
-                      <p className="text-muted small mb-0">Use "Add Holiday" or "Auto Generate" to populate organization holidays.</p>
+                      <p className="text-muted small mb-0">
+                        {searchQuery || natureFilter !== "all"
+                          ? "No holidays match your search criteria."
+                          : "Use 'Add Holiday' or 'Auto Generate' to populate organization holidays."}
+                      </p>
                     </div>
                   </td>
                 </tr>
