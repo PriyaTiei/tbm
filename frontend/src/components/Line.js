@@ -34,12 +34,6 @@ function Line({ line, processNos, counts, dailyStatusDataLinewise }) {
         }}
       >
         <div className="d-flex align-items-center gap-2">
-          <div
-            className="d-flex align-items-center justify-content-center bg-white bg-opacity-20 rounded-2"
-            style={{ width: "34px", height: "34px" }}
-          >
-            <i className="bi bi-diagram-3-fill fs-5 text-white"></i>
-          </div>
           <h5 className="m-0 fw-bold" style={{ letterSpacing: "0.4px", fontSize: "1.15rem" }}>
             {line}
           </h5>
