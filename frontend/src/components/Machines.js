@@ -78,19 +78,32 @@ function Machines() {
 
   return (
     <Fragment>
-      <div className="d-flex justify-content-end align-items-center m-2">
-        <button
-          className="btn btn-sm btn-outline-primary me-2"
-          onClick={() => setViewMode("card")}
-        >
-          Card View
-        </button>
-        <button
-          className="btn btn-sm btn-outline-success"
-          onClick={() => setViewMode("list")}
-        >
-          List View
-        </button>
+      {/* View Mode Pill Switch */}
+      <div className="d-flex justify-content-end align-items-center px-3 py-1 mb-2">
+        <div className="btn-group bg-white p-1 rounded-pill border shadow-sm" role="group">
+          <button
+            type="button"
+            className={`btn btn-sm rounded-pill px-3 py-1 fw-semibold ${
+              viewMode === "card"
+                ? "btn-primary shadow-sm"
+                : "btn-light text-muted border-0 bg-transparent"
+            }`}
+            onClick={() => setViewMode("card")}
+          >
+            <i className="bi bi-grid-fill me-1"></i> Card View
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm rounded-pill px-3 py-1 fw-semibold ${
+              viewMode === "list"
+                ? "btn-success shadow-sm"
+                : "btn-light text-muted border-0 bg-transparent"
+            }`}
+            onClick={() => setViewMode("list")}
+          >
+            <i className="bi bi-table me-1"></i> List View
+          </button>
+        </div>
       </div>
 
       {loading ? (
