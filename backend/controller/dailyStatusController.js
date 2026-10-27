@@ -353,24 +353,45 @@ exports.getDailyStatusAll = catchAsyncError(async (req, res, next) => {
 // });
 
 exports.getDailyStatusByCheckItem = catchAsyncError(async (req, res, next) => {
-  console.log("=== Judgement History API ===");
+  const { checkItem, byData, result, limit, page, date } = req.query;
 
-  const filter =
-    req?.query?.byData === "yes"
-      ? {}
-      : {
-          checkItem: ObjectId(req.query.checkItem),
-        };
+  const filter = {};
 
-  const dailyStatusAll = await DailyStatusModel.find(filter)
-    .sort({ checkedAt: -1 }) // latest first
-    .limit(200)              // fetch only 200 records
-    .lean();
+  if (byData !== "yes" && checkItem && checkItem !== "undefined" && checkItem !== "null") {
+    try {
+      filter.checkItem = ObjectId(checkItem);
+    } catch (err) {
+      console.warn("Invalid checkItem ObjectId in getDailyStatusByCheckItem:", checkItem);
+    }
+  }
 
-  console.log("Records returned:", dailyStatusAll.length);
+  if (result && result !== "All" && result !== "") {
+    filter.result = result;
+  }
+
+  if (date && date !== "undefined" && date !== "") {
+    filter.entryFor = date;
+  }
+
+  const limitNum = Math.min(500, Math.max(10, parseInt(limit, 10) || 100));
+  const pageNum = Math.max(1, parseInt(page, 10) || 1);
+  const skip = (pageNum - 1) * limitNum;
+
+  // Use _id: -1 for lightning fast sorted retrieval using the native indexed primary key
+  const [dailyStatusAll, totalCount] = await Promise.all([
+    DailyStatusModel.find(filter)
+      .sort({ _id: -1 })
+      .skip(skip)
+      .limit(limitNum)
+      .lean(),
+    DailyStatusModel.countDocuments(filter),
+  ]);
 
   return res.status(200).json({
     success: true,
+    total: totalCount,
+    page: pageNum,
+    totalPages: Math.ceil(totalCount / limitNum),
     dailyStatusAll,
   });
 });

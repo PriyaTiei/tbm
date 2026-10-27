@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Modal from "react-bootstrap/Modal";
 import JudgementHistoryData from "./JudgementHistoryData";
 
-
 function JudgementHistoryModel({ showModal, setShowModal, checkItem }) {
-
   const handleClose = () => {
     setShowModal(false);
   };
@@ -15,16 +13,16 @@ function JudgementHistoryModel({ showModal, setShowModal, checkItem }) {
       onHide={handleClose}
       dialogClassName="my-modal"
       contentClassName="modal-height"
-
+      size="xl"
     >
       <Modal.Header closeButton>
-        <Modal.Title>Judgement History</Modal.Title>
+        <Modal.Title className="fw-bold fs-6">Judgement History</Modal.Title>
       </Modal.Header>
-      <Modal.Body >
+      <Modal.Body className="p-2">
         <JudgementHistoryData checkItem={checkItem} />
       </Modal.Body>
     </Modal>
   );
 }
 
-export default JudgementHistoryModel
+export default JudgementHistoryModel;
