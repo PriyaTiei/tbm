@@ -45,7 +45,10 @@ export default function Title() {
 
   return (
     <Fragment>
-      <Row className="align-items-center bg-black m-0 py-2 px-3 border-bottom border-secondary border-opacity-25">
+      <Row
+        className="align-items-center bg-black m-0 py-2 px-3 border-bottom border-secondary border-opacity-25 sticky-top"
+        style={{ position: "sticky", top: 0, zIndex: 1020 }}
+      >
         <Col xs="auto" className="d-flex align-items-center ps-0">
           <Nav className="me-2">
             <Nav.Link
