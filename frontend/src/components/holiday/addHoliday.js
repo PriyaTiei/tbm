@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import { useDispatch, useSelector } from 'react-redux';
 import DatePicker from "react-date-picker";
-import { Button, FloatingLabel, Form, Table, Toast } from 'react-bootstrap';
+import { Button, FloatingLabel, Form, Table } from 'react-bootstrap';
 import "./addHoliday.css";
 import { createData, deleteData, fetchData, fetchSingleData, updateData } from '../../redux/holiday/holidayActions';
 import { toast } from 'react-toastify';
@@ -14,7 +14,6 @@ export const AddHoliday = () => {
   const [toDate, setToDate] = useState(new Date(Date.now()));
   const [showInput, setShowInput] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [showToast, setShowToast] = useState(false);
   const dispatch = useDispatch();
   const textareaRef = useRef(null);
   const [hdata, setHdata] = useState({
@@ -25,18 +24,18 @@ export const AddHoliday = () => {
   });
   const [errors, setErrors] = useState({});
   const [cards, setCards] = useState("empty");
-  const { holidaydata, holidaySingledata } = useSelector((state) => state.holiday)
-  const [complete, setComplete] = useState([])
-  const [editComp, setEditComp] = useState("")
-  const [selected, setSelected] = useState()
+  const { holidaydata, holidaySingledata } = useSelector((state) => state.holiday);
+  const [complete, setComplete] = useState([]);
+  const [selected, setSelected] = useState();
 
   useEffect(() => {
-    const year = toDate.getFullYear();
-    const month = String(toDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const day = String(toDate.getDate()).padStart(2, '0');
-    const formattedDate = `${year}/${month}/${day}`;
-    setHdata({ ...hdata, date: formattedDate });
-
+    if (toDate && !isNaN(toDate.getTime())) {
+      const year = toDate.getFullYear();
+      const month = String(toDate.getMonth() + 1).padStart(2, '0');
+      const day = String(toDate.getDate()).padStart(2, '0');
+      const formattedDate = `${year}/${month}/${day}`;
+      setHdata((prev) => ({ ...prev, date: formattedDate }));
+    }
   }, [toDate]);
 
   const handleAutoGenerateClick = () => {
@@ -44,77 +43,60 @@ export const AddHoliday = () => {
   };
 
   const handleSubmitClick = () => {
+    if (!inputValue.trim()) {
+      toast.error("Please enter a valid year");
+      return;
+    }
     axios
       .post(
         `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/holidays/prepopulate`,
         { year: inputValue }
       )
       .then((result) => {
-
         if (result.data.success) {
-          toast.success("saved data");
-          setShowInput(false)
-          setInputValue("")
+          toast.success("Holidays auto-generated successfully");
+          setShowInput(false);
+          setInputValue("");
+          dispatch(fetchData());
         }
       })
       .catch((err) => {
-
-        setShowInput(false)
-        setInputValue("")
-        toast.error(`Data could not be saved , ${err.message}`);
+        setShowInput(false);
+        setInputValue("");
+        toast.error(`Data could not be saved, ${err.message}`);
       });
-    // const response = axios.post(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}holidays/prepopulate`, { year: inputValue });
-    // if (response.data.success) {
-    //   setShowToast(true);
-    //   setShowInput(false);
-    // } else {
-    //   // Handle error case
-    //   alert("Failed to submit");
-    // }
-
   };
 
   useEffect(() => {
     if (holidaydata?.holidays) {
-
-      setComplete(holidaydata?.holidays)
+      setComplete(holidaydata?.holidays);
     }
-  }, [holidaydata])
-
-
-
+  }, [holidaydata]);
 
   useEffect(() => {
     if (holidaySingledata && holidaySingledata?.holiday) {
-      setHdata(holidaySingledata?.holiday)
-
-      // const formattedDate = new Date(holidaySingledata?.holiday?.date);
+      setHdata(holidaySingledata?.holiday);
       const dateString = holidaySingledata?.holiday?.date;
-      const dateOnly = dateString.split("T")[0];
-      const formattedDate = new Date(dateOnly);
-      setToDate(formattedDate);
+      if (dateString) {
+        const dateOnly = String(dateString).split("T")[0];
+        const formattedDate = new Date(dateOnly);
+        if (!isNaN(formattedDate.getTime())) {
+          setToDate(formattedDate);
+        }
+      }
     }
-
-  }, [holidaySingledata])
+  }, [holidaySingledata]);
 
   const validate = () => {
-    let errors = {};
-
-    // Validate date
+    let errs = {};
     if (!hdata.date || isNaN(new Date(hdata.date).getTime())) {
-      errors.date = "Valid date is required.";
+      errs.date = "Valid date is required.";
     }
-
-    // Validate reason
-    if (!hdata.reason.trim()) {
-      errors.reason = "Reason is required.";
+    if (!hdata.reason || !hdata.reason.trim()) {
+      errs.reason = "Reason is required.";
     }
-
-    // Validate adhoc (Assuming it must be "true" or "false")
-
-
-    setErrors(errors);
-    return Object.keys(errors).length === 0; // Returns true if no errors
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
   };
 
   useEffect(() => {
@@ -122,47 +104,33 @@ export const AddHoliday = () => {
   }, [dispatch]);
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
-
+    e.preventDefault();
     if (validate()) {
-
-
       dispatch(createData({ ...hdata, user: users?._id }))
-        .then((status) => {
-
+        .then(() => {
           toast.success("Holiday Added successfully");
-          dispatch(fetchData())
-          handleClear(); // Clear form after successful submission
+          dispatch(fetchData());
+          handleClear();
         })
         .catch((error) => {
           console.error("Submission failed:", error);
           toast.error(error);
         });
-    } else {
-
     }
   };
 
-
-  const handleSave = (e) => {
-    // e.preventDefault(); // Prevent default form submission behavior
-
+  const handleSave = () => {
     if (validate()) {
-
-
       dispatch(updateData(selected, { ...hdata, user: users?._id }))
-        .then((status) => {
-
+        .then(() => {
           toast.success("Holiday Updated successfully");
-          dispatch(fetchData())
-          handleClear(); // Clear form after successful submission
+          dispatch(fetchData());
+          handleClear();
         })
         .catch((error) => {
           console.error("Submission failed:", error);
           toast.error(error);
         });
-    } else {
-
     }
   };
 
@@ -173,212 +141,271 @@ export const AddHoliday = () => {
     setErrors({});
   };
 
-
   const handleEditClick = (item) => {
     textareaRef.current?.focus();
-    dispatch(fetchSingleData(item))
-    setSelected(item)
-    setCards("edit")
-
-    // Implement edit functionality here
+    dispatch(fetchSingleData(item));
+    setSelected(item);
+    setCards("edit");
   };
 
   const handleDeleteClick = (item) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this item?");
+    const confirmDelete = window.confirm("Are you sure you want to delete this holiday?");
     if (confirmDelete) {
-
-      dispatch(deleteData(item)).then(() => dispatch(fetchData()))
-      // Implement delete functionality here
-      // For example, you might setItem to null or remove it from a list
+      dispatch(deleteData(item)).then(() => dispatch(fetchData()));
     }
   };
+
+  const formatDateSafely = (dateVal) => {
+    if (!dateVal) return "--";
+    try {
+      const d = new Date(dateVal);
+      if (isNaN(d.getTime())) return String(dateVal);
+      return d.toISOString().slice(0, 10);
+    } catch {
+      return String(dateVal);
+    }
+  };
+
   return (
-    <div className="overflow-auto" style={{ height: "85vh", paddingBottom: "10%" }}>
-      {cards && cards === 'add' ? (
-        <Card style={{ width: '30rem', margin: "auto", marginTop: "2%", position: "relative" }}>
-          <Card.Body>
-            <i className="bi bi-x-circle cross" onClick={handleClear} style={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer' }}></i>
-            <Card.Title>Add Holiday</Card.Title>
-
-            <div style={{ display: "block", width: "100%" }}>
-              Select A Date
-              <DatePicker
-                format="dd/MM/yyyy"
-                className={"newar"}
-                value={toDate}
-                onChange={setToDate}
-                clearIcon={null}
-                calendarIcon={null}
-                style={{ width: "100%!important", boxSizing: "border-box" }}
-              />
-            </div>
-            <span style={{ color: "red" }}>{errors.date}</span>
-
-            <FloatingLabel controlId="floatingSelect" label="Adhoc">
-              <Form.Select
-                aria-label="Floating label select example"
-                onChange={(e) => {
-                  setHdata({ ...hdata, adhoc: e.target.value });
-                }}
-              >
-                <option value="">Please select Ad Hoc Holiday Nature</option>
-                <option value="false">Scheduled</option>
-                <option value="true">Spontaneous</option>
-              </Form.Select>
-            </FloatingLabel>
-            {/* <span style={{ color: "red" }}>{errors.adhoc}</span> */}
-
-            <FloatingLabel controlId="floatingTextarea2" label="Reason for Holiday" className='cheecc'>
-              <Form.Control
-                as="textarea"
-                placeholder="Leave a comment here"
-                style={{ height: '100px' }}
-                onChange={(e) => {
-                  setHdata({ ...hdata, reason: e.target.value });
-                }}
-              />
-            </FloatingLabel>
-            <span style={{ color: "red" }}>{errors.reason}</span>
-
-            <Button variant="primary" className='cheecc' style={{ width: "100%" }} onClick={handleSubmit}>Save</Button>
-          </Card.Body>
-        </Card>
-      ) : cards == "edit" ?
-        (<Card style={{ width: '30rem', margin: "auto", marginTop: "2%", position: "relative" }}>
-          <Card.Body>
-            <i className="bi bi-x-circle cross" onClick={handleClear} style={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer' }}></i>
-            <Card.Title>Edit Holiday</Card.Title>
-
-            <div style={{ display: "block", width: "100%" }}>
-              Select A Date
-              <DatePicker
-                format="dd/MM/yyyy"
-                className={"newar"}
-                value={toDate}
-                onChange={setToDate}
-                clearIcon={null}
-                calendarIcon={null}
-                style={{ width: "100%!important", boxSizing: "border-box" }}
-              />
-            </div>
-            <span style={{ color: "red" }}>{errors.date}</span>
-
-            <FloatingLabel controlId="floatingSelect" label="Adhoc">
-              <Form.Select
-                aria-label="Floating label select example"
-                onChange={(e) => {
-                  setHdata({ ...hdata, adhoc: e.target.value });
-                }}
-                value={hdata?.adhoc}
-              >
-                <option value="">Please select Ad Hoc Holiday Nature</option>
-                <option value="false">Scheduled</option>
-                <option value="true">Spontaneous</option>
-              </Form.Select>
-            </FloatingLabel>
-            <span style={{ color: "red" }}>{errors.adhoc}</span>
-
-            <FloatingLabel controlId="floatingTextarea2" label="Reason for Holiday" className='cheecc'>
-              <Form.Control
-                as="textarea"
-                placeholder="Leave a comment here"
-                style={{ height: '100px' }}
-                onChange={(e) => {
-                  setHdata({ ...hdata, reason: e.target.value });
-                }}
-                ref={textareaRef} 
-                value={hdata?.reason}
-              />
-            </FloatingLabel>
-            <span style={{ color: "red" }}>{errors.reason}</span>
-
-            <Button variant="primary" className='cheecc' style={{ width: "100%" }} onClick={() => handleSave()}>Update Holiday</Button>
-          </Card.Body>
-        </Card>) : null}
-
-      <div style={{ display: "flex" }}>
-        <div style={{ height: "50px" }}>
-          {cards !== 'add' ? (
-            <Button variant="warning" style={{ position: "absolute", right: 30 }} onClick={() => setCards("add")}>Add Holiday</Button>
-          ) : null}
+    <div className="container-fluid px-3 px-md-4 py-3" style={{ minHeight: "85vh" }}>
+      {/* Top Header Card */}
+      <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom">
+        <div className="d-flex align-items-center gap-2">
+          <div className="bg-primary bg-opacity-10 text-primary p-2 rounded-3 d-inline-flex align-items-center justify-content-center">
+            <i className="bi bi-calendar-event fs-5"></i>
+          </div>
+          <div>
+            <h4 className="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+              Holidays List
+              <span className="badge bg-light text-secondary border fs-6 fw-normal rounded-pill">
+                {complete?.length || 0}
+              </span>
+            </h4>
+            <p className="text-muted small mb-0">
+              Manage organization holidays, factory shutdowns, and adhoc days.
+            </p>
+          </div>
         </div>
 
-        <div>
-          {!showInput && (
-            <Button variant="warning" style={{ position: "absolute", right: 150 }} onClick={handleAutoGenerateClick}>
-              Auto Generate
-            </Button>
-          )}
-
-          {showInput && (
-            <div style={{ position: "absolute", right: 150 }}>
-              <Form.Control
-                type="text"
-                placeholder="Enter the year"
+        {/* Action Controls */}
+        <div className="d-flex flex-wrap align-items-center gap-2">
+          {!showInput ? (
+            <button
+              className="btn btn-sm btn-outline-warning text-dark border rounded-pill px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm"
+              onClick={handleAutoGenerateClick}
+            >
+              <i className="bi bi-magic text-warning fs-6"></i>
+              <span>Auto Generate</span>
+            </button>
+          ) : (
+            <div className="d-flex align-items-center gap-1 bg-light border p-1 rounded-pill shadow-sm">
+              <input
+                type="number"
+                placeholder="Year (e.g. 2026)"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
+                className="form-control form-control-sm border-0 bg-transparent px-2"
+                style={{ width: "130px", fontSize: "13px" }}
               />
-              <Button variant="primary" onClick={handleSubmitClick} style={{ marginTop: "10px" }}>
-                Submit
-              </Button>
-              <Button variant="danger" onClick={() => { setShowInput(false); setInputValue("") }} style={{ marginTop: "10px" }}>
-                Cancel
-              </Button>
+              <button
+                className="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-semibold"
+                onClick={handleSubmitClick}
+              >
+                Generate
+              </button>
+              <button
+                className="btn btn-sm btn-light border-0 rounded-circle text-muted"
+                onClick={() => { setShowInput(false); setInputValue(""); }}
+                title="Cancel"
+              >
+                <i className="bi bi-x"></i>
+              </button>
             </div>
           )}
 
-          <Toast
-            onClose={() => setShowToast(false)}
-            show={showToast}
-            delay={3000}
-            autohide
-            style={{ position: "absolute", top: 0, right: 0 }}
-          >
-            <Toast.Header>
-              <strong className="mr-auto">Success</strong>
-            </Toast.Header>
-            <Toast.Body>API call was successful!</Toast.Body>
-          </Toast>
+          {cards !== 'add' && (
+            <button
+              className="btn btn-sm btn-warning text-dark rounded-pill px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm"
+              onClick={() => setCards("add")}
+            >
+              <i className="bi bi-plus-lg fs-6"></i>
+              <span>Add Holiday</span>
+            </button>
+          )}
         </div>
       </div>
 
-      <div style={{ width: "80%", margin: "1% auto" }}>
-        <h4 style={{ marginBottom: "1%" }}>Holidays List</h4>
-        <Table striped bordered hover >
+      {/* Add / Edit Form Card */}
+      {(cards === 'add' || cards === 'edit') && (
+        <div className="row justify-content-center mb-4">
+          <div className="col-12 col-md-8 col-lg-6">
+            <Card className="border-0 shadow-sm rounded-4 overflow-hidden">
+              <Card.Header className="bg-white border-bottom py-3 d-flex align-items-center justify-content-between">
+                <div className="d-flex align-items-center gap-2">
+                  <i className={`bi ${cards === 'add' ? 'bi-calendar-plus text-primary' : 'bi-pencil-square text-warning'} fs-5`}></i>
+                  <h6 className="mb-0 fw-bold text-dark">
+                    {cards === 'add' ? "Add New Holiday" : "Edit Holiday Record"}
+                  </h6>
+                </div>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={handleClear}
+                  aria-label="Close"
+                ></button>
+              </Card.Header>
+              <Card.Body className="p-4">
+                <div className="mb-3">
+                  <label className="form-label fw-semibold text-secondary small mb-1">Holiday Date</label>
+                  <div className="border rounded-3 p-2 bg-light">
+                    <DatePicker
+                      format="dd/MM/yyyy"
+                      className="w-100 border-0"
+                      value={toDate}
+                      onChange={setToDate}
+                      clearIcon={null}
+                    />
+                  </div>
+                  {errors.date && <small className="text-danger mt-1 d-block">{errors.date}</small>}
+                </div>
 
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Reason</th>
-              <th>Adhoc Type</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {complete?.map((item, i) =>
+                <div className="mb-3">
+                  <FloatingLabel controlId="floatingSelect" label="Ad Hoc Holiday Nature">
+                    <Form.Select
+                      aria-label="Ad Hoc Holiday Nature"
+                      className="rounded-3"
+                      value={hdata?.adhoc}
+                      onChange={(e) => setHdata({ ...hdata, adhoc: e.target.value })}
+                    >
+                      <option value="">Please select nature</option>
+                      <option value="false">Scheduled (Standard Weekend/Holiday)</option>
+                      <option value="true">Spontaneous (Unplanned / Emergency)</option>
+                    </Form.Select>
+                  </FloatingLabel>
+                  {errors.adhoc && <small className="text-danger mt-1 d-block">{errors.adhoc}</small>}
+                </div>
+
+                <div className="mb-4">
+                  <FloatingLabel controlId="floatingTextarea2" label="Reason for Holiday">
+                    <Form.Control
+                      as="textarea"
+                      placeholder="Enter holiday reason"
+                      style={{ height: '90px' }}
+                      className="rounded-3"
+                      ref={textareaRef}
+                      value={hdata?.reason || ""}
+                      onChange={(e) => setHdata({ ...hdata, reason: e.target.value })}
+                    />
+                  </FloatingLabel>
+                  {errors.reason && <small className="text-danger mt-1 d-block">{errors.reason}</small>}
+                </div>
+
+                <div className="d-flex align-items-center justify-content-end gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-light border rounded-pill px-4 py-2 text-secondary fw-semibold"
+                    onClick={handleClear}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm"
+                    onClick={cards === 'add' ? handleSubmit : handleSave}
+                  >
+                    {cards === 'add' ? "Save Holiday" : "Update Holiday"}
+                  </button>
+                </div>
+              </Card.Body>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {/* Holidays Table Card */}
+      <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+        <div className="table-responsive" style={{ maxHeight: "70vh" }}>
+          <Table hover className="align-middle mb-0" style={{ fontSize: "13px" }}>
+            <thead
+              className="table-light text-uppercase sticky-top"
+              style={{
+                fontSize: "11px",
+                letterSpacing: "0.5px",
+                backgroundColor: "#f8fafc",
+                borderBottom: "2px solid #e2e8f0",
+                zIndex: 1
+              }}
+            >
               <tr>
-
-                <td>{new Date(item?.date).toISOString().slice(0, 10)}</td>
-                <td>{item?.reason}</td>
-                {/* <td>{item?.user}</td> */}
-                <td>{item.adhoc ? "Spontaneous" : "Scheduled"}</td>
-                <td>
-                  <i
-                    className="bi bi-pencil-square"
-                    style={{ color: "blue", cursor: "pointer" }}
-                    onClick={(e) => handleEditClick(item?._id)}
-                  ></i>&emsp;
-                  <i
-                    className="bi bi-trash"
-                    style={{ color: "red", cursor: "pointer" }}
-                    onClick={(e) => handleDeleteClick(item?._id)}
-                  ></i>
-                </td>
+                <th scope="col" style={{ width: "160px" }}>Date</th>
+                <th scope="col">Reason</th>
+                <th scope="col" style={{ width: "180px", textAlign: "center" }}>Adhoc Type</th>
+                <th scope="col" style={{ width: "120px", textAlign: "center" }}>Actions</th>
               </tr>
-            )}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {complete && complete.length > 0 ? (
+                complete.map((item, i) => (
+                  <tr key={item?._id || i}>
+                    <td className="font-monospace fw-medium text-dark">
+                      <i className="bi bi-calendar3 me-2 text-muted"></i>
+                      {formatDateSafely(item?.date)}
+                    </td>
+                    <td className="fw-semibold text-dark">
+                      {item?.reason || "--"}
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      {item.adhoc ? (
+                        <span className="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 rounded-pill fw-semibold">
+                          <i className="bi bi-lightning-charge me-1"></i> Spontaneous
+                        </span>
+                      ) : (
+                        <span className="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill fw-semibold">
+                          <i className="bi bi-clock me-1"></i> Scheduled
+                        </span>
+                      )}
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      <div className="d-inline-flex align-items-center gap-1">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-light border text-primary rounded-circle p-1 d-inline-flex align-items-center justify-content-center"
+                          style={{ width: "30px", height: "30px" }}
+                          onClick={() => handleEditClick(item?._id)}
+                          title="Edit Holiday"
+                        >
+                          <i className="bi bi-pencil-square"></i>
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-light border text-danger rounded-circle p-1 d-inline-flex align-items-center justify-content-center"
+                          style={{ width: "30px", height: "30px" }}
+                          onClick={() => handleDeleteClick(item?._id)}
+                          title="Delete Holiday"
+                        >
+                          <i className="bi bi-trash3"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} className="text-center py-5">
+                    <div className="py-4">
+                      <div className="d-inline-flex align-items-center justify-content-center bg-light text-muted rounded-circle mb-3" style={{ width: 56, height: 56 }}>
+                        <i className="bi bi-calendar-x fs-2"></i>
+                      </div>
+                      <h6 className="fw-bold text-dark mb-1">No Holidays Found</h6>
+                      <p className="text-muted small mb-0">Use "Add Holiday" or "Auto Generate" to populate organization holidays.</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </Table>
+        </div>
       </div>
     </div>
   );
-}
+};

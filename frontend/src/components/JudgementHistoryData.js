@@ -1,468 +1,216 @@
-// import React, { useState, useEffect } from "react";
-// import { useSearchParams } from "react-router-dom";
-// import axios from "axios";
-// import { useSelector } from "react-redux";
-// import TrendGraph from "./TrendGraph";
-// import DatePicker from "react-date-picker";
-// import "./trend.css";
-
-// const JudgementHistoryData = ({ checkItem, query = {}, byData = 'no' }) => {
-
-//   const auth = useSelector((state) => state.auth);
-//   const role = auth.user ? auth.user.role : 0;
-//   const [cardList, setCardList] = useState([])
-
-//   useEffect(() => {
-//     axios.get(
-//       `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/dailyStatusByCheckItem?checkItem=${checkItem}&query=${query}&byData=${byData}`)
-//       .then((result) => {
-//         if (result.data.success) {
-//           setCardList(result.data.dailyStatusAll)
-//         }
-//       })
-//       .catch((err) => {
-//         // console.log("error ", err);
-//         // toast.error(`Data could not be saved , ${err.message}`);
-//       });
-
-//   }, [])
-
-//   const verfifyToggle = (role, changed, id, setChanged) => {
-//     axios.put(
-//       `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/changeVerified?role=${role}&status=${!changed}&id=${id}`)
-//       .then((result) => {
-//         if (result.data.success) {
-//           setChanged(!changed)
-//         }
-//       })
-//       .catch((err) => {
-//         // console.log("error ", err);
-//         // toast.error(`Data could not be saved , ${err.message}`);
-//       });
-//   }
-
-//   const GetVerified = ({ data }) => {
-//     const { role, status, id } = data
-//     const [changed, setChanged] = useState(status)
-
-//     return (
-//       <div style={{
-//         display: "flex"
-//       }}>
-//         {
-//           changed &&
-//           <div>
-//             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48px" height="48px"><path fill="#4caf50" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z" /><path fill="#ccff90" d="M34.602,14.602L21,28.199l-5.602-5.598l-2.797,2.797L21,33.801l16.398-16.402L34.602,14.602z" /></svg>
-//           </div>
-//         }
-//         <button onClick={() => verfifyToggle(role, changed, id, setChanged)}>
-//           {
-//             changed ? (
-//               "Unverify"
-
-//             ) : (
-//               "Verify"
-//             )
-//           }
-//         </button>
-//       </div>
-//     )
-//   }
-
-//   const list = cardList.map((item) => {
-
-
-//     return (
-//       <tr>
-//         <td>{item.checkedAt.split("T")[0]}</td>
-//         <td>{item.result}</td>
-//         <td>{item.value}</td>
-//         <td>{item.remarks}</td>
-//         <td>{item.checkedBy}</td>
-//         <td>{new Date(item.checkedAt).toLocaleTimeString()}</td>
-//         <td>
-//           {
-//             role == "tl" ? (
-//               <GetVerified data={{ role, status: item.tl, id: item._id }} />
-//             ) : (
-//               item.tl ? (
-//                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48px" height="48px"><path fill="#4caf50" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z" /><path fill="#ccff90" d="M34.602,14.602L21,28.199l-5.602-5.598l-2.797,2.797L21,33.801l16.398-16.402L34.602,14.602z" /></svg>
-//               ) : "Not Verified"
-//             )
-//           }
-//         </td>
-//         <td>
-//           {
-//             role == "gl" ? (
-//               <GetVerified data={{ role, status: item.gl, tlstatus: item.tl, id: item._id }} />
-//             ) : (
-//               item.gl ? (
-//                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48px" height="48px"><path fill="#4caf50" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z" /><path fill="#ccff90" d="M34.602,14.602L21,28.199l-5.602-5.598l-2.797,2.797L21,33.801l16.398-16.402L34.602,14.602z" /></svg>
-//               ) : "Not Verified"
-//             )
-//           }
-//         </td>
-//       </tr>
-//     );
-//   });
-
-//   return (
-//     <table className="m-3   table table-bordered table-sm table-hover text-dark ">
-//       {/* <table className="m-5 border border-black-50 text-light"> */}
-//       <thead>
-//         <tr>
-//           <th>Entry Date</th>
-//           <th>Result</th>
-//           <th>Value</th>
-//           <th>Remarks</th>
-//           <th>Checked By</th>
-//           <th>Checked At</th>
-//           <th>Team Lead</th>
-//           <th>Group Lead</th>
-//         </tr>
-
-//       </thead>
-
-//       <tbody>{list}</tbody>
-//     </table>
-//   )
-// }
-
-// export default JudgementHistoryData
-
-
-// import React, { useState, useEffect } from "react";
-// import { useSearchParams } from "react-router-dom";
-// import axios from "axios";
-// import { useSelector } from "react-redux";
-// import TrendGraph from "./TrendGraph";
-// import DatePicker from "react-date-picker";
-// import "./trend.css";
-
-// const JudgementHistoryData = ({ checkItem, query = {}, byData = 'no' }) => {
-
-//   const auth = useSelector((state) => state.auth);
-//   const role = auth.user ? auth.user.role : 0;
-//   const [cardList, setCardList] = useState([])
-
-//   useEffect(() => {
-//     axios.get(
-//       `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/dailyStatusByCheckItem?checkItem=${checkItem}&query=${query}&byData=${byData}`)
-//       .then((result) => {
-//         if (result.data.success) {
-//           setCardList(result.data.dailyStatusAll)
-//         }
-//       })
-//       .catch((err) => {
-//         // console.log("error ", err);
-//         // toast.error(`Data could not be saved , ${err.message}`);
-//       });
-
-//   }, [])
-
-//   const verfifyToggle = (role, changed, id, setChanged) => {
-//     axios.put(
-//       `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/changeVerified?role=${role}&status=${!changed}&id=${id}`)
-//       .then((result) => {
-//         if (result.data.success) {
-//           setChanged(!changed)
-//         }
-//       })
-//       .catch((err) => {
-//         // console.log("error ", err);
-//         // toast.error(`Data could not be saved , ${err.message}`);
-//       });
-//   }
-
-//   const GetVerified = ({ data }) => {
-//     const { role, status, id } = data
-//     const [changed, setChanged] = useState(status)
-
-//     return (
-//       <div style={{
-//         display: "flex",
-//         alignItems: "center",
-//         gap: "8px"
-//       }}>
-//         {
-//           changed &&
-//           <div>
-//             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px"><path fill="#4caf50" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z" /><path fill="#ccff90" d="M34.602,14.602L21,28.199l-5.602-5.598l-2.797,2.797L21,33.801l16.398-16.402L34.602,14.602z" /></svg>
-//           </div>
-//         }
-//         <button 
-//           className="btn btn-sm btn-outline-primary"
-//           onClick={() => verfifyToggle(role, changed, id, setChanged)}
-//         >
-//           {
-//             changed ? (
-//               "Unverify"
-
-//             ) : (
-//               "Verify"
-//             )
-//           }
-//         </button>
-//       </div>
-//     )
-//   }
-
-//   const list = cardList.map((item, index) => {
-//     return (
-//       <tr key={item._id || index}>
-//         <td>{item.checkedAt.split("T")[0]}</td>
-//         <td>
-//           <span className={`badge ${item.result === 'Pass' ? 'bg-success' : item.result === 'Fail' ? 'bg-danger' : 'bg-warning'}`}>
-//             {item.result}
-//           </span>
-//         </td>
-//         <td>{item.value}</td>
-//         <td className="text-wrap" style={{ maxWidth: '200px' }}>{item.remarks}</td>
-//         <td>{item.checkedBy}</td>
-//         <td>{new Date(item.checkedAt).toLocaleTimeString()}</td>
-//         <td>
-//           {
-//             role == "tl" ? (
-//               <GetVerified data={{ role, status: item.tl, id: item._id }} />
-//             ) : (
-//               item.tl ? (
-//                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px"><path fill="#4caf50" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z" /><path fill="#ccff90" d="M34.602,14.602L21,28.199l-5.602-5.598l-2.797,2.797L21,33.801l16.398-16.402L34.602,14.602z" /></svg>
-//               ) : <span className="text-muted">Not Verified</span>
-//             )
-//           }
-//         </td>
-//         <td>
-//           {
-//             role == "gl" ? (
-//               <GetVerified data={{ role, status: item.gl, tlstatus: item.tl, id: item._id }} />
-//             ) : (
-//               item.gl ? (
-//                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px"><path fill="#4caf50" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z" /><path fill="#ccff90" d="M34.602,14.602L21,28.199l-5.602-5.598l-2.797,2.797L21,33.801l16.398-16.402L34.602,14.602z" /></svg>
-//               ) : <span className="text-muted">Not Verified</span>
-//             )
-//           }
-//         </td>
-//       </tr>
-//     );
-//   });
-
-//   return (
-//     <div className="judgement-history-container">
-//       <div className="judgement-table-wrapper">
-//         <table className="table table-bordered table-sm table-hover text-dark mb-0 table-striped">
-//           <thead className="table-dark table-sticky-header">
-//             <tr>
-//               <th scope="col">Entry Date</th>
-//               <th scope="col">Result</th>
-//               <th scope="col">Value</th>
-//               <th scope="col">Remarks</th>
-//               <th scope="col">Checked By</th>
-//               <th scope="col">Checked At</th>
-//               <th scope="col">Team Lead</th>
-//               <th scope="col">Group Lead</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {list.length > 0 ? list : (
-//               <tr>
-//                 <td colSpan="8" className="text-center py-4 text-muted">
-//                   No judgement history data available.
-//                 </td>
-//               </tr>
-//             )}
-//           </tbody>
-//         </table>
-//       </div>
-//     </div>
-//   )
-// }
-
-// export default JudgementHistoryData
-
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import TrendGraph from "./TrendGraph";
-import DatePicker from "react-date-picker";
 import "./trend.css";
 
 const JudgementHistoryData = ({ checkItem, query = {}, byData = 'no' }) => {
-
   const auth = useSelector((state) => state.auth);
   const role = auth.user ? auth.user.role : 0;
-  const [cardList, setCardList] = useState([])
+  const [cardList, setCardList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(
-      `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/dailyStatusByCheckItem?checkItem=${checkItem}&query=${query}&byData=${byData}`)
+    setLoading(true);
+    axios
+      .get(
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/dailyStatusByCheckItem?checkItem=${checkItem}&query=${query}&byData=${byData}`
+      )
       .then((result) => {
         if (result.data.success) {
-          setCardList(result.data.dailyStatusAll)
+          setCardList(result.data.dailyStatusAll || []);
         }
       })
       .catch((err) => {
-        // console.log("error ", err);
-        // toast.error(`Data could not be saved , ${err.message}`);
+        console.error("Error fetching judgement history:", err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
+  }, [checkItem, query, byData]);
 
-  }, [])
-
-  const verfifyToggle = (role, changed, id, setChanged) => {
-    axios.put(
-      `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/changeVerified?role=${role}&status=${!changed}&id=${id}`)
+  const verfifyToggle = (targetRole, changed, id, setChanged) => {
+    axios
+      .put(
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/changeVerified?role=${targetRole}&status=${!changed}&id=${id}`
+      )
       .then((result) => {
         if (result.data.success) {
-          setChanged(!changed)
+          setChanged(!changed);
         }
       })
       .catch((err) => {
-        // console.log("error ", err);
-        // toast.error(`Data could not be saved , ${err.message}`);
+        console.error("Error updating verification:", err);
       });
-  }
+  };
 
   const GetVerified = ({ data }) => {
-    const { role, status, id } = data
-    const [changed, setChanged] = useState(status)
+    const { role: userRole, status, id } = data;
+    const [changed, setChanged] = useState(status);
 
     return (
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "8px"
-      }}>
-        {
-          changed &&
-          <div>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px"><path fill="#4caf50" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z" /><path fill="#ccff90" d="M34.602,14.602L21,28.199l-5.602-5.598l-2.797,2.797L21,33.801l16.398-16.402L34.602,14.602z" /></svg>
-          </div>
-        }
-        <button 
-          className="btn btn-sm btn-outline-primary"
-          onClick={() => verfifyToggle(role, changed, id, setChanged)}
+      <div className="d-flex align-items-center justify-content-center gap-2">
+        {changed && (
+          <i className="bi bi-check-circle-fill text-success fs-6" title="Verified"></i>
+        )}
+        <button
+          className={`btn btn-sm rounded-pill px-3 py-0 fw-semibold ${
+            changed ? "btn-outline-secondary" : "btn-outline-primary"
+          }`}
+          style={{ fontSize: "11px", height: "26px" }}
+          onClick={() => verfifyToggle(userRole, changed, id, setChanged)}
         >
-          {
-            changed ? (
-              "Unverify"
-
-            ) : (
-              "Verify"
-            )
-          }
+          {changed ? "Unverify" : "Verify"}
         </button>
       </div>
-    )
-  }
+    );
+  };
+
+  const renderResultBadge = (res) => {
+    if (!res) return <span className="text-muted">--</span>;
+    const upper = String(res).trim().toUpperCase();
+    if (upper === "OK" || upper === "PASS") {
+      return (
+        <span className="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 fw-semibold d-inline-flex align-items-center gap-1">
+          <i className="bi bi-check-circle-fill"></i> OK
+        </span>
+      );
+    }
+    if (upper === "NG" || upper === "FAIL") {
+      return (
+        <span className="badge bg-danger text-white px-2 py-1 fw-semibold shadow-sm d-inline-flex align-items-center gap-1">
+          <i className="bi bi-exclamation-triangle-fill"></i> NG
+        </span>
+      );
+    }
+    return (
+      <span className="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1 fw-semibold">
+        {res}
+      </span>
+    );
+  };
 
   const list = cardList.map((item, index) => {
+    const entryDate = item.checkedAt ? item.checkedAt.split("T")[0] : "--";
+    const checkedTime = item.checkedAt
+      ? new Date(item.checkedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      : "--";
+
     return (
-      <tr key={item._id || index}>
-        <td>{item.checkedAt.split("T")[0]}</td>
-        <td>
-          <span className={`badge ${item.result === 'Pass' ? 'bg-success' : item.result === 'Fail' ? 'bg-danger' : 'bg-warning'}`}>
-            {item.result}
-          </span>
+      <tr key={item._id || index} className="align-middle">
+        <td className="font-monospace text-secondary" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
+          {entryDate}
         </td>
-        <td>{item.value}</td>
-        <td className="text-wrap" style={{ maxWidth: '200px' }}>{item.remarks}</td>
-        <td>{item.checkedBy}</td>
-        <td>{new Date(item.checkedAt).toLocaleTimeString()}</td>
-        <td>
-          {
-            role == "tl" ? (
-              <GetVerified data={{ role, status: item.tl, id: item._id }} />
-            ) : (
-              item.tl ? (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px"><path fill="#4caf50" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z" /><path fill="#ccff90" d="M34.602,14.602L21,28.199l-5.602-5.598l-2.797,2.797L21,33.801l16.398-16.402L34.602,14.602z" /></svg>
-              ) : <span className="text-muted">Not Verified</span>
-            )
-          }
+        <td style={{ textAlign: "center" }}>
+          {renderResultBadge(item.result)}
         </td>
-        <td>
-          {
-            role == "gl" ? (
-              <GetVerified data={{ role, status: item.gl, tlstatus: item.tl, id: item._id }} />
-            ) : (
-              item.gl ? (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px"><path fill="#4caf50" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z" /><path fill="#ccff90" d="M34.602,14.602L21,28.199l-5.602-5.598l-2.797,2.797L21,33.801l16.398-16.402L34.602,14.602z" /></svg>
-              ) : <span className="text-muted">Not Verified</span>
-            )
-          }
+        <td className="text-muted" style={{ textAlign: "center", fontSize: "12px" }}>
+          {item.value || "-"}
+        </td>
+        <td style={{ fontSize: "12px", maxWidth: "260px", wordBreak: "break-word" }}>
+          {item.remarks || "--"}
+        </td>
+        <td className="fw-medium text-dark" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
+          {item.checkedBy || "--"}
+        </td>
+        <td className="text-secondary font-monospace" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
+          {checkedTime}
+        </td>
+        <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>
+          {role === "tl" ? (
+            <GetVerified data={{ role, status: item.tl, id: item._id }} />
+          ) : item.tl ? (
+            <span className="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 fw-semibold d-inline-flex align-items-center gap-1">
+              <i className="bi bi-check-circle-fill"></i> Verified
+            </span>
+          ) : (
+            <span className="badge bg-light text-muted border px-2 py-1">Not Verified</span>
+          )}
+        </td>
+        <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>
+          {role === "gl" ? (
+            <GetVerified data={{ role, status: item.gl, tlstatus: item.tl, id: item._id }} />
+          ) : item.gl ? (
+            <span className="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 fw-semibold d-inline-flex align-items-center gap-1">
+              <i className="bi bi-check-circle-fill"></i> Verified
+            </span>
+          ) : (
+            <span className="badge bg-light text-muted border px-2 py-1">Not Verified</span>
+          )}
         </td>
       </tr>
     );
   });
 
   return (
-    <div style={{
-      padding: '1rem',
-      backgroundColor: '#f8f9fa',
-      borderRadius: '0.5rem',
-      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      minHeight: '600px'
-    }}>
-      <div 
-        className="custom-scroll-container"
+    <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-3">
+      {/* Header Bar */}
+      <div className="d-flex align-items-center justify-content-between px-4 py-3 bg-white border-bottom">
+        <div className="d-flex align-items-center gap-2">
+          <div className="bg-primary bg-opacity-10 text-primary p-2 rounded-3 d-inline-flex align-items-center justify-content-center">
+            <i className="bi bi-clock-history fs-5"></i>
+          </div>
+          <div>
+            <h6 className="mb-0 fw-bold text-dark">Judgement History Logs</h6>
+            <small className="text-muted">Inspection results, remarks, and verification status</small>
+          </div>
+        </div>
+        <div>
+          <span className="badge bg-light text-dark border px-3 py-1 rounded-pill fw-medium">
+            Total Records: {cardList.length}
+          </span>
+        </div>
+      </div>
+
+      <div
+        className="table-responsive"
         style={{
-          maxHeight: '700px',
-          overflowY: 'scroll',
-          overflowX: 'auto',
-          border: '1px solid #000000',
-          borderRadius: '0.375rem',
-          backgroundColor: 'white',
-          minHeight: '592px'
+          maxHeight: "600px",
+          overflowY: "auto",
+          backgroundColor: "#ffffff"
         }}
       >
-        <style>{`
-          .custom-scroll-container::-webkit-scrollbar {
-            width: 12px !important;
-            height: 12px !important;
-          }
-          .custom-scroll-container::-webkit-scrollbar-track {
-            background: #e9ecef !important;
-            border-radius: 6px !important;
-          }
-          .custom-scroll-container::-webkit-scrollbar-thumb {
-            background: #6c757d !important;
-            border-radius: 6px !important;
-            border: 2px solid #e9ecef !important;
-          }
-          .custom-scroll-container::-webkit-scrollbar-thumb:hover {
-            background: #495057 !important;
-          }
-          .custom-scroll-container::-webkit-scrollbar-corner {
-            background: #e9ecef !important;
-          }
-          /* For Firefox */
-          .custom-scroll-container {
-            scrollbar-width: auto !important;
-            scrollbar-color: #6c757d #e9ecef !important;
-          }
-        `}</style>
-        <table className="table table-bordered table-sm table-hover text-dark mb-0 table-striped">
-          <thead style={{ 
-            position: 'sticky', 
-            top: 0, 
-            zIndex: 10, 
-            backgroundColor: '#212529'
-          }}>
+        <table className="table table-hover align-middle mb-0" style={{ fontSize: "12px" }}>
+          <thead
+            className="table-light text-uppercase sticky-top"
+            style={{
+              fontSize: "11px",
+              letterSpacing: "0.5px",
+              backgroundColor: "#f8fafc",
+              borderBottom: "2px solid #e2e8f0",
+              zIndex: 1
+            }}
+          >
             <tr>
-              <th scope="col" style={{ backgroundColor: '#212529', color: 'white' }}>Entry Date</th>
-              <th scope="col" style={{ backgroundColor: '#212529', color: 'white' }}>Result</th>
-              <th scope="col" style={{ backgroundColor: '#212529', color: 'white' }}>Value</th>
-              <th scope="col" style={{ backgroundColor: '#212529', color: 'white' }}>Remarks</th>
-              <th scope="col" style={{ backgroundColor: '#212529', color: 'white' }}>Checked By</th>
-              <th scope="col" style={{ backgroundColor: '#212529', color: 'white' }}>Checked At</th>
-              <th scope="col" style={{ backgroundColor: '#212529', color: 'white' }}>Team Lead</th>
-              <th scope="col" style={{ backgroundColor: '#212529', color: 'white' }}>Group Lead</th>
+              <th scope="col" style={{ minWidth: "105px" }}>Entry Date</th>
+              <th scope="col" style={{ width: "90px", textAlign: "center" }}>Result</th>
+              <th scope="col" style={{ width: "70px", textAlign: "center" }}>Value</th>
+              <th scope="col" style={{ minWidth: "220px" }}>Remarks</th>
+              <th scope="col" style={{ minWidth: "120px" }}>Checked By</th>
+              <th scope="col" style={{ minWidth: "110px" }}>Checked At</th>
+              <th scope="col" style={{ width: "130px", textAlign: "center" }}>Team Lead</th>
+              <th scope="col" style={{ width: "130px", textAlign: "center" }}>Group Lead</th>
             </tr>
           </thead>
           <tbody>
-            {list.length > 0 ? list : (
+            {loading ? (
               <tr>
-                <td colSpan="8" className="text-center py-4 text-muted">
-                  No judgement history data available.
+                <td colSpan="8" className="text-center py-5 text-muted">
+                  <div className="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                  Loading judgement history...
+                </td>
+              </tr>
+            ) : list.length > 0 ? (
+              list
+            ) : (
+              <tr>
+                <td colSpan="8" className="text-center py-5">
+                  <div className="py-4">
+                    <div className="d-inline-flex align-items-center justify-content-center bg-light text-secondary rounded-circle mb-3" style={{ width: 56, height: 56 }}>
+                      <i className="bi bi-journal-x fs-2"></i>
+                    </div>
+                    <h6 className="fw-bold text-dark mb-1">No Judgement History</h6>
+                    <p className="text-muted small mb-0">No records found for this check item.</p>
+                  </div>
                 </td>
               </tr>
             )}
@@ -470,7 +218,7 @@ const JudgementHistoryData = ({ checkItem, query = {}, byData = 'no' }) => {
         </table>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default JudgementHistoryData
+export default JudgementHistoryData;
