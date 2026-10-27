@@ -113,20 +113,10 @@ export default function Title() {
                   fontSize: "0.88rem"
                 }}
               >
-                <i className="bi bi-person-circle text-info me-2 fs-6"></i>
+                <i className="bi bi-person me-2 fs-6"></i>
                 <span className="fw-semibold text-truncate" style={{ maxWidth: "120px" }}>
                   {auth.user?.name || "User"}
                 </span>
-                <span
-                  className="ms-2 rounded-circle"
-                  style={{
-                    width: "8px",
-                    height: "8px",
-                    background: "#22c55e",
-                    display: "inline-block"
-                  }}
-                  title="Online"
-                ></span>
               </div>
               <Button
                 variant="outline-danger"

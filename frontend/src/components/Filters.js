@@ -27,6 +27,68 @@ import { getPendingTasks } from "../redux/pendingTasks/pendingActions";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 
+const customSelectStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    height: "38px",
+    minHeight: "38px",
+    borderRadius: "6px",
+    borderColor: state.isFocused ? "#0d6efd" : "#ced4da",
+    boxShadow: state.isFocused ? "0 0 0 1px #0d6efd" : "none",
+    fontSize: "0.88rem",
+    backgroundColor: "#ffffff",
+    cursor: "pointer",
+    "&:hover": {
+      borderColor: "#0d6efd",
+    },
+  }),
+  valueContainer: (provided) => ({
+    ...provided,
+    height: "38px",
+    padding: "0 8px",
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: "#1e293b",
+    fontWeight: 500,
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: "#64748b",
+    fontSize: "0.85rem",
+  }),
+  input: (provided) => ({
+    ...provided,
+    margin: "0px",
+  }),
+  indicatorSeparator: () => ({
+    display: "none",
+  }),
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    padding: "4px 8px",
+    color: state.isFocused ? "#0d6efd" : "#94a3b8",
+  }),
+  menu: (provided) => ({
+    ...provided,
+    zIndex: 9999,
+    borderRadius: "6px",
+    boxShadow: "0 4px 14px rgba(0,0,0,0.12)",
+    overflow: "hidden",
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    fontSize: "0.86rem",
+    backgroundColor: state.isSelected
+      ? "#0d6efd"
+      : state.isFocused
+      ? "#eff6ff"
+      : "#ffffff",
+    color: state.isSelected ? "#ffffff" : "#1e293b",
+    cursor: "pointer",
+  }),
+};
+
 const todayDate = new Date(Date.now());
 
 
@@ -342,29 +404,10 @@ function Filters() {
       <div className="bg-white p-2 rounded shadow-sm border my-2 mx-1">
         {/* Row 1: Primary Navigation, Date & Line Selection Filters */}
         <div className="d-flex align-items-center flex-wrap gap-2">
-          {/* Windows / Browser History Back Button */}
-          <Button
-            variant="outline-secondary"
-            size="sm"
-            className="d-flex align-items-center gap-1 px-3 shadow-sm"
-            style={{ height: "38px", borderRadius: "6px", fontWeight: 500 }}
-            onClick={() => {
-              if (window.history.length > 1) {
-                window.history.back();
-              } else {
-                window.location.href = "/";
-              }
-            }}
-            title="Back to previous page"
-          >
-            <i className="bi bi-arrow-left"></i>
-            <span>Back</span>
-          </Button>
-
           {/* Home Button */}
           <Link to="/" style={{ textDecoration: "none" }}>
             <Button
-              className="d-flex align-items-center gap-1 px-3 shadow-sm bg-blue"
+              className="d-flex align-items-center gap-1.5 px-3 shadow-sm bg-blue"
               style={{ height: "38px", borderRadius: "6px", fontWeight: 500 }}
               title="Home"
             >
@@ -373,10 +416,14 @@ function Filters() {
             </Button>
           </Link>
 
-          {/* Date Picker */}
+          {/* Date Picker (React Date Picker) */}
           <div
-            className="d-flex align-items-center border rounded px-2"
-            style={{ height: "38px", background: "#f8fafc" }}
+            className="d-flex align-items-center bg-white border rounded px-2"
+            style={{
+              height: "38px",
+              borderColor: "#ced4da",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.02)",
+            }}
           >
             <DatePicker
               value={date}
@@ -387,24 +434,24 @@ function Filters() {
           </div>
 
           {/* Department Select */}
-          <div style={{ minWidth: "155px" }}>
+          <div style={{ minWidth: "160px" }}>
             <Select
               options={deptOptions}
+              value={deptOptions.find((opt) => opt.value === filters.pS) || deptOptions[0]}
               onChange={selectDeptHandler}
-              className="secondary"
-              defaultValue={{ value: "S", label: "Production Dept" }}
+              styles={customSelectStyles}
               isSearchable={false}
             />
           </div>
 
           {/* Main Line Select */}
-          <div style={{ minWidth: "145px" }}>
+          <div style={{ minWidth: "150px" }}>
             <Select
               ref={selectLineRef}
               options={lineOptions}
               value={selectedMainLineOption}
               onChange={selectLineHandler}
-              className="secondary"
+              styles={customSelectStyles}
               placeholder="Main Line"
               isSearchable={true}
             />
@@ -416,30 +463,30 @@ function Filters() {
               options={subLineOptions}
               value={selectedSubLineOption}
               onChange={selectSubLineHandler}
-              className="secondary"
+              styles={customSelectStyles}
               placeholder="Sub Line"
               isSearchable={true}
             />
           </div>
 
           {/* Check Type Select */}
-          <div style={{ minWidth: "115px" }}>
+          <div style={{ minWidth: "120px" }}>
             <Select
               options={checkOptions}
+              value={checkOptions.find((opt) => opt.value === filters.rS) || checkOptions[0]}
               onChange={selectCheckHandler}
-              className="secondary"
-              defaultValue={checkOptions[0]}
+              styles={customSelectStyles}
               isSearchable={false}
             />
           </div>
 
           {/* Group Select */}
-          <div style={{ minWidth: "115px" }}>
+          <div style={{ minWidth: "120px" }}>
             <Select
               options={groupOptions}
+              value={groupOptions.find((opt) => opt.value === filters.group) || groupOptions[0]}
               onChange={selectGroupHandler}
-              className="secondary"
-              defaultValue={groupOptions[0]}
+              styles={customSelectStyles}
               isSearchable={false}
             />
           </div>
@@ -447,7 +494,7 @@ function Filters() {
           {/* Search / Clear Search */}
           {filters.processNo === "" && filters.cardNo === "" ? (
             <Button
-              className={`d-flex align-items-center gap-1 px-3 shadow-sm ${colorSearchButton}`}
+              className={`d-flex align-items-center gap-1.5 px-3 shadow-sm ${colorSearchButton}`}
               style={{ height: "38px", borderRadius: "6px", fontWeight: 500 }}
               onClick={() => setShowSearch(true)}
             >
@@ -456,7 +503,7 @@ function Filters() {
             </Button>
           ) : (
             <Button
-              className={`d-flex align-items-center gap-1 px-3 shadow-sm ${colorSearchButton}`}
+              className={`d-flex align-items-center gap-1.5 px-3 shadow-sm ${colorSearchButton}`}
               style={{ height: "38px", borderRadius: "6px", fontWeight: 500 }}
               onClick={() => clearSearchHandler()}
             >
@@ -495,7 +542,7 @@ function Filters() {
                 variant="outline-secondary"
                 size="sm"
                 onClick={() => setShowModal(true)}
-                className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white text-dark shadow-sm border"
+                className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm border"
                 style={{ fontSize: "0.85rem", fontWeight: 500 }}
                 title="Monthly Report"
               >
@@ -509,7 +556,7 @@ function Filters() {
               <Button
                 variant="outline-secondary"
                 size="sm"
-                className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white text-dark shadow-sm border"
+                className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm border"
                 style={{ fontSize: "0.85rem", fontWeight: 500 }}
                 title="Pending Items"
               >
@@ -525,7 +572,7 @@ function Filters() {
                   variant="outline-secondary"
                   size="sm"
                   onClick={() => setShowModals(true)}
-                  className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white text-dark shadow-sm border position-relative"
+                  className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm border position-relative"
                   style={{ fontSize: "0.85rem", fontWeight: 500 }}
                   title="TL/GL Verification"
                 >
@@ -550,7 +597,7 @@ function Filters() {
                 <Button
                   variant="outline-secondary"
                   size="sm"
-                  className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white text-dark shadow-sm border"
+                  className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm border"
                   style={{ fontSize: "0.85rem", fontWeight: 500 }}
                   title="Holiday List"
                 >
@@ -561,19 +608,18 @@ function Filters() {
             )}
           </div>
 
-          {/* Right Action: Judgement History */}
+          {/* Right Action: Judgement History (no whiteout on hover) */}
           <div>
             <Link to="/judgementHistory" style={{ textDecoration: "none" }}>
-              <Button
-                variant="outline-primary"
-                size="sm"
-                className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm fw-semibold bg-white"
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-primary d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm fw-semibold"
                 style={{ fontSize: "0.85rem" }}
                 title="Judgement History"
               >
                 <i className="bi bi-card-list"></i>
                 <span>Judgement History</span>
-              </Button>
+              </button>
             </Link>
           </div>
         </div>
