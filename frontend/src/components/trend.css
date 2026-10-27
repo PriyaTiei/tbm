@@ -1,6 +1,6 @@
 .my-modal {
   width: 95vw !important ;  
-  max-width: 95vw !important;
+  max-width: 1400px !important;
   background-color: transparent !important;
 } 
 
@@ -101,6 +101,12 @@
 /* Modal specific styles */
 .my-modal .modal-dialog {
   max-width: 95vw;
+}
+
+.my-modal .modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 .modal-height .modal-body {

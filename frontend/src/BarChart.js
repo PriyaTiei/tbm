@@ -81,7 +81,7 @@ const getCurrentMonthYear = (d) => {
 const convertDate = (inputDate) => {
     if (!inputDate) return "";
     const [year, month] = inputDate.split('-').map(Number);
-    const date = new Date(year, month - 1, 1); // Months are 0-indexed in JavaScript
+    const date = new Date(year, month - 1, 1);
     const formattedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 11, 14, 0).toString();
     return formattedDate;
 };
@@ -421,7 +421,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                 {
                     label: "Completed",
                     data: labels?.map(() => 0),
-                    backgroundColor: "rgba(34, 197, 94, 0.9)", // Crisp modern green
+                    backgroundColor: "rgba(34, 197, 94, 0.9)",
                     borderColor: "#16a34a",
                     borderWidth: 1,
                     borderRadius: 3,
@@ -432,7 +432,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                         color: '#ffffff',
                         font: {
                             weight: 'bold',
-                            size: 11
+                            size: 10
                         },
                         formatter: function (value) {
                             return value > 0 ? value : '';
@@ -445,7 +445,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                 {
                     label: "Pending",
                     data: labels?.map(() => 0),
-                    backgroundColor: "rgba(148, 163, 184, 0.75)", // Clean slate
+                    backgroundColor: "rgba(148, 163, 184, 0.75)",
                     borderColor: "#94a3b8",
                     borderWidth: 1,
                     borderRadius: 3,
@@ -456,7 +456,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                         color: '#1e293b',
                         font: {
                             weight: 'bold',
-                            size: 11
+                            size: 10
                         },
                         formatter: function (value) {
                             return value > 0 ? value : '';
@@ -469,7 +469,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                 {
                     label: "Holidays",
                     data: labels?.map(() => 0),
-                    backgroundColor: "rgba(186, 230, 253, 0.7)", // Light sky blue
+                    backgroundColor: "rgba(186, 230, 253, 0.7)",
                     borderColor: "#7dd3fc",
                     borderWidth: 1,
                     borderRadius: 3,
@@ -483,10 +483,13 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
 
         let options = {
             responsive: true,
+            maintainAspectRatio: false,
             layout: {
                 padding: {
-                    top: 25,
-                    bottom: 10
+                    top: 15,
+                    bottom: 2,
+                    left: 2,
+                    right: 2
                 }
             },
             plugins: {
@@ -496,10 +499,10 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     labels: {
                         usePointStyle: true,
                         pointStyle: "rectRounded",
-                        boxWidth: 12,
-                        boxHeight: 12,
-                        padding: 16,
-                        font: { size: 12, weight: "600" },
+                        boxWidth: 10,
+                        boxHeight: 10,
+                        padding: 10,
+                        font: { size: 11, weight: "600" },
                         color: "#334155"
                     }
                 },
@@ -529,7 +532,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                 datalabels: {
                     font: {
                         weight: 'bold',
-                        size: 11
+                        size: 10
                     }
                 }
             },
@@ -541,7 +544,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     ticks: {
                         autoSkip: false,
                         font: {
-                            size: 11,
+                            size: 10,
                             weight: "500"
                         },
                         color: "#475569",
@@ -563,7 +566,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     },
                     ticks: {
                         font: {
-                            size: 11
+                            size: 10
                         },
                         color: "#64748b",
                         callback: function (value) {
@@ -572,7 +575,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     },
                     stacked: true,
                     beginAtZero: true,
-                    grace: '8%'
+                    grace: '5%'
                 }
             }
         };
@@ -663,7 +666,6 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                 modifyDataAtIndex(difference, totalOkNgCount ? totalOkNgCount : 0);
             });
 
-            // Calculate cumulative sums safely after all individual days are populated
             modifycpends();
         }
 
@@ -686,7 +688,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
             centered
             size="xl"
         >
-            <Modal.Header closeButton className="border-bottom px-4 py-3 bg-white">
+            <Modal.Header closeButton className="border-bottom px-4 py-2 bg-white">
                 <div className="d-flex flex-wrap align-items-center justify-content-between w-100 pe-3 gap-3">
                     <div className="d-flex align-items-center gap-2">
                         <div className="bg-primary bg-opacity-10 text-primary p-2 rounded-3 d-inline-flex align-items-center justify-content-center">
@@ -703,7 +705,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     </div>
 
                     <div className="d-flex flex-wrap align-items-center gap-2 ms-auto">
-                        <div className="d-flex align-items-center bg-light border rounded-3 px-2 py-1 shadow-sm" style={{ height: "36px" }}>
+                        <div className="d-flex align-items-center bg-light border rounded-3 px-2 py-1 shadow-sm" style={{ height: "34px" }}>
                             <i className="bi bi-calendar3 text-secondary me-2"></i>
                             <input
                                 type="month"
@@ -718,14 +720,14 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
 
                         <button
                             className="btn btn-sm btn-success d-inline-flex align-items-center gap-2 rounded-3 px-3 shadow-sm fw-semibold"
-                            style={{ height: "36px" }}
+                            style={{ height: "34px" }}
                             onClick={exportToExcel}
                         >
                             <i className="bi bi-file-earmark-excel-fill"></i>
                             <span>Download Excel</span>
                         </button>
 
-                        <div style={{ minWidth: "150px" }}>
+                        <div style={{ minWidth: "140px" }}>
                             <Select
                                 options={lineOptions}
                                 value={selectedMainLineOption}
@@ -736,7 +738,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                             />
                         </div>
 
-                        <div style={{ minWidth: "160px" }}>
+                        <div style={{ minWidth: "150px" }}>
                             <Select
                                 options={subLineOptions}
                                 value={selectedSubLineOption}
@@ -750,12 +752,12 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                 </div>
             </Modal.Header>
 
-            <Modal.Body className="bg-light p-3 p-md-4">
+            <Modal.Body className="bg-light px-3 py-2" style={{ maxHeight: "calc(90vh - 65px)", overflowY: "auto" }}>
                 <div className="d-flex flex-column align-items-center w-100">
-                    {/* Modern Chart Container */}
+                    {/* Modern Compact Chart Container - Fits comfortably without scrolling */}
                     <div
-                        className="w-100 bg-white rounded-3 border p-3 p-md-4 mb-3 shadow-sm"
-                        style={{ borderColor: "#e2e8f0" }}
+                        className="w-100 bg-white rounded-3 border p-2 mb-2 shadow-sm"
+                        style={{ borderColor: "#e2e8f0", height: "340px", position: "relative" }}
                     >
                         <Bar data={datas} options={optionss} plugins={[totalCountPlugin]} />
                     </div>
@@ -779,7 +781,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                                                 verticalAlign: "middle",
                                                 borderRight: "2px solid #cbd5e1",
                                                 color: "#1e293b",
-                                                padding: "6px 2px"
+                                                padding: "5px 2px"
                                             }}
                                         >
                                             <span className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1">P</span>
@@ -799,7 +801,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                                                         backgroundColor: isWeekEnd ? "#f8fafc" : "#ffffff",
                                                         borderRight: isWeekEnd ? "2px solid #cbd5e1" : "1px solid #f1f5f9",
                                                         textAlign: "center",
-                                                        padding: "6px 2px",
+                                                        padding: "5px 2px",
                                                         verticalAlign: "middle"
                                                     }}
                                                 >
@@ -819,7 +821,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                                                 verticalAlign: "middle",
                                                 borderRight: "2px solid #cbd5e1",
                                                 color: "#1e293b",
-                                                padding: "6px 2px"
+                                                padding: "5px 2px"
                                             }}
                                         >
                                             <span className="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-2 py-1">CP</span>
@@ -839,7 +841,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                                                         backgroundColor: isWeekEnd ? "#f8fafc" : "#fafafa",
                                                         borderRight: isWeekEnd ? "2px solid #cbd5e1" : "1px solid #f1f5f9",
                                                         textAlign: "center",
-                                                        padding: "6px 2px",
+                                                        padding: "5px 2px",
                                                         verticalAlign: "middle"
                                                     }}
                                                 >
