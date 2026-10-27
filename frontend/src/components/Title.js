@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Button, Col, Row, Image, Nav } from "react-bootstrap";
+import { Button, Col, Row, Image, Nav, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";  
 import axios from "axios";
 import LoginModal from "./LoginModal";
@@ -15,6 +15,7 @@ export default function Title() {
   const [showModal, setShowModal] = useState(false);
   const filters = useSelector((state) => state.filters);
   const auth = useSelector((state) => state.auth);
+  const level = auth.user ? auth.user.level : 0;
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -105,65 +106,94 @@ export default function Title() {
         <Col xs="auto" className="d-flex align-items-center justify-content-end pe-0">
           {auth.isAuthenticated ? (
             <div className="d-flex align-items-center gap-2">
-              <div
-                className="d-flex align-items-center px-3 py-1 rounded-pill text-light"
-                style={{
-                  background: "rgba(255, 255, 255, 0.1)",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                  fontSize: "0.88rem"
-                }}
+              <OverlayTrigger
+                placement="bottom"
+                overlay={
+                  <Tooltip id="user-info-tooltip">
+                    {auth.user?.name || "User"}
+                    {level >= 100
+                      ? " (Admin)"
+                      : level >= 20
+                      ? " (Team Leader)"
+                      : " (Operator)"}
+                  </Tooltip>
+                }
               >
-                <i className="bi bi-person me-2 fs-6"></i>
-                <span className="fw-semibold text-truncate" style={{ maxWidth: "120px" }}>
-                  {auth.user?.name || "User"}
-                </span>
-              </div>
-              <Button
-                variant="outline-danger"
-                size="sm"
-                className="rounded-pill px-3 py-1 d-flex align-items-center gap-1 shadow-sm"
-                onClick={handleLogout}
-                style={{
-                  fontSize: "0.85rem",
-                  fontWeight: 500,
-                  borderColor: "#ef4444",
-                  color: "#fca5a5"
-                }}
-                title="Sign Out"
+                <div
+                  className="d-flex align-items-center justify-content-center rounded-circle text-light shadow-sm"
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    background: "rgba(255, 255, 255, 0.12)",
+                    border: "1px solid rgba(255, 255, 255, 0.25)",
+                    cursor: "pointer",
+                  }}
+                >
+                  <i className="bi bi-person-fill fs-5"></i>
+                </div>
+              </OverlayTrigger>
+
+              <OverlayTrigger
+                placement="bottom"
+                overlay={<Tooltip id="signout-tooltip">Sign Out</Tooltip>}
               >
-                <i className="bi bi-box-arrow-right"></i>
-                <span>Sign Out</span>
-              </Button>
+                <Button
+                  variant="outline-danger"
+                  size="sm"
+                  className="rounded-circle d-flex align-items-center justify-content-center p-0 shadow-sm"
+                  onClick={handleLogout}
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderColor: "#ef4444",
+                    color: "#fca5a5",
+                  }}
+                  aria-label="Sign Out"
+                >
+                  <i className="bi bi-box-arrow-right fs-6"></i>
+                </Button>
+              </OverlayTrigger>
             </div>
           ) : (
             <div className="d-flex align-items-center gap-2">
-              <div
-                className="d-flex align-items-center px-3 py-1 rounded-pill text-white-50"
-                style={{
-                  background: "rgba(255, 255, 255, 0.06)",
-                  border: "1px solid rgba(255, 255, 255, 0.12)",
-                  fontSize: "0.88rem"
-                }}
+              <OverlayTrigger
+                placement="bottom"
+                overlay={<Tooltip id="guest-tooltip">Guest (Not signed in)</Tooltip>}
               >
-                <i className="bi bi-person me-1"></i>
-                <span>Guest</span>
-              </div>
-              <Button
-                variant="success"
-                size="sm"
-                className="rounded-pill px-3 py-1 d-flex align-items-center gap-1 shadow-sm"
-                onClick={() => setShowModal(true)}
-                style={{
-                  fontSize: "0.85rem",
-                  fontWeight: 600,
-                  background: "#16a34a",
-                  borderColor: "#16a34a"
-                }}
-                title="Sign In"
+                <div
+                  className="d-flex align-items-center justify-content-center rounded-circle text-white-50"
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    background: "rgba(255, 255, 255, 0.06)",
+                    border: "1px solid rgba(255, 255, 255, 0.15)",
+                    cursor: "pointer",
+                  }}
+                >
+                  <i className="bi bi-person fs-5"></i>
+                </div>
+              </OverlayTrigger>
+
+              <OverlayTrigger
+                placement="bottom"
+                overlay={<Tooltip id="signin-tooltip">Sign In</Tooltip>}
               >
-                <i className="bi bi-box-arrow-in-right"></i>
-                <span>Sign In</span>
-              </Button>
+                <Button
+                  variant="success"
+                  size="sm"
+                  className="rounded-circle d-flex align-items-center justify-content-center p-0 shadow-sm"
+                  onClick={() => setShowModal(true)}
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    background: "#16a34a",
+                    borderColor: "#16a34a",
+                  }}
+                  aria-label="Sign In"
+                >
+                  <i className="bi bi-box-arrow-in-right fs-6"></i>
+                </Button>
+              </OverlayTrigger>
             </div>
           )}
         </Col>

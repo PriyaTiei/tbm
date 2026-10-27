@@ -250,34 +250,22 @@ export function AppSidebar({ children }) {
             }}
           >
             <div className="d-flex align-items-center justify-content-between">
-              <div className="d-flex align-items-center gap-2">
+              <div>
                 <div
-                  className="rounded-circle bg-primary bg-opacity-15 text-primary d-flex align-items-center justify-content-center fw-bold shadow-sm"
-                  style={{ width: "34px", height: "34px", fontSize: "0.9rem" }}
+                  className="fw-bold text-dark text-truncate"
+                  style={{ maxWidth: "140px", fontSize: "0.88rem" }}
                 >
-                  {auth.isAuthenticated && auth.user?.name ? (
-                    auth.user.name.charAt(0).toUpperCase()
-                  ) : (
-                    <i className="bi bi-person"></i>
-                  )}
+                  {auth.isAuthenticated ? auth.user?.name : "Guest"}
                 </div>
-                <div>
-                  <div
-                    className="fw-bold text-dark text-truncate"
-                    style={{ maxWidth: "110px", fontSize: "0.85rem" }}
-                  >
-                    {auth.isAuthenticated ? auth.user?.name : "Guest"}
-                  </div>
-                  <small className="text-muted d-block" style={{ fontSize: "0.7rem" }}>
-                    {auth.isAuthenticated
-                      ? level >= 100
-                        ? "Admin"
-                        : level >= 20
-                        ? "Team Leader"
-                        : "Operator"
-                      : "Not signed in"}
-                  </small>
-                </div>
+                <small className="text-muted d-block" style={{ fontSize: "0.72rem" }}>
+                  {auth.isAuthenticated
+                    ? level >= 100
+                      ? "Admin"
+                      : level >= 20
+                      ? "Team Leader"
+                      : "Operator"
+                    : "Not signed in"}
+                </small>
               </div>
 
               {auth.isAuthenticated ? (
