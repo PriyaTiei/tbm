@@ -15,14 +15,12 @@ import {
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchReportData } from "./redux/reportChart/reportChartActions";
-import DatePicker from "react-date-picker";
 import Select from "react-select";
 import {
     filterLine,
     filterMainLine,
     filterSubLine,
 } from "./redux/filter/filterActions";
-
 
 const totalCountPlugin = {
     id: "totalCountPlugin",
@@ -34,8 +32,8 @@ const totalCountPlugin = {
         if (!metaCompleted || !metaCompleted.data) return;
 
         ctx.save();
-        ctx.font = "bold 12px sans-serif";
-        ctx.fillStyle = "#000000";
+        ctx.font = "bold 11px sans-serif";
+        ctx.fillStyle = "#1e293b";
         ctx.textAlign = "center";
         ctx.textBaseline = "bottom";
 
@@ -88,6 +86,45 @@ const convertDate = (inputDate) => {
     return formattedDate;
 };
 
+const customSelectStyles = {
+    control: (base, state) => ({
+        ...base,
+        minHeight: "36px",
+        height: "36px",
+        fontSize: "13px",
+        borderRadius: "8px",
+        borderColor: state.isFocused ? "#0d6efd" : "#cbd5e1",
+        boxShadow: state.isFocused ? "0 0 0 2px rgba(13, 110, 253, 0.15)" : "none",
+        "&:hover": {
+            borderColor: "#94a3b8"
+        },
+        minWidth: "150px",
+        backgroundColor: "#ffffff"
+    }),
+    valueContainer: (base) => ({
+        ...base,
+        padding: "0 8px"
+    }),
+    dropdownIndicator: (base) => ({
+        ...base,
+        padding: "4px"
+    }),
+    menu: (base) => ({
+        ...base,
+        fontSize: "13px",
+        zIndex: 9999,
+        borderRadius: "8px",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.12)"
+    })
+};
+
+const formatMatrixValue = (val) => {
+    if (val === null || val === undefined || isNaN(val)) return "00";
+    const num = Number(val);
+    if (isNaN(num) || num === 0) return "00";
+    return String(num);
+};
+
 const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
     const [firstMondayCurrent, setFirstMondayCurrent] = useState(null);
     const [firstMondayNext, setFirstMondayNext] = useState(null);
@@ -96,43 +133,45 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
     const [monthName, setMonthName] = useState("");
     const [monthNumber, setMonthNumber] = useState("");
     const [year, setYear] = useState();
-    const dispatch = useDispatch()
-    const { reportChartdata } = useSelector(state => state?.report)
+    const dispatch = useDispatch();
+    const { reportChartdata } = useSelector(state => state?.report);
     const { machineData } = useSelector((state) => state.machines);
-    const filters = useSelector(state => state?.filters)
-    const { pS, line } = filters || {}
-    const [chartData, setChartData] = useState([])
-    const [datas, setDatas] = useState([])
-    const [optionss, setOptionss] = useState([])
-    const [labelss, setlabelss] = useState([])
-    const [pendings, setPending] = useState([])
-    const [cpendings, setCPending] = useState([])
+    const filters = useSelector(state => state?.filters);
+    const { pS, line } = filters || {};
+    const [chartData, setChartData] = useState([]);
+    const [datas, setDatas] = useState([]);
+    const [optionss, setOptionss] = useState([]);
+    const [labelss, setlabelss] = useState([]);
+    const [pendings, setPending] = useState([]);
+    const [cpendings, setCPending] = useState([]);
+
     const exportToExcel = () => {
-    const completed = datas?.datasets?.[0]?.data || [];
-    const pending = datas?.datasets?.[1]?.data || [];
+        const completed = datas?.datasets?.[0]?.data || [];
+        const pending = datas?.datasets?.[1]?.data || [];
 
-    const exportData = labelss.map((label, index) => ({
-        Day: label.replace(/\n/g, " "),
-        Completed: completed[index] || 0,
-        Pending: pending[index] || 0,
-        CumulativePending: cpendings[index] || 0,
-        Total: (completed[index] || 0) + (pending[index] || 0)
-    }));
+        const exportData = labelss.map((label, index) => ({
+            Day: label.replace(/\n/g, " "),
+            Completed: completed[index] || 0,
+            Pending: pending[index] || 0,
+            CumulativePending: cpendings[index] || 0,
+            Total: (completed[index] || 0) + (pending[index] || 0)
+        }));
 
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
 
-    XLSX.utils.book_append_sheet(
-        workbook,
-        worksheet,
-        "Monthly Report"
-    );
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "Monthly Report"
+        );
 
-    XLSX.writeFile(
-        workbook,
-        `Monthly_Report_${monthName}_${year}.xlsx`
-    );
-};
+        XLSX.writeFile(
+            workbook,
+            `Monthly_Report_${monthName}_${year}.xlsx`
+        );
+    };
+
     const [monthYear, setMonthYear] = useState(() => getCurrentMonthYear(chkDate));
     const [monthYearS, setMonthYearS] = useState(() => convertDate(getCurrentMonthYear(chkDate)));
     const [selectLineRef, setSelectLineRef] = useState("test");
@@ -168,7 +207,7 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
         allDiscoveredLinesRef.current.clear();
     }
 
-    if (machineData && machineData.machineData != undefined) {
+    if (machineData && machineData.machineData !== undefined) {
         machineData.machineData.forEach((element) => {
             if (!element || !element.line) return;
             allDiscoveredLinesRef.current.add(element.line);
@@ -284,7 +323,8 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
 
         const years = date.getFullYear();
         setYear(years);
-        dispatch(fetchReportData({ year: years, month: monthNumbers + 1, pS: pS, line: line }))
+        dispatch(fetchReportData({ year: years, month: monthNumbers + 1, pS: pS, line: line }));
+
         function getFirstMonday(year, month) {
             let date = new Date(year, month, 1);
             while (date.getDay() !== 1) {
@@ -321,22 +361,18 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
         const daysInCurrentMonth = daysInMonth(monthNumbers, years);
         setDaysInMonth(daysInCurrentMonth);
 
-    }, [chkDate, showModal, monthYear, selectLineRef, line]);
-
+    }, [chkDate, showModal, monthYear, selectLineRef, line, dispatch, monthYearS]);
 
     useEffect(() => {
-        setChartData(reportChartdata?.report?.data)
-    }, [reportChartdata])
-
-
-
+        setChartData(reportChartdata?.report?.data);
+    }, [reportChartdata]);
 
     useEffect(() => {
         let pends = [];
         let cpends = [];
 
         function generateLabels(startDate, endDate) {
-            let labels = []
+            let labels = [];
             const start = new Date(startDate);
             const end = new Date(endDate);
 
@@ -376,26 +412,20 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
 
         let labels = generateLabels(firstMondayCurrent, firstMondayNext);
 
-        pends = labels?.map(label => {
-            return 0;
-        })
-        cpends = labels?.map(label => {
-            return 0;
-        })
+        pends = labels?.map(() => 0) || [];
+        cpends = labels?.map(() => 0) || [];
 
         let data = {
             labels: labels,
             datasets: [
                 {
                     label: "Completed",
-                    data: labels?.map(label => {
-                        return 0;
-                    }),
-                    backgroundColor: (context) => {
-                        return "rgb(40, 167, 69)";
-                    },
-                    borderColor: "#0d6efd",
-                    borderWidth: 1.5,
+                    data: labels?.map(() => 0),
+                    backgroundColor: "rgba(34, 197, 94, 0.9)", // Crisp modern green
+                    borderColor: "#16a34a",
+                    borderWidth: 1,
+                    borderRadius: 3,
+                    borderSkipped: false,
                     datalabels: {
                         anchor: 'center',
                         align: 'center',
@@ -414,19 +444,16 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                 },
                 {
                     label: "Pending",
-                    data: labels?.map(label => {
-                        return 0;
-                    }),
-                    backgroundColor: (context) => {
-
-                        return "rgb(193,193,193)";
-                    },
-                    borderColor: "#0d6efd",
-                    borderWidth: 1.5,
+                    data: labels?.map(() => 0),
+                    backgroundColor: "rgba(148, 163, 184, 0.75)", // Clean slate
+                    borderColor: "#94a3b8",
+                    borderWidth: 1,
+                    borderRadius: 3,
+                    borderSkipped: false,
                     datalabels: {
                         anchor: 'center',
                         align: 'center',
-                        color: '#000000',
+                        color: '#1e293b',
                         font: {
                             weight: 'bold',
                             size: 11
@@ -438,64 +465,65 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                             return context.dataset.data[context.dataIndex] > 0;
                         }
                     }
-
                 },
                 {
                     label: "Holidays",
-                    data: labels?.map(label => {
-                        return 0;
-                    }),
-                    backgroundColor: (context) => {
-                        return "rgb(180,198,231)"
-                    },
-                    borderColor: "#0d6efd",
-                    borderWidth: 1.5,
+                    data: labels?.map(() => 0),
+                    backgroundColor: "rgba(186, 230, 253, 0.7)", // Light sky blue
+                    borderColor: "#7dd3fc",
+                    borderWidth: 1,
+                    borderRadius: 3,
+                    borderSkipped: false,
                     datalabels: {
-                        display: false, // Disable data labels for "Pending"
-                    },
-
+                        display: false,
+                    }
                 }
-
-
             ]
         };
-
-
 
         let options = {
             responsive: true,
             layout: {
                 padding: {
-                    top: 25
+                    top: 25,
+                    bottom: 10
                 }
             },
             plugins: {
+                legend: {
+                    display: true,
+                    position: "top",
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: "rectRounded",
+                        boxWidth: 12,
+                        boxHeight: 12,
+                        padding: 16,
+                        font: { size: 12, weight: "600" },
+                        color: "#334155"
+                    }
+                },
                 totalCount: {
                     display: true
                 },
                 tooltip: {
                     callbacks: {
                         title: function () {
-                            return ''; // No title
+                            return '';
                         },
                         label: function (tooltipItem) {
                             const labels = tooltipItem.chart.data.labels;
                             const label = labels && labels[tooltipItem.dataIndex] ? labels[tooltipItem.dataIndex] : "";
 
-                            // Hide tooltip for weekends
                             if (label.includes("#")) {
-                                return ''; // Return empty string to hide tooltip
+                                return '';
                             }
-
-                            // Return the default label otherwise
                             return tooltipItem.label;
                         },
                         footer: function () {
-                            // Optionally, you can hide the footer as well
                             return [];
                         }
                     },
-                    // Prevent tooltip from showing
                     enabled: false
                 },
                 datalabels: {
@@ -507,8 +535,16 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
             },
             scales: {
                 x: {
+                    grid: {
+                        display: false
+                    },
                     ticks: {
                         autoSkip: false,
+                        font: {
+                            size: 11,
+                            weight: "500"
+                        },
+                        color: "#475569",
                         callback: function (value) {
                             const label = this.getLabelForValue(value);
                             if (typeof label === "string") {
@@ -522,48 +558,63 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     stacked: true
                 },
                 y: {
-                    stacked: true,
-                    beginAtZero: true,
-                    grace: '8%',
+                    grid: {
+                        color: "#f1f5f9"
+                    },
                     ticks: {
+                        font: {
+                            size: 11
+                        },
+                        color: "#64748b",
                         callback: function (value) {
                             return value === 0 ? '0' : value;
                         }
-                    }
+                    },
+                    stacked: true,
+                    beginAtZero: true,
+                    grace: '8%'
                 }
             }
         };
 
         const modifyDataAtIndex = (index, newValue) => {
-            data.datasets[0].data[index] = data.datasets[0].data[index] + newValue;
+            if (index >= 0 && index < data.datasets[0].data.length) {
+                data.datasets[0].data[index] = (data.datasets[0].data[index] || 0) + (newValue || 0);
+            }
         };
         const modifyDataHolidayAtIndex = (index, newValue) => {
-            data.datasets[2].data[index] = data.datasets[2].data[index] + newValue;
-        };
-
-        // added data.datasets[1].data[index] to cumulate the sum
-        const modifyLabelPending = (index, newLabel) => {
-            data.datasets[1].data[index] = data.datasets[1].data[index] + newLabel;
-        };
-
-        const modifypends = (index, newLabel) => {
-            pends[index] = pends[index] + newLabel;
-        };
-        const modifycpends = () => {
-            for (let i = 0; i < cpends.length; i++) {
-                cpends[i] = (i === 0) ? pends[i] : cpends[i - 1] + pends[i];
+            if (index >= 0 && index < data.datasets[2].data.length) {
+                data.datasets[2].data[index] = (data.datasets[2].data[index] || 0) + (newValue || 0);
             }
         };
 
+        const modifyLabelPending = (index, newLabel) => {
+            if (index >= 0 && index < data.datasets[1].data.length) {
+                data.datasets[1].data[index] = (data.datasets[1].data[index] || 0) + (newLabel || 0);
+            }
+        };
+
+        const modifypends = (index, newLabel) => {
+            if (index !== undefined && index >= 0 && index < pends.length) {
+                const add = Number(newLabel) || 0;
+                pends[index] = (Number(pends[index]) || 0) + add;
+            }
+        };
+
+        const modifycpends = () => {
+            for (let i = 0; i < cpends.length; i++) {
+                const prev = i === 0 ? 0 : (Number(cpends[i - 1]) || 0);
+                const curr = Number(pends[i]) || 0;
+                cpends[i] = prev + curr;
+            }
+        };
 
         function roundUpToNearest10(value) {
             return Math.ceil(value / 10) * 10;
         }
 
-        if (chartData) {
-
-            chartData.map((ddd, index) => {
-                // Extract and parse date parts
+        if (chartData && Array.isArray(chartData) && firstMondayCurrent) {
+            chartData.forEach((ddd) => {
                 let dateParts = ddd.entryFor?.split('-');
                 let day = parseInt(dateParts && dateParts[2]);
 
@@ -579,75 +630,49 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     difference = newDate - firstday;
                 }
 
-                // Handle undefined or null values
-                const okCount = parseInt(ddd.okCount ?? 0); // Ensuring it's a number
-                const ngCount = parseInt(ddd.ngCount ?? 0); // Ensuring it's a number
-                const pendingCount = parseInt(ddd.pendingCount ?? 0);
-                const totalItemCount = parseInt(ddd.totalItemCount ?? 0);
-                const cumPendingCount = parseInt(ddd.cumPendingCount ?? 0);
-
+                const okCount = parseInt(ddd.okCount ?? 0) || 0;
+                const ngCount = parseInt(ddd.ngCount ?? 0) || 0;
+                const pendingCount = parseInt(ddd.pendingCount ?? 0) || 0;
+                const totalItemCount = parseInt(ddd.totalItemCount ?? 0) || 0;
                 const totalOkNgCount = okCount + ngCount;
 
-
-
                 if (ddd?.holiday) {
-                    // modifyLabelAtIndex(difference, labels[difference]?.split('\n').slice(0, 2).join('\n') + '#\n' + labels[difference].split('\n').slice(2).join('\n'))
-                    const { maxOkCountss, maxOkCountPending, maxNgCountss, maxItemCountss } = chartData.reduce(
+                    const { maxItemCountss } = chartData.reduce(
                         (acc, obj) => {
-                            acc.maxOkCountss = Math.max(acc.maxOkCountss, obj.okCount);
-                            acc.maxOkCountPending = Math.max(acc.maxOkCountPending, obj.pendingCount);
-                            acc.maxNgCountss = Math.max(acc.maxNgCountss, obj.ngCount);
-                            acc.maxItemCountss = Math.max(acc.maxItemCountss, obj.totalItemCount);
+                            acc.maxItemCountss = Math.max(acc.maxItemCountss, obj.totalItemCount || 0);
                             return acc;
                         },
-                        { maxOkCountss: 0, maxOkCountPending: 0, maxNgCountss: 0, maxItemCountss: 0 }
+                        { maxItemCountss: 0 }
                     );
 
-
-                    const maxCount = maxItemCountss
-
-                    modifyLabelPending(difference, 0)
-
-                    modifypends(difference, pendingCount)
-                    modifycpends(difference, cumPendingCount)
+                    const maxCount = maxItemCountss;
+                    modifyLabelPending(difference, 0);
+                    modifypends(difference, pendingCount);
 
                     modifyDataHolidayAtIndex(
                         difference,
-                        typeof maxCount === "number" && maxCount != -Infinity && maxCount != 0
+                        typeof maxCount === "number" && maxCount !== -Infinity && maxCount !== 0
                             ? roundUpToNearest10(maxCount - totalOkNgCount)
                             : 2
                     );
-
-
                 } else {
                     const pendingForDay = Math.max(0, totalItemCount - totalOkNgCount);
                     modifyLabelPending(difference, pendingForDay);
-                    // modifyDataAtIndex(difference, ddd.okCount + ddd.ngCount);
                     modifypends(difference, pendingForDay);
-                    console.log(pends);
-                    modifycpends(difference, ddd.cumPendingCount);
                 }
-                // Remove other logic for focus on summing
                 modifyDataAtIndex(difference, totalOkNgCount ? totalOkNgCount : 0);
-
-                return {
-                    ...ddd,
-                    difference
-                };
             });
 
+            // Calculate cumulative sums safely after all individual days are populated
+            modifycpends();
         }
 
-
-
-        setPending(pends)
-        setCPending(cpends)
+        setPending(pends);
+        setCPending(cpends);
         setlabelss(labels);
         setDatas(data);
         setOptionss(options);
-    }, [chartData])
-
-
+    }, [chartData, firstMondayCurrent, firstMondayNext, daysInMonth]);
 
     const handleClose = () => {
         setShowModal(false);
@@ -658,117 +683,175 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
             show={showModal}
             onHide={handleClose}
             dialogClassName="my-modal"
-            // contentClassName="modal-height"
-            style={{ height: "100%!important" }}
+            centered
+            size="xl"
         >
-            <Modal.Header closeButton style={{ display: "flex", justifyContent: 'space-between', width: '100%' }}>
-                <Modal.Title>
-                    Monthly Chart ({monthName}-{year})
-                </Modal.Title>
+            <Modal.Header closeButton className="border-bottom px-4 py-3 bg-white">
+                <div className="d-flex flex-wrap align-items-center justify-content-between w-100 pe-3 gap-3">
+                    <div className="d-flex align-items-center gap-2">
+                        <div className="bg-primary bg-opacity-10 text-primary p-2 rounded-3 d-inline-flex align-items-center justify-content-center">
+                            <i className="bi bi-bar-chart-line-fill fs-5"></i>
+                        </div>
+                        <div>
+                            <h5 className="mb-0 fw-bold text-dark">
+                                Monthly Performance Chart
+                            </h5>
+                            <small className="text-muted fw-semibold">
+                                {monthName} {year}
+                            </small>
+                        </div>
+                    </div>
 
-                <div
-                    style={{
-                        marginLeft: "auto",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px"
-                    }}
-                >
-                    <input
-                        type="month"
-                        id="monthYear"
-                        name="monthYear"
-                        value={monthYear}
-                        onChange={handleMonthYearChange}
-                    />
+                    <div className="d-flex flex-wrap align-items-center gap-2 ms-auto">
+                        <div className="d-flex align-items-center bg-light border rounded-3 px-2 py-1 shadow-sm" style={{ height: "36px" }}>
+                            <i className="bi bi-calendar3 text-secondary me-2"></i>
+                            <input
+                                type="month"
+                                id="monthYear"
+                                name="monthYear"
+                                value={monthYear}
+                                onChange={handleMonthYearChange}
+                                className="form-control form-control-sm border-0 bg-transparent p-0"
+                                style={{ fontSize: "13px", fontWeight: "600", cursor: "pointer", width: "130px" }}
+                            />
+                        </div>
 
-                    <button
-                        className="btn btn-success"
-                        onClick={exportToExcel}
-                    >
-                        Download Excel
-                    </button>
+                        <button
+                            className="btn btn-sm btn-success d-inline-flex align-items-center gap-2 rounded-3 px-3 shadow-sm fw-semibold"
+                            style={{ height: "36px" }}
+                            onClick={exportToExcel}
+                        >
+                            <i className="bi bi-file-earmark-excel-fill"></i>
+                            <span>Download Excel</span>
+                        </button>
+
+                        <div style={{ minWidth: "150px" }}>
+                            <Select
+                                options={lineOptions}
+                                value={selectedMainLineOption}
+                                onChange={selectLineHandler}
+                                isSearchable={true}
+                                placeholder="Main Line"
+                                styles={customSelectStyles}
+                            />
+                        </div>
+
+                        <div style={{ minWidth: "160px" }}>
+                            <Select
+                                options={subLineOptions}
+                                value={selectedSubLineOption}
+                                onChange={selectSubLineHandler}
+                                isSearchable={true}
+                                placeholder="Sub Line"
+                                styles={customSelectStyles}
+                            />
+                        </div>
+                    </div>
                 </div>
-                <Select
-                    options={lineOptions}
-                    value={selectedMainLineOption}
-                    onChange={selectLineHandler}
-                    className="mx-2 secondary"
-                    isSearchable={true}
-                    placeholder="Main Line"
-                />
-                <Select
-                    options={subLineOptions}
-                    value={selectedSubLineOption}
-                    onChange={selectSubLineHandler}
-                    className="mx-2 secondary"
-                    isSearchable={true}
-                    placeholder="Sub Line"
-                />
-
             </Modal.Header>
 
+            <Modal.Body className="bg-light p-3 p-md-4">
+                <div className="d-flex flex-column align-items-center w-100">
+                    {/* Modern Chart Container */}
+                    <div
+                        className="w-100 bg-white rounded-3 border p-3 p-md-4 mb-3 shadow-sm"
+                        style={{ borderColor: "#e2e8f0" }}
+                    >
+                        <Bar data={datas} options={optionss} plugins={[totalCountPlugin]} />
+                    </div>
 
-            <Modal.Body
-
-            >
-                <div
-                    style={{ width: "100%", overflowY: "scroll" }}
-                    className="d-flex justify-content-center align-item-center "
-                    onClick={handleClose}
-                >
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "70vw" }}>
-                        <div
-                            style={{
-                                width: "100%",
-                                border: "2px solid #0d6efd",
-                                borderRadius: "8px",
-                                padding: "16px",
-                                backgroundColor: "#ffffff",
-                                marginBottom: "16px",
-                                boxShadow: "0 2px 8px rgba(13, 110, 253, 0.1)"
-                            }}
-                        >
-                            <Bar data={datas} options={optionss} plugins={[totalCountPlugin]} />
-                        </div>
-                        <div style={{ width: "100%", overflowX: "auto" }}>
-                            <table className="table table-bordered" style={{ width: "100%", tableLayout: "fixed" }}>
+                    {/* Modern Matrix Summary Table */}
+                    <div
+                        className="w-100 bg-white rounded-3 border shadow-sm overflow-hidden"
+                        style={{ borderColor: "#e2e8f0" }}
+                    >
+                        <div className="table-responsive">
+                            <table className="table table-sm table-borderless mb-0" style={{ width: "100%", tableLayout: "fixed" }}>
                                 <tbody>
-                                    <tr>
-                                        <td style={{ fontSize: 11 }}>{"P"}</td>
-                                        {pendings?.map((dats, index) => (
-                                            <td
-                                                key={index}
-                                                style={{
-                                                    fontSize: 11, // Adjust as needed
-                                                    borderRight: (index + 1) % 7 === 0 ? "2px solid black" : "none",
-                                                    textAlign: "center"
-                                                }}
-                                            >
-                                                {String(dats).padStart(2, "0")}
-                                            </td>
-                                        ))}
+                                    <tr style={{ borderBottom: "1px solid #f1f5f9" }}>
+                                        <th
+                                            style={{
+                                                width: "55px",
+                                                backgroundColor: "#f8fafc",
+                                                fontSize: "11px",
+                                                fontWeight: "700",
+                                                textAlign: "center",
+                                                verticalAlign: "middle",
+                                                borderRight: "2px solid #cbd5e1",
+                                                color: "#1e293b",
+                                                padding: "6px 2px"
+                                            }}
+                                        >
+                                            <span className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1">P</span>
+                                        </th>
+                                        {pendings?.map((dats, index) => {
+                                            const isWeekEnd = (index + 1) % 7 === 0;
+                                            const formatted = formatMatrixValue(dats);
+                                            const isZero = formatted === "00";
+                                            return (
+                                                <td
+                                                    key={index}
+                                                    style={{
+                                                        fontSize: "11px",
+                                                        fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+                                                        fontWeight: isZero ? 500 : 700,
+                                                        color: isZero ? "#94a3b8" : "#0f172a",
+                                                        backgroundColor: isWeekEnd ? "#f8fafc" : "#ffffff",
+                                                        borderRight: isWeekEnd ? "2px solid #cbd5e1" : "1px solid #f1f5f9",
+                                                        textAlign: "center",
+                                                        padding: "6px 2px",
+                                                        verticalAlign: "middle"
+                                                    }}
+                                                >
+                                                    {formatted}
+                                                </td>
+                                            );
+                                        })}
                                     </tr>
                                     <tr>
-                                        <td style={{ fontSize: 11 }}>CP</td>
-                                        {cpendings?.map((dats, index) => (
-                                            <td
-                                                key={index}
-                                                style={{
-                                                    fontSize: 11, // Adjust as needed
-                                                    borderRight: (index + 1) % 7 === 0 ? "2px solid black" : "none",
-                                                    textAlign: "center"
-                                                }}
-                                            >
-                                                {String(dats).padStart(2, "0")}
-                                            </td>
-                                        ))}
+                                        <th
+                                            style={{
+                                                width: "55px",
+                                                backgroundColor: "#f8fafc",
+                                                fontSize: "11px",
+                                                fontWeight: "700",
+                                                textAlign: "center",
+                                                verticalAlign: "middle",
+                                                borderRight: "2px solid #cbd5e1",
+                                                color: "#1e293b",
+                                                padding: "6px 2px"
+                                            }}
+                                        >
+                                            <span className="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-2 py-1">CP</span>
+                                        </th>
+                                        {cpendings?.map((dats, index) => {
+                                            const isWeekEnd = (index + 1) % 7 === 0;
+                                            const formatted = formatMatrixValue(dats);
+                                            const isZero = formatted === "00";
+                                            return (
+                                                <td
+                                                    key={index}
+                                                    style={{
+                                                        fontSize: "11px",
+                                                        fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+                                                        fontWeight: isZero ? 500 : 700,
+                                                        color: isZero ? "#94a3b8" : "#0f172a",
+                                                        backgroundColor: isWeekEnd ? "#f8fafc" : "#fafafa",
+                                                        borderRight: isWeekEnd ? "2px solid #cbd5e1" : "1px solid #f1f5f9",
+                                                        textAlign: "center",
+                                                        padding: "6px 2px",
+                                                        verticalAlign: "middle"
+                                                    }}
+                                                >
+                                                    {formatted}
+                                                </td>
+                                            );
+                                        })}
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-
                 </div>
             </Modal.Body>
         </Modal>

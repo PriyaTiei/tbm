@@ -1,7 +1,7 @@
 .my-modal {
-  width: 90vw !important ;  
-  max-width: 90vw !important;
-  background-color: blueviolet;
+  width: 95vw !important ;  
+  max-width: 95vw !important;
+  background-color: transparent !important;
 } 
 
 .modal-height {
