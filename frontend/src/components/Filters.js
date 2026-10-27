@@ -511,31 +511,33 @@ function Filters() {
               <span>Clear Search</span>
             </Button>
           )}
+
+          {/* TBM Dashboard Button beside Search */}
+          <Link to="/overallStatus" style={{ textDecoration: "none" }}>
+            <Button
+              variant="outline-primary"
+              className="d-flex align-items-center gap-2 px-3 shadow-sm fw-semibold"
+              style={{
+                height: "38px",
+                borderRadius: "6px",
+                background: "#eff6ff",
+                borderColor: "#bfdbfe",
+                color: "#1d4ed8",
+                fontSize: "0.88rem",
+                letterSpacing: "0.2px",
+              }}
+              title="TBM Overall Status Dashboard"
+            >
+              <i className="bi bi-speedometer2 text-primary fs-6"></i>
+              <span>TBM Dashboard</span>
+            </Button>
+          </Link>
         </div>
 
-        {/* Row 2: Action Toolbar & TBM Dashboard Navigation */}
+        {/* Row 2: Action Toolbar & Secondary Navigation */}
         <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 pt-2 border-top mt-2">
-          {/* Left Actions: TBM Dashboard & Quick Metrics */}
+          {/* Left Actions */}
           <div className="d-flex align-items-center flex-wrap gap-2">
-            {/* Prominent TBM Dashboard Button */}
-            <Link to="/overallStatus" style={{ textDecoration: "none" }}>
-              <Button
-                variant="primary"
-                className="d-flex align-items-center gap-2 px-3 py-1 shadow-sm fw-bold"
-                style={{
-                  background: "linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%)",
-                  border: "none",
-                  borderRadius: "6px",
-                  fontSize: "0.88rem",
-                  letterSpacing: "0.2px",
-                }}
-                title="TBM Overall Status Dashboard"
-              >
-                <i className="bi bi-speedometer2 text-warning fs-5"></i>
-                <span>TBM Dashboard</span>
-              </Button>
-            </Link>
-
             {/* Monthly Report */}
             {date && (
               <Button

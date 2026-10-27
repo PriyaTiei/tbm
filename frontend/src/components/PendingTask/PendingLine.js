@@ -13,8 +13,23 @@ function PendingLine({ line, processList, counts }) {
 
   return (
     <Fragment>
-      <h3 className="mx-3 p-1 bg-info text-center">{`${line} - ${totalSum}`}</h3>
-      <div className="d-flex flex-wrap">
+      <div
+        className="mx-3 my-2 p-2 px-3 rounded-3 d-flex justify-content-between align-items-center shadow-sm"
+        style={{
+          background: "#ffffff",
+          border: "1px solid #e2e8f0",
+          borderLeft: "4px solid #f59e0b",
+        }}
+      >
+        <h5 className="m-0 fw-bold text-dark d-flex align-items-center">
+          <i className="bi bi-hourglass-split text-warning me-2"></i>
+          {line}
+        </h5>
+        <span className="badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-50 rounded-pill px-3 py-1.5 fw-semibold">
+          {totalSum} Pending {totalSum === 1 ? "Station" : "Stations"}
+        </span>
+      </div>
+      <div className="d-flex flex-wrap mx-2 mb-3">
         {processList.length > 0 ? (
           processList.map((process) => (
             <PendingCard
@@ -26,7 +41,7 @@ function PendingLine({ line, processList, counts }) {
             />
           ))
         ) : (
-          <div className="text-center w-100 py-4">No pending cards available.</div>
+          <div className="text-center w-100 py-3 text-muted">No pending cards available.</div>
         )}
       </div>
     </Fragment>

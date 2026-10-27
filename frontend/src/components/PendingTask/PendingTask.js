@@ -1180,55 +1180,68 @@ function buildExcelRowsFromData(data) {
         <div className="text-center text-danger py-4">Error: {error}</div>
       ) : (
         <Fragment>
-          <div className="mx-3 my-2 d-flex align-items-center gap-3">
-            <div>
-              <label className="me-2">
-                <strong>Filter by Age:</strong>
-              </label>
-              <select
-                className="form-select-sm"
-                value={ageFilter}
-                onChange={(e) => setAgeFilter(e.target.value)}
-              >
-                <option value="ALL">All</option>
-                <option value="1-10">1–10 days</option>
-                <option value="11-20">11–20 days</option>
-                <option value=">20">More than 20 days</option>
-              </select>
-            </div>
-            
-            {/* Age Summary Display */}
-            <div className="text-muted small">
-              <span className="me-3">1-10 days: <strong>{ageSummary["1-10"]}</strong></span>
-              <span className="me-3">11-20 days: <strong>{ageSummary["11-20"]}</strong></span>
-              <span>20+ days: <strong>{ageSummary["20+"]}</strong></span>
-            </div>
-          </div>
+          <div className="mx-3 my-2 p-2 px-3 bg-white rounded-3 border d-flex justify-content-between align-items-center flex-wrap gap-2 shadow-sm">
+            <div className="d-flex align-items-center flex-wrap gap-3">
+              <div className="d-flex align-items-center">
+                <label className="me-2 mb-0 fw-semibold text-secondary" style={{ fontSize: "0.88rem" }}>
+                  <i className="bi bi-funnel-fill text-warning me-1"></i> Filter by Age:
+                </label>
+                <select
+                  className="form-select form-select-sm"
+                  style={{ width: "160px", borderRadius: "6px" }}
+                  value={ageFilter}
+                  onChange={(e) => setAgeFilter(e.target.value)}
+                >
+                  <option value="ALL">All Days</option>
+                  <option value="1-10">1–10 days</option>
+                  <option value="11-20">11–20 days</option>
+                  <option value=">20">More than 20 days</option>
+                </select>
+              </div>
 
-          <div>
-            {isExcelDataReady && body.length > 0 ? (
-              <Button
-                variant="warning"
-                style={{ position: "absolute", right: 150 }}
-                onClick={handleDownloadExcel}
-              >
-                Download Excel ({body.length} rows)
-              </Button>
-            ) : (
-              <Button
-                disabled
-                style={{
-                  position: "absolute",
-                  right: 150,
-                  backgroundColor: "#666",
-                  cursor: "not-allowed",
-                }}
-              >
-                {isLoading ? "Loading data..." : 
-                 !isExcelDataReady ? "Preparing Excel data..." : 
-                 "No data to export"}
-              </Button>
-            )}
+              {/* Age Summary Display */}
+              <div className="d-flex align-items-center gap-2 small">
+                <span className="badge bg-light text-dark border">
+                  1-10d: <strong className="text-primary">{ageSummary["1-10"]}</strong>
+                </span>
+                <span className="badge bg-light text-dark border">
+                  11-20d: <strong className="text-warning">{ageSummary["11-20"]}</strong>
+                </span>
+                <span className="badge bg-light text-dark border">
+                  20+d: <strong className="text-danger">{ageSummary["20+"]}</strong>
+                </span>
+              </div>
+            </div>
+
+            <div>
+              {isExcelDataReady && body.length > 0 ? (
+                <Button
+                  variant="warning"
+                  size="sm"
+                  className="fw-semibold shadow-sm d-flex align-items-center gap-1.5"
+                  onClick={handleDownloadExcel}
+                >
+                  <i className="bi bi-file-earmark-excel-fill"></i>
+                  <span>Download Excel ({body.length} rows)</span>
+                </Button>
+              ) : (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  disabled
+                  className="shadow-sm d-flex align-items-center gap-1.5"
+                >
+                  <i className="bi bi-file-earmark-excel"></i>
+                  <span>
+                    {isLoading
+                      ? "Loading data..."
+                      : !isExcelDataReady
+                      ? "Preparing Excel..."
+                      : "No data to export"}
+                  </span>
+                </Button>
+              )}
+            </div>
           </div>
 
           <div className="overflow-auto" style={{ height: "75vh", paddingBottom: "10%" }}>

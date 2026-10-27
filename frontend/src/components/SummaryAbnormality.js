@@ -1,3 +1,368 @@
+// import React, { useEffect, useState } from "react";
+// import { getAbnormality } from "../redux/abnormality/abnormalityActions";
+// import { useDispatch, useSelector } from "react-redux";
+// import AbnormilityDoc from "./AbnormalityDoc";
+// import DatePicker from "react-date-picker";
+// import GraphAbnormality from "./GraphAbnormality";
+// import Select from "react-select";
+
+// function SummaryAbnormality() {
+//   const [showGraph, setShowGraph] = useState(true);
+
+//   // begining of Month
+//   var beginingDate = new Date(Date.now());
+//   beginingDate.setDate(-30);
+//   //from date
+//   const [fromDate, setFromDate] = useState(beginingDate);
+//   const fromDt = fromDate.getDate();
+//   const fromMonth = fromDate.getMonth() + 1;
+//   const fromYear = fromDate.getFullYear();
+//   const fromDateSt = `${fromYear}-${fromMonth}-${fromDt}`;
+
+//   //to next date
+//   const [toDate, setToDate] = useState(new Date(Date.now()));
+//   var toNextDate = new Date(toDate);
+//   toNextDate.setDate(toNextDate.getDate() + 1);
+//   const toDt = toNextDate.getDate();
+//   const toMonth = toNextDate.getMonth() + 1;
+//   const toYear = toNextDate.getFullYear();
+//   const toDateSt = `${toYear}-${toMonth}-${toDt}`;
+//   const [filterObject, setFilterObject] = useState({
+//     entryDate: "",
+//     pS: "",
+//     line: "",
+//     processNo: "",
+//     item: "",
+//     abnormality: "",
+//     countermeasure: "",
+//     spare: "",
+//     pic: "",
+//     target: "",
+//     status: "",
+//   });
+
+//   const dispatch = useDispatch();
+//   let queryStr = "";
+//   for (let key in filterObject) {
+//     let value = filterObject[key];
+
+//     if (value != "") {
+//       if (queryStr == "") {
+//         queryStr = `${key}=${value}`;
+//       } else {
+//         queryStr = `${queryStr}&${key}=${value}`;
+//       }
+//     }
+//   }
+
+//   useEffect(() => {
+//     dispatch(getAbnormality(fromDateSt, toDateSt, queryStr));
+//   }, [dispatch, fromDate, toDate, filterObject]);
+
+
+//   const abnormalities = useSelector((state) => state.abnormalities);
+//   const abnormalityList = abnormalities.loading
+//     ? []
+//     : abnormalities.abnormalities.success
+//     ? abnormalities.abnormalities.abnormalities
+//     : [];
+
+//   const list = abnormalityList.map((item) => {
+//     return (
+//       <AbnormilityDoc
+//         key={item._id}
+//         item={item}
+//         fromDateSt={fromDateSt}
+//         toDateSt={toDateSt}
+//       />
+//     );
+//   });
+
+//   var total = 0;
+//   var complete = 0;
+//   var inprogress = 0;
+//   var pending = 0;
+//   if (abnormalityList.length > 0) {
+//     total = abnormalityList.length;
+//     abnormalityList.forEach((item) => {
+//       if (item.status === "complete") {
+//         complete += 1;
+//       }
+//       if (item.status === "pending") {
+//         pending += 1;
+//       }
+//       if (item.status === "inprogress") {
+//         inprogress += 1;
+//       }
+//     });
+//   }
+
+//   const labels = ["Total", "Complete", "Pending", "Inprogress"];
+//   const data = [total, complete, pending, inprogress];
+
+
+//   const filterHandler = (e) => {
+//     setFilterObject((filterObject) => {
+//       filterObject[e.target.name] = e.target.value;
+//       return {
+//         ...filterObject,
+//       };
+//     });
+//   };
+
+//   const deptOptions = [
+//     { value: "S", label: "Production." },
+//     { value: "P", label: "Maintenance" },
+//   ];
+
+//   const deptHandler = (e) => {
+//     setFilterObject((filterObject) => {
+//       filterObject["pS"] = e.value;
+//       return {
+//         ...filterObject,
+//       };
+//     });
+//   };
+
+//   const options = [
+//     { value: "pending", label: "Pending" },
+//     { value: "inprogress", label: "Inprogress" },
+//     { value: "complete", label: "Complete" },
+//   ];
+
+//   const statusHandler = (e) => {
+//     setFilterObject((filterObject) => {
+//       filterObject["status"] = e.value;
+//       return {
+//         ...filterObject,
+//       };
+//     });
+//   };
+
+//   const entryDateHandler = (date) => {
+//     setFilterObject((filterObject) => {
+//       filterObject["entryDate"] = date;
+//       return {
+//         ...filterObject,
+//       };
+//     });
+//   };
+
+//   const targetHandler = (date) => {
+//     setFilterObject((filterObject) => {
+//       filterObject["target"] = date;
+//       return {
+//         ...filterObject,
+//       };
+//     });
+//   };
+//   const clearFilterHandler = () => {
+//     setFilterObject({
+//       entryDate: "",
+//       pS: "",
+//       line: "",
+//       processNo: "",
+//       item: "",
+//       abnormality: "",
+//       countermeasure: "",
+//       spare: "",
+//       pic: "",
+//       target: "",
+//       status: "",
+//     });
+//   };
+//   return (
+//     <div>
+//       <div className="d-flex align-items-center bg-info ">
+//         <h3 className="mx-3  text-center ">Summary of Abnormality </h3>
+//         {showGraph ? (
+//           <button
+//             className="btn btn-outline-primary"
+//             onClick={() => setShowGraph(false)}
+//           >
+//             Hide Graph
+//           </button>
+//         ) : (
+//           <button
+//             className="btn btn-outline-primary"
+//             onClick={() => setShowGraph(true)}
+//           >
+//             Show Graph
+//           </button>
+//         )}
+
+
+//         <div className="ms-auto me-3">
+//           <span>From</span>
+//           <DatePicker
+//             format="dd/MM/yyyy"
+//             value={fromDate}
+//             onChange={setFromDate}
+//             clearIcon={null}
+//           />
+//           <span className="ms-3">To</span>
+//           <DatePicker format="dd/MM/yyyy" value={toDate} onChange={setToDate} clearIcon={null} />
+//         </div>
+//       </div>
+
+//           <div className="d-flex justify-content-between " >
+//       {showGraph ? <GraphAbnormality labels={labels} data={data} /> : null}
+//       <button
+//           className="btn btn-primary d-block mx-5 d-inline-block "
+//           style={{"height":"40px", "marginBottom":"16px", "marginTop":"auto" , "marginLeft":"auto", "marginRight":"16px" }}
+//           onClick={clearFilterHandler}
+//         > Clear Filters
+//         </button>
+//         </div>
+
+//       <div className="overflow-auto " style={{ height: "65vh", width: "97vw", paddingBottom: "10%" }}>
+
+
+//         <table className="m-3   table table-bordered table-sm table-hover text-dark ">
+//           {/* <table className="m-5 border border-black-50 text-light"> */}
+//           <thead>
+//             <tr>
+//               <th>Entry Date</th>
+//               <th>Dept.</th>
+//               <th>Line</th>
+//               <th>OP</th>
+//               <th>Item</th>
+//               <th>Abnormality</th>
+//               <th>Countermeasure</th>
+//               <th>Spare</th>
+//               <th>PIC</th>
+//               <th>Target</th>
+//               <th>Status</th>
+//               <th></th>
+//               <th></th>
+//               <th></th>
+//               <th></th>
+//             </tr>
+//             <tr>
+//               <td>
+//                 {/* <DatePicker
+//                   value={filterObject.entryDate}
+//                   onChange={entryDateHandler}
+//                   clearIcon={null}
+//                   // className="px-3"
+//                 /> */}
+//               </td>
+
+//               <td>
+//                 <Select
+//                   className="d-inline"
+//                   options={deptOptions}
+//                   // defaultValue={{ value: "", label: "" }}
+//                   menuPlacement="bottom"
+//                   onChange={deptHandler}
+//                 />
+//               </td>
+
+//               <td>
+//                 <input
+//                   type="text"
+//                   name="line"
+//                   onChange={filterHandler}
+//                   value={filterObject["line"]}
+//                   className="w-100"
+//                 />
+//               </td>
+
+//               <td>
+//                 <input
+//                   type="text"
+//                   name="processNo"
+//                   onChange={filterHandler}
+//                   value={filterObject["processNo"]}
+//                   className="w-100"
+//                 />
+//               </td>
+
+//               <td>
+//                 <input
+//                   type="text"
+//                   name="item"
+//                   onChange={filterHandler}
+//                   value={filterObject["item"]}
+//                   className="w-100"
+//                 />
+//               </td>
+
+//               <td>
+//                 <input
+//                   type="text"
+//                   name="abnormality"
+//                   onChange={filterHandler}
+//                   value={filterObject["abnormality"]}
+//                   className="w-100"
+//                 />
+//               </td>
+
+//               <td>
+//                 <input
+//                   type="text"
+//                   name="countermeasure"
+//                   onChange={filterHandler}
+//                   value={filterObject["countermeasure"]}
+//                   className="w-100"
+//                 />
+//               </td>
+
+//               <td>
+//                 <input
+//                   type="text"
+//                   name="spare"
+//                   onChange={filterHandler}
+//                   value={filterObject["spare"]}
+//                   className="w-100"
+//                 />
+//               </td>
+
+//               <td>
+//                 <input
+//                   type="text"
+//                   name="pic"
+//                   onChange={filterHandler}
+//                   value={filterObject["pic"]}
+//                   className="w-100"
+//                 />
+//               </td>
+
+//               <td>
+//                 {/* <DatePicker
+//                   value={filterObject.target}
+//                   onChange={targetHandler}
+//                   clearIcon={null}
+//                   // className="px-3"
+//                 /> */}
+//               </td>
+
+//               <td>
+//                 <Select
+//                   className="d-inline"
+//                   options={options}
+//                   // defaultValue={{ value: "pending", label: "Pending" }}
+//                   menuPlacement="bottom"
+//                   onChange={statusHandler}
+//                 />
+//               </td>
+
+//               <td></td>
+//               <td></td>
+//               <td></td>
+//             </tr>
+//           </thead>
+
+//           <tbody>{list}</tbody>
+//         </table>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default SummaryAbnormality;
+
+
 import React, { useEffect, useState } from "react";
 import { getAbnormality } from "../redux/abnormality/abnormalityActions";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,32 +371,28 @@ import DatePicker from "react-date-picker";
 import GraphAbnormality from "./GraphAbnormality";
 import Select from "react-select";
 import * as XLSX from 'xlsx';
-import "./SummaryAbnormality.css";
 
 function SummaryAbnormality() {
   const [showGraph, setShowGraph] = useState(true);
 
-  // beginning of Month (30 days ago)
-  const getInitialFromDate = () => {
-    const d = new Date();
-    d.setDate(d.getDate() - 30);
-    return d;
-  };
-
-  const [fromDate, setFromDate] = useState(getInitialFromDate);
+  // begining of Month
+  var beginingDate = new Date(Date.now());
+  beginingDate.setDate(-30);
+  //from date
+  const [fromDate, setFromDate] = useState(beginingDate);
   const fromDt = fromDate.getDate();
   const fromMonth = fromDate.getMonth() + 1;
   const fromYear = fromDate.getFullYear();
   const fromDateSt = `${fromYear}-${fromMonth}-${fromDt}`;
 
+  //to next date
   const [toDate, setToDate] = useState(new Date(Date.now()));
-  const toNextDate = new Date(toDate);
+  var toNextDate = new Date(toDate);
   toNextDate.setDate(toNextDate.getDate() + 1);
   const toDt = toNextDate.getDate();
   const toMonth = toNextDate.getMonth() + 1;
   const toYear = toNextDate.getFullYear();
   const toDateSt = `${toYear}-${toMonth}-${toDt}`;
-
   const [filterObject, setFilterObject] = useState({
     entryDate: "",
     pS: "",
@@ -50,8 +411,9 @@ function SummaryAbnormality() {
   let queryStr = "";
   for (let key in filterObject) {
     let value = filterObject[key];
-    if (value !== "") {
-      if (queryStr === "") {
+
+    if (value != "") {
+      if (queryStr == "") {
         queryStr = `${key}=${value}`;
       } else {
         queryStr = `${queryStr}&${key}=${value}`;
@@ -63,26 +425,29 @@ function SummaryAbnormality() {
     dispatch(getAbnormality(fromDateSt, toDateSt, queryStr));
   }, [dispatch, fromDate, toDate, filterObject]);
 
+
   const abnormalities = useSelector((state) => state.abnormalities);
   const abnormalityList = abnormalities.loading
     ? []
-    : abnormalities.abnormalities?.success
+    : abnormalities.abnormalities.success
       ? abnormalities.abnormalities.abnormalities
       : [];
 
-  const list = abnormalityList.map((item) => (
-    <AbnormilityDoc
-      key={item._id}
-      item={item}
-      fromDateSt={fromDateSt}
-      toDateSt={toDateSt}
-    />
-  ));
+  const list = abnormalityList.map((item) => {
+    return (
+      <AbnormilityDoc
+        key={item._id}
+        item={item}
+        fromDateSt={fromDateSt}
+        toDateSt={toDateSt}
+      />
+    );
+  });
 
-  let total = 0;
-  let complete = 0;
-  let inprogress = 0;
-  let pending = 0;
+  var total = 0;
+  var complete = 0;
+  var inprogress = 0;
+  var pending = 0;
   if (abnormalityList.length > 0) {
     total = abnormalityList.length;
     abnormalityList.forEach((item) => {
@@ -101,41 +466,61 @@ function SummaryAbnormality() {
   const labels = ["Total", "Complete", "Pending", "Inprogress"];
   const data = [total, complete, pending, inprogress];
 
+
   const filterHandler = (e) => {
-    const { name, value } = e.target;
-    setFilterObject((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFilterObject((filterObject) => {
+      filterObject[e.target.name] = e.target.value;
+      return {
+        ...filterObject,
+      };
+    });
   };
 
   const deptOptions = [
-    { value: "", label: "All Dept" },
-    { value: "S", label: "Production" },
+    { value: "S", label: "Production." },
     { value: "P", label: "Maintenance" },
   ];
 
   const deptHandler = (e) => {
-    const val = e ? e.value : "";
-    setFilterObject((prev) => ({
-      ...prev,
-      pS: val,
-    }));
+    setFilterObject((filterObject) => {
+      filterObject["pS"] = e.value;
+      return {
+        ...filterObject,
+      };
+    });
   };
 
   const options = [
-    { value: "", label: "All Status" },
     { value: "pending", label: "Pending" },
     { value: "inprogress", label: "Inprogress" },
     { value: "complete", label: "Complete" },
   ];
 
   const statusHandler = (e) => {
-    const val = e ? e.value : "";
-    setFilterObject((prev) => ({
-      ...prev,
-      status: val,
-    }));
+    setFilterObject((filterObject) => {
+      filterObject["status"] = e.value;
+      return {
+        ...filterObject,
+      };
+    });
+  };
+
+  const entryDateHandler = (date) => {
+    setFilterObject((filterObject) => {
+      filterObject["entryDate"] = date;
+      return {
+        ...filterObject,
+      };
+    });
+  };
+
+  const targetHandler = (date) => {
+    setFilterObject((filterObject) => {
+      filterObject["target"] = date;
+      return {
+        ...filterObject,
+      };
+    });
   };
 
   const clearFilterHandler = () => {
@@ -154,39 +539,14 @@ function SummaryAbnormality() {
     });
   };
 
-  const customFilterSelectStyles = {
-    control: (base) => ({
-      ...base,
-      minHeight: "28px",
-      height: "28px",
-      fontSize: "11px",
-      borderRadius: "6px",
-      borderColor: "#cbd5e1",
-      minWidth: "90px",
-      backgroundColor: "#ffffff",
-      boxShadow: "none"
-    }),
-    valueContainer: (base) => ({
-      ...base,
-      padding: "0 6px"
-    }),
-    dropdownIndicator: (base) => ({
-      ...base,
-      padding: "2px"
-    }),
-    menu: (base) => ({
-      ...base,
-      fontSize: "12px",
-      zIndex: 9999
-    })
-  };
-
+  // Excel download function
   const downloadExcel = () => {
     if (abnormalityList.length === 0) {
       alert("No data to export");
       return;
     }
 
+    // Prepare data for Excel
     const excelData = abnormalityList.map((item, index) => ({
       'S.No': index + 1,
       'Entry Date': item.createdAt ? new Date(item.createdAt).toLocaleDateString() : '',
@@ -198,10 +558,11 @@ function SummaryAbnormality() {
       'Countermeasure': item.countermeasure || '',
       'Spare': item.spare || '',
       'PIC': item.pic || '',
-      'Target Date': item.targetDate ? new Date(item.targetDate).toLocaleDateString() : '',
+      'Target Date': item.target ? new Date(item.target).toLocaleDateString() : '',
       'Status': item.status || ''
     }));
 
+    // Add summary data at the top
     const summaryData = [
       { 'S.No': 'SUMMARY', 'Entry Date': '', 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
       { 'S.No': 'Total Records', 'Entry Date': total, 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
@@ -213,255 +574,231 @@ function SummaryAbnormality() {
     ];
 
     const finalData = [...summaryData, ...excelData];
+
+    // Create workbook and worksheet
     const ws = XLSX.utils.json_to_sheet(finalData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Abnormalities");
 
+    // Auto-width columns
     const colWidths = [
-      { wch: 8 },
-      { wch: 12 },
-      { wch: 12 },
-      { wch: 10 },
-      { wch: 12 },
-      { wch: 15 },
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 10 },
-      { wch: 10 },
-      { wch: 12 },
-      { wch: 12 }
+      { wch: 8 }, // S.No
+      { wch: 12 }, // Entry Date
+      { wch: 12 }, // Department
+      { wch: 10 }, // Line
+      { wch: 12 }, // Process No
+      { wch: 15 }, // Item
+      { wch: 20 }, // Abnormality
+      { wch: 20 }, // Countermeasure
+      { wch: 10 }, // Spare
+      { wch: 10 }, // PIC
+      { wch: 12 }, // Target Date
+      { wch: 12 }  // Status
     ];
     ws['!cols'] = colWidths;
 
-    const filename = `Abnormalities_${fromDateSt}_to_${toDateSt}.xlsx`;
+    // Generate filename with date range
+    const filename = `Abnormalities_${fromDate.toISOString().split('T')[0]}_to_${toDate.toISOString().split('T')[0]}.xlsx`;
+
+    // Download file
     XLSX.writeFile(wb, filename);
   };
 
   return (
-    <div className="container-fluid px-3 px-md-4 py-3 abnormality-container">
-      {/* Header Banner */}
-      <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 p-3 bg-white border rounded-4 shadow-sm mb-3">
-        <div className="d-flex align-items-center gap-3">
-          <div className="bg-primary bg-opacity-10 text-primary p-2 rounded-3 d-inline-flex align-items-center justify-content-center">
-            <i className="bi bi-exclamation-octagon-fill fs-5"></i>
-          </div>
-          <div>
-            <h5 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-              Summary of Abnormality
-              <span className="badge bg-light text-primary border rounded-pill fs-6 fw-normal">
-                {total}
-              </span>
-            </h5>
-            <small className="text-muted">Track, review countermeasures, and update abnormalities</small>
-          </div>
+    <div>
+      <div className="d-flex align-items-center bg-info ">
+        <h3 className="mx-3  text-center ">Summary of Abnormality </h3>
+        {showGraph ? (
           <button
-            className="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center gap-1 ms-2"
-            onClick={() => setShowGraph(!showGraph)}
+            className="btn btn-outline-primary"
+            onClick={() => setShowGraph(false)}
           >
-            <i className={`bi ${showGraph ? 'bi-eye-slash' : 'bi-bar-chart'}`}></i>
-            <span>{showGraph ? "Hide Graph" : "Show Graph"}</span>
+            Hide Graph
           </button>
-        </div>
+        ) : (
+          <button
+            className="btn btn-outline-primary"
+            onClick={() => setShowGraph(true)}
+          >
+            Show Graph
+          </button>
+        )}
 
-        {/* Date Range Picker Controls */}
-        <div className="d-flex flex-wrap align-items-center gap-2 bg-light border rounded-pill px-3 py-1 shadow-sm abnormality-date-range">
-          <span className="text-muted small fw-semibold">From</span>
+
+        <div className="ms-auto me-3">
+          <span>From</span>
           <DatePicker
             format="dd/MM/yyyy"
             value={fromDate}
             onChange={setFromDate}
             clearIcon={null}
           />
-          <span className="text-muted small fw-semibold ms-2">To</span>
-          <DatePicker
-            format="dd/MM/yyyy"
-            value={toDate}
-            onChange={setToDate}
-            clearIcon={null}
-          />
+          <span className="ms-3">To</span>
+          <DatePicker format="dd/MM/yyyy" value={toDate} onChange={setToDate} clearIcon={null} />
         </div>
       </div>
 
-      {/* Chart and Action Controls Bar */}
-      <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
-        <div>
-          {showGraph && <GraphAbnormality labels={labels} data={data} />}
-        </div>
-        <div className="d-flex align-items-center gap-2 ms-auto mt-auto mb-2">
+      <div className="d-flex justify-content-between " >
+        {showGraph ? <GraphAbnormality labels={labels} data={data} /> : null}
+        <div className="d-flex gap-2" style={{ "marginBottom": "16px", "marginTop": "auto", "marginLeft": "auto", "marginRight": "16px" }}>
           <button
-            className="btn btn-sm btn-success rounded-pill px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm"
+            className="btn btn-success"
+            style={{ "height": "40px" }}
             onClick={downloadExcel}
             disabled={abnormalityList.length === 0}
           >
-            <i className="bi bi-file-earmark-excel-fill"></i>
-            <span>Download Excel</span>
+            📊 Download Excel
           </button>
           <button
-            className="btn btn-sm btn-outline-secondary rounded-pill px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm"
+            className="btn btn-primary"
+            style={{ "height": "40px" }}
             onClick={clearFilterHandler}
           >
-            <i className="bi bi-arrow-counterclockwise"></i>
-            <span>Clear Filters</span>
+            Clear Filters
           </button>
         </div>
       </div>
 
-      {/* Abnormality Records Table Card */}
-      <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-        <div className="abnormality-scroll-wrapper">
-          <table className="table abnormality-table table-hover align-middle mb-0">
-            <thead>
-              {/* Header Titles Row */}
-              <tr className="header-title-row">
-                <th scope="col" style={{ minWidth: "95px" }}>Entry Date</th>
-                <th scope="col" style={{ minWidth: "95px" }}>Card Date</th>
-                <th scope="col" style={{ width: "90px" }}>Dept</th>
-                <th scope="col" style={{ minWidth: "90px" }}>Line</th>
-                <th scope="col" style={{ minWidth: "70px" }}>OP</th>
-                <th scope="col" style={{ minWidth: "150px" }}>Item</th>
-                <th scope="col" style={{ minWidth: "180px" }}>Abnormality</th>
-                <th scope="col" style={{ minWidth: "180px" }}>Countermeasure</th>
-                <th scope="col" style={{ minWidth: "85px" }}>Spare</th>
-                <th scope="col" style={{ minWidth: "85px" }}>PIC</th>
-                <th scope="col" style={{ minWidth: "95px" }}>Target</th>
-                <th scope="col" style={{ minWidth: "120px", textAlign: "center" }}>Status</th>
-                <th scope="col" style={{ minWidth: "220px", textAlign: "center" }}>Actions</th>
-              </tr>
-              {/* Filter inputs row */}
-              <tr className="header-filter-row">
-                <th>
-                  <input
-                    type="text"
-                    name="entryDate"
-                    placeholder="Filter date"
-                    onChange={filterHandler}
-                    value={filterObject.entryDate}
-                    className="abnormality-filter-input"
-                  />
-                </th>
-                <th></th>
-                <th>
-                  <Select
-                    options={deptOptions}
-                    menuPlacement="bottom"
-                    onChange={deptHandler}
-                    placeholder="All"
-                    isClearable={false}
-                    styles={customFilterSelectStyles}
-                  />
-                </th>
-                <th>
-                  <input
-                    type="text"
-                    name="line"
-                    placeholder="Line"
-                    onChange={filterHandler}
-                    value={filterObject.line}
-                    className="abnormality-filter-input"
-                  />
-                </th>
-                <th>
-                  <input
-                    type="text"
-                    name="processNo"
-                    placeholder="OP"
-                    onChange={filterHandler}
-                    value={filterObject.processNo}
-                    className="abnormality-filter-input"
-                  />
-                </th>
-                <th>
-                  <input
-                    type="text"
-                    name="item"
-                    placeholder="Filter item"
-                    onChange={filterHandler}
-                    value={filterObject.item}
-                    className="abnormality-filter-input"
-                  />
-                </th>
-                <th>
-                  <input
-                    type="text"
-                    name="abnormality"
-                    placeholder="Filter abnormality"
-                    onChange={filterHandler}
-                    value={filterObject.abnormality}
-                    className="abnormality-filter-input"
-                  />
-                </th>
-                <th>
-                  <input
-                    type="text"
-                    name="countermeasure"
-                    placeholder="Filter countermeasure"
-                    onChange={filterHandler}
-                    value={filterObject.countermeasure}
-                    className="abnormality-filter-input"
-                  />
-                </th>
-                <th>
-                  <input
-                    type="text"
-                    name="spare"
-                    placeholder="Spare"
-                    onChange={filterHandler}
-                    value={filterObject.spare}
-                    className="abnormality-filter-input"
-                  />
-                </th>
-                <th>
-                  <input
-                    type="text"
-                    name="pic"
-                    placeholder="PIC"
-                    onChange={filterHandler}
-                    value={filterObject.pic}
-                    className="abnormality-filter-input"
-                  />
-                </th>
-                <th>
-                  <input
-                    type="text"
-                    name="target"
-                    placeholder="Target"
-                    onChange={filterHandler}
-                    value={filterObject.target}
-                    className="abnormality-filter-input"
-                  />
-                </th>
-                <th>
-                  <Select
-                    options={options}
-                    menuPlacement="bottom"
-                    onChange={statusHandler}
-                    placeholder="Status"
-                    isClearable={false}
-                    styles={customFilterSelectStyles}
-                  />
-                </th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {list.length > 0 ? (
-                list
-              ) : (
-                <tr>
-                  <td colSpan={13} className="text-center py-5">
-                    <div className="py-4">
-                      <div className="d-inline-flex align-items-center justify-content-center bg-light text-muted rounded-circle mb-3" style={{ width: 56, height: 56 }}>
-                        <i className="bi bi-shield-check fs-2"></i>
-                      </div>
-                      <h6 className="fw-bold text-dark mb-1">No Abnormalities Found</h6>
-                      <p className="text-muted small mb-0">No records match the current filter criteria and date range.</p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+      <div className="overflow-auto " style={{ height: "65vh", width: "97vw", paddingBottom: "10%" }}>
+
+
+        <table className="m-3   table table-bordered table-sm table-hover text-dark ">
+          {/* <table className="m-5 border border-black-50 text-light"> */}
+          <thead>
+            <tr>
+              <th>Entry Date</th>
+              <th>Card Created Date</th>
+              <th>Dept.</th>
+              <th>Line</th>
+              <th>OP</th>
+              <th>Item</th>
+              <th>Abnormality</th>
+              <th>Countermeasure</th>
+              <th>Spare</th>
+              <th>PIC</th>
+              <th>Target</th>
+              <th>Status</th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
+            <tr>
+              <td>
+                {/* <DatePicker
+                  value={filterObject.entryDate}
+                  onChange={entryDateHandler}
+                  clearIcon={null}
+                  // className="px-3"
+                /> */}
+              </td>
+              <td></td>
+              <td>
+                <Select
+                  className="d-inline"
+                  options={deptOptions}
+                  menuPlacement="bottom"
+                  onChange={deptHandler}
+                />
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  name="line"
+                  onChange={filterHandler}
+                  value={filterObject["line"]}
+                  className="w-100"
+                />
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  name="processNo"
+                  onChange={filterHandler}
+                  value={filterObject["processNo"]}
+                  className="w-100"
+                />
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  name="item"
+                  onChange={filterHandler}
+                  value={filterObject["item"]}
+                  className="w-100"
+                />
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  name="abnormality"
+                  onChange={filterHandler}
+                  value={filterObject["abnormality"]}
+                  className="w-100"
+                />
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  name="countermeasure"
+                  onChange={filterHandler}
+                  value={filterObject["countermeasure"]}
+                  className="w-100"
+                />
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  name="spare"
+                  onChange={filterHandler}
+                  value={filterObject["spare"]}
+                  className="w-100"
+                />
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  name="pic"
+                  onChange={filterHandler}
+                  value={filterObject["pic"]}
+                  className="w-100"
+                />
+              </td>
+
+              <td>
+                {/* <DatePicker
+                  value={filterObject.target}
+                  onChange={targetHandler}
+                  clearIcon={null}
+                  // className="px-3"
+                /> */}
+              </td>
+
+              <td>
+                <Select
+                  className="d-inline"
+                  options={options}
+                  // defaultValue={{ value: "pending", label: "Pending" }}
+                  menuPlacement="bottom"
+                  onChange={statusHandler}
+                />
+              </td>
+
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </thead>
+
+          <tbody>{list}</tbody>
+        </table>
       </div>
     </div>
   );

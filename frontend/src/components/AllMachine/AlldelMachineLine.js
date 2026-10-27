@@ -17,21 +17,35 @@ export default function AlldelMachineLine({ line, processList , counts  }) {
 
   return (
     <Fragment>
-      <h3 className="mx-3 p-1 bg-info text-center ">{`${line} - ${totalSum}`}</h3>
-      <div className="d-flex flex-wrap">
-        {processList ?  processList
-        .map((processNo) => {
-             
-          return (
+      <div
+        className="mx-3 my-2 p-2 px-3 rounded-3 d-flex justify-content-between align-items-center shadow-sm"
+        style={{
+          background: "#ffffff",
+          border: "1px solid #e2e8f0",
+          borderLeft: "4px solid #ef4444",
+        }}
+      >
+        <h5 className="m-0 fw-bold text-dark d-flex align-items-center">
+          <i className="bi bi-trash3-fill text-danger me-2"></i>
+          {line}
+        </h5>
+        <span className="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3 py-1.5 fw-semibold">
+          {totalSum} Deleted {totalSum === 1 ? "Station" : "Stations"}
+        </span>
+      </div>
+      <div className="d-flex flex-wrap mx-2 mb-3">
+        {processList ? (
+          processList.map((processNo) => (
             <AlldelMachineCard
               onClick={() => handleClick(processNo.processData)}
               processNo={processNo.processNo}
-              key={processNo.processNo} 
+              key={processNo.processNo}
               processData={processNo.processData}
-             
             />
-          );
-        }) : <Loading/>}
+          ))
+        ) : (
+          <Loading />
+        )}
       </div>
     </Fragment>
   );

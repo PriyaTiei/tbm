@@ -1,0 +1,392 @@
+/* ==========================================================================
+   TBM Add CheckItems Page - Modern UI Styles
+   ========================================================================== */
+
+.tbm-checkitem-page {
+  background-color: #f8fafc;
+  min-height: calc(100vh - 120px);
+  padding: 1.25rem 2rem 3rem 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #1e293b;
+}
+
+/* Page Top Header Banner */
+.tbm-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  background: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.04);
+}
+
+.tbm-header-title-box h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.tbm-header-title-box p {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0.2rem 0 0 0;
+}
+
+.tbm-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tbm-required-pill {
+  font-size: 0.775rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  background-color: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fee2e2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.tbm-btn-save {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.55rem 1.35rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.25), 0 2px 4px -2px rgba(37, 99, 235, 0.2);
+}
+
+.tbm-btn-save:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px -2px rgba(37, 99, 235, 0.35);
+}
+
+.tbm-btn-save:active {
+  transform: translateY(0);
+}
+
+/* Section Cards */
+.tbm-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03), 0 1px 2px rgba(15, 23, 42, 0.02);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  overflow: hidden;
+}
+
+.tbm-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.tbm-card-header {
+  padding: 0.9rem 1.25rem;
+  background-color: #fafbfd;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tbm-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  letter-spacing: -0.01em;
+}
+
+.tbm-card-title i {
+  color: #2563eb;
+  font-size: 1.05rem;
+}
+
+.tbm-card-body {
+  padding: 1.25rem;
+}
+
+/* Form Groups & Labels */
+.tbm-form-group {
+  margin-bottom: 1rem;
+}
+
+.tbm-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.tbm-label .req {
+  color: #ef4444;
+  margin-left: 2px;
+  font-weight: 700;
+}
+
+.tbm-input,
+.tbm-select {
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 7px !important;
+  font-size: 0.9rem !important;
+  padding: 0.45rem 0.75rem !important;
+  color: #0f172a !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+  background-color: #ffffff !important;
+}
+
+.tbm-input:focus,
+.tbm-select:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+  outline: none !important;
+}
+
+.tbm-input::placeholder {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+/* OP input group */
+.tbm-op-group .input-group-text {
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-top-left-radius: 7px;
+  border-bottom-left-radius: 7px;
+}
+
+/* React Select Theme overrides */
+.tbm-react-select-container .tbm-rs__control {
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  min-height: 38px;
+  box-shadow: none;
+  transition: all 0.15s ease;
+}
+
+.tbm-react-select-container .tbm-rs__control--is-focused {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.tbm-react-select-container .tbm-rs__multi-value {
+  background-color: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: 5px;
+}
+
+.tbm-react-select-container .tbm-rs__multi-value__label {
+  color: #1e40af;
+  font-size: 0.825rem;
+  font-weight: 500;
+  padding: 2px 6px;
+}
+
+.tbm-react-select-container .tbm-rs__multi-value__remove:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+/* Image Upload Area */
+.tbm-upload-zone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 1.25rem;
+  text-align: center;
+  background-color: #f8fafc;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.tbm-upload-zone:hover {
+  border-color: #93c5fd;
+  background-color: #f0f7ff;
+}
+
+.tbm-upload-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tbm-uploaded-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  border-radius: 6px;
+  font-size: 0.825rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+/* Measurement Dynamic Table */
+.tbm-measure-table {
+  width: 100%;
+  margin: 0;
+}
+
+.tbm-measure-header {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.5rem;
+}
+
+.tbm-measure-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  transition: border-color 0.15s ease;
+}
+
+.tbm-measure-row:hover {
+  border-color: #cbd5e1;
+}
+
+.tbm-measure-col-label {
+  flex: 3;
+}
+
+.tbm-measure-col-unit {
+  flex: 2.5;
+}
+
+.tbm-measure-col-val {
+  flex: 3.5;
+}
+
+.tbm-measure-col-act {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tbm-btn-remove {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fee2e2;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.15s ease;
+}
+
+.tbm-btn-remove:hover {
+  background-color: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+}
+
+.tbm-btn-add-measure {
+  background-color: #eff6ff;
+  color: #2563eb;
+  border: 1px dashed #93c5fd;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  justify-content: center;
+  transition: all 0.15s ease;
+  margin-top: 0.25rem;
+}
+
+.tbm-btn-add-measure:hover {
+  background-color: #dbeafe;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+/* Floating Save Footer Bar for convenient submitting */
+.tbm-bottom-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1rem 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.04);
+}
+
+@media (max-width: 768px) {
+  .tbm-checkitem-page {
+    padding: 1rem 0.75rem 2rem 0.75rem;
+  }
+  .tbm-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .tbm-measure-header {
+    display: none;
+  }
+  .tbm-measure-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .tbm-measure-col-act {
+    justify-content: stretch;
+  }
+  .tbm-btn-remove {
+    width: 100%;
+    justify-content: center;
+  }
+}

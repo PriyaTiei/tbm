@@ -127,7 +127,7 @@ exports.getCardAll = catchAsyncError(async (req, res, next) => {
 
 
   if (cards.length === 0) {
-    return next(new ErrorHandler("Cards not found", 404));
+    return res.status(200).json({ success: true, totalCards: 0, cards: [] });
   }
 
   // Ensure every card has an abnormalityId

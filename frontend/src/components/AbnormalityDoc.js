@@ -23,8 +23,14 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
     _id,
     pS
   } = item;
-
-  const workDetail = checkItem ? checkItem.workDetail : "";
+  console.log(item);
+  var workDetail = ""
+  if (checkItem == null) {
+    workDetail = ""
+  }
+  else {
+    workDetail = checkItem.workDetail
+  }
 
   const [showModal, setShowModal] = useState(false);
   const [showModalRaiseCard, setShowModalRaiseCard] = useState(false);
@@ -57,11 +63,20 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
       setAfterImageUrl(null);
     }
 
+    // Cleanup blob URLs when component unmounts or image changes:
     return () => {
       if (beforeImageUrl) URL.revokeObjectURL(beforeImageUrl);
       if (afterImageUrl) URL.revokeObjectURL(afterImageUrl);
     };
-  }, [beforeImage, afterImage]);
+  }, [beforeImage]);
+
+
+  useEffect(() => {
+    console.log(item)
+  }, [item])
+  useEffect(() => {
+    console.log("Image inside AbnormilityDoc:", beforeImage);
+  }, [beforeImage]);
 
   const dispatch = useDispatch();
   const deleteItem = (itemId) => {
@@ -69,145 +84,122 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
       .delete(
         `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/update/${itemId}`
       )
-      .then(() => {
+      .then((result) => {
         dispatch(getAbnormality(fromDateSt, toDateSt));
       })
-      .catch((err) => {
-        console.error("Delete failed:", err);
-      });
+
   };
 
   const deleteConfirmation = () => {
-    if (window.confirm("Are you sure you want to Delete this abnormality item?")) {
+    if (window.confirm("Are you sure you want to Delete this item?")) {
       deleteItem(_id);
+    } else {
+      // Do nothing!
     }
   };
 
-  const renderStatusBadge = (st) => {
-    const s = String(st || "").toLowerCase();
-    if (s === "complete") {
-      return (
-        <span className="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 fw-semibold d-inline-flex align-items-center gap-1">
-          <i className="bi bi-check-circle-fill"></i> COMPLETE
-        </span>
-      );
-    }
-    if (s === "inprogress") {
-      return (
-        <span className="badge bg-info-subtle text-info border border-info-subtle px-2 py-1 fw-semibold d-inline-flex align-items-center gap-1">
-          <i className="bi bi-gear-wide-connected"></i> IN PROGRESS
-        </span>
-      );
-    }
-    return (
-      <span className="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1 fw-semibold d-inline-flex align-items-center gap-1">
-        <i className="bi bi-hourglass-split"></i> PENDING
-      </span>
-    );
-  };
+
 
   return (
-    <tr className="align-middle">
-      <td className="font-monospace text-secondary" style={{ fontSize: "11px", whiteSpace: "nowrap" }}>
-        {createdAt ? createdAt.slice(0, 10) : "-"}
-      </td>
-      <td className="font-monospace text-muted" style={{ fontSize: "11px", whiteSpace: "nowrap" }}>
-        {item.cardCreatedDate ? item.cardCreatedDate.slice(0, 10) : "-"}
-      </td>
+    <tr
+      className={
+        status === "complete"
+          ? "bg-success"
+          : status === "inprogress"
+            ? "bg-warning"
+            : "bg-light"
+      }
+    >
+      <td>{createdAt.slice(0, 10)}</td>
+
       <td>
-        <span className="badge bg-light text-secondary border">
-          {pS === "P" ? "Maint." : pS === "S" ? "Prod." : "--"}
-        </span>
+        {item.cardCreatedDate
+          ? item.cardCreatedDate.slice(0, 10)
+          : "-"}
       </td>
+
+      <td>{pS === "P" ? "Maint." : (pS === "S" ? "Prod." : "")}</td>
+      ``
+      <td>{line}</td>
+      <td>{processNo}</td>
+      <td>{workDetail}</td>
+      <td>{abnormality}</td>
+      <td>{countermeasure}</td>
+      <td>{spare}</td>
+
+      <td>{pic}</td>
+      <td>{targetDate ? targetDate.slice(0, 10) : null}</td>
+      <td>{status.toUpperCase()}</td>
+
       <td>
-        <span className="fw-semibold text-dark">{line}</span>
+        <button
+          className="btn btn-primary"
+          onClick={() => setShowModalImage(true)}
+          title="Image"
+        >
+          <i
+            className="bi bi-image"
+            style={{ fontSize: "1.5rem", color: "white" }}
+          ></i>
+          Images
+        </button>
       </td>
-      <td>
-        <span className="badge bg-light text-dark border font-monospace">{processNo}</span>
-      </td>
-      <td>
-        <div className="fw-medium text-dark" style={{ minWidth: "140px", maxWidth: "220px", lineHeight: "1.3" }}>
-          {workDetail}
-        </div>
-      </td>
-      <td>
-        <div style={{ minWidth: "160px", maxWidth: "240px", wordBreak: "break-word", lineHeight: "1.3" }}>
-          {abnormality}
-        </div>
-      </td>
-      <td>
-        <div style={{ minWidth: "160px", maxWidth: "240px", wordBreak: "break-word", lineHeight: "1.3" }}>
-          {countermeasure}
-        </div>
-      </td>
-      <td style={{ whiteSpace: "nowrap" }}>
-        <span className="text-secondary">{spare || "--"}</span>
-      </td>
-      <td style={{ whiteSpace: "nowrap" }}>
-        <span className="text-secondary">{pic || "--"}</span>
-      </td>
-      <td className="font-monospace text-secondary" style={{ fontSize: "11px", whiteSpace: "nowrap" }}>
-        {targetDate ? targetDate.slice(0, 10) : "--"}
-      </td>
-      <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>
-        {renderStatusBadge(status)}
-      </td>
-      <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>
-        <div className="d-inline-flex align-items-center gap-1">
+
+      {level >= 40 && (
+        <td>
           <button
-            className="btn btn-sm btn-outline-primary rounded-pill px-2 py-1 d-inline-flex align-items-center gap-1 shadow-sm"
-            style={{ fontSize: "11px", fontWeight: "600" }}
-            onClick={() => setShowModalImage(true)}
-            title="View Images"
+            className="btn btn-danger"
+            onClick={deleteConfirmation}
+            // data-toggle="tooltip"
+            // data-placement="top"
+            title="Delete the entry"
           >
-            <i className="bi bi-image"></i>
-            <span>Images</span>
+            <i
+              className="bi bi-trash"
+              style={{ fontSize: "1.5rem", color: "white" }}
+            ></i>
+            Delete
           </button>
+        </td>
+      )}
+      {level >= 20 && (
+        <td>
+          <button
+            className="btn btn-warning"
+            title="Update the entry"
+            onClick={() => setShowModal(true)}
+          >
+            <i
+              className="bi bi-pencil-square"
+              style={{ fontSize: "1.5rem", color: "white" }}
+            ></i>
+            Update
+          </button>
+        </td>
+      )}
 
-          {level >= 20 && (
-            <button
-              className="btn btn-sm btn-outline-warning text-dark rounded-pill px-2 py-1 d-inline-flex align-items-center gap-1 shadow-sm"
-              style={{ fontSize: "11px", fontWeight: "600" }}
-              title="Update Abnormality"
-              onClick={() => setShowModal(true)}
-            >
-              <i className="bi bi-pencil-square"></i>
-              <span>Update</span>
-            </button>
-          )}
+      {level >= 100 && (
+        <td>
+          <button
+            className="btn btn-warning"
+            title="Raise Card"
+            onClick={() => setShowModalRaiseCard(true)}
+          >
+            <i
+              className="bi bi-files"
+              style={{ fontSize: "1.5rem", color: "white" }}
+            ></i>
+            Raise_Card
+          </button>
+        </td>
+      )}
 
-          {level >= 40 && (
-            <button
-              className="btn btn-sm btn-outline-danger rounded-pill px-2 py-1 d-inline-flex align-items-center gap-1 shadow-sm"
-              style={{ fontSize: "11px", fontWeight: "600" }}
-              onClick={deleteConfirmation}
-              title="Delete Entry"
-            >
-              <i className="bi bi-trash3"></i>
-              <span>Delete</span>
-            </button>
-          )}
-
-          {level >= 100 && (
-            <button
-              className="btn btn-sm btn-warning text-dark rounded-pill px-2 py-1 d-inline-flex align-items-center gap-1 shadow-sm"
-              style={{ fontSize: "11px", fontWeight: "600" }}
-              title="Raise Card"
-              onClick={() => setShowModalRaiseCard(true)}
-            >
-              <i className="bi bi-files"></i>
-              <span>Raise</span>
-            </button>
-          )}
-        </div>
-      </td>
-
-      {showModal && (
+      {showModal ? (
         <AbnormalityRecordUpdate
           showModal={showModal}
           setShowModal={setShowModal}
           id={_id}
-          checkItem={checkItem?._id}
+          checkItem={checkItem._id}
           line={line}
           processNo={processNo}
           workDetail={workDetail}
@@ -222,14 +214,13 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
           beforeImage={beforeImage}
           afterImage={afterImage}
         />
-      )}
-
-      {showModalRaiseCard && (
+      ) : null}
+      {showModalRaiseCard ? (
         <RaiseCardModal
           showModal={showModalRaiseCard}
           setShowModal={setShowModalRaiseCard}
           id={_id}
-          checkItem={checkItem?._id}
+          checkItem={checkItem._id}
           line={line}
           processNo={processNo}
           workDetail={workDetail}
@@ -244,7 +235,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
           pS={pS}
           abnormalityId={item._id}
         />
-      )}
+      ) : null}
 
       {showModalImage && (
         <AbnormalityImageModal
@@ -254,6 +245,8 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
           afterImageUrl={afterImageUrl}
         />
       )}
+
+
     </tr>
   );
 }

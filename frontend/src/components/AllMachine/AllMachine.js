@@ -1367,47 +1367,77 @@ export default function AllMachine() {
     return (
       <div className="overflow-auto" style={{height:"85vh", paddingBottom: "10%"}}>
         {filteredData.success
-          ? filteredData.machineData.map((item, i) => (
-              <Fragment key={item.line}>
-                <h3 className="mx-3 p-1 bg-info text-center">
-                  {`${item.line} - ${Object.values(item.counts).reduce((acc, curr) => acc + curr, 0)}`}
-                </h3>
-                <div className="d-flex flex-wrap">
-                  {item.processList ? item.processList.map((processItem) => (
-                    <Fragment key={processItem.processNo}>
-                      <Link
-                        to={`/allMachine/cardDetails/`}
-                        style={{ textDecoration: "none" }}
-                      >
-                        <div
-                          className={`card mx-3 mb-3 ${styles.bg} ${styles.translate}`}
-                          style={{
-                            width: "8vmax",
-                            background: "rgba(76,74,75)",
-                            color: "white",
-                          }}
-                          onClick={() => handleCardClick(processItem.processData)}
+          ? filteredData.machineData.map((item, i) => {
+              const totalCount = Object.values(item.counts).reduce((acc, curr) => acc + curr, 0);
+              return (
+                <Fragment key={item.line}>
+                  <div
+                    className="mx-3 my-2 p-2 px-3 rounded-3 d-flex justify-content-between align-items-center shadow-sm"
+                    style={{
+                      background: "#ffffff",
+                      border: "1px solid #e2e8f0",
+                      borderLeft: "4px solid #2563eb",
+                    }}
+                  >
+                    <h5 className="m-0 fw-bold text-dark d-flex align-items-center">
+                      <i className="bi bi-diagram-3-fill text-primary me-2"></i>
+                      {item.line}
+                    </h5>
+                    <span className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-1.5 fw-semibold">
+                      {totalCount} {totalCount === 1 ? "Station" : "Stations"}
+                    </span>
+                  </div>
+                  <div className="d-flex flex-wrap mx-2 mb-3">
+                    {item.processList ? item.processList.map((processItem) => (
+                      <Fragment key={processItem.processNo}>
+                        <Link
+                          to={`/allMachine/cardDetails/`}
+                          style={{ textDecoration: "none" }}
                         >
-                          <div className="card-header">
-                            <h6 className="text-center">{processItem.processNo}</h6>
+                          <div
+                            className={`card mx-2 mb-3 shadow-sm ${styles.translate}`}
+                            style={{
+                              minWidth: "125px",
+                              maxWidth: "150px",
+                              background: "linear-gradient(145deg, #1e293b, #0f172a)",
+                              color: "#ffffff",
+                              borderRadius: "10px",
+                              border: "1px solid rgba(255,255,255,0.1)",
+                              transition: "all 0.2s ease-in-out",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => handleCardClick(processItem.processData)}
+                          >
+                            <div
+                              className="card-header py-2 border-bottom text-center"
+                              style={{ borderColor: "rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)" }}
+                            >
+                              <h6 className="mb-0 fw-bold" style={{ fontSize: "0.95rem" }}>
+                                {processItem.processNo}
+                              </h6>
+                            </div>
+                            <div className="text-center py-2">
+                              <i
+                                className="bi bi-file-easel-fill"
+                                style={{ fontSize: "2.5rem", color: "#60a5fa" }}
+                              ></i>
+                            </div>
+                            <div className="text-center pb-2">
+                              <span
+                                className="badge rounded-pill px-2.5 py-1"
+                                style={{ background: "rgba(255,255,255,0.15)", fontSize: "0.75rem", fontWeight: 600 }}
+                              >
+                                Total: {processItem.processData.length}
+                              </span>
+                            </div>
                           </div>
-                          <div className="m-auto">
-                            <i
-                              className="bi bi-file-easel-fill"
-                              style={{ fontSize: "3rem", color: "white" }}
-                            ></i>
-                          </div>
-                          <div className="text-center">
-                            Total {processItem.processData.length}
-                          </div>
-                          <div style={{ height: 10 }}></div>
-                        </div>
-                      </Link>
-                    </Fragment>
-                  )) : <Loading/>}
-                </div>
-              </Fragment>
-            ))
+                        </Link>
+                      </Fragment>
+                    )) : <Loading/>}
+                  </div>
+                </Fragment>
+              );
+            })
           : null}
       </div>
     );

@@ -39,14 +39,6 @@ export default function Title() {
     dispatch(navBarSlice.actions.toggleVisible());
   };
 
-  const handleHistoryBack = () => {
-    if (window.history.length > 1) {
-      window.history.back();
-    } else {
-      window.location.href = "/";
-    }
-  };
-
   const title = getTitle(location.pathname);
   const section = getSection(filters.pS); // Always "TBM" for consistent GD_TBM header
   const plantName = process.env.REACT_APP_PLANT || "GD";
@@ -65,24 +57,6 @@ export default function Title() {
               <i className="bi bi-list" style={{ fontSize: "28px" }}></i>
             </Nav.Link>
           </Nav>
-
-          {location.pathname !== "/" && (
-            <Button
-              variant="outline-light"
-              size="sm"
-              className="d-flex align-items-center gap-1 me-2 px-2 py-1 rounded"
-              style={{
-                fontSize: "0.82rem",
-                borderColor: "rgba(255,255,255,0.3)",
-                background: "rgba(255,255,255,0.08)"
-              }}
-              onClick={handleHistoryBack}
-              title="Back (Browser History)"
-            >
-              <i className="bi bi-arrow-left"></i>
-              <span className="d-none d-sm-inline">Back</span>
-            </Button>
-          )}
 
           <Link to="/" className="d-flex align-items-center">
             <Image width="115" src="logo.png" alt="TIEI_LOGO" fluid />
@@ -181,17 +155,18 @@ export default function Title() {
                 <Button
                   variant="success"
                   size="sm"
-                  className="rounded-circle d-flex align-items-center justify-content-center p-0 shadow-sm"
+                  className="rounded-pill d-flex align-items-center gap-1.5 px-3 shadow-sm fw-semibold"
                   onClick={() => setShowModal(true)}
                   style={{
-                    width: "36px",
                     height: "36px",
                     background: "#16a34a",
                     borderColor: "#16a34a",
+                    fontSize: "0.85rem",
                   }}
                   aria-label="Sign In"
                 >
                   <i className="bi bi-box-arrow-in-right fs-6"></i>
+                  <span>Sign In</span>
                 </Button>
               </OverlayTrigger>
             </div>

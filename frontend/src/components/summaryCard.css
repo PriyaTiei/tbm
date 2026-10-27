@@ -1,0 +1,295 @@
+/* ==========================================================================
+   Summary of Cards (SummaryCard) - Modern Dashboard Styles
+   ========================================================================== */
+
+.summary-cards-container {
+  background-color: #f8fafc;
+  min-height: calc(100vh - 120px);
+  padding: 1.25rem 1.75rem 3rem 1.75rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #1e293b;
+}
+
+/* Top Navigation / Header Toolbar */
+.summary-top-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  background: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  margin-bottom: 1.25rem;
+}
+
+.summary-title-section {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.summary-title-section h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.summary-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.summary-date-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f8fafc;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.summary-date-box .date-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* KPI Metric Cards Grid */
+.summary-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.summary-kpi-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.9rem 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.summary-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+}
+
+.summary-kpi-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+.kpi-total::before { background-color: #2563eb; }
+.kpi-complete::before { background-color: #10b981; }
+.kpi-pending::before { background-color: #ef4444; }
+.kpi-inprogress::before { background-color: #f59e0b; }
+
+.kpi-info .kpi-label {
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.15rem;
+}
+
+.kpi-info .kpi-val {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.kpi-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.kpi-total .kpi-icon { background-color: #eff6ff; color: #2563eb; }
+.kpi-complete .kpi-icon { background-color: #ecfdf5; color: #10b981; }
+.kpi-pending .kpi-icon { background-color: #fef2f2; color: #ef4444; }
+.kpi-inprogress .kpi-icon { background-color: #fffbeb; color: #f59e0b; }
+
+/* Analytics / Graph Card */
+.summary-graph-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+}
+
+.summary-graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.summary-graph-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #334155;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Action Toolbar */
+.summary-action-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.summary-count-badge {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #475569;
+  background-color: #ffffff;
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.summary-count-badge span {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.summary-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Table Card Wrapper */
+.summary-table-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.summary-table-scroll {
+  overflow-x: auto;
+  max-height: 62vh;
+}
+
+.summary-table {
+  width: 100%;
+  margin-bottom: 0;
+  font-size: 0.85rem;
+}
+
+.summary-table thead th {
+  background-color: #f8fafc !important;
+  color: #475569 !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  padding: 0.65rem 0.6rem !important;
+  border-bottom: 1px solid #cbd5e1 !important;
+  white-space: nowrap !important;
+  vertical-align: middle !important;
+}
+
+.summary-filter-row td {
+  background-color: #f1f5f9 !important;
+  padding: 0.4rem 0.45rem !important;
+  border-bottom: 2px solid #cbd5e1 !important;
+  vertical-align: middle !important;
+}
+
+.summary-filter-input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  color: #1e293b;
+  outline: none;
+  background-color: #ffffff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.summary-filter-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.summary-table tbody tr {
+  transition: background-color 0.12s ease;
+}
+
+.summary-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.summary-table tbody td {
+  padding: 0.65rem 0.6rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e293b;
+}
+
+/* Empty State */
+.summary-empty-state {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: #64748b;
+}
+
+.summary-empty-state i {
+  font-size: 2.75rem;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.summary-empty-state h5 {
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 0.25rem;
+}
+
+.summary-empty-state p {
+  font-size: 0.85rem;
+  margin-bottom: 0;
+}
