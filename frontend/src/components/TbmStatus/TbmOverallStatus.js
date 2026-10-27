@@ -326,13 +326,13 @@ export default function TbmOverallStatus() {
     wsData.push(cols);
 
     wsData.push([
-      "Todays: No of cards completed",
+      "Todays: No of TBMs completed",
       ...table2Columns.map((c) => todaysCompletedMap[c] || 0),
       table2Totals.todays,
     ]);
 
     wsData.push([
-      "Other days: No of cards completed",
+      "Other days: No of TBMs completed",
       ...table2Columns.map((c) => otherDaysCompletedMap[c] || 0),
       table2Totals.other,
     ]);
@@ -570,7 +570,7 @@ export default function TbmOverallStatus() {
               <tbody>
                 <tr>
                   <td className="cell-line" style={{ fontWeight: 600 }}>
-                    Todays: No of cards completed
+                    Todays: No of TBMs completed
                   </td>
                   {table2Columns.map((col) => (
                     <td key={col} className="cell-num">
@@ -581,7 +581,7 @@ export default function TbmOverallStatus() {
                 </tr>
                 <tr>
                   <td className="cell-line" style={{ fontWeight: 600 }}>
-                    Other days: No of cards completed
+                    Other days: No of TBMs completed
                   </td>
                   {table2Columns.map((col) => (
                     <td key={col} className="cell-num">

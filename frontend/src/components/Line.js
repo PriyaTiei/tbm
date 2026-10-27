@@ -16,7 +16,12 @@ function Line({ line, processNos, counts, dailyStatusDataLinewise }) {
     };
   }); 
 
-  let totalSum = processNos ? processNos.length : 0;
+  let totalSum = 0;
+  if (counts && processNos) {
+    totalSum = processNos.reduce((sum, p) => sum + (Number(counts[p]) || 0), 0);
+  } else if (processNos) {
+    totalSum = processNos.length;
+  }
  
 
   return (

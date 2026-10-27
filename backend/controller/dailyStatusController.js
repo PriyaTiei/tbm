@@ -556,17 +556,13 @@ exports.getGraphData = catchAsyncError(async (req, res, next) => {
     }
   });
 
-  // 2. Count total cards (unique processes) on this line
+  // 2. Count total items on this line
   const checkItems = await HeadModel.find({
     pS: pS,
     line: line
-  }).select("processNo");
+  }).select("_id");
 
-  const uniqueProcesses = new Set();
-  checkItems.forEach((ci) => {
-    if (ci.processNo) uniqueProcesses.add(ci.processNo);
-  });
-  const lineTotalCards = uniqueProcesses.size;
+  const lineTotalItems = checkItems.length;
 
   // 3. Query real-time DailyStatus aggregations for the date range
   const statuses = await DailyStatusModel.aggregate([
@@ -597,7 +593,7 @@ exports.getGraphData = catchAsyncError(async (req, res, next) => {
         _id: {
           entryFor: "$entryFor",
           result: "$result",
-          processNo: "$checkItemData.processNo"
+          checkItem: "$checkItem"
         }
       }
     }
@@ -609,10 +605,11 @@ exports.getGraphData = catchAsyncError(async (req, res, next) => {
     if (!statusByDate[dateKey]) {
       statusByDate[dateKey] = { okSet: new Set(), ngSet: new Set() };
     }
-    if (st._id.result === "OK") {
-      statusByDate[dateKey].okSet.add(st._id.processNo);
-    } else if (st._id.result === "NG") {
-      statusByDate[dateKey].ngSet.add(st._id.processNo);
+    const itemId = String(st._id.checkItem);
+    if (st._id.result === "OK" || st._id.result === "ok") {
+      statusByDate[dateKey].okSet.add(itemId);
+    } else if (st._id.result === "NG" || st._id.result === "ng") {
+      statusByDate[dateKey].ngSet.add(itemId);
     }
   });
 
@@ -635,7 +632,7 @@ exports.getGraphData = catchAsyncError(async (req, res, next) => {
     } else {
       const okCount = statusByDate[d.yyyyMMdd]?.okSet.size || 0;
       const ngCount = statusByDate[d.yyyyMMdd]?.ngSet.size || 0;
-      const total = lineTotalCards;
+      const total = lineTotalItems;
       const pendingCount = Math.max(0, total - (okCount + ngCount));
 
       totalData[d.time] = {

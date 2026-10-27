@@ -777,13 +777,13 @@ async function getItemsOKCountByLine(report, pS, line) {
           entryFor: "$entryFor",
           line: "$checkItemData.line",
         },
-        processes: { $addToSet: "$checkItemData.processNo" },
+        items: { $addToSet: "$checkItem" },
       },
     },
     {
       $project: {
         _id: 1,
-        count: { $size: "$processes" },
+        count: { $size: "$items" },
       },
     }
   );
@@ -845,13 +845,13 @@ async function getItemsNGCountByLine(report, pS, line) {
           entryFor: "$entryFor",
           line: "$checkItemData.line",
         },
-        processes: { $addToSet: "$checkItemData.processNo" },
+        items: { $addToSet: "$checkItem" },
       },
     },
     {
       $project: {
         _id: 1,
-        count: { $size: "$processes" },
+        count: { $size: "$items" },
       },
     }
   );
@@ -910,13 +910,13 @@ async function getItemsPendingCountByLine(report, pS, line) {
           date: { $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" } },
           line: "$checkItemData.line",
         },
-        processes: { $addToSet: "$checkItemData.processNo" },
+        items: { $addToSet: "$checkItem" },
       },
     },
     {
       $project: {
         _id: 1,
-        count: { $size: "$processes" },
+        count: { $size: "$items" },
       },
     }
   );
@@ -1119,8 +1119,7 @@ async function fillTotalItemsByLine(report, pS, line) {
         if (!lineGroups[lineName]) {
           lineGroups[lineName] = 0;
         }
-        const uniqueProcesses = new Set(item.processList || []);
-        lineGroups[lineName] += uniqueProcesses.size;
+        lineGroups[lineName] += (item.processList || []).length;
       }
     });
 
@@ -1618,40 +1617,36 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
     }
   });
 
-  // Helper: check if a card (group of items) is scheduled for a given date
-  const isCardScheduledForDate = (cardItems, dateObj) => {
+  // Helper: check if a checkitem is scheduled for a given date
+  const isItemScheduledForDate = (it, dateObj) => {
     const yNum = dateObj.getFullYear();
     const mNum = dateObj.getMonth() + 1;
     const dNum = dateObj.getDate();
     const dayOfWeek = dateObj.getDay(); // 0 is Sunday, 1 is Monday ... 6 is Saturday
     const isoDay = dayOfWeek === 0 ? 7 : dayOfWeek; // 1=Mon ... 7=Sun
     const weekNo = Math.floor(dNum / 7.1) + 1;
-
-    // By default, Sunday is weekly off for TBM unless specified
     const isSunday = (dayOfWeek === 0);
 
-    return cardItems.some(it => {
-      const yArr = Array.isArray(it.y) && it.y.length > 0 ? it.y : [9999];
-      const matchYear = yArr.includes(9999) || yArr.includes(yNum);
-      if (!matchYear) return false;
+    const yArr = Array.isArray(it.y) && it.y.length > 0 ? it.y : [9999];
+    if (!yArr.includes(9999) && !yArr.includes(yNum)) return false;
 
-      const mArr = Array.isArray(it.m) && it.m.length > 0 ? it.m : [9999];
-      const matchMonth = mArr.includes(9999) || mArr.includes(99) || mArr.includes(mNum);
-      if (!matchMonth) return false;
+    const mArr = Array.isArray(it.m) && it.m.length > 0 ? it.m : [9999];
+    if (!mArr.includes(9999) && !mArr.includes(99) && !mArr.includes(mNum)) return false;
 
-      const wArr = Array.isArray(it.w) && it.w.length > 0 ? it.w : [9999];
-      const matchWeek = wArr.includes(9999) || wArr.includes(9) || wArr.includes(weekNo);
-      if (!matchWeek) return false;
+    const wArr = Array.isArray(it.w) && it.w.length > 0 ? it.w : [9999];
+    if (!wArr.includes(9999) && !wArr.includes(9) && !wArr.includes(weekNo)) return false;
 
-      const dArr = Array.isArray(it.d) && it.d.length > 0 ? it.d : [9999];
-      if (isSunday && !dArr.includes(7) && !dArr.includes(0)) {
-        return false;
-      }
-      const matchDay = dArr.includes(9999) || dArr.includes(9) || dArr.includes(isoDay) || dArr.includes(dayOfWeek);
-      if (!matchDay) return false;
+    const dArr = Array.isArray(it.d) && it.d.length > 0 ? it.d : [9999];
+    if (isSunday && !dArr.includes(7) && !dArr.includes(0)) return false;
 
-      return true;
-    });
+    const matchDay = dArr.includes(9999) || dArr.includes(9) || dArr.includes(isoDay) || dArr.includes(dayOfWeek);
+    if (!matchDay) return false;
+
+    return true;
+  };
+
+  const isCardScheduledForDate = (cardItems, dateObj) => {
+    return cardItems.some(it => isItemScheduledForDate(it, dateObj));
   };
 
   // 2. Fetch DailyStatus records for this month
@@ -1686,18 +1681,18 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
   };
 
   // Group actuals by line and date
-  const todaysCompletedCards = {};
-  const aodCompletedCards = {};
-  const monthCompletedCards = {};
-  const todaysOnTimeCards = {};
-  const todaysBacklogCards = {};
+  const todaysCompletedItems = {};
+  const aodCompletedItems = {};
+  const monthCompletedItems = {};
+  const todaysOnTimeItems = {};
+  const todaysBacklogItems = {};
 
   linesToProcess.forEach(l => {
-    todaysCompletedCards[l] = new Set();
-    aodCompletedCards[l] = new Set();
-    monthCompletedCards[l] = new Set();
-    todaysOnTimeCards[l] = new Set();
-    todaysBacklogCards[l] = new Set();
+    todaysCompletedItems[l] = new Set();
+    aodCompletedItems[l] = new Set();
+    monthCompletedItems[l] = new Set();
+    todaysOnTimeItems[l] = new Set();
+    todaysBacklogItems[l] = new Set();
   });
 
   monthDailyStatuses.forEach(st => {
@@ -1708,28 +1703,28 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
     if (!ciInfo) return;
 
     const lineName = ciInfo.line;
-    const proc = ciInfo.processNo;
+    const itemId = String(st.checkItem);
 
-    if (!monthCompletedCards[lineName]) {
-      monthCompletedCards[lineName] = new Set();
-      aodCompletedCards[lineName] = new Set();
-      todaysCompletedCards[lineName] = new Set();
-      todaysOnTimeCards[lineName] = new Set();
-      todaysBacklogCards[lineName] = new Set();
+    if (!monthCompletedItems[lineName]) {
+      monthCompletedItems[lineName] = new Set();
+      aodCompletedItems[lineName] = new Set();
+      todaysCompletedItems[lineName] = new Set();
+      todaysOnTimeItems[lineName] = new Set();
+      todaysBacklogItems[lineName] = new Set();
     }
 
-    // Month actuals: key = day_proc
-    monthCompletedCards[lineName].add(`${parsed.day}_${proc}`);
+    // Month actuals: key = day_itemId
+    monthCompletedItems[lineName].add(`${parsed.day}_${itemId}`);
 
     // AOD actuals
     if (parsed.day <= day) {
-      aodCompletedCards[lineName].add(`${parsed.day}_${proc}`);
+      aodCompletedItems[lineName].add(`${parsed.day}_${itemId}`);
     }
 
     // Today's actuals
     if (parsed.day === day) {
-      todaysCompletedCards[lineName].add(proc);
-      todaysOnTimeCards[lineName].add(proc);
+      todaysCompletedItems[lineName].add(itemId);
+      todaysOnTimeItems[lineName].add(itemId);
     } else if (st.checkedAt) {
       // Check if checkedAt date is today's date
       const chkDate = new Date(st.checkedAt);
@@ -1738,7 +1733,7 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
         chkDate.getMonth() + 1 === month &&
         chkDate.getDate() === day
       ) {
-        todaysBacklogCards[lineName].add(proc);
+        todaysBacklogItems[lineName].add(itemId);
       }
     }
   });
@@ -1764,7 +1759,7 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
   linesToProcess.forEach(lineName => {
     const cardMap = cardsByLine[lineName] || new Map();
     const cardList = Array.from(cardMap.entries()).map(([proc, items]) => ({ proc, items }));
-    const totalCardsOnLine = cardList.length;
+    const totalItemsOnLine = cardList.reduce((acc, c) => acc + c.items.length, 0);
 
     let todaysPlan = 0;
     let cumPlanAod = 0;
@@ -1774,11 +1769,13 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
       const dObj = new Date(year, month - 1, d);
       const isSunday = (dObj.getDay() === 0);
 
-      let dayPlan = cardList.filter(c => isCardScheduledForDate(c.items, dObj)).length;
+      let dayPlan = cardList.reduce((acc, c) => {
+        return acc + c.items.filter(it => isItemScheduledForDate(it, dObj)).length;
+      }, 0);
 
-      // If checkitems have no explicit schedule configured, default working days (Mon-Sat) to all cards
-      if (dayPlan === 0 && !isSunday && totalCardsOnLine > 0) {
-        dayPlan = totalCardsOnLine;
+      // If checkitems have no explicit schedule configured, default working days (Mon-Sat) to all items
+      if (dayPlan === 0 && !isSunday && totalItemsOnLine > 0) {
+        dayPlan = totalItemsOnLine;
       }
 
       if (d === day) {
@@ -1790,15 +1787,15 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
       cumPlanMonth += dayPlan;
     }
 
-    const todaysActual = todaysCompletedCards[lineName]?.size || 0;
-    const cumActualAod = aodCompletedCards[lineName]?.size || 0;
-    const cumActualMonth = monthCompletedCards[lineName]?.size || 0;
+    const todaysActual = todaysCompletedItems[lineName]?.size || 0;
+    const cumActualAod = aodCompletedItems[lineName]?.size || 0;
+    const cumActualMonth = monthCompletedItems[lineName]?.size || 0;
 
     const cumPendingAod = Math.max(0, cumPlanAod - cumActualAod);
     const cumPendingMonth = Math.max(0, cumPlanMonth - cumActualMonth);
 
-    todaysTbmStatus.todaysCompleted[lineName] = todaysOnTimeCards[lineName]?.size || 0;
-    todaysTbmStatus.otherDaysCompleted[lineName] = todaysBacklogCards[lineName]?.size || 0;
+    todaysTbmStatus.todaysCompleted[lineName] = todaysOnTimeItems[lineName]?.size || 0;
+    todaysTbmStatus.otherDaysCompleted[lineName] = todaysBacklogItems[lineName]?.size || 0;
 
     totals.todaysPlan += todaysPlan;
     totals.todaysActual += todaysActual;
