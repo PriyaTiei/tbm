@@ -412,11 +412,8 @@ export default function TbmOverallStatus() {
             </button>
           </div>
 
-          <button className="excel-btn excel-btn-success" onClick={handleExportExcel}>
+          <button className="excel-btn excel-btn-success" onClick={handleExportExcel} disabled={loading}>
             <i className="bi bi-file-earmark-excel"></i> Export
-          </button>
-          <button className="excel-btn" onClick={fetchData} disabled={loading}>
-            <i className={`bi bi-arrow-clockwise ${loading ? "spin" : ""}`}></i> Refresh
           </button>
         </div>
       </div>
