@@ -63,7 +63,7 @@ function GraphAbnormality(props) {
   };
 
   return (
-    <div style={{ height: "140px", width: "320px" }} className="p-2 bg-white rounded-3 border shadow-sm my-2">    
+    <div style={{ height: "165px", width: "100%", maxWidth: "380px" }} className="p-2 bg-white rounded-3 border shadow-sm my-2">    
       <Bar data={data} options={options} />
     </div>
   );

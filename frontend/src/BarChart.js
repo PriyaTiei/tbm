@@ -752,12 +752,12 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                 </div>
             </Modal.Header>
 
-            <Modal.Body className="bg-light px-3 py-2" style={{ maxHeight: "calc(90vh - 65px)", overflowY: "auto" }}>
+            <Modal.Body className="bg-light px-3 py-2" style={{ maxHeight: "calc(93vh - 60px)", overflowY: "auto" }}>
                 <div className="d-flex flex-column align-items-center w-100">
                     {/* Modern Compact Chart Container - Fits comfortably without scrolling */}
                     <div
                         className="w-100 bg-white rounded-3 border p-2 mb-2 shadow-sm"
-                        style={{ borderColor: "#e2e8f0", height: "340px", position: "relative" }}
+                        style={{ borderColor: "#e2e8f0", height: "clamp(400px, 52vh, 520px)", position: "relative" }}
                     >
                         <Bar data={datas} options={optionss} plugins={[totalCountPlugin]} />
                     </div>

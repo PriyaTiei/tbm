@@ -1,11 +1,11 @@
 .my-modal {
-  width: 95vw !important ;  
-  max-width: 1400px !important;
+  width: 96vw !important;  
+  max-width: 1560px !important;
   background-color: transparent !important;
 } 
 
 .modal-height {
-  height: 90vh !important;
+  height: 92vh !important;
 }
 
 /* Add these styles to your trend.css file */
