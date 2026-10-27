@@ -994,7 +994,7 @@ async function refineDataByLine(report, selectedLine) {
     iDate <= report.endDate;
     iDate.setUTCDate(iDate.getUTCDate() + 1)
   ) {
-    strDate = iDate.toISOString().split("T")[0];
+    const strDate = iDate.toISOString().split("T")[0];
     const tStrDate = strDate.replaceAll("-0", "-");
 
     allLines.forEach((line) => {
@@ -1300,7 +1300,7 @@ const getPageNumber = async (query, checkitem) => {
   var headCheckList = await headObject.query;
 
   if (headCheckList.length === 0) {
-    return next(new ErrorHandler("could not find check list", 404));
+    return 1;
   }
 
   // const totalCount = await HeadModel.countDocuments(headObject.newQueryStr);
@@ -1366,6 +1366,7 @@ exports.tlVerifyItems = catchAsyncError(async (req, res, next) => {
   ]);
 
   const tlListPromises = tlList.map(async (item) => {
+    if (!item.item || !item.item[0]) return;
     console.log(
       "allparameters",
       item.checkItem,
@@ -1443,6 +1444,7 @@ exports.glVerifyItems = catchAsyncError(async (req, res, next) => {
   ]);
 
   const glListPromises = glList.map(async (item) => {
+    if (!item.item || !item.item[0]) return;
     console.log(
       "allparameters",
       item.checkItem,
@@ -1824,7 +1826,7 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
     success: true,
     date: formattedSelectedDate,
     pS: pS,
-    departmentName: "Maintenance (TBM)",
+    departmentName: pS === "P" ? "Maintenance (TBM)" : "Production (Smile Card)",
     lines: linesData,
     total: totals,
     todaysTbmStatus: todaysTbmStatus
