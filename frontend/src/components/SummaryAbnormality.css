@@ -1,0 +1,128 @@
+/* Summary of Abnormality Styles */
+
+.abnormality-container {
+  min-height: 85vh;
+}
+
+.abnormality-scroll-wrapper {
+  max-height: 64vh;
+  overflow-y: auto;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f8fafc;
+}
+
+.abnormality-scroll-wrapper::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.abnormality-scroll-wrapper::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 4px;
+}
+
+.abnormality-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.abnormality-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Ensure font size is consistently compact and not overridden by global styles */
+.abnormality-table {
+  font-size: 12px !important;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.abnormality-table th {
+  font-size: 11px !important;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+  vertical-align: middle;
+  padding: 8px 10px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.abnormality-table td {
+  font-size: 12px !important;
+  vertical-align: middle;
+  padding: 8px 10px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+
+.abnormality-table tbody tr {
+  transition: background-color 0.15s ease-in-out;
+}
+
+.abnormality-table tbody tr:hover {
+  background-color: #f8fafc !important;
+}
+
+/* Sticky Header Rows */
+.abnormality-table thead tr.header-title-row th {
+  position: sticky;
+  top: 0;
+  background-color: #f8fafc !important;
+  z-index: 10;
+  border-bottom: 1px solid #cbd5e1 !important;
+}
+
+.abnormality-table thead tr.header-filter-row th {
+  position: sticky;
+  top: 36px;
+  background-color: #f1f5f9 !important;
+  z-index: 9;
+  border-bottom: 2px solid #cbd5e1 !important;
+  padding: 4px 6px !important;
+}
+
+/* Filter Inputs */
+.abnormality-filter-input {
+  width: 100%;
+  font-size: 11px !important;
+  height: 28px !important;
+  border-radius: 6px !important;
+  border: 1px solid #cbd5e1 !important;
+  padding: 2px 8px !important;
+  background-color: #ffffff !important;
+  color: #334155 !important;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.abnormality-filter-input:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+}
+
+.abnormality-filter-input::placeholder {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+/* Date Picker Polish */
+.abnormality-date-range .react-date-picker__wrapper {
+  border: none !important;
+  background: transparent !important;
+}
+
+.abnormality-date-range .react-date-picker__inputGroup__input {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #1e293b !important;
+}
+
+.abnormality-date-range .react-date-picker__button {
+  padding: 2px 4px !important;
+}
+
+.abnormality-date-range .react-date-picker__button svg {
+  stroke: #64748b !important;
+  width: 14px !important;
+  height: 14px !important;
+}

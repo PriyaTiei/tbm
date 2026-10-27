@@ -119,15 +119,33 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
           {pS === "P" ? "Maint." : pS === "S" ? "Prod." : "--"}
         </span>
       </td>
-      <td className="fw-semibold text-dark">{line}</td>
+      <td>
+        <span className="fw-semibold text-dark">{line}</span>
+      </td>
       <td>
         <span className="badge bg-light text-dark border font-monospace">{processNo}</span>
       </td>
-      <td className="fw-medium text-dark" style={{ minWidth: "140px" }}>{workDetail}</td>
-      <td style={{ minWidth: "160px", wordBreak: "break-word" }}>{abnormality}</td>
-      <td style={{ minWidth: "160px", wordBreak: "break-word" }}>{countermeasure}</td>
-      <td style={{ whiteSpace: "nowrap" }}>{spare || "--"}</td>
-      <td style={{ whiteSpace: "nowrap" }}>{pic || "--"}</td>
+      <td>
+        <div className="fw-medium text-dark" style={{ minWidth: "140px", maxWidth: "220px", lineHeight: "1.3" }}>
+          {workDetail}
+        </div>
+      </td>
+      <td>
+        <div style={{ minWidth: "160px", maxWidth: "240px", wordBreak: "break-word", lineHeight: "1.3" }}>
+          {abnormality}
+        </div>
+      </td>
+      <td>
+        <div style={{ minWidth: "160px", maxWidth: "240px", wordBreak: "break-word", lineHeight: "1.3" }}>
+          {countermeasure}
+        </div>
+      </td>
+      <td style={{ whiteSpace: "nowrap" }}>
+        <span className="text-secondary">{spare || "--"}</span>
+      </td>
+      <td style={{ whiteSpace: "nowrap" }}>
+        <span className="text-secondary">{pic || "--"}</span>
+      </td>
       <td className="font-monospace text-secondary" style={{ fontSize: "11px", whiteSpace: "nowrap" }}>
         {targetDate ? targetDate.slice(0, 10) : "--"}
       </td>

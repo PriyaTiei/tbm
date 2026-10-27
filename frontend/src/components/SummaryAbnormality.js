@@ -6,6 +6,7 @@ import DatePicker from "react-date-picker";
 import GraphAbnormality from "./GraphAbnormality";
 import Select from "react-select";
 import * as XLSX from 'xlsx';
+import "./SummaryAbnormality.css";
 
 function SummaryAbnormality() {
   const [showGraph, setShowGraph] = useState(true);
@@ -161,8 +162,9 @@ function SummaryAbnormality() {
       fontSize: "11px",
       borderRadius: "6px",
       borderColor: "#cbd5e1",
-      minWidth: "110px",
-      backgroundColor: "#ffffff"
+      minWidth: "90px",
+      backgroundColor: "#ffffff",
+      boxShadow: "none"
     }),
     valueContainer: (base) => ({
       ...base,
@@ -236,7 +238,7 @@ function SummaryAbnormality() {
   };
 
   return (
-    <div className="container-fluid px-3 px-md-4 py-3" style={{ minHeight: "85vh" }}>
+    <div className="container-fluid px-3 px-md-4 py-3 abnormality-container">
       {/* Header Banner */}
       <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 p-3 bg-white border rounded-4 shadow-sm mb-3">
         <div className="d-flex align-items-center gap-3">
@@ -262,7 +264,7 @@ function SummaryAbnormality() {
         </div>
 
         {/* Date Range Picker Controls */}
-        <div className="d-flex flex-wrap align-items-center gap-2 bg-light border rounded-pill px-3 py-1 shadow-sm">
+        <div className="d-flex flex-wrap align-items-center gap-2 bg-light border rounded-pill px-3 py-1 shadow-sm abnormality-date-range">
           <span className="text-muted small fw-semibold">From</span>
           <DatePicker
             format="dd/MM/yyyy"
@@ -306,38 +308,39 @@ function SummaryAbnormality() {
 
       {/* Abnormality Records Table Card */}
       <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-        <div className="table-responsive" style={{ maxHeight: "68vh" }}>
-          <table className="table table-hover align-middle mb-0" style={{ fontSize: "12px" }}>
-            <thead
-              className="table-light text-uppercase sticky-top"
-              style={{
-                fontSize: "11px",
-                letterSpacing: "0.5px",
-                backgroundColor: "#f8fafc",
-                borderBottom: "2px solid #e2e8f0",
-                zIndex: 1
-              }}
-            >
-              <tr>
+        <div className="abnormality-scroll-wrapper">
+          <table className="table abnormality-table table-hover align-middle mb-0">
+            <thead>
+              {/* Header Titles Row */}
+              <tr className="header-title-row">
                 <th scope="col" style={{ minWidth: "95px" }}>Entry Date</th>
                 <th scope="col" style={{ minWidth: "95px" }}>Card Date</th>
                 <th scope="col" style={{ width: "90px" }}>Dept</th>
                 <th scope="col" style={{ minWidth: "90px" }}>Line</th>
-                <th scope="col" style={{ minWidth: "75px" }}>OP</th>
-                <th scope="col" style={{ minWidth: "140px" }}>Item</th>
-                <th scope="col" style={{ minWidth: "160px" }}>Abnormality</th>
-                <th scope="col" style={{ minWidth: "160px" }}>Countermeasure</th>
+                <th scope="col" style={{ minWidth: "70px" }}>OP</th>
+                <th scope="col" style={{ minWidth: "150px" }}>Item</th>
+                <th scope="col" style={{ minWidth: "180px" }}>Abnormality</th>
+                <th scope="col" style={{ minWidth: "180px" }}>Countermeasure</th>
                 <th scope="col" style={{ minWidth: "85px" }}>Spare</th>
                 <th scope="col" style={{ minWidth: "85px" }}>PIC</th>
                 <th scope="col" style={{ minWidth: "95px" }}>Target</th>
-                <th scope="col" style={{ minWidth: "115px", textAlign: "center" }}>Status</th>
-                <th scope="col" style={{ width: "190px", textAlign: "center" }}>Actions</th>
+                <th scope="col" style={{ minWidth: "120px", textAlign: "center" }}>Status</th>
+                <th scope="col" style={{ minWidth: "220px", textAlign: "center" }}>Actions</th>
               </tr>
               {/* Filter inputs row */}
-              <tr className="bg-light">
-                <th className="p-1"></th>
-                <th className="p-1"></th>
-                <th className="p-1">
+              <tr className="header-filter-row">
+                <th>
+                  <input
+                    type="text"
+                    name="entryDate"
+                    placeholder="Filter date"
+                    onChange={filterHandler}
+                    value={filterObject.entryDate}
+                    className="abnormality-filter-input"
+                  />
+                </th>
+                <th></th>
+                <th>
                   <Select
                     options={deptOptions}
                     menuPlacement="bottom"
@@ -347,85 +350,87 @@ function SummaryAbnormality() {
                     styles={customFilterSelectStyles}
                   />
                 </th>
-                <th className="p-1">
+                <th>
                   <input
                     type="text"
                     name="line"
-                    placeholder="Filter line"
+                    placeholder="Line"
                     onChange={filterHandler}
                     value={filterObject.line}
-                    className="form-control form-control-sm"
-                    style={{ fontSize: "11px", height: "28px" }}
+                    className="abnormality-filter-input"
                   />
                 </th>
-                <th className="p-1">
+                <th>
                   <input
                     type="text"
                     name="processNo"
                     placeholder="OP"
                     onChange={filterHandler}
                     value={filterObject.processNo}
-                    className="form-control form-control-sm"
-                    style={{ fontSize: "11px", height: "28px" }}
+                    className="abnormality-filter-input"
                   />
                 </th>
-                <th className="p-1">
+                <th>
                   <input
                     type="text"
                     name="item"
                     placeholder="Filter item"
                     onChange={filterHandler}
                     value={filterObject.item}
-                    className="form-control form-control-sm"
-                    style={{ fontSize: "11px", height: "28px" }}
+                    className="abnormality-filter-input"
                   />
                 </th>
-                <th className="p-1">
+                <th>
                   <input
                     type="text"
                     name="abnormality"
                     placeholder="Filter abnormality"
                     onChange={filterHandler}
                     value={filterObject.abnormality}
-                    className="form-control form-control-sm"
-                    style={{ fontSize: "11px", height: "28px" }}
+                    className="abnormality-filter-input"
                   />
                 </th>
-                <th className="p-1">
+                <th>
                   <input
                     type="text"
                     name="countermeasure"
                     placeholder="Filter countermeasure"
                     onChange={filterHandler}
                     value={filterObject.countermeasure}
-                    className="form-control form-control-sm"
-                    style={{ fontSize: "11px", height: "28px" }}
+                    className="abnormality-filter-input"
                   />
                 </th>
-                <th className="p-1">
+                <th>
                   <input
                     type="text"
                     name="spare"
                     placeholder="Spare"
                     onChange={filterHandler}
                     value={filterObject.spare}
-                    className="form-control form-control-sm"
-                    style={{ fontSize: "11px", height: "28px" }}
+                    className="abnormality-filter-input"
                   />
                 </th>
-                <th className="p-1">
+                <th>
                   <input
                     type="text"
                     name="pic"
                     placeholder="PIC"
                     onChange={filterHandler}
                     value={filterObject.pic}
-                    className="form-control form-control-sm"
-                    style={{ fontSize: "11px", height: "28px" }}
+                    className="abnormality-filter-input"
                   />
                 </th>
-                <th className="p-1"></th>
-                <th className="p-1">
+                <th>
+                  <input
+                    type="text"
+                    name="target"
+                    placeholder="Target"
+                    onChange={filterHandler}
+                    value={filterObject.target}
+                    className="abnormality-filter-input"
+                  />
+                </th>
+                <th>
                   <Select
                     options={options}
                     menuPlacement="bottom"
@@ -435,7 +440,7 @@ function SummaryAbnormality() {
                     styles={customFilterSelectStyles}
                   />
                 </th>
-                <th className="p-1"></th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
