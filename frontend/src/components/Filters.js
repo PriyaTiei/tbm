@@ -418,7 +418,7 @@ function Filters() {
 
           {/* Date Picker (React Date Picker) */}
           <div
-            className="d-flex align-items-center bg-white border rounded px-2"
+            className="d-flex align-items-center bg-white border rounded px-2 position-relative"
             style={{
               height: "38px",
               borderColor: "#ced4da",

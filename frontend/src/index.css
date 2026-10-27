@@ -4,3 +4,116 @@ html, body {
   overscroll-behavior-y: contain;
   scroll-behavior: smooth;
 }
+
+/* ==========================================================================
+   React DatePicker & Calendar Customization
+   - Forces calendar to always open downwards below the input
+   - Reduces size to compact, clean enterprise proportions
+   ========================================================================== */
+
+/* Remove default border on react-date-picker inner wrapper */
+.react-date-picker__wrapper {
+  border: none !important;
+}
+
+.react-date-picker__inputGroup {
+  font-size: 0.88rem !important;
+  font-weight: 500 !important;
+  color: #1e293b !important;
+  padding: 0 2px !important;
+}
+
+.react-date-picker__inputGroup__input {
+  outline: none !important;
+}
+
+.react-date-picker__button {
+  padding: 2px 4px !important;
+}
+
+.react-date-picker__button svg {
+  stroke: #64748b !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Force the calendar popup to always open downwards below the input */
+.react-date-picker__calendar,
+.react-date-picker__calendar--above-label {
+  top: 100% !important;
+  bottom: auto !important;
+  margin-top: 4px !important;
+  z-index: 9999 !important;
+}
+
+/* Compact Modern Calendar Container */
+.react-calendar {
+  width: 240px !important;
+  max-width: 240px !important;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  padding: 6px !important;
+  font-family: inherit !important;
+  font-size: 0.8rem !important;
+}
+
+.react-calendar__navigation {
+  height: 30px !important;
+  margin-bottom: 4px !important;
+}
+
+.react-calendar__navigation button {
+  min-width: 26px !important;
+  font-size: 0.84rem !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  border-radius: 6px !important;
+  padding: 2px 4px !important;
+}
+
+.react-calendar__navigation button:hover,
+.react-calendar__navigation button:focus {
+  background-color: #f1f5f9 !important;
+}
+
+.react-calendar__month-view__weekdays {
+  text-align: center !important;
+  text-transform: uppercase !important;
+  font-weight: 700 !important;
+  font-size: 0.65rem !important;
+  color: #64748b !important;
+  margin-bottom: 2px !important;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none !important;
+}
+
+.react-calendar__tile {
+  padding: 4px 2px !important;
+  font-size: 0.78rem !important;
+  border-radius: 6px !important;
+  line-height: 1.2 !important;
+  height: 28px !important;
+}
+
+.react-calendar__tile:hover {
+  background-color: #f1f5f9 !important;
+}
+
+.react-calendar__tile--now {
+  background: #eff6ff !important;
+  color: #2563eb !important;
+  font-weight: 700 !important;
+}
+
+.react-calendar__tile--active,
+.react-calendar__tile--active:hover,
+.react-calendar__tile--active:focus {
+  background: #0d6efd !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-radius: 6px !important;
+}
