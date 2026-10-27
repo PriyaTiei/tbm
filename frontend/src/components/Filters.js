@@ -338,187 +338,246 @@ function Filters() {
 
   return (
     <Fragment>
-      <hr className="my-2"></hr>
-      <div className="d-flex justify-content-between align-items-center flex-wrap gap-1">
-        <div className="d-flex">
-          <DatePicker
-            value={date}
-            format="dd/MM/yyyy"
-            onChange={setDate}
-            clearIcon={null}
-            className="px-3"
-          />
-        </div>
-        {/* {
-          cookies.userId ? (<>
-            <SlideInNotification message={
-              "An error occurred. Please try again."
-            }
-              duration={5000}
-              type={"info"} handleDownloadExcel={handleDownloadExcel} />  </>) : (<></>)
-        } */}
-        <Link to="/">
-          <Button className="mx-1 bg-blue px-3 py-3">
-            <i className="bi bi-house"></i> Home
-          </Button>
-        </Link>
-
-        {/* <Link to="/teamleader">
-          <Button variant="secondary" className="mx-3 bg-green px-3">
-            Team Leader
-          </Button>
-        </Link> */}
-
-        {/* 
-        <Container className="mx-3 px-3" style={{ maxWidth: "30vw" }}>
-          <Row className="bg-info text-light border rounded-2 d-flex align-items-center justify-content-center">
-            <Col xs={12} md={6} className="text-center">
-              <h6 className="my-2">Total Check</h6>
-            </Col>
-            <Col xs={12} md={6} className="text-center">
-              <h6 className="my-2">
-                Block: {totalCountBlock} | Crank: {totalCountCrank} | Head:{" "}
-                {totalCountHead}
-              </h6>
-            </Col>
-          </Row>
-        </Container> */}
-
-        <Select
-          options={deptOptions}
-          onChange={selectDeptHandler}
-          className="mx-1 secondary"
-          defaultValue={{ value: "S", label: "Production Dept" }}
-          isSearchable={false}
-        />
-
-        <Select
-          ref={selectLineRef}
-          options={lineOptions}
-          value={selectedMainLineOption}
-          onChange={selectLineHandler}
-          className="mx-1 secondary"
-          placeholder="Main Line"
-          isSearchable={true}
-        />
-
-        <Select
-          options={subLineOptions}
-          value={selectedSubLineOption}
-          onChange={selectSubLineHandler}
-          className="mx-1 secondary"
-          placeholder="Sub Line"
-          isSearchable={true}
-        />
-
-        <Select
-          options={checkOptions}
-          onChange={selectCheckHandler}
-          className="mx-1 secondary"
-          defaultValue={checkOptions[0]}
-          isSearchable={false}
-        />
-        <Select
-          options={groupOptions}
-          onChange={selectGroupHandler}
-          className="mx-1 secondary"
-          defaultValue={groupOptions[0]}
-          isSearchable={false}
-        />
-        {(filters.processNo == "" && filters.cardNo == "") ? <Button className={`mx-1 ${colorSearchButton}`} onClick={() => setShowSearch(true)}>
-          <i className="bi bi-search px-1"></i>
-          Search
-        </Button> :
-          <Button className={`mx-1 ${colorSearchButton}`} onClick={() => clearSearchHandler()}>
-            <i className="bi bi-search px-1"></i>
-            Clear Search
-          </Button>}
-        {date ? <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      {/* Structured Modern Filter Toolbar */}
+      <div className="bg-white p-2 rounded shadow-sm border my-2 mx-1">
+        {/* Row 1: Primary Navigation, Date & Line Selection Filters */}
+        <div className="d-flex align-items-center flex-wrap gap-2">
+          {/* Windows / Browser History Back Button */}
           <Button
-            className=""
-            onClick={() => setShowModal(true)}
-            style={{ background: "transparent", color: "#000" }}
-          >
-            <i className="bi bi-graph-up bi-2x"></i>
-          </Button>
-          <div
-            style={{
-              marginTop: '4px',
-              fontSize: '0.8rem',
-              color: '#000',
-              textAlign: 'center',
+            variant="outline-secondary"
+            size="sm"
+            className="d-flex align-items-center gap-1 px-3 shadow-sm"
+            style={{ height: "38px", borderRadius: "6px", fontWeight: 500 }}
+            onClick={() => {
+              if (window.history.length > 1) {
+                window.history.back();
+              } else {
+                window.location.href = "/";
+              }
             }}
+            title="Back to previous page"
           >
-            Monthly Report
-          </div>
-        </div> : null}
-
-        {level >= 100 ? (
-          <Link to="/holidays" style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Button style={{ background: "transparent", color: "#000" }}>
-                <i className="bi bi-sunset bi-2x"></i>
-              </Button>
-              <div style={{ marginTop: '4px', fontSize: '0.8rem', color: '#000', textAlign: 'center' }}>
-                Holiday List
-              </div>
-            </div>
-          </Link>
-        ) : null}
-
-        {level >= 20 ? (
-          <Link to="/verification" style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-              <Button onClick={() => setShowModals(true)} style={{ background: "transparent", color: "#000" }}>
-                <i className="bi bi-calendar-check bi-2x"></i>
-                <span style={{
-                  background: "red",
-                  borderRadius: "50%",
-                  width: "10px",
-                  height: "10px",
-                  position: "absolute",
-                  top: "3px",      
-                  right: "12px", 
-                }}></span>
-              </Button>
-              <div style={{ marginTop: '4px', fontSize: '0.8rem', color: '#000', textAlign: 'center' }}>
-                TL/GL Verification
-              </div>
-            </div>
-          </Link>
-        ) : null}
-
-        <Link to="/pendingTasks" style={{ textDecoration: 'none' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '15px' }}>
-            <Button style={{ background: "transparent", color: "#000" }}>
-              <i className="bi bi-hourglass-split"></i>
-            </Button>
-            <div style={{ marginTop: '4px', fontSize: '0.8rem', color: '#000', textAlign: 'center' }}>
-              Pending Items
-            </div>
-          </div>
-        </Link>
-
-        <Link to="/overallStatus" style={{ textDecoration: 'none' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '20px' }}>
-            <Button style={{ background: "transparent", color: "#0d6efd" }}>
-              <i className="bi bi-speedometer2"></i>
-            </Button>
-            <div style={{ marginTop: '4px', fontSize: '0.8rem', color: '#0d6efd', fontWeight: 'bold', textAlign: 'center' }}>
-              TBM Status
-            </div>
-          </div>
-        </Link>
-
-
-        <Link to="/judgementHistory">
-          <Button color="blue" className="mx-1">
-            <i className="bi bi-card-list px-1"></i>
-            Judgement History
+            <i className="bi bi-arrow-left"></i>
+            <span>Back</span>
           </Button>
-        </Link>
+
+          {/* Home Button */}
+          <Link to="/" style={{ textDecoration: "none" }}>
+            <Button
+              className="d-flex align-items-center gap-1 px-3 shadow-sm bg-blue"
+              style={{ height: "38px", borderRadius: "6px", fontWeight: 500 }}
+              title="Home"
+            >
+              <i className="bi bi-house-door-fill"></i>
+              <span>Home</span>
+            </Button>
+          </Link>
+
+          {/* Date Picker */}
+          <div
+            className="d-flex align-items-center border rounded px-2"
+            style={{ height: "38px", background: "#f8fafc" }}
+          >
+            <DatePicker
+              value={date}
+              format="dd/MM/yyyy"
+              onChange={setDate}
+              clearIcon={null}
+            />
+          </div>
+
+          {/* Department Select */}
+          <div style={{ minWidth: "155px" }}>
+            <Select
+              options={deptOptions}
+              onChange={selectDeptHandler}
+              className="secondary"
+              defaultValue={{ value: "S", label: "Production Dept" }}
+              isSearchable={false}
+            />
+          </div>
+
+          {/* Main Line Select */}
+          <div style={{ minWidth: "145px" }}>
+            <Select
+              ref={selectLineRef}
+              options={lineOptions}
+              value={selectedMainLineOption}
+              onChange={selectLineHandler}
+              className="secondary"
+              placeholder="Main Line"
+              isSearchable={true}
+            />
+          </div>
+
+          {/* Sub Line Select */}
+          <div style={{ minWidth: "165px" }}>
+            <Select
+              options={subLineOptions}
+              value={selectedSubLineOption}
+              onChange={selectSubLineHandler}
+              className="secondary"
+              placeholder="Sub Line"
+              isSearchable={true}
+            />
+          </div>
+
+          {/* Check Type Select */}
+          <div style={{ minWidth: "115px" }}>
+            <Select
+              options={checkOptions}
+              onChange={selectCheckHandler}
+              className="secondary"
+              defaultValue={checkOptions[0]}
+              isSearchable={false}
+            />
+          </div>
+
+          {/* Group Select */}
+          <div style={{ minWidth: "115px" }}>
+            <Select
+              options={groupOptions}
+              onChange={selectGroupHandler}
+              className="secondary"
+              defaultValue={groupOptions[0]}
+              isSearchable={false}
+            />
+          </div>
+
+          {/* Search / Clear Search */}
+          {filters.processNo === "" && filters.cardNo === "" ? (
+            <Button
+              className={`d-flex align-items-center gap-1 px-3 shadow-sm ${colorSearchButton}`}
+              style={{ height: "38px", borderRadius: "6px", fontWeight: 500 }}
+              onClick={() => setShowSearch(true)}
+            >
+              <i className="bi bi-search"></i>
+              <span>Search</span>
+            </Button>
+          ) : (
+            <Button
+              className={`d-flex align-items-center gap-1 px-3 shadow-sm ${colorSearchButton}`}
+              style={{ height: "38px", borderRadius: "6px", fontWeight: 500 }}
+              onClick={() => clearSearchHandler()}
+            >
+              <i className="bi bi-x-circle"></i>
+              <span>Clear Search</span>
+            </Button>
+          )}
+        </div>
+
+        {/* Row 2: Action Toolbar & TBM Dashboard Navigation */}
+        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 pt-2 border-top mt-2">
+          {/* Left Actions: TBM Dashboard & Quick Metrics */}
+          <div className="d-flex align-items-center flex-wrap gap-2">
+            {/* Prominent TBM Dashboard Button */}
+            <Link to="/overallStatus" style={{ textDecoration: "none" }}>
+              <Button
+                variant="primary"
+                className="d-flex align-items-center gap-2 px-3 py-1 shadow-sm fw-bold"
+                style={{
+                  background: "linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%)",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontSize: "0.88rem",
+                  letterSpacing: "0.2px",
+                }}
+                title="TBM Overall Status Dashboard"
+              >
+                <i className="bi bi-speedometer2 text-warning fs-5"></i>
+                <span>TBM Dashboard</span>
+              </Button>
+            </Link>
+
+            {/* Monthly Report */}
+            {date && (
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                onClick={() => setShowModal(true)}
+                className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white text-dark shadow-sm border"
+                style={{ fontSize: "0.85rem", fontWeight: 500 }}
+                title="Monthly Report"
+              >
+                <i className="bi bi-graph-up text-primary"></i>
+                <span>Monthly Report</span>
+              </Button>
+            )}
+
+            {/* Pending Items */}
+            <Link to="/pendingTasks" style={{ textDecoration: "none" }}>
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white text-dark shadow-sm border"
+                style={{ fontSize: "0.85rem", fontWeight: 500 }}
+                title="Pending Items"
+              >
+                <i className="bi bi-hourglass-split text-warning"></i>
+                <span>Pending Items</span>
+              </Button>
+            </Link>
+
+            {/* TL/GL Verification */}
+            {level >= 20 && (
+              <Link to="/verification" style={{ textDecoration: "none" }}>
+                <Button
+                  variant="outline-secondary"
+                  size="sm"
+                  onClick={() => setShowModals(true)}
+                  className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white text-dark shadow-sm border position-relative"
+                  style={{ fontSize: "0.85rem", fontWeight: 500 }}
+                  title="TL/GL Verification"
+                >
+                  <i className="bi bi-calendar-check text-success"></i>
+                  <span>TL/GL Verification</span>
+                  <span
+                    style={{
+                      background: "#ef4444",
+                      borderRadius: "50%",
+                      width: "8px",
+                      height: "8px",
+                      display: "inline-block",
+                    }}
+                  ></span>
+                </Button>
+              </Link>
+            )}
+
+            {/* Holiday List */}
+            {level >= 100 && (
+              <Link to="/holidays" style={{ textDecoration: "none" }}>
+                <Button
+                  variant="outline-secondary"
+                  size="sm"
+                  className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white text-dark shadow-sm border"
+                  style={{ fontSize: "0.85rem", fontWeight: 500 }}
+                  title="Holiday List"
+                >
+                  <i className="bi bi-sunset text-danger"></i>
+                  <span>Holiday List</span>
+                </Button>
+              </Link>
+            )}
+          </div>
+
+          {/* Right Action: Judgement History */}
+          <div>
+            <Link to="/judgementHistory" style={{ textDecoration: "none" }}>
+              <Button
+                variant="outline-primary"
+                size="sm"
+                className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm fw-semibold bg-white"
+                style={{ fontSize: "0.85rem" }}
+                title="Judgement History"
+              >
+                <i className="bi bi-card-list"></i>
+                <span>Judgement History</span>
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
-      <hr className="my-2"></hr>
       <MultiLevelXAxisBarChart showModal={showModal} setShowModal={setShowModal} chkDate={date} />
       {/* <Verification showModals={showModals} setShowModals={setShowModals} /> */}
       <Search_Modal showModal={showSearch} setShowModal={setShowSearch} />

@@ -348,9 +348,29 @@ export default function TbmOverallStatus() {
       {/* Top Bar: All Controls in One Single Compact Row */}
       <div className="excel-top-bar">
         <div className="excel-header-left">
-          <Link to="/" className="excel-btn" style={{ textDecoration: "none" }}>
-            <i className="bi bi-arrow-left"></i> Home
-          </Link>
+          <button
+            type="button"
+            className="excel-btn"
+            onClick={() => {
+              if (window.history.length > 1) {
+                window.history.back();
+              } else {
+                window.location.href = "/";
+              }
+            }}
+            title="Back to previous page"
+            style={{
+              textDecoration: "none",
+              border: "none",
+              cursor: "pointer",
+              background: "transparent",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px"
+            }}
+          >
+            <i className="bi bi-arrow-left"></i> Back
+          </button>
           <h1 className="excel-main-title">TBM DASHBOARD</h1>
 
           {/* Department Segmented Switch */}

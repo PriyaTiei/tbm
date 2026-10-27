@@ -10,24 +10,30 @@ export function getTitle(pathname) {
       return "Card Details";
     case "/allMachine":
       return "All Cards";
-      case "/delMachine":
+    case "/delMachine":
       return "Deleted Cards";
     case "/overallStatus":
       return "TBM Overall Status";
     case "/pendingTasks/cardDetails/":
       return "Pending Card Details";
+    case "/summaryAbnormality":
+      return "Abnormalities by Member";
+    case "/summaryCards":
+      return "Actual Abnormalities";
+    case "/addCheckItems":
+      return "Add CheckItems";
+    case "/holidays":
+      return "Holiday List";
+    case "/verification":
+      return "TL/GL Verification";
+    case "/judgementHistory":
+      return "Judgement History";
     default:
-      return "";
+      return "Home";
   }
 }
 
 export function getSection(pathname) {
-  switch (pathname) {
-    case "P":
-      return "TBM";
-    case "S":
-      return "Smile Card";
-    default:
-      return "NULL";
-  }
+  // Return "TBM" for both Maintenance and Production so header consistently shows GD_TBM
+  return "TBM";
 }
