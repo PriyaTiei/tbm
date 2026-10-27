@@ -196,6 +196,7 @@ export default function TbmOverallStatus() {
 
     const is3C = (lineStr) => {
       const lower = String(lineStr || "").toLowerCase();
+      if (lower.includes("assembly")) return false;
       return lower.includes("block") || lower.includes("crank") || lower.includes("head");
     };
 

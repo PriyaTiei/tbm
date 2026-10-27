@@ -1577,6 +1577,7 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
 
   const getNormalizedLine = (name) => {
     const s = String(name || "").toLowerCase().trim();
+    if (s.includes("assembly")) return String(name || "").toUpperCase().trim();
     if (s.includes("block")) return "BLOCK";
     if (s.includes("crank")) return "CRANK";
     if (s.includes("head")) return "HEAD";
@@ -1773,10 +1774,7 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
         return acc + c.items.filter(it => isItemScheduledForDate(it, dObj)).length;
       }, 0);
 
-      // If checkitems have no explicit schedule configured, default working days (Mon-Sat) to all items
-      if (dayPlan === 0 && !isSunday && totalItemsOnLine > 0) {
-        dayPlan = totalItemsOnLine;
-      }
+
 
       if (d === day) {
         todaysPlan = dayPlan;
