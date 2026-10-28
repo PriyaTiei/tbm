@@ -605,56 +605,146 @@ function SummaryAbnormality() {
   };
 
   return (
-    <div>
-      <div className="d-flex align-items-center bg-info ">
-        <h3 className="mx-3  text-center ">Summary of Abnormality </h3>
-        {showGraph ? (
-          <button
-            className="btn btn-outline-primary"
-            onClick={() => setShowGraph(false)}
-          >
-            Hide Graph
-          </button>
-        ) : (
-          <button
-            className="btn btn-outline-primary"
-            onClick={() => setShowGraph(true)}
-          >
-            Show Graph
-          </button>
-        )}
+    <div className="px-3 py-2">
+      {/* Summary of Abnormality Header Card */}
+      <div
+        className="card border-0 shadow-sm rounded-4 mb-3"
+        style={{
+          background: "#ffffff",
+          border: "1px solid #e2e8f0",
+          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.04)",
+        }}
+      >
+        <div className="card-body p-3 px-4">
+          <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            {/* Title, Icon, Badge & Subtitle */}
+            <div className="d-flex align-items-center gap-3">
+              <div
+                className="d-flex align-items-center justify-content-center rounded-3 text-primary"
+                style={{
+                  width: "44px",
+                  height: "44px",
+                  background: "rgba(37, 99, 235, 0.1)",
+                  fontSize: "1.25rem",
+                  flexShrink: 0,
+                }}
+              >
+                <i className="bi bi-exclamation-octagon-fill"></i>
+              </div>
+              <div>
+                <div className="d-flex align-items-center gap-2 flex-wrap">
+                  <h5 className="mb-0 fw-bold text-dark" style={{ letterSpacing: "0.2px" }}>
+                    Summary of Abnormality
+                  </h5>
+                  <span
+                    className="badge rounded-pill fw-semibold"
+                    style={{
+                      background: "#eff6ff",
+                      color: "#2563eb",
+                      border: "1px solid #bfdbfe",
+                      fontSize: "0.82rem",
+                      padding: "3px 10px",
+                    }}
+                  >
+                    {total}
+                  </span>
+                  <button
+                    className="btn btn-sm rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center gap-1.5 ms-2"
+                    style={{
+                      border: "1px solid #cbd5e1",
+                      background: "#f8fafc",
+                      color: "#334155",
+                      fontSize: "0.82rem",
+                      transition: "all 0.15s ease",
+                    }}
+                    onClick={() => setShowGraph(!showGraph)}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "#eff6ff";
+                      e.currentTarget.style.borderColor = "#93c5fd";
+                      e.currentTarget.style.color = "#1d4ed8";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "#f8fafc";
+                      e.currentTarget.style.borderColor = "#cbd5e1";
+                      e.currentTarget.style.color = "#334155";
+                    }}
+                  >
+                    <i className={`bi ${showGraph ? "bi-eye-slash" : "bi-bar-chart"}`}></i>
+                    <span>{showGraph ? "Hide Graph" : "Show Graph"}</span>
+                  </button>
+                </div>
+                <small className="text-muted d-block mt-0.5" style={{ fontSize: "0.82rem" }}>
+                  Track, review countermeasures, and update abnormalities
+                </small>
+              </div>
+            </div>
 
-
-        <div className="ms-auto me-3">
-          <span>From</span>
-          <DatePicker
-            format="dd/MM/yyyy"
-            value={fromDate}
-            onChange={setFromDate}
-            clearIcon={null}
-          />
-          <span className="ms-3">To</span>
-          <DatePicker format="dd/MM/yyyy" value={toDate} onChange={setToDate} clearIcon={null} />
+            {/* Date Range Picker Controls */}
+            <div
+              className="d-flex align-items-center gap-2 rounded-pill px-3 py-1.5 shadow-sm"
+              style={{
+                background: "#f8fafc",
+                border: "1px solid #e2e8f0",
+              }}
+            >
+              <span className="text-secondary small fw-semibold">From</span>
+              <DatePicker
+                format="dd/MM/yyyy"
+                value={fromDate}
+                onChange={setFromDate}
+                clearIcon={null}
+              />
+              <span className="text-secondary small fw-semibold ms-2">To</span>
+              <DatePicker
+                format="dd/MM/yyyy"
+                value={toDate}
+                onChange={setToDate}
+                clearIcon={null}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="d-flex justify-content-between " >
-        {showGraph ? <GraphAbnormality labels={labels} data={data} /> : null}
-        <div className="d-flex gap-2" style={{ "marginBottom": "16px", "marginTop": "auto", "marginLeft": "auto", "marginRight": "16px" }}>
+      {/* Chart and Action Controls Bar */}
+      <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 px-1">
+        <div>
+          {showGraph && <GraphAbnormality labels={labels} data={data} />}
+        </div>
+        <div className="d-flex align-items-center gap-2 ms-auto mt-auto mb-1">
           <button
-            className="btn btn-success"
-            style={{ "height": "40px" }}
+            className="btn btn-sm btn-success rounded-pill px-3.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm"
+            style={{
+              background: "#16a34a",
+              borderColor: "#16a34a",
+              fontSize: "0.85rem",
+            }}
             onClick={downloadExcel}
             disabled={abnormalityList.length === 0}
           >
-            📊 Download Excel
+            <i className="bi bi-file-earmark-excel-fill"></i>
+            <span>Download Excel</span>
           </button>
           <button
-            className="btn btn-primary"
-            style={{ "height": "40px" }}
+            className="btn btn-sm rounded-pill px-3.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm"
+            style={{
+              border: "1px solid #cbd5e1",
+              background: "#ffffff",
+              color: "#475569",
+              fontSize: "0.85rem",
+            }}
             onClick={clearFilterHandler}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#f1f5f9";
+              e.currentTarget.style.borderColor = "#94a3b8";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#ffffff";
+              e.currentTarget.style.borderColor = "#cbd5e1";
+            }}
           >
-            Clear Filters
+            <i className="bi bi-arrow-counterclockwise"></i>
+            <span>Clear Filters</span>
           </button>
         </div>
       </div>

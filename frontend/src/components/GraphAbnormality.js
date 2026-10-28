@@ -10,41 +10,63 @@ function GraphAbnormality(props) {
     labels: labels,
     datasets: [
       {
-        // label: "Machine wise data",
-        background: ["rgb(0, 0, 255)", "rgb(0, 255, 0)", "rgb(255, 0,0)", "rgb(255, 110,255)"],
-        // background: "rgb(255, 99, 99)",
-        borderColor: "rgb(255, 99, 99)",
         data: props.data,
+        backgroundColor: [
+          "rgba(59, 130, 246, 0.85)", // Total - Blue
+          "rgba(34, 197, 94, 0.85)",  // Complete - Green
+          "rgba(245, 158, 11, 0.85)", // Pending - Amber
+          "rgba(139, 92, 246, 0.85)"  // Inprogress - Purple
+        ],
+        borderColor: [
+          "#2563eb",
+          "#16a34a",
+          "#d97706",
+          "#7c3aed"
+        ],
+        borderWidth: 1.5,
+        borderRadius: 4,
+        borderSkipped: false
       },
     ],
   };
   const options = {
-    legend: {
-      display: false,
-    },
-    maintainAspectRatio: false, // Don't maintain w/h ratio
-    // scales: {
-    //   yAxes: [
-    //     {
-    //       ticks: {
-    //         beginAtZero: true,
-    //       },
-    //     },
-    //   ],
-    // },
+    responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: false,
       },
+      tooltip: {
+        enabled: true,
+        backgroundColor: "#1e293b",
+        titleFont: { size: 12 },
+        bodyFont: { size: 12 }
+      }
     },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: {
+          font: { size: 11, weight: "600" },
+          color: "#475569"
+        }
+      },
+      y: {
+        beginAtZero: true,
+        grid: { color: "#f1f5f9" },
+        ticks: {
+          font: { size: 11 },
+          color: "#64748b"
+        }
+      }
+    }
   };
 
-
   return (
-    <div style={{ height: "15vh" ,  width:"30vw" }} className="m-3">    
-    <Bar data={data} options={options} />
-  </div>
-  )
+    <div style={{ height: "140px", width: "320px" }} className="p-2 bg-white rounded-3 border shadow-sm my-1">    
+      <Bar data={data} options={options} />
+    </div>
+  );
 }
 
 export default GraphAbnormality
