@@ -111,15 +111,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
       }
     >
       <td>{createdAt.slice(0, 10)}</td>
-
-      <td>
-        {item.cardCreatedDate
-          ? item.cardCreatedDate.slice(0, 10)
-          : "-"}
-      </td>
-
       <td>{pS === "P" ? "Maint." : (pS === "S" ? "Prod." : "")}</td>
-      ``
       <td>{line}</td>
       <td>{processNo}</td>
       <td>{workDetail}</td>
