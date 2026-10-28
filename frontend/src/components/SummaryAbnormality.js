@@ -757,6 +757,7 @@ function SummaryAbnormality() {
           <thead>
             <tr>
               <th>Entry Date</th>
+              <th>Card Created</th>
               <th>Dept.</th>
               <th>Line</th>
               <th>OP</th>
@@ -781,6 +782,7 @@ function SummaryAbnormality() {
                   // className="px-3"
                 /> */}
               </td>
+              <td></td>
               <td>
                 <Select
                   className="d-inline"

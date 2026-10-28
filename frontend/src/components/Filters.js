@@ -120,7 +120,7 @@ function Filters() {
 
 
   useEffect(() => {
-    if (relativeUrl == "/checkList" && "changedDate" in localStorage) {
+    if ("changedDate" in localStorage) {
       const dateString = localStorage.getItem("changedDate");
       const date = new Date(dateString);
 
@@ -129,7 +129,7 @@ function Filters() {
 
       // Store the Date object, not a string
       setDate(date);
-      localStorage.removeItem("changedDate")
+      localStorage.removeItem("changedDate");
     }
   }, [relativeUrl]);
 

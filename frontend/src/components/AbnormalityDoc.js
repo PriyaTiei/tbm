@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { getAbnormality } from "../redux/abnormality/abnormalityActions";
+import { filterDate, filterDept, filterMainLine, filterProcessNo } from "../redux/filter/filterActions";
 import AbnormalityRecordUpdate from "./AbnormalityRecordUpdate";
 import RaiseCardModal from "./RaiseCardModal";
 import AbnormalityImageModal from "./AbnormalityImageModal";
 
 function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
+  const navigate = useNavigate();
   const {
     createdAt,
     line,
@@ -100,6 +103,42 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
 
 
 
+  const handleNavigateToHome = () => {
+    const cardDateStr = item.cardCreatedDate || createdAt;
+    if (!cardDateStr) return;
+    const targetDate = new Date(cardDateStr);
+
+    localStorage.setItem("changedDate", targetDate.toISOString());
+
+    dispatch(
+      filterDate(
+        targetDate.getDay(),
+        Math.floor(targetDate.getDate() / 7.1) + 1,
+        targetDate.getMonth() + 1,
+        targetDate.getFullYear(),
+        targetDate.getDate()
+      )
+    );
+
+    if (pS) {
+      dispatch(filterDept(pS));
+    }
+    if (line) {
+      dispatch(filterMainLine(line));
+    }
+    if (processNo) {
+      dispatch(filterProcessNo(processNo));
+    }
+
+    navigate("/");
+  };
+
+  const cardDateDisplay = item.cardCreatedDate
+    ? item.cardCreatedDate.slice(0, 10)
+    : createdAt
+    ? createdAt.slice(0, 10)
+    : "-";
+
   return (
     <tr
       className={
@@ -111,6 +150,20 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
       }
     >
       <td>{createdAt.slice(0, 10)}</td>
+      <td>
+        <div className="d-flex align-items-center gap-1.5 text-nowrap">
+          <span>{cardDateDisplay}</span>
+          <button
+            type="button"
+            className="btn btn-sm btn-outline-primary p-0 d-inline-flex align-items-center justify-content-center rounded-circle ms-1"
+            style={{ width: "22px", height: "22px", fontSize: "0.72rem" }}
+            title="View card on Home Page"
+            onClick={handleNavigateToHome}
+          >
+            <i className="bi bi-house-door-fill"></i>
+          </button>
+        </div>
+      </td>
       <td>{pS === "P" ? "Maint." : (pS === "S" ? "Prod." : "")}</td>
       <td>{line}</td>
       <td>{processNo}</td>
