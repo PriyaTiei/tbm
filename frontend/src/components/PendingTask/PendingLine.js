@@ -29,7 +29,7 @@ function PendingLine({ line, processList, counts }) {
           {totalSum} Pending {totalSum === 1 ? "Station" : "Stations"}
         </span>
       </div>
-      <div className="d-flex flex-wrap mx-2 mb-3">
+      <div className="d-flex flex-wrap gap-3 mx-3 mb-4">
         {processList.length > 0 ? (
           processList.map((process) => (
             <PendingCard

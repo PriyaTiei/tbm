@@ -549,7 +549,8 @@ function SummaryAbnormality() {
     // Prepare data for Excel
     const excelData = abnormalityList.map((item, index) => ({
       'S.No': index + 1,
-      'Entry Date': item.createdAt ? new Date(item.createdAt).toLocaleDateString() : '',
+      'Issue Reported Date': item.createdAt ? new Date(item.createdAt).toLocaleDateString() : '',
+      'Card Created Date': item.cardCreatedDate ? new Date(item.cardCreatedDate).toLocaleDateString() : (item.createdAt ? new Date(item.createdAt).toLocaleDateString() : ''),
       'Department': item.pS === 'S' ? 'Production' : item.pS === 'P' ? 'Maintenance' : item.pS || '',
       'Line': item.line || '',
       'Process No': item.processNo || '',
@@ -564,13 +565,13 @@ function SummaryAbnormality() {
 
     // Add summary data at the top
     const summaryData = [
-      { 'S.No': 'SUMMARY', 'Entry Date': '', 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
-      { 'S.No': 'Total Records', 'Entry Date': total, 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
-      { 'S.No': 'Complete', 'Entry Date': complete, 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
-      { 'S.No': 'Pending', 'Entry Date': pending, 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
-      { 'S.No': 'In Progress', 'Entry Date': inprogress, 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
-      { 'S.No': '', 'Entry Date': '', 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
-      { 'S.No': 'ABNORMALITY RECORDS', 'Entry Date': '', 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' }
+      { 'S.No': 'SUMMARY', 'Issue Reported Date': '', 'Card Created Date': '', 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
+      { 'S.No': 'Total Records', 'Issue Reported Date': total, 'Card Created Date': '', 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
+      { 'S.No': 'Complete', 'Issue Reported Date': complete, 'Card Created Date': '', 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
+      { 'S.No': 'Pending', 'Issue Reported Date': pending, 'Card Created Date': '', 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
+      { 'S.No': 'In Progress', 'Issue Reported Date': inprogress, 'Card Created Date': '', 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
+      { 'S.No': '', 'Issue Reported Date': '', 'Card Created Date': '', 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
+      { 'S.No': 'ABNORMALITY RECORDS', 'Issue Reported Date': '', 'Card Created Date': '', 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' }
     ];
 
     const finalData = [...summaryData, ...excelData];
@@ -583,7 +584,8 @@ function SummaryAbnormality() {
     // Auto-width columns
     const colWidths = [
       { wch: 8 }, // S.No
-      { wch: 12 }, // Entry Date
+      { wch: 18 }, // Issue Reported Date
+      { wch: 16 }, // Card Created Date
       { wch: 12 }, // Department
       { wch: 10 }, // Line
       { wch: 12 }, // Process No
@@ -756,7 +758,7 @@ function SummaryAbnormality() {
           {/* <table className="m-5 border border-black-50 text-light"> */}
           <thead>
             <tr>
-              <th>Entry Date</th>
+              <th>Issue Reported Date</th>
               <th>Card Created</th>
               <th>Dept.</th>
               <th>Line</th>
