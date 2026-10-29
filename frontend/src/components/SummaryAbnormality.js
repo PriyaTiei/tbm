@@ -1,368 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import { getAbnormality } from "../redux/abnormality/abnormalityActions";
-// import { useDispatch, useSelector } from "react-redux";
-// import AbnormilityDoc from "./AbnormalityDoc";
-// import DatePicker from "react-date-picker";
-// import GraphAbnormality from "./GraphAbnormality";
-// import Select from "react-select";
-
-// function SummaryAbnormality() {
-//   const [showGraph, setShowGraph] = useState(true);
-
-//   // begining of Month
-//   var beginingDate = new Date(Date.now());
-//   beginingDate.setDate(-30);
-//   //from date
-//   const [fromDate, setFromDate] = useState(beginingDate);
-//   const fromDt = fromDate.getDate();
-//   const fromMonth = fromDate.getMonth() + 1;
-//   const fromYear = fromDate.getFullYear();
-//   const fromDateSt = `${fromYear}-${fromMonth}-${fromDt}`;
-
-//   //to next date
-//   const [toDate, setToDate] = useState(new Date(Date.now()));
-//   var toNextDate = new Date(toDate);
-//   toNextDate.setDate(toNextDate.getDate() + 1);
-//   const toDt = toNextDate.getDate();
-//   const toMonth = toNextDate.getMonth() + 1;
-//   const toYear = toNextDate.getFullYear();
-//   const toDateSt = `${toYear}-${toMonth}-${toDt}`;
-//   const [filterObject, setFilterObject] = useState({
-//     entryDate: "",
-//     pS: "",
-//     line: "",
-//     processNo: "",
-//     item: "",
-//     abnormality: "",
-//     countermeasure: "",
-//     spare: "",
-//     pic: "",
-//     target: "",
-//     status: "",
-//   });
-
-//   const dispatch = useDispatch();
-//   let queryStr = "";
-//   for (let key in filterObject) {
-//     let value = filterObject[key];
-
-//     if (value != "") {
-//       if (queryStr == "") {
-//         queryStr = `${key}=${value}`;
-//       } else {
-//         queryStr = `${queryStr}&${key}=${value}`;
-//       }
-//     }
-//   }
-
-//   useEffect(() => {
-//     dispatch(getAbnormality(fromDateSt, toDateSt, queryStr));
-//   }, [dispatch, fromDate, toDate, filterObject]);
-
-
-//   const abnormalities = useSelector((state) => state.abnormalities);
-//   const abnormalityList = abnormalities.loading
-//     ? []
-//     : abnormalities.abnormalities.success
-//     ? abnormalities.abnormalities.abnormalities
-//     : [];
-
-//   const list = abnormalityList.map((item) => {
-//     return (
-//       <AbnormilityDoc
-//         key={item._id}
-//         item={item}
-//         fromDateSt={fromDateSt}
-//         toDateSt={toDateSt}
-//       />
-//     );
-//   });
-
-//   var total = 0;
-//   var complete = 0;
-//   var inprogress = 0;
-//   var pending = 0;
-//   if (abnormalityList.length > 0) {
-//     total = abnormalityList.length;
-//     abnormalityList.forEach((item) => {
-//       if (item.status === "complete") {
-//         complete += 1;
-//       }
-//       if (item.status === "pending") {
-//         pending += 1;
-//       }
-//       if (item.status === "inprogress") {
-//         inprogress += 1;
-//       }
-//     });
-//   }
-
-//   const labels = ["Total", "Complete", "Pending", "Inprogress"];
-//   const data = [total, complete, pending, inprogress];
-
-
-//   const filterHandler = (e) => {
-//     setFilterObject((filterObject) => {
-//       filterObject[e.target.name] = e.target.value;
-//       return {
-//         ...filterObject,
-//       };
-//     });
-//   };
-
-//   const deptOptions = [
-//     { value: "S", label: "Production." },
-//     { value: "P", label: "Maintenance" },
-//   ];
-
-//   const deptHandler = (e) => {
-//     setFilterObject((filterObject) => {
-//       filterObject["pS"] = e.value;
-//       return {
-//         ...filterObject,
-//       };
-//     });
-//   };
-
-//   const options = [
-//     { value: "pending", label: "Pending" },
-//     { value: "inprogress", label: "Inprogress" },
-//     { value: "complete", label: "Complete" },
-//   ];
-
-//   const statusHandler = (e) => {
-//     setFilterObject((filterObject) => {
-//       filterObject["status"] = e.value;
-//       return {
-//         ...filterObject,
-//       };
-//     });
-//   };
-
-//   const entryDateHandler = (date) => {
-//     setFilterObject((filterObject) => {
-//       filterObject["entryDate"] = date;
-//       return {
-//         ...filterObject,
-//       };
-//     });
-//   };
-
-//   const targetHandler = (date) => {
-//     setFilterObject((filterObject) => {
-//       filterObject["target"] = date;
-//       return {
-//         ...filterObject,
-//       };
-//     });
-//   };
-//   const clearFilterHandler = () => {
-//     setFilterObject({
-//       entryDate: "",
-//       pS: "",
-//       line: "",
-//       processNo: "",
-//       item: "",
-//       abnormality: "",
-//       countermeasure: "",
-//       spare: "",
-//       pic: "",
-//       target: "",
-//       status: "",
-//     });
-//   };
-//   return (
-//     <div>
-//       <div className="d-flex align-items-center bg-info ">
-//         <h3 className="mx-3  text-center ">Summary of Abnormality </h3>
-//         {showGraph ? (
-//           <button
-//             className="btn btn-outline-primary"
-//             onClick={() => setShowGraph(false)}
-//           >
-//             Hide Graph
-//           </button>
-//         ) : (
-//           <button
-//             className="btn btn-outline-primary"
-//             onClick={() => setShowGraph(true)}
-//           >
-//             Show Graph
-//           </button>
-//         )}
-
-
-//         <div className="ms-auto me-3">
-//           <span>From</span>
-//           <DatePicker
-//             format="dd/MM/yyyy"
-//             value={fromDate}
-//             onChange={setFromDate}
-//             clearIcon={null}
-//           />
-//           <span className="ms-3">To</span>
-//           <DatePicker format="dd/MM/yyyy" value={toDate} onChange={setToDate} clearIcon={null} />
-//         </div>
-//       </div>
-
-//           <div className="d-flex justify-content-between " >
-//       {showGraph ? <GraphAbnormality labels={labels} data={data} /> : null}
-//       <button
-//           className="btn btn-primary d-block mx-5 d-inline-block "
-//           style={{"height":"40px", "marginBottom":"16px", "marginTop":"auto" , "marginLeft":"auto", "marginRight":"16px" }}
-//           onClick={clearFilterHandler}
-//         > Clear Filters
-//         </button>
-//         </div>
-
-//       <div className="overflow-auto " style={{ height: "65vh", width: "97vw", paddingBottom: "10%" }}>
-
-
-//         <table className="m-3   table table-bordered table-sm table-hover text-dark ">
-//           {/* <table className="m-5 border border-black-50 text-light"> */}
-//           <thead>
-//             <tr>
-//               <th>Entry Date</th>
-//               <th>Dept.</th>
-//               <th>Line</th>
-//               <th>OP</th>
-//               <th>Item</th>
-//               <th>Abnormality</th>
-//               <th>Countermeasure</th>
-//               <th>Spare</th>
-//               <th>PIC</th>
-//               <th>Target</th>
-//               <th>Status</th>
-//               <th></th>
-//               <th></th>
-//               <th></th>
-//               <th></th>
-//             </tr>
-//             <tr>
-//               <td>
-//                 {/* <DatePicker
-//                   value={filterObject.entryDate}
-//                   onChange={entryDateHandler}
-//                   clearIcon={null}
-//                   // className="px-3"
-//                 /> */}
-//               </td>
-
-//               <td>
-//                 <Select
-//                   className="d-inline"
-//                   options={deptOptions}
-//                   // defaultValue={{ value: "", label: "" }}
-//                   menuPlacement="bottom"
-//                   onChange={deptHandler}
-//                 />
-//               </td>
-
-//               <td>
-//                 <input
-//                   type="text"
-//                   name="line"
-//                   onChange={filterHandler}
-//                   value={filterObject["line"]}
-//                   className="w-100"
-//                 />
-//               </td>
-
-//               <td>
-//                 <input
-//                   type="text"
-//                   name="processNo"
-//                   onChange={filterHandler}
-//                   value={filterObject["processNo"]}
-//                   className="w-100"
-//                 />
-//               </td>
-
-//               <td>
-//                 <input
-//                   type="text"
-//                   name="item"
-//                   onChange={filterHandler}
-//                   value={filterObject["item"]}
-//                   className="w-100"
-//                 />
-//               </td>
-
-//               <td>
-//                 <input
-//                   type="text"
-//                   name="abnormality"
-//                   onChange={filterHandler}
-//                   value={filterObject["abnormality"]}
-//                   className="w-100"
-//                 />
-//               </td>
-
-//               <td>
-//                 <input
-//                   type="text"
-//                   name="countermeasure"
-//                   onChange={filterHandler}
-//                   value={filterObject["countermeasure"]}
-//                   className="w-100"
-//                 />
-//               </td>
-
-//               <td>
-//                 <input
-//                   type="text"
-//                   name="spare"
-//                   onChange={filterHandler}
-//                   value={filterObject["spare"]}
-//                   className="w-100"
-//                 />
-//               </td>
-
-//               <td>
-//                 <input
-//                   type="text"
-//                   name="pic"
-//                   onChange={filterHandler}
-//                   value={filterObject["pic"]}
-//                   className="w-100"
-//                 />
-//               </td>
-
-//               <td>
-//                 {/* <DatePicker
-//                   value={filterObject.target}
-//                   onChange={targetHandler}
-//                   clearIcon={null}
-//                   // className="px-3"
-//                 /> */}
-//               </td>
-
-//               <td>
-//                 <Select
-//                   className="d-inline"
-//                   options={options}
-//                   // defaultValue={{ value: "pending", label: "Pending" }}
-//                   menuPlacement="bottom"
-//                   onChange={statusHandler}
-//                 />
-//               </td>
-
-//               <td></td>
-//               <td></td>
-//               <td></td>
-//             </tr>
-//           </thead>
-
-//           <tbody>{list}</tbody>
-//         </table>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default SummaryAbnormality;
-
-
 import React, { useEffect, useState } from "react";
 import { getAbnormality } from "../redux/abnormality/abnormalityActions";
 import { useDispatch, useSelector } from "react-redux";
@@ -372,27 +7,70 @@ import GraphAbnormality from "./GraphAbnormality";
 import Select from "react-select";
 import * as XLSX from 'xlsx';
 
+const compactFilterSelect = {
+  control: (provided) => ({
+    ...provided,
+    minHeight: "28px",
+    height: "28px",
+    fontSize: "0.78rem",
+    borderRadius: "6px",
+    borderColor: "#cbd5e1",
+    boxShadow: "none",
+    padding: "0",
+    "&:hover": { borderColor: "#94a3b8" },
+  }),
+  valueContainer: (provided) => ({
+    ...provided,
+    padding: "0 6px",
+    height: "28px",
+  }),
+  input: (provided) => ({
+    ...provided,
+    margin: "0px",
+  }),
+  indicatorSeparator: () => ({ display: "none" }),
+  dropdownIndicator: (provided) => ({
+    ...provided,
+    padding: "2px",
+  }),
+  menu: (provided) => ({
+    ...provided,
+    zIndex: 9999,
+    fontSize: "0.78rem",
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    padding: "4px 8px",
+    fontSize: "0.78rem",
+    backgroundColor: state.isSelected ? "#2563eb" : state.isFocused ? "#eff6ff" : "#fff",
+    color: state.isSelected ? "#fff" : "#1e293b",
+    cursor: "pointer",
+  }),
+};
+
 function SummaryAbnormality() {
   const [showGraph, setShowGraph] = useState(true);
 
-  // begining of Month
-  var beginingDate = new Date(Date.now());
+  // Beginning of Month
+  const beginingDate = new Date(Date.now());
   beginingDate.setDate(-30);
-  //from date
+  
+  // From date
   const [fromDate, setFromDate] = useState(beginingDate);
   const fromDt = fromDate.getDate();
   const fromMonth = fromDate.getMonth() + 1;
   const fromYear = fromDate.getFullYear();
   const fromDateSt = `${fromYear}-${fromMonth}-${fromDt}`;
 
-  //to next date
+  // To next date
   const [toDate, setToDate] = useState(new Date(Date.now()));
-  var toNextDate = new Date(toDate);
+  const toNextDate = new Date(toDate);
   toNextDate.setDate(toNextDate.getDate() + 1);
   const toDt = toNextDate.getDate();
   const toMonth = toNextDate.getMonth() + 1;
   const toYear = toNextDate.getFullYear();
   const toDateSt = `${toYear}-${toMonth}-${toDt}`;
+
   const [filterObject, setFilterObject] = useState({
     entryDate: "",
     pS: "",
@@ -411,9 +89,8 @@ function SummaryAbnormality() {
   let queryStr = "";
   for (let key in filterObject) {
     let value = filterObject[key];
-
-    if (value != "") {
-      if (queryStr == "") {
+    if (value !== "") {
+      if (queryStr === "") {
         queryStr = `${key}=${value}`;
       } else {
         queryStr = `${queryStr}&${key}=${value}`;
@@ -424,7 +101,6 @@ function SummaryAbnormality() {
   useEffect(() => {
     dispatch(getAbnormality(fromDateSt, toDateSt, queryStr));
   }, [dispatch, fromDate, toDate, filterObject]);
-
 
   const abnormalities = useSelector((state) => state.abnormalities);
   const abnormalityList = abnormalities.loading
@@ -444,10 +120,10 @@ function SummaryAbnormality() {
     );
   });
 
-  var total = 0;
-  var complete = 0;
-  var inprogress = 0;
-  var pending = 0;
+  let total = 0;
+  let complete = 0;
+  let inprogress = 0;
+  let pending = 0;
   if (abnormalityList.length > 0) {
     total = abnormalityList.length;
     abnormalityList.forEach((item) => {
@@ -466,61 +142,38 @@ function SummaryAbnormality() {
   const labels = ["Total", "Complete", "Pending", "Inprogress"];
   const data = [total, complete, pending, inprogress];
 
-
   const filterHandler = (e) => {
-    setFilterObject((filterObject) => {
-      filterObject[e.target.name] = e.target.value;
-      return {
-        ...filterObject,
-      };
-    });
+    setFilterObject((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const deptOptions = [
-    { value: "S", label: "Production." },
+    { value: "", label: "All Dept" },
+    { value: "S", label: "Production" },
     { value: "P", label: "Maintenance" },
   ];
 
   const deptHandler = (e) => {
-    setFilterObject((filterObject) => {
-      filterObject["pS"] = e.value;
-      return {
-        ...filterObject,
-      };
-    });
+    setFilterObject((prev) => ({
+      ...prev,
+      pS: e ? e.value : "",
+    }));
   };
 
   const options = [
+    { value: "", label: "All Status" },
     { value: "pending", label: "Pending" },
     { value: "inprogress", label: "Inprogress" },
     { value: "complete", label: "Complete" },
   ];
 
   const statusHandler = (e) => {
-    setFilterObject((filterObject) => {
-      filterObject["status"] = e.value;
-      return {
-        ...filterObject,
-      };
-    });
-  };
-
-  const entryDateHandler = (date) => {
-    setFilterObject((filterObject) => {
-      filterObject["entryDate"] = date;
-      return {
-        ...filterObject,
-      };
-    });
-  };
-
-  const targetHandler = (date) => {
-    setFilterObject((filterObject) => {
-      filterObject["target"] = date;
-      return {
-        ...filterObject,
-      };
-    });
+    setFilterObject((prev) => ({
+      ...prev,
+      status: e ? e.value : "",
+    }));
   };
 
   const clearFilterHandler = () => {
@@ -546,7 +199,6 @@ function SummaryAbnormality() {
       return;
     }
 
-    // Prepare data for Excel
     const excelData = abnormalityList.map((item, index) => ({
       'S.No': index + 1,
       'Issue Reported Date': item.createdAt ? new Date(item.createdAt).toLocaleDateString() : '',
@@ -554,16 +206,15 @@ function SummaryAbnormality() {
       'Department': item.pS === 'S' ? 'Production' : item.pS === 'P' ? 'Maintenance' : item.pS || '',
       'Line': item.line || '',
       'Process No': item.processNo || '',
-      'Item': item.workDetail,
+      'Item': item.workDetail || '',
       'Abnormality': item.abnormality || '',
       'Countermeasure': item.countermeasure || '',
       'Spare': item.spare || '',
       'PIC': item.pic || '',
-      'Target Date': item.target ? new Date(item.target).toLocaleDateString() : '',
+      'Target Date': item.targetDate ? new Date(item.targetDate).toLocaleDateString() : (item.target ? new Date(item.target).toLocaleDateString() : ''),
       'Status': item.status || ''
     }));
 
-    // Add summary data at the top
     const summaryData = [
       { 'S.No': 'SUMMARY', 'Issue Reported Date': '', 'Card Created Date': '', 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
       { 'S.No': 'Total Records', 'Issue Reported Date': total, 'Card Created Date': '', 'Department': '', 'Line': '', 'Process No': '', 'Item': '', 'Abnormality': '', 'Countermeasure': '', 'Spare': '', 'PIC': '', 'Target Date': '', 'Status': '' },
@@ -575,34 +226,28 @@ function SummaryAbnormality() {
     ];
 
     const finalData = [...summaryData, ...excelData];
-
-    // Create workbook and worksheet
     const ws = XLSX.utils.json_to_sheet(finalData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Abnormalities");
 
-    // Auto-width columns
     const colWidths = [
-      { wch: 8 }, // S.No
-      { wch: 18 }, // Issue Reported Date
-      { wch: 16 }, // Card Created Date
-      { wch: 12 }, // Department
-      { wch: 10 }, // Line
-      { wch: 12 }, // Process No
-      { wch: 15 }, // Item
-      { wch: 20 }, // Abnormality
-      { wch: 20 }, // Countermeasure
-      { wch: 10 }, // Spare
-      { wch: 10 }, // PIC
-      { wch: 12 }, // Target Date
-      { wch: 12 }  // Status
+      { wch: 8 },
+      { wch: 18 },
+      { wch: 16 },
+      { wch: 12 },
+      { wch: 10 },
+      { wch: 12 },
+      { wch: 18 },
+      { wch: 22 },
+      { wch: 22 },
+      { wch: 12 },
+      { wch: 12 },
+      { wch: 14 },
+      { wch: 14 }
     ];
     ws['!cols'] = colWidths;
 
-    // Generate filename with date range
     const filename = `Abnormalities_${fromDate.toISOString().split('T')[0]}_to_${toDate.toISOString().split('T')[0]}.xlsx`;
-
-    // Download file
     XLSX.writeFile(wb, filename);
   };
 
@@ -751,146 +396,163 @@ function SummaryAbnormality() {
         </div>
       </div>
 
-      <div className="overflow-auto " style={{ height: "65vh", width: "97vw", paddingBottom: "10%" }}>
-
-
-        <table className="m-3   table table-bordered table-sm table-hover text-dark ">
-          {/* <table className="m-5 border border-black-50 text-light"> */}
-          <thead>
-            <tr>
-              <th>Issue Reported Date</th>
-              <th>Card Created</th>
-              <th>Dept.</th>
-              <th>Line</th>
-              <th>OP</th>
-              <th>Item</th>
-              <th>Abnormality</th>
-              <th>Countermeasure</th>
-              <th>Spare</th>
-              <th>PIC</th>
-              <th>Target</th>
-              <th>Status</th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-            </tr>
-            <tr>
-              <td>
-                {/* <DatePicker
-                  value={filterObject.entryDate}
-                  onChange={entryDateHandler}
-                  clearIcon={null}
-                  // className="px-3"
-                /> */}
-              </td>
-              <td></td>
-              <td>
-                <Select
-                  className="d-inline"
-                  options={deptOptions}
-                  menuPlacement="bottom"
-                  onChange={deptHandler}
-                />
-              </td>
-
-              <td>
-                <input
-                  type="text"
-                  name="line"
-                  onChange={filterHandler}
-                  value={filterObject["line"]}
-                  className="w-100"
-                />
-              </td>
-
-              <td>
-                <input
-                  type="text"
-                  name="processNo"
-                  onChange={filterHandler}
-                  value={filterObject["processNo"]}
-                  className="w-100"
-                />
-              </td>
-
-              <td>
-                <input
-                  type="text"
-                  name="item"
-                  onChange={filterHandler}
-                  value={filterObject["item"]}
-                  className="w-100"
-                />
-              </td>
-
-              <td>
-                <input
-                  type="text"
-                  name="abnormality"
-                  onChange={filterHandler}
-                  value={filterObject["abnormality"]}
-                  className="w-100"
-                />
-              </td>
-
-              <td>
-                <input
-                  type="text"
-                  name="countermeasure"
-                  onChange={filterHandler}
-                  value={filterObject["countermeasure"]}
-                  className="w-100"
-                />
-              </td>
-
-              <td>
-                <input
-                  type="text"
-                  name="spare"
-                  onChange={filterHandler}
-                  value={filterObject["spare"]}
-                  className="w-100"
-                />
-              </td>
-
-              <td>
-                <input
-                  type="text"
-                  name="pic"
-                  onChange={filterHandler}
-                  value={filterObject["pic"]}
-                  className="w-100"
-                />
-              </td>
-
-              <td>
-                {/* <DatePicker
-                  value={filterObject.target}
-                  onChange={targetHandler}
-                  clearIcon={null}
-                  // className="px-3"
-                /> */}
-              </td>
-
-              <td>
-                <Select
-                  className="d-inline"
-                  options={options}
-                  // defaultValue={{ value: "pending", label: "Pending" }}
-                  menuPlacement="bottom"
-                  onChange={statusHandler}
-                />
-              </td>
-
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </thead>
-
-          <tbody>{list}</tbody>
-        </table>
+      {/* Modern High-Density Table Card */}
+      <div
+        className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4"
+        style={{
+          background: "#ffffff",
+          border: "1px solid #e2e8f0",
+        }}
+      >
+        <div
+          className="overflow-auto"
+          style={{ maxHeight: "65vh", width: "100%", paddingBottom: "20px" }}
+        >
+          <table className="table table-hover align-middle mb-0" style={{ fontSize: "0.82rem", minWidth: "1420px" }}>
+            <thead style={{ position: "sticky", top: 0, zIndex: 10 }}>
+              <tr style={{ background: "#f8fafc", borderBottom: "2px solid #e2e8f0" }}>
+                <th style={{ fontSize: "0.76rem", fontWeight: 700, color: "#475569", padding: "10px 8px", minWidth: "115px" }}>Issue Reported Date</th>
+                <th style={{ fontSize: "0.76rem", fontWeight: 700, color: "#475569", padding: "10px 8px", minWidth: "130px" }}>Card Created</th>
+                <th style={{ fontSize: "0.76rem", fontWeight: 700, color: "#475569", padding: "10px 8px", textAlign: "center", minWidth: "95px" }}>Dept.</th>
+                <th style={{ fontSize: "0.76rem", fontWeight: 700, color: "#475569", padding: "10px 8px", minWidth: "100px" }}>Line</th>
+                <th style={{ fontSize: "0.76rem", fontWeight: 700, color: "#475569", padding: "10px 8px", minWidth: "90px" }}>OP</th>
+                <th style={{ fontSize: "0.76rem", fontWeight: 700, color: "#475569", padding: "10px 8px", minWidth: "150px" }}>Item</th>
+                <th style={{ fontSize: "0.76rem", fontWeight: 700, color: "#475569", padding: "10px 8px", minWidth: "160px" }}>Abnormality</th>
+                <th style={{ fontSize: "0.76rem", fontWeight: 700, color: "#475569", padding: "10px 8px", minWidth: "160px" }}>Countermeasure</th>
+                <th style={{ fontSize: "0.76rem", fontWeight: 700, color: "#475569", padding: "10px 8px", minWidth: "90px" }}>Spare</th>
+                <th style={{ fontSize: "0.76rem", fontWeight: 700, color: "#475569", padding: "10px 8px", minWidth: "90px" }}>PIC</th>
+                <th style={{ fontSize: "0.76rem", fontWeight: 700, color: "#475569", padding: "10px 8px", minWidth: "110px" }}>Target Date</th>
+                <th style={{ fontSize: "0.76rem", fontWeight: 700, color: "#475569", padding: "10px 8px", textAlign: "center", minWidth: "125px" }}>Status</th>
+                <th style={{ fontSize: "0.76rem", fontWeight: 700, color: "#475569", padding: "10px 8px", textAlign: "center", minWidth: "130px" }}>Actions</th>
+              </tr>
+              <tr style={{ background: "#f1f5f9", borderBottom: "1px solid #cbd5e1" }}>
+                <td style={{ padding: "4px 6px" }}></td>
+                <td style={{ padding: "4px 6px" }}></td>
+                <td style={{ padding: "4px 6px" }}>
+                  <Select
+                    options={deptOptions}
+                    value={deptOptions.find((o) => o.value === filterObject["pS"]) || deptOptions[0]}
+                    menuPlacement="bottom"
+                    onChange={deptHandler}
+                    styles={compactFilterSelect}
+                    isSearchable={false}
+                  />
+                </td>
+                <td style={{ padding: "4px 6px" }}>
+                  <input
+                    type="text"
+                    name="line"
+                    placeholder="Filter Line"
+                    onChange={filterHandler}
+                    value={filterObject["line"]}
+                    className="form-control form-control-sm"
+                    style={{ height: "28px", fontSize: "0.78rem", borderRadius: "6px" }}
+                  />
+                </td>
+                <td style={{ padding: "4px 6px" }}>
+                  <input
+                    type="text"
+                    name="processNo"
+                    placeholder="Filter OP"
+                    onChange={filterHandler}
+                    value={filterObject["processNo"]}
+                    className="form-control form-control-sm"
+                    style={{ height: "28px", fontSize: "0.78rem", borderRadius: "6px" }}
+                  />
+                </td>
+                <td style={{ padding: "4px 6px" }}>
+                  <input
+                    type="text"
+                    name="item"
+                    placeholder="Filter Item"
+                    onChange={filterHandler}
+                    value={filterObject["item"]}
+                    className="form-control form-control-sm"
+                    style={{ height: "28px", fontSize: "0.78rem", borderRadius: "6px" }}
+                  />
+                </td>
+                <td style={{ padding: "4px 6px" }}>
+                  <input
+                    type="text"
+                    name="abnormality"
+                    placeholder="Filter Abnormality"
+                    onChange={filterHandler}
+                    value={filterObject["abnormality"]}
+                    className="form-control form-control-sm"
+                    style={{ height: "28px", fontSize: "0.78rem", borderRadius: "6px" }}
+                  />
+                </td>
+                <td style={{ padding: "4px 6px" }}>
+                  <input
+                    type="text"
+                    name="countermeasure"
+                    placeholder="Filter Countermeasure"
+                    onChange={filterHandler}
+                    value={filterObject["countermeasure"]}
+                    className="form-control form-control-sm"
+                    style={{ height: "28px", fontSize: "0.78rem", borderRadius: "6px" }}
+                  />
+                </td>
+                <td style={{ padding: "4px 6px" }}>
+                  <input
+                    type="text"
+                    name="spare"
+                    placeholder="Spare"
+                    onChange={filterHandler}
+                    value={filterObject["spare"]}
+                    className="form-control form-control-sm"
+                    style={{ height: "28px", fontSize: "0.78rem", borderRadius: "6px" }}
+                  />
+                </td>
+                <td style={{ padding: "4px 6px" }}>
+                  <input
+                    type="text"
+                    name="pic"
+                    placeholder="PIC"
+                    onChange={filterHandler}
+                    value={filterObject["pic"]}
+                    className="form-control form-control-sm"
+                    style={{ height: "28px", fontSize: "0.78rem", borderRadius: "6px" }}
+                  />
+                </td>
+                <td style={{ padding: "4px 6px" }}></td>
+                <td style={{ padding: "4px 6px" }}>
+                  <Select
+                    options={options}
+                    value={options.find((o) => o.value === filterObject["status"]) || options[0]}
+                    menuPlacement="bottom"
+                    onChange={statusHandler}
+                    styles={compactFilterSelect}
+                    isSearchable={false}
+                  />
+                </td>
+                <td style={{ padding: "4px 6px", textAlign: "center" }}>
+                  <button
+                    className="btn btn-sm btn-outline-secondary p-0 px-2 d-inline-flex align-items-center gap-1"
+                    style={{ height: "28px", fontSize: "0.74rem", borderRadius: "6px" }}
+                    onClick={clearFilterHandler}
+                    title="Reset all table column filters"
+                  >
+                    <i className="bi bi-x-circle"></i>
+                    Reset
+                  </button>
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              {list && list.length > 0 ? (
+                list
+              ) : (
+                <tr>
+                  <td colSpan={13} className="text-center py-5 text-muted">
+                    <i className="bi bi-inbox fs-3 d-block mb-1 text-secondary opacity-50"></i>
+                    No abnormality records found for the selected filters.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
