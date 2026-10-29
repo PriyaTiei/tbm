@@ -1184,7 +1184,7 @@ function buildExcelRowsFromData(data) {
             <div className="d-flex align-items-center flex-wrap gap-3">
               <div className="d-flex align-items-center">
                 <label className="me-2 mb-0 fw-semibold text-secondary" style={{ fontSize: "0.88rem" }}>
-                  <i className="bi bi-funnel-fill text-warning me-1"></i> Filter by Age:
+                  <i className="bi bi-funnel-fill text-primary me-1"></i> Filter by Age:
                 </label>
                 <select
                   className="form-select form-select-sm"
@@ -1216,9 +1216,10 @@ function buildExcelRowsFromData(data) {
             <div>
               {isExcelDataReady && body.length > 0 ? (
                 <Button
-                  variant="warning"
+                  variant="primary"
                   size="sm"
-                  className="fw-semibold shadow-sm d-flex align-items-center gap-1.5"
+                  className="fw-semibold shadow-sm d-flex align-items-center gap-1.5 text-white"
+                  style={{ background: "#2563eb", borderColor: "#2563eb" }}
                   onClick={handleDownloadExcel}
                 >
                   <i className="bi bi-file-earmark-excel-fill"></i>

@@ -1,96 +1,117 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
-import styles from "../styles/smilecard.module.css";
-
 
 export default function AllMachineCard(props) {
   const { processNo, result, processData, onClick } = props;
+  const counts = Array.isArray(processData) ? processData.length : (processData ? processData.length : 0);
+  const isCompleted = result === "COMPLETED";
+  const [isHovered, setIsHovered] = useState(false);
 
-  console.log("ProcessData for", processNo, ":", processData);
-
-  let statusColor = "rgba(76,74,75)";
-  const counts = processData.length;
-
- 
+  // Home Page royal blue gradient (or emerald if completed)
+  const cardGradient = isCompleted
+    ? "linear-gradient(145deg, #10b981 0%, #059669 100%)"
+    : "linear-gradient(145deg, #1e40af 0%, #2563eb 100%)";
 
   return (
     <Fragment>
       <Link
         to={`/allMachine/cardDetails/`}
-        style={{ textDecoration: "none" }}
+        style={{ textDecoration: "none", color: "inherit" }}
       >
         <div
-          className={`card mx-2 mb-3 shadow-sm ${styles.translate}`}
+          className="card border-0 text-white shadow-sm"
           style={{
-            minWidth: "130px",
-            maxWidth: "155px",
-            background: "#ffffff",
-            color: "#1e293b",
-            borderRadius: "10px",
-            border: "1px solid #e2e8f0",
-            boxShadow: "0 2px 6px rgba(15, 23, 42, 0.05)",
-            transition: "all 0.2s ease-in-out",
+            width: "148px",
+            height: "108px",
+            minHeight: "108px",
+            maxHeight: "108px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            background: cardGradient,
+            borderRadius: "12px",
+            boxShadow: isHovered
+              ? "0 8px 18px rgba(30, 64, 175, 0.3)"
+              : "0 3px 8px rgba(0, 0, 0, 0.1)",
+            transform: isHovered ? "translateY(-4px)" : "translateY(0)",
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
             cursor: "pointer",
+            overflow: "hidden",
+            boxSizing: "border-box",
           }}
           onClick={onClick}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "translateY(-4px)";
-            e.currentTarget.style.boxShadow = "0 6px 14px rgba(37, 99, 235, 0.12)";
-            e.currentTarget.style.borderColor = "#93c5fd";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow = "0 2px 6px rgba(15, 23, 42, 0.05)";
-            e.currentTarget.style.borderColor = "#e2e8f0";
-          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
+          {/* Header: Process / Station Name with vertical centering & 2-line clamp */}
           <div
-            className="card-header py-2 border-bottom text-center"
-            style={{ borderColor: "#e2e8f0", background: "#f8fafc" }}
+            className="px-2 py-1 text-center d-flex align-items-center justify-content-center"
+            style={{
+              height: "44px",
+              minHeight: "44px",
+              maxHeight: "44px",
+              background: "rgba(0, 0, 0, 0.12)",
+              borderBottom: "1px solid rgba(255, 255, 255, 0.18)",
+            }}
           >
-            <h6 className="mb-0 fw-bold text-dark text-truncate" style={{ fontSize: "0.92rem" }} title={processNo}>
-              {processNo}
-            </h6>
-          </div>
-          <div className="text-center py-2.5">
-            <i
-              className="bi bi-file-easel-fill"
-              style={{ fontSize: "2.4rem", color: "#2563eb" }}
-            ></i>
-          </div>
-          <div className="text-center pb-2.5">
             <span
-              className="badge rounded-pill px-2.5 py-1"
+              className="fw-bold text-white text-center"
               style={{
-                background: "#eff6ff",
-                color: "#1d4ed8",
-                border: "1px solid #bfdbfe",
-                fontSize: "0.76rem",
-                fontWeight: 600,
+                fontSize: "0.85rem",
+                lineHeight: "1.25",
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                wordBreak: "break-word",
+                letterSpacing: "0.2px",
               }}
+              title={processNo}
             >
-              Total: {counts}
+              {processNo}
             </span>
           </div>
-          {result === "PENDING" && (
-            <div className="text-center pb-2">
-              <span
-                className="badge rounded-pill px-2 py-1"
-                style={{
-                  background: "#fef3c7",
-                  color: "#92400e",
-                  border: "1px solid #fde68a",
-                  fontSize: "0.72rem",
-                  fontWeight: 600,
-                }}
-              >
-                PENDING
-              </span>
+
+          {/* Body/Footer: Metrics (Total Count & Status Badge - No mid image) */}
+          <div
+            className="px-2 py-1.5 text-center d-flex flex-column align-items-center justify-content-center gap-1 flex-grow-1"
+            style={{
+              background: "rgba(0, 0, 0, 0.05)",
+            }}
+          >
+            <div
+              className="text-white-50 fw-semibold"
+              style={{ fontSize: "0.72rem", lineHeight: "1.1" }}
+            >
+              Total: <span className="text-white fw-bold">{counts}</span>
             </div>
-          )}
+
+            <span
+              className="badge rounded-pill fw-semibold d-inline-flex align-items-center"
+              style={{
+                background: "rgba(255, 255, 255, 0.22)",
+                color: "#ffffff",
+                border: "1px solid rgba(255, 255, 255, 0.3)",
+                fontSize: "0.68rem",
+                padding: "2.5px 8px",
+                letterSpacing: "0.3px",
+              }}
+            >
+              <span
+                className="rounded-circle me-1"
+                style={{
+                  width: "5px",
+                  height: "5px",
+                  background: isCompleted ? "#86efac" : "#60a5fa",
+                  display: "inline-block",
+                }}
+              ></span>
+              {result || "ACTIVE"}
+            </span>
+          </div>
         </div>
       </Link>
     </Fragment>
   );
 }
- 

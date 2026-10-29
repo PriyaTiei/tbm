@@ -13,24 +13,37 @@ function PendingLine({ line, processList, counts }) {
 
   return (
     <Fragment>
+      {/* Modern Responsive Line Header - Home Page Style */}
       <div
-        className="mx-3 my-2 p-2 px-3 rounded-3 d-flex justify-content-between align-items-center shadow-sm"
+        className="d-flex align-items-center justify-content-between flex-wrap gap-2 px-3 py-2 mx-3 my-3 rounded-3 shadow-sm text-white"
         style={{
-          background: "#ffffff",
-          border: "1px solid #e2e8f0",
-          borderLeft: "4px solid #f59e0b",
+          background: "linear-gradient(135deg, #1e40af 0%, #2563eb 100%)",
+          border: "1px solid rgba(255, 255, 255, 0.15)",
         }}
       >
-        <h5 className="m-0 fw-bold text-dark d-flex align-items-center">
-          <i className="bi bi-hourglass-split text-warning me-2"></i>
-          {line}
-        </h5>
-        <span className="badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-50 rounded-pill px-3 py-1.5 fw-semibold">
-          {totalSum} Pending {totalSum === 1 ? "Station" : "Stations"}
-        </span>
+        <div className="d-flex align-items-center gap-2">
+          <h5 className="m-0 fw-bold d-flex align-items-center" style={{ letterSpacing: "0.4px", fontSize: "1.1rem" }}>
+            <i className="bi bi-hourglass-split me-2 text-white-50"></i>
+            {line}
+          </h5>
+          <span
+            className="badge rounded-pill fw-bold ms-1"
+            style={{
+              background: "rgba(255, 255, 255, 0.22)",
+              color: "#ffffff",
+              fontSize: "0.82rem",
+              padding: "3px 10px",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
+            }}
+            title="Pending Stations"
+          >
+            {totalSum} Pending {totalSum === 1 ? "Station" : "Stations"}
+          </span>
+        </div>
       </div>
+
       <div className="d-flex flex-wrap gap-3 mx-3 mb-4">
-        {processList.length > 0 ? (
+        {processList && processList.length > 0 ? (
           processList.map((process) => (
             <PendingCard
               key={process.processNo}
