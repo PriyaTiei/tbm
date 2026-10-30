@@ -16,7 +16,7 @@ function PendingCard({ processNo, result, processData, onClick }) {
           className="card shadow-sm"
           style={{
             width: "152px",
-            height: "172px",
+            height: "154px",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
@@ -97,9 +97,9 @@ function PendingCard({ processNo, result, processData, onClick }) {
             </div>
           </div>
 
-          {/* Footer: Metrics (Total Count & Mild Status Badge) */}
+          {/* Footer: Metrics (Total Count only - Status badge removed) */}
           <div
-            className="px-2 pb-2 text-center d-flex flex-column align-items-center gap-1.5"
+            className="px-2 py-2 text-center d-flex justify-content-center align-items-center"
             style={{
               borderTop: "1px solid #f8fafc",
               background: "#ffffff",
@@ -111,34 +111,11 @@ function PendingCard({ processNo, result, processData, onClick }) {
                 background: "#f8fafc",
                 color: "#475569",
                 border: "1px solid #e2e8f0",
-                fontSize: "0.72rem",
-                padding: "2.5px 8px",
+                fontSize: "0.75rem",
+                padding: "3px 12px",
               }}
             >
               Total: <strong className="text-dark">{counts}</strong>
-            </span>
-
-            <span
-              className="badge rounded-pill fw-bold d-inline-flex align-items-center"
-              style={{
-                background: isCompleted ? "#dcfce7" : "#f0fdfa",
-                color: isCompleted ? "#15803d" : "#0f766e",
-                border: isCompleted ? "1px solid #86efac" : "1px solid #99f6e4",
-                fontSize: "0.7rem",
-                padding: "3px 9px",
-                letterSpacing: "0.3px",
-              }}
-            >
-              <span
-                className="rounded-circle me-1"
-                style={{
-                  width: "5px",
-                  height: "5px",
-                  background: isCompleted ? "#16a34a" : "#0d9488",
-                  display: "inline-block",
-                }}
-              ></span>
-              {result || "PENDING"}
             </span>
           </div>
         </div>

@@ -22,9 +22,9 @@ export default function AllMachineCard(props) {
           className="card border-0 text-white shadow-sm"
           style={{
             width: "148px",
-            height: "108px",
-            minHeight: "108px",
-            maxHeight: "108px",
+            height: "92px",
+            minHeight: "92px",
+            maxHeight: "92px",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
@@ -73,42 +73,19 @@ export default function AllMachineCard(props) {
             </span>
           </div>
 
-          {/* Body/Footer: Metrics (Total Count & Status Badge - No mid image) */}
+          {/* Body/Footer: Metrics (Total Count only) */}
           <div
-            className="px-2 py-1.5 text-center d-flex flex-column align-items-center justify-content-center gap-1 flex-grow-1"
+            className="px-2 py-2 text-center d-flex align-items-center justify-content-center flex-grow-1"
             style={{
               background: "rgba(0, 0, 0, 0.05)",
             }}
           >
             <div
               className="text-white-50 fw-semibold"
-              style={{ fontSize: "0.72rem", lineHeight: "1.1" }}
+              style={{ fontSize: "0.76rem" }}
             >
               Total: <span className="text-white fw-bold">{counts}</span>
             </div>
-
-            <span
-              className="badge rounded-pill fw-semibold d-inline-flex align-items-center"
-              style={{
-                background: "rgba(255, 255, 255, 0.22)",
-                color: "#ffffff",
-                border: "1px solid rgba(255, 255, 255, 0.3)",
-                fontSize: "0.68rem",
-                padding: "2.5px 8px",
-                letterSpacing: "0.3px",
-              }}
-            >
-              <span
-                className="rounded-circle me-1"
-                style={{
-                  width: "5px",
-                  height: "5px",
-                  background: isCompleted ? "#86efac" : "#60a5fa",
-                  display: "inline-block",
-                }}
-              ></span>
-              {result || "ACTIVE"}
-            </span>
           </div>
         </div>
       </Link>
