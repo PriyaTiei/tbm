@@ -8,7 +8,7 @@ import AbnormalityRecordUpdate from "./AbnormalityRecordUpdate";
 import RaiseCardModal from "./RaiseCardModal";
 import AbnormalityImageModal from "./AbnormalityImageModal";
 
-function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
+function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
   const navigate = useNavigate();
   const {
     createdAt,
@@ -24,10 +24,10 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
     beforeImage,
     afterImage,
     _id,
-    pS
+    pS,
   } = item;
 
-  const workDetail = checkItem ? (checkItem.workDetail || "") : "";
+  const workDetail = checkItem ? checkItem.workDetail || "" : "";
 
   const [showModal, setShowModal] = useState(false);
   const [showModalRaiseCard, setShowModalRaiseCard] = useState(false);
@@ -44,7 +44,9 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
       if (beforeImage instanceof File) {
         setBeforeImageUrl(URL.createObjectURL(beforeImage));
       } else if (typeof beforeImage === "string") {
-        setBeforeImageUrl(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${beforeImage}`);
+        setBeforeImageUrl(
+          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${beforeImage}`
+        );
       } else {
         setBeforeImageUrl(null);
       }
@@ -56,7 +58,9 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
       if (afterImage instanceof File) {
         setAfterImageUrl(URL.createObjectURL(afterImage));
       } else if (typeof afterImage === "string") {
-        setAfterImageUrl(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${afterImage}`);
+        setAfterImageUrl(
+          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${afterImage}`
+        );
       } else {
         setAfterImageUrl(null);
       }
@@ -125,14 +129,29 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
     navigate("/");
   };
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "—";
+    try {
+      return dateStr.slice(0, 10);
+    } catch (e) {
+      return dateStr;
+    }
+  };
+
   const cardDateDisplay = item.cardCreatedDate
-    ? item.cardCreatedDate.slice(0, 10)
+    ? formatDate(item.cardCreatedDate)
     : createdAt
-    ? createdAt.slice(0, 10)
-    : "-";
+    ? formatDate(createdAt)
+    : "—";
 
   const isComplete = status === "complete";
   const isInProgress = status === "inprogress";
+
+  // Check if target date is overdue (in the past and not yet complete)
+  const isOverdue =
+    targetDate &&
+    !isComplete &&
+    new Date(targetDate.slice(0, 10)) < new Date(new Date().toISOString().slice(0, 10));
 
   return (
     <tr
@@ -140,34 +159,46 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
         borderLeft: isComplete
           ? "4px solid #10b981"
           : isInProgress
-          ? "4px solid #f59e0b"
-          : "4px solid #94a3b8",
+          ? "4px solid #0284c7"
+          : "4px solid #f59e0b",
         background: isHovered
           ? isComplete
-            ? "rgba(16, 185, 129, 0.05)"
+            ? "rgba(16, 185, 129, 0.04)"
             : isInProgress
-            ? "rgba(245, 158, 11, 0.05)"
-            : "#f8fafc"
+            ? "rgba(2, 132, 199, 0.04)"
+            : "rgba(245, 158, 11, 0.04)"
           : "#ffffff",
         transition: "background 0.15s ease",
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* 1. Issue Reported Date */}
-      <td className="align-middle text-nowrap" style={{ fontSize: "0.8rem", color: "#334155" }}>
-        {createdAt ? createdAt.slice(0, 10) : "-"}
+      {/* 1. S.No */}
+      <td
+        className="align-middle text-center text-muted fw-semibold"
+        style={{ fontSize: "0.78rem", whiteSpace: "nowrap" }}
+      >
+        {index || "•"}
       </td>
 
-      {/* 2. Card Created Date + Quick Home Button */}
-      <td className="align-middle text-nowrap">
+      {/* 2. Issue Reported Date */}
+      <td
+        className="align-middle text-nowrap"
+        style={{ fontSize: "0.82rem", color: "#334155", whiteSpace: "nowrap" }}
+      >
+        <i className="bi bi-calendar-check text-secondary me-1" style={{ fontSize: "0.78rem" }}></i>
+        <span>{formatDate(createdAt)}</span>
+      </td>
+
+      {/* 3. Card Created Date + Home Button */}
+      <td className="align-middle text-nowrap" style={{ whiteSpace: "nowrap" }}>
         <div className="d-flex align-items-center gap-1.5">
-          <span style={{ fontSize: "0.8rem", color: "#334155" }}>{cardDateDisplay}</span>
+          <span style={{ fontSize: "0.82rem", color: "#334155" }}>{cardDateDisplay}</span>
           <button
             type="button"
-            className="btn btn-sm btn-outline-primary p-0 d-inline-flex align-items-center justify-content-center rounded-circle"
+            className="btn btn-sm btn-outline-primary p-0 d-inline-flex align-items-center justify-content-center rounded-circle shadow-xs"
             style={{ width: "22px", height: "22px", fontSize: "0.72rem" }}
-            title="View checklist card on Home Page"
+            title="Jump to this card on Home Page"
             onClick={handleNavigateToHome}
           >
             <i className="bi bi-house-door-fill"></i>
@@ -175,8 +206,8 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
         </div>
       </td>
 
-      {/* 3. Department Badge */}
-      <td className="align-middle text-center">
+      {/* 4. Department Badge */}
+      <td className="align-middle text-center" style={{ whiteSpace: "nowrap" }}>
         {pS === "S" ? (
           <span
             className="badge rounded-pill fw-semibold"
@@ -188,7 +219,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
               padding: "2.5px 8px",
             }}
           >
-            Prod.
+            Production
           </span>
         ) : pS === "P" ? (
           <span
@@ -201,55 +232,102 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
               padding: "2.5px 8px",
             }}
           >
-            Maint.
+            Maintenance
           </span>
         ) : (
-          <span className="text-muted">-</span>
+          <span className="text-muted">—</span>
         )}
       </td>
 
-      {/* 4. Line */}
-      <td className="align-middle fw-semibold text-dark text-nowrap" style={{ fontSize: "0.82rem" }}>
-        {line || "-"}
+      {/* 5. Line */}
+      <td className="align-middle text-nowrap fw-semibold text-dark" style={{ fontSize: "0.82rem" }}>
+        {line || "—"}
       </td>
 
-      {/* 5. Process / OP */}
+      {/* 6. Station (OP) */}
       <td className="align-middle text-nowrap" style={{ fontSize: "0.82rem" }}>
-        {processNo || "-"}
+        <span
+          className="badge bg-light text-dark border fw-bold px-2 py-1 rounded"
+          style={{ fontSize: "0.76rem" }}
+        >
+          {processNo || "—"}
+        </span>
       </td>
 
-      {/* 6. Item / Work Detail */}
-      <td className="align-middle" style={{ maxWidth: "200px" }} title={workDetail}>
-        <div className="text-truncate">{workDetail || "-"}</div>
+      {/* 7. Inspection Item */}
+      <td className="align-middle" style={{ maxWidth: "220px" }} title={workDetail}>
+        <div className="text-truncate fw-medium text-dark">{workDetail || "—"}</div>
       </td>
 
-      {/* 7. Abnormality */}
-      <td className="align-middle" style={{ maxWidth: "200px" }} title={abnormality}>
-        <div className="text-truncate fw-medium text-danger">{abnormality || "-"}</div>
+      {/* 8. Abnormality / Defect (Prominent warning style) */}
+      <td className="align-middle" style={{ maxWidth: "260px" }} title={abnormality}>
+        <div className="d-flex align-items-center text-danger fw-semibold">
+          <i className="bi bi-exclamation-triangle-fill text-danger me-1.5 flex-shrink-0" style={{ fontSize: "0.85rem" }}></i>
+          <span className="text-truncate">{abnormality || "—"}</span>
+        </div>
       </td>
 
-      {/* 8. Countermeasure */}
-      <td className="align-middle" style={{ maxWidth: "200px" }} title={countermeasure}>
-        <div className="text-truncate text-secondary">{countermeasure || "-"}</div>
+      {/* 9. Countermeasure */}
+      <td className="align-middle" style={{ maxWidth: "220px" }} title={countermeasure}>
+        {countermeasure ? (
+          <div className="text-truncate text-secondary">{countermeasure}</div>
+        ) : (
+          <span className="text-muted fst-italic">—</span>
+        )}
       </td>
 
-      {/* 9. Spare */}
+      {/* 10. Spare */}
       <td className="align-middle text-nowrap" style={{ fontSize: "0.8rem" }}>
-        {spare || "-"}
+        {spare ? (
+          <span className="badge bg-light text-secondary border px-2 py-0.5 rounded">
+            {spare}
+          </span>
+        ) : (
+          <span className="text-muted">—</span>
+        )}
       </td>
 
-      {/* 10. PIC (Person in Charge) */}
-      <td className="align-middle text-nowrap fw-medium" style={{ fontSize: "0.8rem" }}>
-        {pic || "-"}
+      {/* 11. PIC (Person in Charge) */}
+      <td className="align-middle text-nowrap" style={{ fontSize: "0.82rem" }}>
+        {pic ? (
+          <div className="d-inline-flex align-items-center gap-1 text-dark fw-medium">
+            <i className="bi bi-person-fill text-secondary" style={{ fontSize: "0.78rem" }}></i>
+            <span>{pic}</span>
+          </div>
+        ) : (
+          <span className="text-muted fst-italic">Unassigned</span>
+        )}
       </td>
 
-      {/* 11. Target Date */}
-      <td className="align-middle text-nowrap" style={{ fontSize: "0.8rem", color: "#475569" }}>
-        {targetDate ? targetDate.slice(0, 10) : "-"}
+      {/* 12. Target Date (with Overdue pill if past deadline) */}
+      <td className="align-middle text-nowrap" style={{ whiteSpace: "nowrap" }}>
+        {targetDate ? (
+          <div className="d-flex align-items-center gap-1.5">
+            <span
+              style={{
+                fontSize: "0.8rem",
+                color: isOverdue ? "#dc2626" : "#475569",
+                fontWeight: isOverdue ? 700 : 500,
+              }}
+            >
+              {formatDate(targetDate)}
+            </span>
+            {isOverdue && (
+              <span
+                className="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-50 fw-bold"
+                style={{ fontSize: "0.65rem", padding: "1px 5px" }}
+              >
+                Overdue
+              </span>
+            )}
+          </div>
+        ) : (
+          <span className="text-muted">—</span>
+        )}
       </td>
 
-      {/* 12. Status Badge */}
-      <td className="align-middle text-center text-nowrap">
+      {/* 13. Status Badge */}
+      <td className="align-middle text-center text-nowrap" style={{ whiteSpace: "nowrap" }}>
         {isComplete ? (
           <span
             className="badge rounded-pill fw-semibold d-inline-flex align-items-center"
@@ -258,93 +336,109 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
               color: "#15803d",
               border: "1px solid #86efac",
               fontSize: "0.72rem",
-              padding: "3px 8px",
+              padding: "3.5px 9px",
+              letterSpacing: "0.2px",
             }}
           >
-            <i className="bi bi-check-circle-fill me-1" style={{ fontSize: "0.7rem" }}></i>
+            <i className="bi bi-check-circle-fill me-1" style={{ fontSize: "0.72rem" }}></i>
             COMPLETE
           </span>
         ) : isInProgress ? (
           <span
             className="badge rounded-pill fw-semibold d-inline-flex align-items-center"
             style={{
-              background: "#fef3c7",
-              color: "#b45309",
-              border: "1px solid #fde68a",
+              background: "#e0f2fe",
+              color: "#0369a1",
+              border: "1px solid #7dd3fc",
               fontSize: "0.72rem",
-              padding: "3px 8px",
+              padding: "3.5px 9px",
+              letterSpacing: "0.2px",
             }}
           >
-            <i className="bi bi-clock-history me-1" style={{ fontSize: "0.7rem" }}></i>
+            <i className="bi bi-gear-wide-connected me-1" style={{ fontSize: "0.72rem" }}></i>
             IN PROGRESS
           </span>
         ) : (
           <span
             className="badge rounded-pill fw-semibold d-inline-flex align-items-center"
             style={{
-              background: "#f1f5f9",
-              color: "#475569",
-              border: "1px solid #cbd5e1",
+              background: "#fef3c7",
+              color: "#92400e",
+              border: "1px solid #fde68a",
               fontSize: "0.72rem",
-              padding: "3px 8px",
+              padding: "3.5px 9px",
+              letterSpacing: "0.2px",
             }}
           >
-            <i className="bi bi-exclamation-circle me-1" style={{ fontSize: "0.7rem" }}></i>
+            <i className="bi bi-clock-history me-1" style={{ fontSize: "0.72rem" }}></i>
             PENDING
           </span>
         )}
       </td>
 
-      {/* 13. Consolidated Actions Column */}
+      {/* 14. Sleek Action Buttons Toolbar */}
       <td className="align-middle text-center" style={{ whiteSpace: "nowrap" }}>
         <div className="d-inline-flex align-items-center gap-1.5">
-          {/* Images Modal Button */}
+          {/* Images Button */}
           <button
             type="button"
-            className="btn btn-sm btn-outline-primary d-inline-flex align-items-center justify-content-center p-0 rounded-circle shadow-sm"
-            style={{ width: "28px", height: "28px" }}
+            className="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 px-2.5 py-1 rounded-pill shadow-xs"
+            style={{ fontSize: "0.75rem", fontWeight: 500 }}
             onClick={() => setShowModalImage(true)}
-            title="View Images"
+            title="View Defect Photos (Before/After)"
           >
-            <i className="bi bi-image" style={{ fontSize: "0.85rem" }}></i>
+            <i className="bi bi-image" style={{ fontSize: "0.8rem" }}></i>
+            <span>Images</span>
+            {(beforeImage || afterImage) && (
+              <span
+                className="badge bg-primary text-white rounded-circle p-0"
+                style={{ width: "5px", height: "5px" }}
+              ></span>
+            )}
           </button>
 
-          {/* Update Record Button (Level >= 20) */}
+          {/* Update Button (Level >= 20) */}
           {level >= 20 && (
             <button
               type="button"
-              className="btn btn-sm btn-warning d-inline-flex align-items-center justify-content-center p-0 rounded-circle shadow-sm text-dark"
-              style={{ width: "28px", height: "28px" }}
+              className="btn btn-sm btn-warning d-inline-flex align-items-center gap-1 px-2.5 py-1 rounded-pill shadow-xs text-dark fw-semibold"
+              style={{ fontSize: "0.75rem" }}
               onClick={() => setShowModal(true)}
-              title="Update Record / Countermeasure"
+              title="Update Status & Countermeasure"
             >
-              <i className="bi bi-pencil-square" style={{ fontSize: "0.85rem" }}></i>
+              <i className="bi bi-pencil-square" style={{ fontSize: "0.8rem" }}></i>
+              <span>Update</span>
             </button>
           )}
 
-          {/* Raise Maintenance Card Button (Level >= 100) */}
+          {/* Raise Card Button (Level >= 100) */}
           {level >= 100 && (
             <button
               type="button"
-              className="btn btn-sm btn-info text-white d-inline-flex align-items-center justify-content-center p-0 rounded-circle shadow-sm"
-              style={{ width: "28px", height: "28px", background: "#0284c7", borderColor: "#0284c7" }}
+              className="btn btn-sm btn-info text-white d-inline-flex align-items-center gap-1 px-2.5 py-1 rounded-pill shadow-xs"
+              style={{
+                fontSize: "0.75rem",
+                background: "#0284c7",
+                borderColor: "#0284c7",
+              }}
               onClick={() => setShowModalRaiseCard(true)}
-              title="Raise Card"
+              title="Raise Preventive Maintenance Card"
             >
-              <i className="bi bi-files" style={{ fontSize: "0.85rem" }}></i>
+              <i className="bi bi-files" style={{ fontSize: "0.8rem" }}></i>
+              <span>Raise</span>
             </button>
           )}
 
-          {/* Delete Record Button (Level >= 40) */}
+          {/* Delete Button (Level >= 40) */}
           {level >= 40 && (
             <button
               type="button"
-              className="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center p-0 rounded-circle shadow-sm"
-              style={{ width: "28px", height: "28px" }}
+              className="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center p-0 rounded-circle shadow-xs"
+              style={{ width: "26px", height: "26px" }}
               onClick={deleteConfirmation}
-              title="Delete Record"
+              title="Delete Abnormality Record"
             >
-              <i className="bi bi-trash3" style={{ fontSize: "0.85rem" }}></i>
+              <i className="bi bi-trash3" style={{ fontSize: "0.78rem" }}></i>
             </button>
           )}
         </div>

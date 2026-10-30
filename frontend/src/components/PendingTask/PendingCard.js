@@ -6,11 +6,6 @@ function PendingCard({ processNo, result, processData, onClick }) {
   const isCompleted = result === "COMPLETED";
   const [isHovered, setIsHovered] = useState(false);
 
-  // Use Home Page styling (rich blue gradient by default, emerald if completed)
-  const cardGradient = isCompleted
-    ? "linear-gradient(145deg, #10b981 0%, #059669 100%)"
-    : "linear-gradient(145deg, #1e40af 0%, #2563eb 100%)";
-
   return (
     <Fragment>
       <Link
@@ -18,20 +13,26 @@ function PendingCard({ processNo, result, processData, onClick }) {
         style={{ textDecoration: "none", color: "inherit" }}
       >
         <div
-          className="card border-0 text-white shadow-sm"
+          className="card shadow-sm"
           style={{
-            width: "148px",
-            height: "108px",
-            minHeight: "108px",
-            maxHeight: "108px",
+            width: "152px",
+            height: "172px",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
-            background: cardGradient,
+            background: "#ffffff",
             borderRadius: "12px",
+            border: isCompleted
+              ? isHovered
+                ? "1px solid #10b981"
+                : "1px solid #d1fae5"
+              : isHovered
+              ? "1px solid #14b8a6"
+              : "1px solid #e2e8f0",
+            borderTop: isCompleted ? "3px solid #10b981" : "3px solid #0d9488",
             boxShadow: isHovered
-              ? "0 8px 18px rgba(30, 64, 175, 0.3)"
-              : "0 3px 8px rgba(0, 0, 0, 0.1)",
+              ? "0 8px 18px rgba(13, 148, 136, 0.12)"
+              : "0 2px 6px rgba(15, 23, 42, 0.05)",
             transform: isHovered ? "translateY(-4px)" : "translateY(0)",
             transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
             cursor: "pointer",
@@ -42,21 +43,21 @@ function PendingCard({ processNo, result, processData, onClick }) {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          {/* Header: Process / Station Name with vertical centering & 2-line clamp */}
+          {/* Header: Station / Process Name with guaranteed vertical centering & 2-line clamp */}
           <div
             className="px-2 py-1 text-center d-flex align-items-center justify-content-center"
             style={{
-              height: "44px",
-              minHeight: "44px",
-              maxHeight: "44px",
-              background: "rgba(0, 0, 0, 0.12)",
-              borderBottom: "1px solid rgba(255, 255, 255, 0.18)",
+              height: "46px",
+              minHeight: "46px",
+              maxHeight: "46px",
+              background: isCompleted ? "rgba(16, 185, 129, 0.06)" : "#f8fafc",
+              borderBottom: "1px solid #f1f5f9",
             }}
           >
             <span
-              className="fw-bold text-white text-center"
+              className="fw-bold text-dark text-center"
               style={{
-                fontSize: "0.85rem",
+                fontSize: "0.82rem",
                 lineHeight: "1.25",
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
@@ -72,28 +73,59 @@ function PendingCard({ processNo, result, processData, onClick }) {
             </span>
           </div>
 
-          {/* Body/Footer: Metrics (Total Count & Status Badge - No mid image) */}
+          {/* Middle: Pending Clock-History Emblem (distinct from Home page gear) */}
+          <div className="d-flex align-items-center justify-content-center py-2 flex-grow-1">
+            <div
+              className="d-flex align-items-center justify-content-center rounded-circle"
+              style={{
+                width: "44px",
+                height: "44px",
+                background: isCompleted ? "#ecfdf5" : "#f0fdfa",
+                border: isCompleted ? "1px solid #a7f3d0" : "1px solid #99f6e4",
+                boxShadow: "0 2px 5px rgba(13, 148, 136, 0.08)",
+                transition: "transform 0.2s ease",
+                transform: isHovered ? "scale(1.08)" : "scale(1)",
+              }}
+            >
+              <i
+                className={isCompleted ? "bi bi-check-circle-fill" : "bi bi-clock-history"}
+                style={{
+                  fontSize: "1.45rem",
+                  color: isCompleted ? "#059669" : "#0d9488",
+                }}
+              ></i>
+            </div>
+          </div>
+
+          {/* Footer: Metrics (Total Count & Mild Status Badge) */}
           <div
-            className="px-2 py-1.5 text-center d-flex flex-column align-items-center justify-content-center gap-1 flex-grow-1"
+            className="px-2 pb-2 text-center d-flex flex-column align-items-center gap-1.5"
             style={{
-              background: "rgba(0, 0, 0, 0.05)",
+              borderTop: "1px solid #f8fafc",
+              background: "#ffffff",
             }}
           >
-            <div
-              className="text-white-50 fw-semibold"
-              style={{ fontSize: "0.72rem", lineHeight: "1.1" }}
+            <span
+              className="badge rounded-pill fw-semibold"
+              style={{
+                background: "#f8fafc",
+                color: "#475569",
+                border: "1px solid #e2e8f0",
+                fontSize: "0.72rem",
+                padding: "2.5px 8px",
+              }}
             >
-              Total: <span className="text-white fw-bold">{counts}</span>
-            </div>
+              Total: <strong className="text-dark">{counts}</strong>
+            </span>
 
             <span
-              className="badge rounded-pill fw-semibold d-inline-flex align-items-center"
+              className="badge rounded-pill fw-bold d-inline-flex align-items-center"
               style={{
-                background: "rgba(255, 255, 255, 0.22)",
-                color: "#ffffff",
-                border: "1px solid rgba(255, 255, 255, 0.3)",
-                fontSize: "0.68rem",
-                padding: "2.5px 8px",
+                background: isCompleted ? "#dcfce7" : "#f0fdfa",
+                color: isCompleted ? "#15803d" : "#0f766e",
+                border: isCompleted ? "1px solid #86efac" : "1px solid #99f6e4",
+                fontSize: "0.7rem",
+                padding: "3px 9px",
                 letterSpacing: "0.3px",
               }}
             >
@@ -102,7 +134,7 @@ function PendingCard({ processNo, result, processData, onClick }) {
                 style={{
                   width: "5px",
                   height: "5px",
-                  background: isCompleted ? "#86efac" : "#60a5fa",
+                  background: isCompleted ? "#16a34a" : "#0d9488",
                   display: "inline-block",
                 }}
               ></span>
