@@ -111,6 +111,16 @@ function Filters() {
   const [relativeUrl, setRelativeUrl] = useState('');
   const location = useLocation();
 
+  const isPendingActive = location.pathname.startsWith('/pending');
+  const isHomeActive =
+    location.pathname === '/' ||
+    location.pathname === '/checkList' ||
+    location.pathname === '/card';
+  const isVerificationActive = location.pathname.startsWith('/verification');
+  const isHolidaysActive = location.pathname.startsWith('/holidays');
+  const isJudgementActive = location.pathname.startsWith('/judgementHistory');
+  const isDashboardActive = location.pathname.startsWith('/overallStatus');
+
   useEffect(() => {
     // Construct the URL without the host
     const urlWithoutHost = `${location.pathname}`;
@@ -407,8 +417,19 @@ function Filters() {
           {/* Home Button */}
           <Link to="/" style={{ textDecoration: "none" }}>
             <Button
-              className="d-flex align-items-center gap-1.5 px-3 shadow-sm bg-blue"
-              style={{ height: "38px", borderRadius: "6px", fontWeight: 500 }}
+              variant={isHomeActive ? "primary" : "outline-primary"}
+              className={`d-flex align-items-center gap-1.5 px-3 shadow-sm ${
+                isHomeActive ? "bg-blue text-white" : ""
+              }`}
+              style={{
+                height: "38px",
+                borderRadius: "6px",
+                fontWeight: isHomeActive ? 600 : 500,
+                background: isHomeActive ? "#0d6efd" : "#ffffff",
+                borderColor: isHomeActive ? "#0d6efd" : "#bfdbfe",
+                color: isHomeActive ? "#ffffff" : "#1d4ed8",
+                transition: "all 0.2s ease",
+              }}
               title="Home"
             >
               <i className="bi bi-house-door-fill"></i>
@@ -515,20 +536,25 @@ function Filters() {
           {/* TBM Dashboard Button beside Search */}
           <Link to="/overallStatus" style={{ textDecoration: "none" }}>
             <Button
-              variant="outline-primary"
+              variant={isDashboardActive ? "primary" : "outline-primary"}
               className="d-flex align-items-center gap-2 px-3 shadow-sm fw-semibold"
               style={{
                 height: "38px",
                 borderRadius: "6px",
-                background: "#eff6ff",
-                borderColor: "#bfdbfe",
-                color: "#1d4ed8",
+                background: isDashboardActive ? "#1d4ed8" : "#eff6ff",
+                borderColor: isDashboardActive ? "#1d4ed8" : "#bfdbfe",
+                color: isDashboardActive ? "#ffffff" : "#1d4ed8",
                 fontSize: "0.88rem",
                 letterSpacing: "0.2px",
+                transition: "all 0.2s ease",
               }}
               title="TBM Overall Status Dashboard"
             >
-              <i className="bi bi-speedometer2 text-primary fs-6"></i>
+              <i
+                className={`bi bi-speedometer2 fs-6 ${
+                  isDashboardActive ? "text-white" : "text-primary"
+                }`}
+              ></i>
               <span>TBM Dashboard</span>
             </Button>
           </Link>
@@ -540,45 +566,90 @@ function Filters() {
           <div className="d-flex align-items-center flex-wrap gap-2">
             {/* Monthly Report */}
             {date && (
-              <Button
-                variant="outline-secondary"
-                size="sm"
+              <button
+                type="button"
                 onClick={() => setShowModal(true)}
-                className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm border"
-                style={{ fontSize: "0.85rem", fontWeight: 500 }}
+                className="btn btn-sm d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm"
+                style={{
+                  fontSize: "0.85rem",
+                  fontWeight: 500,
+                  background: "#ffffff",
+                  color: "#475569",
+                  border: "1px solid #cbd5e1",
+                  transition: "all 0.2s ease",
+                  cursor: "pointer",
+                }}
                 title="Monthly Report"
               >
                 <i className="bi bi-graph-up text-primary"></i>
                 <span>Monthly Report</span>
-              </Button>
+              </button>
             )}
 
-            {/* Pending Items */}
+            {/* Pending Items - Highlighted with Mild Teal theme when active */}
             <Link to="/pendingTasks" style={{ textDecoration: "none" }}>
-              <Button
-                variant="outline-secondary"
-                size="sm"
-                className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm border"
-                style={{ fontSize: "0.85rem", fontWeight: 500 }}
+              <button
+                type="button"
+                className="btn btn-sm d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm"
+                style={{
+                  fontSize: "0.85rem",
+                  fontWeight: isPendingActive ? 600 : 500,
+                  background: isPendingActive
+                    ? "linear-gradient(135deg, #0f766e 0%, #0d9488 100%)"
+                    : "#ffffff",
+                  color: isPendingActive ? "#ffffff" : "#475569",
+                  border: isPendingActive
+                    ? "1px solid #0f766e"
+                    : "1px solid #cbd5e1",
+                  boxShadow: isPendingActive
+                    ? "0 3px 10px rgba(13, 148, 136, 0.35)"
+                    : "0 1px 2px rgba(0, 0, 0, 0.05)",
+                  transition: "all 0.2s ease",
+                  cursor: "pointer",
+                }}
                 title="Pending Items"
               >
-                <i className="bi bi-hourglass-split text-warning"></i>
+                <i
+                  className="bi bi-clock-history"
+                  style={{
+                    color: isPendingActive ? "#ffffff" : "#0d9488",
+                    fontSize: "0.95rem",
+                  }}
+                ></i>
                 <span>Pending Items</span>
-              </Button>
+              </button>
             </Link>
 
             {/* TL/GL Verification */}
             {level >= 20 && (
               <Link to="/verification" style={{ textDecoration: "none" }}>
-                <Button
-                  variant="outline-secondary"
-                  size="sm"
+                <button
+                  type="button"
                   onClick={() => setShowModals(true)}
-                  className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm border position-relative"
-                  style={{ fontSize: "0.85rem", fontWeight: 500 }}
+                  className="btn btn-sm d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm position-relative"
+                  style={{
+                    fontSize: "0.85rem",
+                    fontWeight: isVerificationActive ? 600 : 500,
+                    background: isVerificationActive
+                      ? "linear-gradient(135deg, #15803d 0%, #16a34a 100%)"
+                      : "#ffffff",
+                    color: isVerificationActive ? "#ffffff" : "#475569",
+                    border: isVerificationActive
+                      ? "1px solid #15803d"
+                      : "1px solid #cbd5e1",
+                    boxShadow: isVerificationActive
+                      ? "0 3px 10px rgba(22, 163, 74, 0.35)"
+                      : "0 1px 2px rgba(0, 0, 0, 0.05)",
+                    transition: "all 0.2s ease",
+                    cursor: "pointer",
+                  }}
                   title="TL/GL Verification"
                 >
-                  <i className="bi bi-calendar-check text-success"></i>
+                  <i
+                    className={`bi bi-calendar-check ${
+                      isVerificationActive ? "text-white" : "text-success"
+                    }`}
+                  ></i>
                   <span>TL/GL Verification</span>
                   <span
                     style={{
@@ -587,25 +658,44 @@ function Filters() {
                       width: "8px",
                       height: "8px",
                       display: "inline-block",
+                      border: isVerificationActive ? "1.5px solid #ffffff" : "none",
                     }}
                   ></span>
-                </Button>
+                </button>
               </Link>
             )}
 
             {/* Holiday List */}
             {level >= 100 && (
               <Link to="/holidays" style={{ textDecoration: "none" }}>
-                <Button
-                  variant="outline-secondary"
-                  size="sm"
-                  className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm border"
-                  style={{ fontSize: "0.85rem", fontWeight: 500 }}
+                <button
+                  type="button"
+                  className="btn btn-sm d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm"
+                  style={{
+                    fontSize: "0.85rem",
+                    fontWeight: isHolidaysActive ? 600 : 500,
+                    background: isHolidaysActive
+                      ? "linear-gradient(135deg, #be123c 0%, #e11d48 100%)"
+                      : "#ffffff",
+                    color: isHolidaysActive ? "#ffffff" : "#475569",
+                    border: isHolidaysActive
+                      ? "1px solid #be123c"
+                      : "1px solid #cbd5e1",
+                    boxShadow: isHolidaysActive
+                      ? "0 3px 10px rgba(225, 29, 72, 0.35)"
+                      : "0 1px 2px rgba(0, 0, 0, 0.05)",
+                    transition: "all 0.2s ease",
+                    cursor: "pointer",
+                  }}
                   title="Holiday List"
                 >
-                  <i className="bi bi-sunset text-danger"></i>
+                  <i
+                    className={`bi bi-sunset ${
+                      isHolidaysActive ? "text-white" : "text-danger"
+                    }`}
+                  ></i>
                   <span>Holiday List</span>
-                </Button>
+                </button>
               </Link>
             )}
           </div>
@@ -615,11 +705,30 @@ function Filters() {
             <Link to="/judgementHistory" style={{ textDecoration: "none" }}>
               <button
                 type="button"
-                className="btn btn-sm btn-outline-primary d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm fw-semibold"
-                style={{ fontSize: "0.85rem" }}
+                className="btn btn-sm d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm fw-semibold"
+                style={{
+                  fontSize: "0.85rem",
+                  fontWeight: isJudgementActive ? 600 : 500,
+                  background: isJudgementActive
+                    ? "linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)"
+                    : "#ffffff",
+                  color: isJudgementActive ? "#ffffff" : "#1d4ed8",
+                  border: isJudgementActive
+                    ? "1px solid #1d4ed8"
+                    : "1px solid #bfdbfe",
+                  boxShadow: isJudgementActive
+                    ? "0 3px 10px rgba(37, 99, 235, 0.35)"
+                    : "0 1px 2px rgba(0, 0, 0, 0.05)",
+                  transition: "all 0.2s ease",
+                  cursor: "pointer",
+                }}
                 title="Judgement History"
               >
-                <i className="bi bi-card-list"></i>
+                <i
+                  className={`bi bi-card-list ${
+                    isJudgementActive ? "text-white" : "text-primary"
+                  }`}
+                ></i>
                 <span>Judgement History</span>
               </button>
             </Link>
