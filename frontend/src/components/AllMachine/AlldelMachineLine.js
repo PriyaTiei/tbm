@@ -15,17 +15,17 @@ export default function AlldelMachineLine({ line, processList, counts }) {
 
   return (
     <Fragment>
-      {/* Modern Responsive Line Header - Home Page Style (No red!) */}
+      {/* Mild Slate Line Header (No dark blue, no red!) */}
       <div
         className="d-flex align-items-center justify-content-between flex-wrap gap-2 px-3 py-2 mx-3 my-3 rounded-3 shadow-sm text-white"
         style={{
-          background: "linear-gradient(135deg, #1e40af 0%, #2563eb 100%)",
-          border: "1px solid rgba(255, 255, 255, 0.15)",
+          background: "linear-gradient(135deg, #475569 0%, #334155 100%)",
+          border: "1px solid rgba(255, 255, 255, 0.18)",
         }}
       >
         <div className="d-flex align-items-center gap-2">
           <h5 className="m-0 fw-bold d-flex align-items-center" style={{ letterSpacing: "0.4px", fontSize: "1.1rem" }}>
-            <i className="bi bi-trash3 me-2 text-white-50"></i>
+            <i className="bi bi-archive me-2 text-white-50"></i>
             {line}
           </h5>
           <span

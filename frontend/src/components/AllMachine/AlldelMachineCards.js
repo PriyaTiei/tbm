@@ -6,9 +6,6 @@ export default function AlldelMachineCard(props) {
   const counts = Array.isArray(processData) ? processData.length : (processData ? processData.length : 0);
   const [isHovered, setIsHovered] = useState(false);
 
-  // Home Page royal blue gradient (No red!)
-  const cardGradient = "linear-gradient(145deg, #1e40af 0%, #2563eb 100%)";
-
   return (
     <Fragment>
       <Link
@@ -16,20 +13,20 @@ export default function AlldelMachineCard(props) {
         style={{ textDecoration: "none", color: "inherit" }}
       >
         <div
-          className="card border-0 text-white shadow-sm"
+          className="card shadow-sm"
           style={{
-            width: "148px",
-            height: "108px",
-            minHeight: "108px",
-            maxHeight: "108px",
+            width: "152px",
+            height: "154px",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
-            background: cardGradient,
+            background: "#ffffff",
             borderRadius: "12px",
+            border: isHovered ? "1px solid #94a3b8" : "1px solid #e2e8f0",
+            borderTop: "3px solid #64748b",
             boxShadow: isHovered
-              ? "0 8px 18px rgba(30, 64, 175, 0.3)"
-              : "0 3px 8px rgba(0, 0, 0, 0.1)",
+              ? "0 8px 18px rgba(71, 85, 105, 0.15)"
+              : "0 2px 6px rgba(15, 23, 42, 0.05)",
             transform: isHovered ? "translateY(-4px)" : "translateY(0)",
             transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
             cursor: "pointer",
@@ -40,21 +37,21 @@ export default function AlldelMachineCard(props) {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          {/* Header: Process / Station Name with vertical centering & 2-line clamp */}
+          {/* Header: Station / Process Name with vertical centering & 2-line clamp */}
           <div
             className="px-2 py-1 text-center d-flex align-items-center justify-content-center"
             style={{
-              height: "44px",
-              minHeight: "44px",
-              maxHeight: "44px",
-              background: "rgba(0, 0, 0, 0.12)",
-              borderBottom: "1px solid rgba(255, 255, 255, 0.18)",
+              height: "46px",
+              minHeight: "46px",
+              maxHeight: "46px",
+              background: "#f8fafc",
+              borderBottom: "1px solid #f1f5f9",
             }}
           >
             <span
-              className="fw-bold text-white text-center"
+              className="fw-bold text-dark text-center"
               style={{
-                fontSize: "0.85rem",
+                fontSize: "0.82rem",
                 lineHeight: "1.25",
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
@@ -70,33 +67,49 @@ export default function AlldelMachineCard(props) {
             </span>
           </div>
 
-          {/* Body/Footer: Metrics (Deleted Count & Deleted Badge - No mid image) */}
-          <div
-            className="px-2 py-1.5 text-center d-flex flex-column align-items-center justify-content-center gap-1 flex-grow-1"
-            style={{
-              background: "rgba(0, 0, 0, 0.05)",
-            }}
-          >
+          {/* Middle: Archived / Deleted Station Emblem */}
+          <div className="d-flex align-items-center justify-content-center py-2 flex-grow-1">
             <div
-              className="text-white-50 fw-semibold"
-              style={{ fontSize: "0.72rem", lineHeight: "1.1" }}
-            >
-              Total: <span className="text-white fw-bold">{counts}</span>
-            </div>
-
-            <span
-              className="badge rounded-pill fw-semibold d-inline-flex align-items-center"
+              className="d-flex align-items-center justify-content-center rounded-circle"
               style={{
-                background: "rgba(255, 255, 255, 0.22)",
-                color: "#ffffff",
-                border: "1px solid rgba(255, 255, 255, 0.3)",
-                fontSize: "0.68rem",
-                padding: "2.5px 8px",
-                letterSpacing: "0.3px",
+                width: "44px",
+                height: "44px",
+                background: "#f1f5f9",
+                border: "1px solid #e2e8f0",
+                boxShadow: "0 2px 5px rgba(0, 0, 0, 0.04)",
+                transition: "transform 0.2s ease",
+                transform: isHovered ? "scale(1.08)" : "scale(1)",
               }}
             >
-              <i className="bi bi-trash3 me-1" style={{ fontSize: "0.65rem" }}></i>
-              Deleted
+              <i
+                className="bi bi-archive"
+                style={{
+                  fontSize: "1.35rem",
+                  color: "#64748b",
+                }}
+              ></i>
+            </div>
+          </div>
+
+          {/* Footer: Metrics (Total Count only - Deleted badge removed) */}
+          <div
+            className="px-2 py-2 text-center d-flex justify-content-center align-items-center"
+            style={{
+              borderTop: "1px solid #f8fafc",
+              background: "#ffffff",
+            }}
+          >
+            <span
+              className="badge rounded-pill fw-semibold"
+              style={{
+                background: "#f8fafc",
+                color: "#475569",
+                border: "1px solid #e2e8f0",
+                fontSize: "0.75rem",
+                padding: "3px 12px",
+              }}
+            >
+              Total: <strong className="text-dark">{counts}</strong>
             </span>
           </div>
         </div>
