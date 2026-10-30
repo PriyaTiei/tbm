@@ -91,26 +91,20 @@ export default function AlldelMachineCard(props) {
             </div>
           </div>
 
-          {/* Footer: Metrics (Total Count only - Deleted badge removed) */}
+          {/* Footer: Metrics (Total Count only - No status/pill badges) */}
           <div
             className="px-2 py-2 text-center d-flex justify-content-center align-items-center"
             style={{
-              borderTop: "1px solid #f8fafc",
+              borderTop: "1px solid #f1f5f9",
               background: "#ffffff",
             }}
           >
-            <span
-              className="badge rounded-pill fw-semibold"
-              style={{
-                background: "#f8fafc",
-                color: "#475569",
-                border: "1px solid #e2e8f0",
-                fontSize: "0.75rem",
-                padding: "3px 12px",
-              }}
+            <div
+              className="text-muted fw-semibold"
+              style={{ fontSize: "0.78rem" }}
             >
               Total: <strong className="text-dark">{counts}</strong>
-            </span>
+            </div>
           </div>
         </div>
       </Link>
