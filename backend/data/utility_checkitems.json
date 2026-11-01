@@ -1,0 +1,5730 @@
+[
+  {
+    "line": "66KV Sub station",
+    "processNo": "HT Panel and C&R panel",
+    "model": "-",
+    "workDetail": "HT panel maintenance",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      6
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No loose connection, overheating or dust",
+    "action": "Inspect / Clean / Tighten"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "HT Panel and C&R panel",
+    "model": "-",
+    "workDetail": "LT Panel maintenance",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      6
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Panel operating normally",
+    "action": "Inspect / Tighten"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "11kV VCB",
+    "model": "SCHNEIDER",
+    "workDetail": "HT Beaker service",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      10
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      6
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Smooth breaker operation",
+    "action": "Service / Lubricate"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "11kV VCB",
+    "model": "SCHNEIDER",
+    "workDetail": "HT Breaker Testing",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      10
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      6
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tripping and protection within standard",
+    "action": "Test"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "Transformer 10 MVA",
+    "model": "Voltamp",
+    "workDetail": "Transformer winding testing",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      12
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Winding values within standard limit",
+    "action": "Test"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "Transformer 10 MVA",
+    "model": "Voltamp",
+    "workDetail": "Transformer Oil testing",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Oil quality within standard limit",
+    "action": "Test"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "Transformer 10 MVA",
+    "model": "Voltamp",
+    "workDetail": "Transformer Oil filtration",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Oil clean and moisture free",
+    "action": "Filter Oil"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "Transformer 10 MVA",
+    "model": "Voltamp",
+    "workDetail": "Silica gel replacement",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      12
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      3
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Silica gel in active condition",
+    "action": "Replace"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "Transformer 10 MVA",
+    "model": "Voltamp",
+    "workDetail": "OLTC servicing",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      12
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Smooth tap changer operation",
+    "action": "Service"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "H T Breaker (SF6 breaker)",
+    "model": "SIEMENS",
+    "workDetail": "Breaker testing",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Breaker performance satisfactory",
+    "action": "Test"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "H T Breaker (SF6 breaker)",
+    "model": "SIEMENS",
+    "workDetail": "Breaker servicing",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No leakage and proper operation",
+    "action": "Service"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "CT & PT",
+    "model": "-",
+    "workDetail": "CT PT Servicing",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No damage or leakage",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "CT & PT",
+    "model": "-",
+    "workDetail": "Oil filtration",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Oil condition satisfactory",
+    "action": "Filter Oil"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "CT & PT",
+    "model": "-",
+    "workDetail": "CT PT testing",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Output values within standard",
+    "action": "Test"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "Painting",
+    "model": "-",
+    "workDetail": "Rusted part painting",
+    "cycle": "1/5Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      2026
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No rusted surface observed",
+    "action": "Paint"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "GOS",
+    "model": "-",
+    "workDetail": "GOS maintenace",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      8
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Smooth operation",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "Earth pit",
+    "model": "-",
+    "workDetail": "Calibration",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      3
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      5
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Values within standard limit",
+    "action": "Calibrate"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "Earth pit",
+    "model": "-",
+    "workDetail": "Recondtioning based on condition",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      4
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      4
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Earth resistance maintained within limit",
+    "action": "Recondition"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "Energy meter and relay",
+    "model": "-",
+    "workDetail": "Calibration",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      2
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Values within standard limit",
+    "action": "Calibrate"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "UG cable",
+    "model": "-",
+    "workDetail": "Meggering",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Insulation resistance within standard",
+    "action": "Test"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "DCDB",
+    "model": "-",
+    "workDetail": "Health checking",
+    "cycle": "1/1Y",
+    "pS": "S",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Equipment functioning normally",
+    "action": "Inspect"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "110 DC battery",
+    "model": "-",
+    "workDetail": "Battery replacement",
+    "cycle": "1/3Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2024,
+      2027,
+      2030,
+      2033
+    ],
+    "m": [
+      12
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Required backup available",
+    "action": "Replace"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "KPTCL area GOS & SF6 breaker",
+    "model": "-",
+    "workDetail": "SF6 Breaker servicing and testing",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No gas leakage and proper operation",
+    "action": "Service / Test"
+  },
+  {
+    "line": "66KV Sub station",
+    "processNo": "KPTCL area GOS & SF6 breaker",
+    "model": "-",
+    "workDetail": "GOS maintenace",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "66kV Substation",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No gas leakage and proper operation",
+    "action": "Service / Test"
+  },
+  {
+    "line": "Engine",
+    "processNo": "LT PANEL & BREAKERS",
+    "model": "ABB",
+    "workDetail": "LT Panel Maintenance",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "LT Panel & Breaker",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Breaker operating correctly",
+    "action": "Service / Test"
+  },
+  {
+    "line": "Engine",
+    "processNo": "LT PANEL & BREAKERS",
+    "model": "ABB",
+    "workDetail": "LT Breaker Servicing & Testing",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "LT Panel & Breaker",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Breaker operating correctly",
+    "action": "Service / Test"
+  },
+  {
+    "line": "TNGA",
+    "processNo": "LT PANEL & BREAKERS",
+    "model": "ABB",
+    "workDetail": "LT Panel Maintenance",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "LT Panel & Breaker",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Breaker operating correctly",
+    "action": "Service / Test"
+  },
+  {
+    "line": "TNGA",
+    "processNo": "LT PANEL & BREAKERS",
+    "model": "ABB",
+    "workDetail": "LT Breaker Servicing & Testing",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "LT Panel & Breaker",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Breaker operating correctly",
+    "action": "Service / Test"
+  },
+  {
+    "line": "Engine",
+    "processNo": "DRY TRANSFORMER 500 kVA",
+    "model": "ABB",
+    "workDetail": "Visual Check and testing of the Transformer",
+    "cycle": "1/1M",
+    "pS": "S",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "Dry T/F Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No abnormality observed",
+    "action": "Inspect / Test"
+  },
+  {
+    "line": "Engine",
+    "processNo": "DRY TRANSFORMER 500 kVA",
+    "model": "ABB",
+    "workDetail": "Check for tightness/cleanliness of core & winding",
+    "cycle": "1/1Y",
+    "pS": "S",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "Dry T/F Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No loose connection or dirt",
+    "action": "Check / Tighten"
+  },
+  {
+    "line": "Engine",
+    "processNo": "DRY TRANSFORMER 500 kVA",
+    "model": "ABB",
+    "workDetail": "Check for IR values",
+    "cycle": "1/3Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2026,
+      2028,
+      2031,
+      2034
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "Dry T/F Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "IR value within standard",
+    "action": "Test"
+  },
+  {
+    "line": "TNGA",
+    "processNo": "DRY TRANSFORMER 500 kVA",
+    "model": "ABB",
+    "workDetail": "Visual Check and testing of the Transformer",
+    "cycle": "1/6M",
+    "pS": "S",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      8
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "Dry T/F Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No abnormality observed",
+    "action": "Inspect / Test"
+  },
+  {
+    "line": "TNGA",
+    "processNo": "DRY TRANSFORMER 500 kVA",
+    "model": "ABB",
+    "workDetail": "Check for tightness/cleanliness of core & winding",
+    "cycle": "1/1Y",
+    "pS": "S",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "Dry T/F Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No loose connection or dirt",
+    "action": "Check / Tighten"
+  },
+  {
+    "line": "TNGA",
+    "processNo": "DRY TRANSFORMER 500 kVA",
+    "model": "ABB",
+    "workDetail": "Check for IR values",
+    "cycle": "1/3Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2026,
+      2029,
+      2032,
+      2035
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "Dry T/F Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "IR value within standard",
+    "action": "Test"
+  },
+  {
+    "line": "Engine",
+    "processNo": "DG 2000 Kva",
+    "model": "CUMMINS",
+    "workDetail": "Radiaror service- cleaning,geasing ,General check",
+    "cycle": "1/3Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2024,
+      2027,
+      2030,
+      2033
+    ],
+    "m": [
+      7
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "DG",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Cooling system operating normally",
+    "action": "Clean / Grease / Inspect"
+  },
+  {
+    "line": "Engine",
+    "processNo": "DG 2000 Kva",
+    "model": "CUMMINS",
+    "workDetail": "Radiaror coolant replacement",
+    "cycle": "1/3Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2024,
+      2027,
+      2030,
+      2033
+    ],
+    "m": [
+      7
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "DG",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Coolant level and quality satisfactory",
+    "action": "Replace"
+  },
+  {
+    "line": "Engine",
+    "processNo": "DG 2000 Kva",
+    "model": "CUMMINS",
+    "workDetail": "AMC General check quarter",
+    "cycle": "1/4M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      4,
+      7,
+      11
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      1
+    ],
+    "area": "DG",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "DG operating normally",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Engine",
+    "processNo": "DG 2000 Kva",
+    "model": "CUMMINS",
+    "workDetail": "B. check",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      10
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "DG",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Performance within OEM standard",
+    "action": "Inspect"
+  },
+  {
+    "line": "Engine",
+    "processNo": "DG 2000 Kva",
+    "model": "CUMMINS",
+    "workDetail": "Battery replacement",
+    "cycle": "1/3Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      2026,
+      2029,
+      2032,
+      2035
+    ],
+    "m": [
+      9
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      1
+    ],
+    "area": "DG",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Performance within OEM standard",
+    "action": "Inspect"
+  },
+  {
+    "line": "Engine",
+    "processNo": "DG 2000 Kva",
+    "model": "CUMMINS",
+    "workDetail": "Alternator health check",
+    "cycle": "1/5Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2024,
+      2029,
+      2030,
+      2033
+    ],
+    "m": [
+      1
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "DG",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Alternator condition satisfactory",
+    "action": "Inspect / Test"
+  },
+  {
+    "line": "Engine",
+    "processNo": "DG 2000 Kva",
+    "model": "CUMMINS",
+    "workDetail": "Alternator Service",
+    "cycle": "1/5Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2024,
+      2029,
+      2034,
+      2039
+    ],
+    "m": [
+      1
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "DG",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Alternator operating smoothly",
+    "action": "Service"
+  },
+  {
+    "line": "Engine",
+    "processNo": "DG 2000 Kva",
+    "model": "CUMMINS",
+    "workDetail": "Alternator Greasing",
+    "cycle": "1/5Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2024,
+      2029,
+      2034,
+      2039
+    ],
+    "m": [
+      1
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "DG",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Bearing movement smooth",
+    "action": "Grease"
+  },
+  {
+    "line": "Engine",
+    "processNo": "DG 2000 Kva",
+    "model": "CUMMINS",
+    "workDetail": "Performance check",
+    "cycle": "1/5Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2024,
+      2029,
+      2034,
+      2039
+    ],
+    "m": [
+      1
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "DG",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Rated output achieved",
+    "action": "Test"
+  },
+  {
+    "line": "Engine",
+    "processNo": "500kVA",
+    "model": "TMIEC",
+    "workDetail": "Quarterly PM Check of 15 Nos of UPS",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "UPS",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "UPS functioning without alarm",
+    "action": "Inspect / Test"
+  },
+  {
+    "line": "Engine",
+    "processNo": "500kVA",
+    "model": "TMIEC",
+    "workDetail": "Batteries Replacement for every 3 Years",
+    "cycle": "1/3Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2024,
+      2027,
+      2030,
+      2033
+    ],
+    "m": [
+      4
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "UPS",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Backup time as per requirement",
+    "action": "Replace"
+  },
+  {
+    "line": "Engine",
+    "processNo": "3KVA & 1KVA",
+    "model": "EMERSON",
+    "workDetail": "AMC",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      5
+    ],
+    "area": "UPS",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Backup time as per requirement",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "COMPRESSOR PANEL",
+    "model": "ABB",
+    "workDetail": "LT Panel Maintenance",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Panel operating normally",
+    "action": "Inspect / Tighten"
+  },
+  {
+    "line": "Common",
+    "processNo": "COMPRESSOR PANEL",
+    "model": "ABB",
+    "workDetail": "LT Breaker Servicing & Testing",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Smooth breaker operation",
+    "action": "Service / Lubricate"
+  },
+  {
+    "line": "Common",
+    "processNo": "COMPRESSORS  (1050 cfm)",
+    "model": "ATLAS COPCO",
+    "workDetail": "Quarterly AMC",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      4,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Equipment operating normally",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "COMPRESSORS  (1050 cfm)",
+    "model": "ATLAS COPCO",
+    "workDetail": "4000/8000 hours check",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      7
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Parameters within OEM limit",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "COMPRESSORS  (1050 cfm)",
+    "model": "ATLAS COPCO",
+    "workDetail": "Screw element replacement 25000 hours",
+    "cycle": "1/5Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2022,
+      2027,
+      2032,
+      2037
+    ],
+    "m": [
+      9
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No abnormal noise or vibration",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "COMPRESSORS  (1050 cfm)",
+    "model": "ATLAS COPCO",
+    "workDetail": "motor servicing 25000 hours",
+    "cycle": "1/5Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2022,
+      2027,
+      2032,
+      2037
+    ],
+    "m": [
+      9
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Motor operating smoothly",
+    "action": "Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "DRYERS",
+    "model": "ATLAS COPCO",
+    "workDetail": "Radiaror service- cleaning,General check",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      9
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      5
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Dryer operating normally and cooling system free from dust.",
+    "action": "Clean / Inspect"
+  },
+  {
+    "line": "Common",
+    "processNo": "DRYERS",
+    "model": "ATLAS COPCO",
+    "workDetail": "Control circuit with Tripping circuit check",
+    "cycle": "1/5Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2023,
+      2028,
+      2033,
+      2038
+    ],
+    "m": [
+      6
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Control and tripping circuit functioning properly.",
+    "action": "Inspect / Test"
+  },
+  {
+    "line": "Common",
+    "processNo": "DRYERS",
+    "model": "ATLAS COPCO",
+    "workDetail": "Refrigent Gas Pressure & Pipe line Visual check",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Gas pressure normal and no leakage found.",
+    "action": "Inspect / Test"
+  },
+  {
+    "line": "TNGA/DC",
+    "processNo": "COMPRESSORS",
+    "model": "KAESER",
+    "workDetail": "3000 hours service",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      6,
+      12
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Compressor operating as per OEM standard.",
+    "action": "Service"
+  },
+  {
+    "line": "TNGA/DC",
+    "processNo": "COMPRESSORS",
+    "model": "KAESER",
+    "workDetail": "6000 hours service",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      9
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Compressor performance within OEM standard.",
+    "action": "Service"
+  },
+  {
+    "line": "TNGA/DC",
+    "processNo": "COMPRESSORS",
+    "model": "KAESER",
+    "workDetail": "12000 hour service",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      4,
+      10
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Compressor running smoothly without abnormal noise or vibration.",
+    "action": "Service"
+  },
+  {
+    "line": "TNGA/DC",
+    "processNo": "COMPRESSORS",
+    "model": "KAESER",
+    "workDetail": "Screw element replacement 32000 hours",
+    "cycle": "1/5Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2022,
+      2027,
+      2032,
+      2037
+    ],
+    "m": [
+      4
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Screw element condition satisfactory and compressor performance restored.",
+    "action": "Replace"
+  },
+  {
+    "line": "TNGA/DC",
+    "processNo": "COMPRESSORS",
+    "model": "KAESER",
+    "workDetail": "motor servicing 32000 hours",
+    "cycle": "1/5Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2022,
+      2027,
+      2032,
+      2037
+    ],
+    "m": [
+      4
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Motor operating smoothly with normal current and vibration.",
+    "action": "Service"
+  },
+  {
+    "line": "TNGA/DC",
+    "processNo": "COMPRESSORS",
+    "model": "KAESER",
+    "workDetail": "Dryer quarterly service",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Dryer performance satisfactory",
+    "action": "Service"
+  },
+  {
+    "line": "TNGA/DC",
+    "processNo": "COMPRESSORS",
+    "model": "KAESER",
+    "workDetail": "Line filter replacement",
+    "cycle": "1/1Y",
+    "pS": "S",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      10
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Air flow unrestricted",
+    "action": "Replace"
+  },
+  {
+    "line": "TNGA/DC",
+    "processNo": "COMPRESSORS",
+    "model": "KAESER",
+    "workDetail": "Coupling replacement",
+    "cycle": "1/2Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2025,
+      2027,
+      2029,
+      2031
+    ],
+    "m": [
+      6
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Coupling condition satisfactory",
+    "action": "Replace"
+  },
+  {
+    "line": "TNGA/DC",
+    "processNo": "COMPRESSORS",
+    "model": "KAESER",
+    "workDetail": "Quarterly AMC",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "compressors",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Normal working condition",
+    "action": "Inspect / Clean / Service"
+  },
+  {
+    "line": "Engine",
+    "processNo": "Pipe line Visual checking",
+    "model": "pipe lines",
+    "workDetail": "HSD Lines",
+    "cycle": "1/3M",
+    "pS": "S",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "HSD Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No leakage or damage observed",
+    "action": "Inspect"
+  },
+  {
+    "line": "Engine",
+    "processNo": "UNLOADING PUMP",
+    "model": "GLOBE GAS",
+    "workDetail": "Pump,motor & Coupling Alignment Check",
+    "cycle": "1/4M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      5,
+      9
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "HSD Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Alignment within standard",
+    "action": "Check / Align"
+  },
+  {
+    "line": "Engine",
+    "processNo": "UNLOADING PUMP",
+    "model": "GLOBE GAS",
+    "workDetail": "Pump & Ball bearing greasing",
+    "cycle": "1/4M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      5,
+      9
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      2
+    ],
+    "area": "HSD Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Smooth rotation achieved",
+    "action": "Grease"
+  },
+  {
+    "line": "Engine",
+    "processNo": "TRANSFER PUMP",
+    "model": "GLOBE GAS",
+    "workDetail": "Pump,motor & Coupling Alignment Check",
+    "cycle": "1/4M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      5,
+      9
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      3
+    ],
+    "area": "HSD Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Pump, motor and coupling alignment within standard limit.",
+    "action": "Check / Align"
+  },
+  {
+    "line": "Engine",
+    "processNo": "TRANSFER PUMP",
+    "model": "GLOBE GAS",
+    "workDetail": "Pump & Ball bearing greasing",
+    "cycle": "1/4M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      5,
+      9
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      4
+    ],
+    "area": "HSD Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Bearing rotation smooth without abnormal noise.",
+    "action": "Grease"
+  },
+  {
+    "line": "Engine",
+    "processNo": "STORAGE LICENCE RENEWAL",
+    "model": "SHRI RAM SAFETY",
+    "workDetail": "HSD, OIL & Petrol Lines",
+    "cycle": "1/10Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      2020,
+      2030,
+      2040,
+      2050
+    ],
+    "m": [
+      11
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      1
+    ],
+    "area": "HSD Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No leakage, damage or corrosion observed.",
+    "action": "Inspect"
+  },
+  {
+    "line": "Common",
+    "processNo": "Pipe line Visual checking",
+    "model": "pipe lines",
+    "workDetail": "Oil lines",
+    "cycle": "1/3M",
+    "pS": "S",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "Oil Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Pipeline free from leakage and physical damage.",
+    "action": "Inspect"
+  },
+  {
+    "line": "Common",
+    "processNo": "Pipe line Nitrogen pressure checking",
+    "model": "pipe lines",
+    "workDetail": "Oil lines",
+    "cycle": "1/5Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2025,
+      2030,
+      2035,
+      2040
+    ],
+    "m": [
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "Oil Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Nitrogen pressure maintained within specified limit.",
+    "action": "Test"
+  },
+  {
+    "line": "Common",
+    "processNo": "UNLOADING PUMP",
+    "model": "GLOBE GAS",
+    "workDetail": "Pump,motor 7 Coupling Alignment Check",
+    "cycle": "1/4M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      5,
+      9
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      5
+    ],
+    "area": "Oil Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Pump, motor and coupling alignment within standard limit.",
+    "action": "Check / Align"
+  },
+  {
+    "line": "Common",
+    "processNo": "UNLOADING PUMP",
+    "model": "GLOBE GAS",
+    "workDetail": "Pump & Ball bearing greasing",
+    "cycle": "1/4M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      5,
+      9
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      5
+    ],
+    "area": "Oil Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Bearing rotation smooth without abnormal noise.",
+    "action": "Grease"
+  },
+  {
+    "line": "Common",
+    "processNo": "TRANSFER PUMP",
+    "model": "GLOBE GAS",
+    "workDetail": "Pump,motor 7 Coupling Alignment Check",
+    "cycle": "1/4M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      5,
+      9
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      5
+    ],
+    "area": "Oil Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Pump, motor and coupling alignment within standard limit.",
+    "action": "Check / Align"
+  },
+  {
+    "line": "Common",
+    "processNo": "TRANSFER PUMP",
+    "model": "GLOBE GAS",
+    "workDetail": "Pump & Ball bearing greasing",
+    "cycle": "1/4M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      5,
+      9
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      5
+    ],
+    "area": "Oil Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Bearing rotation smooth without abnormal noise.",
+    "action": "Grease"
+  },
+  {
+    "line": "Common",
+    "processNo": "Pipe line Visual checking",
+    "model": "-",
+    "workDetail": "PNG lines",
+    "cycle": "1/3M",
+    "pS": "S",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "PNG Station",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No gas leakage, damage or corrosion observed.",
+    "action": "Inspect"
+  },
+  {
+    "line": "Common",
+    "processNo": "Pipe line Nitrogen pressure checking",
+    "model": "-",
+    "workDetail": "PNG lines",
+    "cycle": "1/5Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2024,
+      2029,
+      2034,
+      2039
+    ],
+    "m": [
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "PNG Station",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Nitrogen pressure maintained within specified limit.",
+    "action": "Test"
+  },
+  {
+    "line": "Common",
+    "processNo": "PNG CUBICAL",
+    "model": "GAIL GAS",
+    "workDetail": "PNG CUBICAL",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      6,
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "PNG Station",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "PNG cubicle operating normally without leakage or faults.",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "Pipe line Visual checking",
+    "model": "-",
+    "workDetail": "PNG lines",
+    "cycle": "1/3M",
+    "pS": "S",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      4,
+      7,
+      10
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "Gasoline Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No gas leakage, damage or corrosion observed.",
+    "action": "Inspect"
+  },
+  {
+    "line": "Common",
+    "processNo": "Pipe line Nitrogen pressure checking",
+    "model": "-",
+    "workDetail": "PNG lines",
+    "cycle": "1/5Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2024,
+      2029,
+      2034,
+      2039
+    ],
+    "m": [
+      10
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "Gasoline Yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Nitrogen pressure maintained within specified limit.",
+    "action": "Test"
+  },
+  {
+    "line": "Engine",
+    "processNo": "AHU",
+    "model": "ATE",
+    "workDetail": "Filter Cleaning",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "AHU",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filter free from dust and blockage",
+    "action": "Clean"
+  },
+  {
+    "line": "Engine",
+    "processNo": "AHU",
+    "model": "ATE",
+    "workDetail": "Filter Replacement",
+    "cycle": "1/3Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2024,
+      2027,
+      2030,
+      2033
+    ],
+    "m": [
+      7
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "AHU",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Air flow maintained",
+    "action": "Replace"
+  },
+  {
+    "line": "Engine",
+    "processNo": "AHU",
+    "model": "ATE",
+    "workDetail": "Tank cleaning",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "AHU",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank free from dirt and deposits",
+    "action": "Clean"
+  },
+  {
+    "line": "Engine",
+    "processNo": "AHU",
+    "model": "ATE",
+    "workDetail": "AMC check",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "AHU",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "AHU operating normally",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Engine",
+    "processNo": "AHU",
+    "model": "ATE",
+    "workDetail": "Efficiency Check",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      9
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "AHU",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Efficiency within standard",
+    "action": "Measure"
+  },
+  {
+    "line": "Engine",
+    "processNo": "AHU",
+    "model": "ATE",
+    "workDetail": "Dama & Celdex pad",
+    "cycle": "1/6Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2026,
+      2032,
+      2038,
+      2044
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "AHU",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Normal working condition",
+    "action": "Inspect / Clean / Service"
+  },
+  {
+    "line": "Engine",
+    "processNo": "CENTRALIZED AC (INDOOR AND OUT DOOR UNITS)",
+    "model": "DAIKIN",
+    "workDetail": "CENTRALIZED AC (INDOOR AND OUT DOOR UNITS)",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "A/C ,s",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Cooling performance satisfactory",
+    "action": "Service"
+  },
+  {
+    "line": "Engine",
+    "processNo": "ENGINE UPS ROOM AC",
+    "model": "EMERSON",
+    "workDetail": "ENGINE UPS ROOM AC",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "A/C ,s",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Cooling performance satisfactory and unit operating normally.",
+    "action": "Service / Inspect"
+  },
+  {
+    "line": "Engine",
+    "processNo": "UPS ROOM  BATTERY AC",
+    "model": "BLUE STAR",
+    "workDetail": "UPS ROOM  BATTERY AC",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      1
+    ],
+    "area": "A/C ,s",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Required room temperature maintained and unit operating normally.",
+    "action": "Service / Inspect"
+  },
+  {
+    "line": "Engine",
+    "processNo": "SPLIT A/C",
+    "model": "VOLTAS",
+    "workDetail": "SPLIT A/C",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "A/C ,s",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Cooling performance satisfactory with no abnormal noise or leakage.",
+    "action": "Service / Inspect"
+  },
+  {
+    "line": "Engine",
+    "processNo": "EXHAUST & FRESH AIR FANS SERVICE",
+    "model": "-",
+    "workDetail": "EXHAUST & FRESH AIR FANS SERVICE",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "Exhaust Fans",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Fan operating smoothly",
+    "action": "Service"
+  },
+  {
+    "line": "Engine",
+    "processNo": "LDB & PDB",
+    "model": "LEGRAND",
+    "workDetail": "LDB & PDB",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "LDB/PDB",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No loose connection or overheating",
+    "action": "Inspect / Tighten"
+  },
+  {
+    "line": "Engine",
+    "processNo": "HYBRID SOLAR",
+    "model": "Lavancha Renewable Energy",
+    "workDetail": "HYBRID SOLAR",
+    "cycle": "2/1M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      2,
+      4
+    ],
+    "d": [
+      1
+    ],
+    "area": "Solar System",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Expected power generation achieved",
+    "action": "Inspect / Clean"
+  },
+  {
+    "line": "Engine",
+    "processNo": "TRANSFORMER   2500 kVA (Oil Filtration)",
+    "model": "VOLT AMP",
+    "workDetail": "TRANSFORMER   2500 kVA (Oil Filtration)",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      7
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "Transformer oil filtration",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Transformer oil clean and test values within standard limits.",
+    "action": "Filter Oil / Test"
+  },
+  {
+    "line": "Engine",
+    "processNo": "LIGHTS & FANS",
+    "model": "-",
+    "workDetail": "Health checking",
+    "cycle": "1/3M",
+    "pS": "S",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "Canteen",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "All units functioning properly",
+    "action": "Inspect"
+  },
+  {
+    "line": "Engine",
+    "processNo": "THERMODYNAMIC WATER HEATER",
+    "model": "-",
+    "workDetail": "Health checking",
+    "cycle": "1/6M",
+    "pS": "S",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      6,
+      12
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "Canteen",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Heater operating normally",
+    "action": "Inspect"
+  },
+  {
+    "line": "Engine",
+    "processNo": "PANEL ROOM (Meter & relay Calibration)",
+    "model": "-",
+    "workDetail": "Yearly Calibration of Energy Meters & Relays",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      1
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "Calibration",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Calibration within tolerance",
+    "action": "Calibrate"
+  },
+  {
+    "line": "Engine",
+    "processNo": "EARTH RESISTANCE & PIT CONDITION CHECK",
+    "model": "-",
+    "workDetail": "EARTH RESISTANCE & PIT CONDITION CHECK",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      3
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "Earth Pits",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Earth resistance within standard",
+    "action": "Measure"
+  },
+  {
+    "line": "Common",
+    "processNo": "AIR QUALITY CHECK Auto & Engine",
+    "model": "-",
+    "workDetail": "AIR QUALITY CHECK Auto & Engine",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      7
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "Air Quality",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Values within permissible limit",
+    "action": "Monitor"
+  },
+  {
+    "line": "Common",
+    "processNo": "COMPRESSOR EFFICIENCY CHECK Auto & Engine",
+    "model": "-",
+    "workDetail": "COMPRESSOR EFFICIENCY CHECK Auto & Engine",
+    "cycle": "1/1Y",
+    "pS": "S",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      7
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "Compressor Efficiency",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Efficiency within target value",
+    "action": "Measure"
+  },
+  {
+    "line": "GD",
+    "processNo": "ENG PANELS",
+    "model": "ABB/PCE",
+    "workDetail": "ENG PANELS",
+    "cycle": "1/1Y",
+    "pS": "S",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      5
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "Thermography",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No hotspot detected",
+    "action": "Thermography Scan"
+  },
+  {
+    "line": "GD",
+    "processNo": "Chiller",
+    "model": "-",
+    "workDetail": "Quarterly AMC",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "QC Test bench utility equipments",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Cooling performance satisfactory and system operating normally.",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "GD",
+    "processNo": "Cooling tower",
+    "model": "-",
+    "workDetail": "Quarterly AMC",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "QC Test bench utility equipments",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Water circulation and cooling efficiency satisfactory.",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "GD",
+    "processNo": "Pump house",
+    "model": "-",
+    "workDetail": "Quarterly AMC",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "QC Test bench utility equipments",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Pumps operating normally without leakage or abnormal vibration.",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "SCADA AMC",
+    "model": "-",
+    "workDetail": "SCADA AMC",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      1
+    ],
+    "area": "Common",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "SCADA system functioning properly with all communication signals and controls working normally.",
+    "action": "Inspect / Test"
+  },
+  {
+    "line": "Common",
+    "processNo": "FORKLIFT",
+    "model": "TOYOTA",
+    "workDetail": "AMC activity",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      6,
+      12
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      1
+    ],
+    "area": "VALUE YARD",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "All functions operating normally",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "Chip compact m/c",
+    "model": "TOYOTA",
+    "workDetail": "AMC activity",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      6,
+      12
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "VALUE YARD",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Machine operating normally",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "WEIGHING BALANCE",
+    "model": "-",
+    "workDetail": "WEIGHING BALANCE",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      12
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "HAZARDOUS YARD",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Reading within tolerance",
+    "action": "Calibrate"
+  },
+  {
+    "line": "Common",
+    "processNo": "Hydro lift",
+    "model": "-",
+    "workDetail": "Value yard",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "Value yard",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Smooth lifting operation",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "PRESSURE GAUGE CALIBRATION",
+    "model": "-",
+    "workDetail": "Yearly Calibration of the Pressure guages",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      9
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "Guages",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Gauge accuracy within tolerance",
+    "action": "Calibrate"
+  },
+  {
+    "line": "Common",
+    "processNo": "UF BAG FILTERS CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "UF BAG FILTERS CLEANING ACTIVITY",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No blockage observed",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "RO CATRIDGE FILTERS CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "RO CATRIDGE FILTERS CLEANING ACTIVITY",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filter clean and serviceable",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "AIR BLOWER SUCTION FILTER CLEANING",
+    "model": "-",
+    "workDetail": "AIR BLOWER SUCTION FILTER CLEANING",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filter free from dust and blockage.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "DOSING TANK CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "DOSING TANK CLEANING ACTIVITY",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank free from deposits",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "TANK CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "TANK CLEANING ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank free from deposits and contamination.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "ETP 2 TREATED WATER QUALITY ANALYSIS BY EXTERNAL LAB",
+    "model": "-",
+    "workDetail": "ETP 2 TREATED WATER QUALITY ANALYSIS BY EXTERNAL LAB",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      1
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Water quality within specified limits.",
+    "action": "Test"
+  },
+  {
+    "line": "Common",
+    "processNo": "UF BAG FILTERS REPLACEMENT ACTIVITY",
+    "model": "-",
+    "workDetail": "UF BAG FILTERS REPLACEMENT ACTIVITY",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      11
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filtration performance satisfactory.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "RO CATRIDGE FILTERS REPLACEMENT ACTIVITY",
+    "model": "-",
+    "workDetail": "RO CATRIDGE FILTERS REPLACEMENT ACTIVITY",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      11
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filter performance satisfactory.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "RO MEMBRANE CHEMICAL CLEANING WORK",
+    "model": "-",
+    "workDetail": "RO MEMBRANE CHEMICAL CLEANING WORK",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Membrane performance restored",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "UF MEMBRANE CHEMICAL CLEANING WORK",
+    "model": "-",
+    "workDetail": "UF MEMBRANE CHEMICAL CLEANING WORK",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Membrane performance restored",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "AIR BLOWER BELT REPLACEMENT",
+    "model": "-",
+    "workDetail": "AIR BLOWER BELT REPLACEMENT",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      4
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Belt condition satisfactory",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "All PUMPS PM WORK",
+    "model": "-",
+    "workDetail": "All PUMPS PM WORK",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      7,
+      11
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Pump operating normally",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "All MOTORS PM WORK",
+    "model": "-",
+    "workDetail": "All MOTORS PM WORK",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      7,
+      11
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Motor operating normally",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "PSF & ACF FILTERS MEDIA (PEBBLES,SAND & ACTIVATED CARBON) REPLACEMENT",
+    "model": "-",
+    "workDetail": "PSF & ACF FILTERS MEDIA (PEBBLES,SAND & ACTIVATED CARBON) REPLACEMENT",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filtration efficiency maintained.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "RO MEMBRENE REPLACEMENT",
+    "model": "HYDRANAUTICS",
+    "workDetail": "RO MEMBRENE REPLACEMENT",
+    "cycle": "1/2Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2026,
+      2028,
+      2030,
+      2032
+    ],
+    "m": [
+      7
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "System performance within standard",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "UF MEMBRENE REPLACEMENT",
+    "model": "NORIT",
+    "workDetail": "UF MEMBRENE REPLACEMENT",
+    "cycle": "1/3Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2025,
+      2027,
+      2029,
+      2032
+    ],
+    "m": [
+      7
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "System performance within standard.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "AIR BLOWER SUCTION FILTER REPLACEMENT",
+    "model": "-",
+    "workDetail": "AIR BLOWER SUCTION FILTER REPLACEMENT",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      10
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filter condition satisfactory.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "FINE BUBBLE DIFFUSERS REPLACEMENT",
+    "model": "TECPRO",
+    "workDetail": "FINE BUBBLE DIFFUSERS REPLACEMENT",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      7
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Air distribution satisfactory.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "COURSE BUBBLE DIFFUSERS REPLACEMENT",
+    "model": "-",
+    "workDetail": "COURSE BUBBLE DIFFUSERS REPLACEMENT",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      10
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Air distribution satisfactory.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "AIR BLOWER SERVICING ACTIVITY",
+    "model": "-",
+    "workDetail": "AIR BLOWER SERVICING ACTIVITY",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Normal air delivery achieved",
+    "action": "Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "COD INSTRUMENT HEATING BLOCK (Calibration)",
+    "model": "HANNA",
+    "workDetail": "COD INSTRUMENT HEATING BLOCK (Calibration)",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      10
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Calibration within tolerance.",
+    "action": "Calibrate"
+  },
+  {
+    "line": "Common",
+    "processNo": "WEIGHING BALANCE (Calibration)",
+    "model": "INDIANE",
+    "workDetail": "WEIGHING BALANCE (Calibration)",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      10
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      1
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Calibration within tolerance.",
+    "action": "Calibrate"
+  },
+  {
+    "line": "Common",
+    "processNo": "SLUDGE BED MEDIA REPLACEMENT WORK",
+    "model": "-",
+    "workDetail": "SLUDGE BED MEDIA REPLACEMENT WORK",
+    "cycle": "1/5Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2025,
+      2030,
+      2035,
+      2040
+    ],
+    "m": [
+      6
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Treatment performance maintained.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "PAINTING AT ETP II AREA",
+    "model": "-",
+    "workDetail": "All area (Outside & Inside) including Handrails",
+    "cycle": "1/3Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      2024,
+      2027,
+      2030,
+      2033
+    ],
+    "m": [
+      6
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "ETP - II OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Surface protected and corrosion free.",
+    "action": "Paint"
+  },
+  {
+    "line": "Common",
+    "processNo": "AIR BLOWER SUCTION FILTER CHECKING & CLEANING",
+    "model": "-",
+    "workDetail": "AIR BLOWER SUCTION FILTER CHECKING & CLEANING",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filter free from dust and blockage.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "DOSING TANK CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "DOSING TANK CLEANING ACTIVITY",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank free from deposits.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "TANK CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "TANK CLEANING ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank clean and free from sludge.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "STP TREATED WATER QUALITY ANALYSIS BY EXTERNAL LAB",
+    "model": "-",
+    "workDetail": "STP TREATED WATER QUALITY ANALYSIS BY EXTERNAL LAB",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      1
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Water quality within specification.",
+    "action": "Test"
+  },
+  {
+    "line": "Common",
+    "processNo": "EQUALISATION TANK I & II  CLEANONG",
+    "model": "-",
+    "workDetail": "EQUALISATION TANK I & II  CLEANONG",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      11
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank clean and free from deposits.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "AIR BLOWER BELT REPLACEMENT",
+    "model": "-",
+    "workDetail": "AIR BLOWER BELT REPLACEMENT",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Belt condition satisfactory.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "ALL PUMPS PM WORK",
+    "model": "-",
+    "workDetail": "ALL PUMPS PM WORK",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      7,
+      11
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Pump operating normally.",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "ALL MOTORS PM WORK",
+    "model": "-",
+    "workDetail": "ALL MOTORS PM WORK",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      7,
+      11
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Motor operating normally.",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "PSF & ACF FILTERS MEDIA (PEBBLES,SAND & ACTIVATED CARBON) REPLACEMENT",
+    "model": "-",
+    "workDetail": "PSF & ACF FILTERS MEDIA (PEBBLES,SAND & ACTIVATED CARBON) REPLACEMENT",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filtration efficiency maintained.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "AIR BLOWER SUCTION FILTER REPLACEMENT",
+    "model": "-",
+    "workDetail": "AIR BLOWER SUCTION FILTER REPLACEMENT",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      10
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filter condition satisfactory.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "FINE BUBBLE DIFFUSERS REPLACEMENT",
+    "model": "TECPRO",
+    "workDetail": "FINE BUBBLE DIFFUSERS REPLACEMENT",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      7
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Air distribution satisfactory.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "COURSE BUBBLE DIFFUSERS REPLACEMENT",
+    "model": "-",
+    "workDetail": "COURSE BUBBLE DIFFUSERS REPLACEMENT",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      10
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Air distribution satisfactory.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "AIR BLOWER SERVICING ACTIVITY",
+    "model": "-",
+    "workDetail": "AIR BLOWER SERVICING ACTIVITY",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Normal air delivery achieved.",
+    "action": "Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "FLUSHING OHT CLEANING WORK",
+    "model": "-",
+    "workDetail": "FLUSHING OHT CLEANING WORK",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank clean and contamination free.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "MULTIGAS DETECTOR",
+    "model": "HONEYWELL",
+    "workDetail": "MULTIGAS DETECTOR",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      6,
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Detector responds correctly",
+    "action": "Calibrate / Test"
+  },
+  {
+    "line": "Common",
+    "processNo": "OIL & GREASE TANK CLEANING",
+    "model": "-",
+    "workDetail": "OIL & GREASE TANK CLEANING",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank free from sludge deposits.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "PAINTING AT STP AREA",
+    "model": "-",
+    "workDetail": "All area (Outside & Inside) including Handrails",
+    "cycle": "1/3Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      2024,
+      2027,
+      2030,
+      2033
+    ],
+    "m": [
+      3
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "STP OPERATION AND MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Surface protected and corrosion free.",
+    "action": "Paint"
+  },
+  {
+    "line": "GD",
+    "processNo": "RO CATRIDGE FILTERS CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "RO CATRIDGE FILTERS CLEANING ACTIVITY",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "GD RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filter clean and serviceable.",
+    "action": "Clean"
+  },
+  {
+    "line": "GD",
+    "processNo": "DOSING TANK CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "DOSING TANK CLEANING ACTIVITY",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "GD RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank free from deposits and contamination.",
+    "action": "Clean"
+  },
+  {
+    "line": "GD",
+    "processNo": "RO CATRIDGE FILTERS REPLACEMENT ACTIVITY",
+    "model": "-",
+    "workDetail": "RO CATRIDGE FILTERS REPLACEMENT ACTIVITY",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      4,
+      6,
+      8,
+      10,
+      12
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "GD RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filtration performance satisfactory.",
+    "action": "Replace"
+  },
+  {
+    "line": "GD",
+    "processNo": "RO MEMBRANE CHEMICAL CLEANING WORK",
+    "model": "HYDRANAUTICS",
+    "workDetail": "RO MEMBRANE CHEMICAL CLEANING WORK",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      4,
+      6,
+      8,
+      10,
+      12
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "GD RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Membrane performance restored",
+    "action": "Clean"
+  },
+  {
+    "line": "GD",
+    "processNo": "UV LIGHT REPLACEMENT AT RO WATER STORAGE TANK OUTLET",
+    "model": "-",
+    "workDetail": "UV LIGHT REPLACEMENT AT RO WATER STORAGE TANK OUTLET",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      8
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "GD RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "UV system functioning properly.",
+    "action": "Replace"
+  },
+  {
+    "line": "GD",
+    "processNo": "PSF & ACF FILTERS MEDIA (PEBBLES,SAND & ACTIVATED CARBON) REPLACEMENT",
+    "model": "-",
+    "workDetail": "PSF & ACF FILTERS MEDIA (PEBBLES,SAND & ACTIVATED CARBON) REPLACEMENT",
+    "cycle": "1/2Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2026,
+      2028,
+      2030,
+      2032
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "GD RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filtration efficiency maintained.",
+    "action": "Replace"
+  },
+  {
+    "line": "GD",
+    "processNo": "RO OHT CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "RO OHT CLEANING ACTIVITY",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      5
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "GD RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank clean and contamination free.",
+    "action": "Clean"
+  },
+  {
+    "line": "GD",
+    "processNo": "RO MEMBRENE REPLACEMENT",
+    "model": "HYDRANAUTICS",
+    "workDetail": "RO MEMBRENE REPLACEMENT",
+    "cycle": "1/2Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2026,
+      2028,
+      2030
+    ],
+    "m": [
+      4
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "GD RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "System performance within standard.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "RO CATRIDGE FILTERS CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "RO CATRIDGE FILTERS CLEANING ACTIVITY",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "DRINKING RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filter clean and serviceable.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "DOSING TANK CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "DOSING TANK CLEANING ACTIVITY",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "DRINKING RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank free from deposits and contamination.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "RO CATRIDGE FILTERS REPLACEMENT ACTIVITY",
+    "model": "-",
+    "workDetail": "RO CATRIDGE FILTERS REPLACEMENT ACTIVITY",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      4,
+      6,
+      8,
+      10,
+      12
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "DRINKING RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filtration performance satisfactory.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "RO MEMBRANE CHEMICAL CLEANING WORK",
+    "model": "HYDRANAUTICS",
+    "workDetail": "RO MEMBRANE CHEMICAL CLEANING WORK",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      4,
+      6,
+      8,
+      10,
+      12
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "DRINKING RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Membrane performance restored.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "PSF & ACF FILTERS MEDIA (PEBBLES,SAND & ACTIVATED CARBON) REPLACEMENT",
+    "model": "-",
+    "workDetail": "PSF & ACF FILTERS MEDIA (PEBBLES,SAND & ACTIVATED CARBON) REPLACEMENT",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "DRINKING RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filtration efficiency maintained.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "RO MEMBRENE REPLACEMENT",
+    "model": "HYDRANAUTICS",
+    "workDetail": "RO MEMBRENE REPLACEMENT",
+    "cycle": "1/2Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2026,
+      2028,
+      2030,
+      2032
+    ],
+    "m": [
+      7
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "DRINKING RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "System performance within standard.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "DRINKING WATER PIPELINE DISINFECTION PROCESS",
+    "model": "-",
+    "workDetail": "DRINKING WATER PIPELINE DISINFECTION PROCESS",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "DRINKING RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Water quality maintained",
+    "action": "Disinfect"
+  },
+  {
+    "line": "Common",
+    "processNo": "DRINKING WATER QUALITY ANALYSIS BY EXTERNAL LAB",
+    "model": "-",
+    "workDetail": "DRINKING WATER QUALITY ANALYSIS BY EXTERNAL LAB",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      1
+    ],
+    "area": "DRINKING RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Water quality within specification.",
+    "action": "Test"
+  },
+  {
+    "line": "Common",
+    "processNo": "UV LIGHT REPLACEMENT AT DRINKING WATER STORAGE TANK OUTLET",
+    "model": "-",
+    "workDetail": "UV LIGHT REPLACEMENT AT DRINKING WATER STORAGE TANK OUTLET",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "DRINKING RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "UV system functioning properly.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "UV LIGHT REPLACEMENT AT DRINKING WATER BOTTLING SECTION",
+    "model": "-",
+    "workDetail": "UV LIGHT REPLACEMENT AT DRINKING WATER BOTTLING SECTION",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "DRINKING RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "UV system functioning properly.",
+    "action": "Replace"
+  },
+  {
+    "line": "QC",
+    "processNo": "RO CATRIDGE FILTERS CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "RO CATRIDGE FILTERS CLEANING ACTIVITY",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "QC RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank clean and contamination free.",
+    "action": "Clean"
+  },
+  {
+    "line": "QC",
+    "processNo": "DOSING TANK CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "DOSING TANK CLEANING ACTIVITY",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "QC RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank free from deposits and contamination.",
+    "action": "Clean"
+  },
+  {
+    "line": "QC",
+    "processNo": "RO CATRIDGE FILTERS REPLACEMENT ACTIVITY",
+    "model": "-",
+    "workDetail": "RO CATRIDGE FILTERS REPLACEMENT ACTIVITY",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "QC RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filtration performance satisfactory.",
+    "action": "Replace"
+  },
+  {
+    "line": "QC",
+    "processNo": "RO MEMBRANE CHEMICAL CLEANING WORK",
+    "model": "HYDRANAUTICS",
+    "workDetail": "RO MEMBRANE CHEMICAL CLEANING WORK",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      11
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "QC RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Membrane performance restored.",
+    "action": "Clean"
+  },
+  {
+    "line": "QC",
+    "processNo": "PSF & ACF FILTERS MEDIA (PEBBLES,SAND & ACTIVATED CARBON) REPLACEMENT",
+    "model": "-",
+    "workDetail": "PSF & ACF FILTERS MEDIA (PEBBLES,SAND & ACTIVATED CARBON) REPLACEMENT",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      8
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "QC RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filtration efficiency maintained.",
+    "action": "Replace"
+  },
+  {
+    "line": "QC",
+    "processNo": "RO WATER STORAGE TANK CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "RO WATER STORAGE TANK CLEANING ACTIVITY",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      11
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "QC RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank clean and contamination free.",
+    "action": "Clean"
+  },
+  {
+    "line": "QC",
+    "processNo": "RO MEMBRENE REPLACEMENT",
+    "model": "HYDRANAUTICS",
+    "workDetail": "RO MEMBRENE REPLACEMENT",
+    "cycle": "1/2Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2025,
+      2027,
+      2029,
+      2031
+    ],
+    "m": [
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "QC RO PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "System performance within standard.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "REGENERATION TANK CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "REGENERATION TANK CLEANING ACTIVITY",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "SOFTENER PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank free from deposits.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "SOFTENER MEDIA REPLACEMENT ACTIVITY",
+    "model": "-",
+    "workDetail": "SOFTENER MEDIA REPLACEMENT ACTIVITY",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      11
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "SOFTENER PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Softening performance satisfactory",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "PSF FILTERS MEDIA (PEBBLES &SAND) REPLACEMENT ACTIVITY",
+    "model": "-",
+    "workDetail": "PSF FILTERS MEDIA (PEBBLES &SAND) REPLACEMENT ACTIVITY",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      10
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "SOFTENER PLANT",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filtration efficiency maintained.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "RAIN WATER POND CLEANING WORK",
+    "model": "-",
+    "workDetail": "RAIN WATER POND CLEANING WORK",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      1
+    ],
+    "area": "RAIN WATER POND",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Pond free from sludge",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "POND WATER STORAGE TANK CLEANING AT DOCK 1",
+    "model": "-",
+    "workDetail": "POND WATER STORAGE TANK CLEANING AT DOCK 1",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "RAIN WATER POND",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank clean and contamination free.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "POND WATER STORAGE TANK CLEANING AT DOCK 3",
+    "model": "-",
+    "workDetail": "POND WATER STORAGE TANK CLEANING AT DOCK 3",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "RAIN WATER POND",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank clean and contamination free.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "OPEN LOOP UG SUMP",
+    "model": "-",
+    "workDetail": "OPEN LOOP UG SUMP",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "COOLING TOWER",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Sump free from deposits.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "CLOSE LOOP UG SUMP",
+    "model": "-",
+    "workDetail": "CLOSE LOOP UG SUMP",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "COOLING TOWER",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Sump free from deposits.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "DIESPRAY TANK CLEANING WORK",
+    "model": "-",
+    "workDetail": "DIESPRAY TANK CLEANING WORK",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "COOLING TOWER",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank clean and contamination free.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "UG SUMP TANK CLEANING WORK",
+    "model": "-",
+    "workDetail": "UG SUMP TANK CLEANING WORK",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      11
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "UG SUMP",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Sump clean and contamination free",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "RAW WATER TRANSFER PUMPS PM WORK",
+    "model": "-",
+    "workDetail": "RAW WATER TRANSFER PUMPS PM WORK",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      11
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "UG SUMP",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Pump operating normally",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "CATRIDGE FILTERS REPLACEMENT ACTIVITY",
+    "model": "-",
+    "workDetail": "AMC activity",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      7,
+      11
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "ZLD PLANT OPERATION & MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filtration performance satisfactory.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "PSF & ACF FILTERS MEDIA (PEBBLES,SAND & ACTIVATED CARBON) REPLACEMENT",
+    "model": "-",
+    "workDetail": "AMC activity",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      10
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "ZLD PLANT OPERATION & MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Filtration efficiency maintained.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "UV LIGHT REPLACEMENT",
+    "model": "-",
+    "workDetail": "AMC activity",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      10
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "ZLD PLANT OPERATION & MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "UV system functioning properly.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "THERMIC FLUID OIL TOPUP ACTIVITY",
+    "model": "-",
+    "workDetail": "AMC activity",
+    "cycle": "1/2Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      2025,
+      2027,
+      2029,
+      2031
+    ],
+    "m": [
+      9
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "ZLD PLANT OPERATION & MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Oil level maintained",
+    "action": "Refill"
+  },
+  {
+    "line": "Common",
+    "processNo": "ISO BUTANE GAS DETECTOR SERVICE ACTIVITY",
+    "model": "-",
+    "workDetail": "AMC activity",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      8
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "ZLD PLANT OPERATION & MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Detector responding correctly",
+    "action": "Calibrate / Test"
+  },
+  {
+    "line": "Common",
+    "processNo": "THERMIC FLUID HEATER SERVICE ACTIVITY",
+    "model": "-",
+    "workDetail": "AMC activity",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "ZLD PLANT OPERATION & MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Heater operating normally",
+    "action": "Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "PUMP OIL REPLACEMENT",
+    "model": "-",
+    "workDetail": "AMC activity",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      8
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "ZLD PLANT OPERATION & MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Oil condition satisfactory",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "COMPRESSOR OIL REPLACEMENT",
+    "model": "-",
+    "workDetail": "AMC activity",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      6,
+      12
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "ZLD PLANT OPERATION & MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Oil quality maintained",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "ZLD FEED TANK CLEANING ACTIVITY",
+    "model": "-",
+    "workDetail": "AMC activity",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "ZLD PLANT OPERATION & MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank free from deposits.",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "FINAL TREATED WATER TANK CLEANING",
+    "model": "-",
+    "workDetail": "AMC activity",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      5
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "ZLD PLANT OPERATION & MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Tank clean and contamination free",
+    "action": "Clean"
+  },
+  {
+    "line": "Common",
+    "processNo": "DRUM EVAPORATOR DRUM REPLACEMENT",
+    "model": "-",
+    "workDetail": "AMC activity",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      4,
+      8,
+      10,
+      12
+    ],
+    "w": [
+      2
+    ],
+    "d": [
+      7
+    ],
+    "area": "ZLD PLANT OPERATION & MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Equipment operating normally.",
+    "action": "Replace"
+  },
+  {
+    "line": "Common",
+    "processNo": "PRESSURE GAUGE CALIBRATION",
+    "model": "-",
+    "workDetail": "AMC activity",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      1
+    ],
+    "area": "ZLD PLANT OPERATION & MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Gauge accuracy within tolerance.",
+    "action": "Calibrate"
+  },
+  {
+    "line": "Common",
+    "processNo": "ALL PUMPS AND MOTORS SERVICE ACTIVITY",
+    "model": "-",
+    "workDetail": "AMC activity",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      7,
+      11
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "ZLD PLANT OPERATION & MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Equipment operating normally",
+    "action": "Service"
+  },
+  {
+    "line": "Common",
+    "processNo": "DESCALING ACTIVITY",
+    "model": "-",
+    "workDetail": "AMC activity",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      1
+    ],
+    "area": "ZLD PLANT OPERATION & MAINTENANCE",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No scale deposition observed",
+    "action": "Clean"
+  }
+]
