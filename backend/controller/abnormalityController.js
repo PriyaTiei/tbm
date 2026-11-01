@@ -14,13 +14,13 @@ const { getStartDate, getEndDate } = require("../util/getISODate");
 
 const { ObjectId } = require("../util/getObjectType");
 
-
-
-
 exports.createAbnormality = catchAsyncError(async (req, res, next) => {
-  console.log("*******************************************", req.body, "********************************************************");
+  console.log(
+    "*******************************************",
+    req.body,
+    "********************************************************",
+  );
   const {
-
     checkItem,
 
     abnormality,
@@ -47,12 +47,10 @@ exports.createAbnormality = catchAsyncError(async (req, res, next) => {
 
     pS,
 
-    m_spec
-
+    m_spec,
   } = req.body;
 
   const abnormalityItem = await AbnormalityModel.create({
-
     checkItem,
 
     abnormality,
@@ -81,12 +79,10 @@ exports.createAbnormality = catchAsyncError(async (req, res, next) => {
 
     pS,
 
-    m_spec
-
+    m_spec,
   });
 
   return res.status(200).json({ success: true, abnormalityItem });
-
 });
 
 exports.uploadAbnormalityImages = catchAsyncError(async (req, res, next) => {
@@ -121,7 +117,7 @@ exports.uploadAbnormalityImages = catchAsyncError(async (req, res, next) => {
     const updatedDoc = await AbnormalityModel.findByIdAndUpdate(
       _id,
       { $set: updateFields },
-      { new: true }
+      { new: true },
     );
 
     if (!updatedDoc) {
@@ -145,13 +141,6 @@ exports.uploadAbnormalityImages = catchAsyncError(async (req, res, next) => {
     });
   }
 });
-
-
-
-
-
-
-
 
 // exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
 
@@ -191,9 +180,6 @@ exports.uploadAbnormalityImages = catchAsyncError(async (req, res, next) => {
 
 //   } = req.body;
 
-
-
-
 //   abnormalityItem.abnormality = abnormality;
 
 //   abnormalityItem.countermeasure = countermeasure;
@@ -222,10 +208,6 @@ exports.uploadAbnormalityImages = catchAsyncError(async (req, res, next) => {
 
 // });
 
-
-
-
-
 exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
   const id = req.params.id;
 
@@ -246,7 +228,7 @@ exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
     user,
     beforeImage,
     afterImage,
-    m_spec
+    m_spec,
   } = req.body;
 
   // Update basic fields
@@ -263,11 +245,11 @@ exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
 
   // ✅ ONLY update image fields if they are actually provided
   // This prevents overwriting existing images with null/undefined
-  if (beforeImage !== undefined && beforeImage !== null && beforeImage !== '') {
+  if (beforeImage !== undefined && beforeImage !== null && beforeImage !== "") {
     abnormalityItem.beforeImage = beforeImage;
   }
 
-  if (afterImage !== undefined && afterImage !== null && afterImage !== '') {
+  if (afterImage !== undefined && afterImage !== null && afterImage !== "") {
     abnormalityItem.afterImage = afterImage;
   }
 
@@ -275,21 +257,14 @@ exports.updateAbnormality = catchAsyncError(async (req, res, next) => {
   return res.status(201).json({ success: true, abnormalityItem });
 });
 
-
 exports.deleteAbnormality = catchAsyncError(async (req, res, next) => {
-
   const id = req.params.id;
 
   const abnormalityItem = await AbnormalityModel.findById(id);
 
   if (!abnormalityItem) {
-
     return next(new ErrorHandler("cannot find this abnormalityItem", 404));
-
   }
-
-
-
 
   await abnormalityItem.remove();
 
@@ -298,77 +273,53 @@ exports.deleteAbnormality = catchAsyncError(async (req, res, next) => {
     .status(201)
 
     .json({ success: true, message: "deleted Abnormality Item successfully" });
-
 });
 
-
-
-
 exports.getAbnormalityAll = catchAsyncError(async (req, res, next) => {
-
   const fromDate = req.params.fromDate;
 
   var toDate = req.params.toDate;
 
   var queryStr = req.query;
 
-  var createdAt = { $gte: fromDate, $lt: toDate }
+  var createdAt = { $gte: fromDate, $lt: toDate };
 
-  let checkItemArray = [""]
+  let checkItemArray = [""];
 
   if (queryStr?.item) {
-
-    checkItemArray = []
+    checkItemArray = [];
 
     let checkItems = await HeadModel.find({
-
       workDetail: {
-
         $regex: queryStr.item,
 
-        $options: "i"
+        $options: "i",
+      },
+    });
 
-      }
-
-    })
-
-    checkItems.map(item => {
-
-      checkItemArray.push(item._id.toString())
-
-    })
-
+    checkItems.map((item) => {
+      checkItemArray.push(item._id.toString());
+    });
   }
-
-
-
 
   if (queryStr.item && !checkItemArray.length) {
-
-    return []
-
+    return [];
   }
 
-
-
-  const abnormailityFeature = new ApiFeatureAbnormality(AbnormalityModel.find(), queryStr, createdAt, checkItemArray).filter()
-
-
-
+  const abnormailityFeature = new ApiFeatureAbnormality(
+    AbnormalityModel.find(),
+    queryStr,
+    createdAt,
+    checkItemArray,
+  ).filter();
 
   //test comp
 
-  const abnormalities = await abnormailityFeature.query.find({
-
-
-
-
-
-
-  })
+  const abnormalities = await abnormailityFeature.query.find({});
   for (let i = 0; i < abnormalities.length; i++) {
+    // Look for a card specifically raised for this abnormality
     const card = await CardRaisedModel.findOne({
-      checkItem: abnormalities[i].checkItem
+      abnormalityId: abnormalities[i]._id,
     }).sort({ createdAt: -1 });
 
     abnormalities[i] = abnormalities[i].toObject();
@@ -376,34 +327,29 @@ exports.getAbnormalityAll = catchAsyncError(async (req, res, next) => {
       "Abnormality ID:",
       abnormalities[i]._id.toString(),
       "Card Found:",
-      card ? card.createdAt : "NOT FOUND"
+      card ? card.createdAt : "NOT FOUND",
     );
+    // If a card was specifically raised for this abnormality, use that card's createdAt;
+    // otherwise fallback to the date when the abnormality occurred/was reported on the checklist card.
     abnormalities[i].cardCreatedDate = card
       ? card.createdAt
-      : null;
+      : abnormalities[i].createdAt;
   }
 
-
-
   if (abnormalities.length === 0) {
-
     return next(new ErrorHandler("Abnormalities list not found", 404));
-
   }
 
   const totalAbnormalities = abnormalities.length;
 
   // console.log(abnormalities)
 
-  return res.status(201).json({ success: true, totalAbnormalities, abnormalities });
-
+  return res
+    .status(201)
+    .json({ success: true, totalAbnormalities, abnormalities });
 });
 
-
-
-
 exports.getAbnormality = catchAsyncError(async (req, res, next) => {
-
   const id = req.params.id;
 
   const abnormalityItem = await AbnormalityModel.findById(id)
@@ -413,68 +359,38 @@ exports.getAbnormality = catchAsyncError(async (req, res, next) => {
     .populate("user", "name");
 
   if (!abnormalityItem) {
-
     return next(new ErrorHandler("cannot find this abnormalityItem", 404));
-
   }
 
-
-
-
   return res.status(201).json({ success: true, abnormalityItem });
-
 });
 
-
-
-
 exports.getAbnormalityByIdAndDate = catchAsyncError(async (req, res, next) => {
-
   const id = req.query.id;
 
   const date = req.query.date;
 
   console.log(date);
 
-  var newQueryStr = {}
-
-
-
+  var newQueryStr = {};
 
   if (id != "" && date != "") {
-
     newQueryStr["createdAt"] = {
-
       $lte: new Date(getEndDate(date)),
 
       $gte: new Date(getStartDate(date)),
-
-    }
-
+    };
   }
 
-
-
-
-  newQueryStr['checkItem'] = ObjectId(id)
-
-
-
+  newQueryStr["checkItem"] = ObjectId(id);
 
   console.log(newQueryStr);
 
-  const abnormalityItem = await AbnormalityModel.findOne(newQueryStr)
-
-
+  const abnormalityItem = await AbnormalityModel.findOne(newQueryStr);
 
   if (abnormalityItem == null) {
-
     return res.status(201).json({ success: false });
-
   }
 
-
-
   return res.status(201).json({ success: true, abnormalityItem });
-
 });

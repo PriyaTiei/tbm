@@ -770,15 +770,23 @@ async function getItemsOKCountByLine(report, pS, line) {
     });
   }
 
-  pipeline.push({
-    $group: {
-      _id: {
-        entryFor: "$entryFor",
-        line: "$checkItemData.line",
+  pipeline.push(
+    {
+      $group: {
+        _id: {
+          entryFor: "$entryFor",
+          line: "$checkItemData.line",
+        },
+        items: { $addToSet: "$checkItem" },
       },
-      count: { $sum: 1 },
     },
-  });
+    {
+      $project: {
+        _id: 1,
+        count: { $size: "$items" },
+      },
+    }
+  );
 
   const dailyStatus = await DailyStatus.aggregate(pipeline);
 
@@ -830,15 +838,23 @@ async function getItemsNGCountByLine(report, pS, line) {
       },
     });
   }
-  pipeline.push({
-    $group: {
-      _id: {
-        entryFor: "$entryFor",
-        line: "$checkItemData.line",
+  pipeline.push(
+    {
+      $group: {
+        _id: {
+          entryFor: "$entryFor",
+          line: "$checkItemData.line",
+        },
+        items: { $addToSet: "$checkItem" },
       },
-      count: { $sum: 1 },
     },
-  });
+    {
+      $project: {
+        _id: 1,
+        count: { $size: "$items" },
+      },
+    }
+  );
 
   const dailyStatus = await DailyStatus.aggregate(pipeline);
 
@@ -856,13 +872,17 @@ async function getItemsNGCountByLine(report, pS, line) {
   });
 }
 
-async function getItemsPendingCountByLine(report, line) {
+async function getItemsPendingCountByLine(report, pS, line) {
+  const matchCriteria = {
+    updatedAt: { $gte: report.startDate, $lte: report.endDate },
+    result: { $eq: "PENDING" },
+  };
+  if (pS) {
+    matchCriteria.pS = pS;
+  }
   const pipeline = [
     {
-      $match: {
-        updatedAt: { $gte: report.startDate, $lte: report.endDate },
-        result: { $eq: "PENDING" },
-      },
+      $match: matchCriteria,
     },
     {
       $lookup: {
@@ -883,15 +903,23 @@ async function getItemsPendingCountByLine(report, line) {
       },
     });
   }
-  pipeline.push({
-    $group: {
-      _id: {
-        date: { $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" } },
-        line: "$checkItemData.line",
+  pipeline.push(
+    {
+      $group: {
+        _id: {
+          date: { $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" } },
+          line: "$checkItemData.line",
+        },
+        items: { $addToSet: "$checkItem" },
       },
-      count: { $sum: 1 },
     },
-  });
+    {
+      $project: {
+        _id: 1,
+        count: { $size: "$items" },
+      },
+    }
+  );
   const pendingTasks = await PendingTask.aggregate(pipeline);
 
   pendingTasks.forEach((task) => {
@@ -966,7 +994,7 @@ async function refineDataByLine(report, selectedLine) {
     iDate <= report.endDate;
     iDate.setUTCDate(iDate.getUTCDate() + 1)
   ) {
-    strDate = iDate.toISOString().split("T")[0];
+    const strDate = iDate.toISOString().split("T")[0];
     const tStrDate = strDate.replaceAll("-0", "-");
 
     allLines.forEach((line) => {
@@ -1066,8 +1094,7 @@ async function fillTotalItemsByLine(report, pS, line) {
 
   while (tDate <= report.endDate) {
     let d = tDate.getDay();
-    d = d == 0 ? 7 : d;
-    let w = Math.trunc(getDifferenceInDays(tDate, report.startDate) / 7) + 1;
+    let w = Math.floor(tDate.getDate() / 7.1) + 1;
     let m = tDate.getMonth() + 1;
     let y = tDate.getFullYear();
     let query = {
@@ -1092,7 +1119,7 @@ async function fillTotalItemsByLine(report, pS, line) {
         if (!lineGroups[lineName]) {
           lineGroups[lineName] = 0;
         }
-        lineGroups[lineName] += item.processList ? item.processList.length : 0;
+        lineGroups[lineName] += (item.processList || []).length;
       }
     });
 
@@ -1127,6 +1154,7 @@ async function fillTotalItemsByLine(report, pS, line) {
 }
 
 exports.reportTBMStatus = catchAsyncError(async (req, res, next) => {
+  console.log("TBM STATUS API HIT");
   var { user, month, year, pS, line } = req.body;
 
   let report = {};
@@ -1150,7 +1178,7 @@ exports.reportTBMStatus = catchAsyncError(async (req, res, next) => {
   await fillHolidays(report);
   await getItemsOKCountByLine(report, pS, line);
   await getItemsNGCountByLine(report, pS, line);
-  await getItemsPendingCountByLine(report, line);
+  await getItemsPendingCountByLine(report, pS, line);
   await fillTotalItemsByLine(report, pS, line);
   await refineDataByLine(report, line);
 
@@ -1272,7 +1300,7 @@ const getPageNumber = async (query, checkitem) => {
   var headCheckList = await headObject.query;
 
   if (headCheckList.length === 0) {
-    return next(new ErrorHandler("could not find check list", 404));
+    return 1;
   }
 
   // const totalCount = await HeadModel.countDocuments(headObject.newQueryStr);
@@ -1338,6 +1366,7 @@ exports.tlVerifyItems = catchAsyncError(async (req, res, next) => {
   ]);
 
   const tlListPromises = tlList.map(async (item) => {
+    if (!item.item || !item.item[0]) return;
     console.log(
       "allparameters",
       item.checkItem,
@@ -1415,6 +1444,7 @@ exports.glVerifyItems = catchAsyncError(async (req, res, next) => {
   ]);
 
   const glListPromises = glList.map(async (item) => {
+    if (!item.item || !item.item[0]) return;
     console.log(
       "allparameters",
       item.checkItem,
@@ -1523,3 +1553,283 @@ exports.getVerifyItems = catchAsyncError(async (req, res, next) => {
   await Promise.all(dailyListPromises);
   return res.status(200).json({ success: true, dailyItemsWithGlTlVerify });
 });
+
+exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
+  const pS = req.query.pS || "P";
+  const dateStr = req.query.date;
+
+  let targetDate;
+  if (dateStr && dateStr.trim()) {
+    const parts = dateStr.trim().split(/[-/]/).map(Number);
+    if (parts[0] > 1000) {
+      targetDate = new Date(parts[0], parts[1] - 1, parts[2]);
+    } else {
+      targetDate = new Date(parts[2], parts[1] - 1, parts[0]);
+    }
+  } else {
+    targetDate = new Date();
+  }
+
+  const year = targetDate.getFullYear();
+  const month = targetDate.getMonth() + 1;
+  const day = targetDate.getDate();
+  const daysInMonth = new Date(year, month, 0).getDate();
+
+  const formattedSelectedDate = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+  const getNormalizedLine = (name) => {
+    const s = String(name || "").toLowerCase().trim();
+    if (s.includes("assembly")) return String(name || "").toUpperCase().trim();
+    if (s.includes("block")) return "BLOCK";
+    if (s.includes("crank")) return "CRANK";
+    if (s.includes("head")) return "HEAD";
+    return String(name || "").toUpperCase().trim();
+  };
+
+  // 1. Fetch checkitems for Maintenance (pS: "P")
+  const checkItems = await HeadModel.find({
+    pS: { $regex: new RegExp(`^${pS}$`, "i") },
+    $or: [{ isDeleted: { $exists: false } }, { isDeleted: false }]
+  }).select("_id line processNo cardNo d m w y cycle");
+
+  const checkItemMap = new Map();
+  const cardsByLine = { "BLOCK": new Map(), "CRANK": new Map(), "HEAD": new Map() };
+
+  checkItems.forEach(ci => {
+    const normLine = getNormalizedLine(ci.line);
+    if (!cardsByLine[normLine]) {
+      cardsByLine[normLine] = new Map();
+    }
+    const procKey = ci.processNo || ci.cardNo || String(ci._id);
+    if (!cardsByLine[normLine].has(procKey)) {
+      cardsByLine[normLine].set(procKey, []);
+    }
+    cardsByLine[normLine].get(procKey).push(ci);
+
+    checkItemMap.set(String(ci._id), {
+      line: normLine,
+      processNo: procKey,
+      items: cardsByLine[normLine].get(procKey)
+    });
+  });
+
+  const linesToProcess = ["BLOCK", "CRANK", "HEAD"];
+  Object.keys(cardsByLine).forEach(l => {
+    if (!linesToProcess.includes(l)) {
+      linesToProcess.push(l);
+    }
+  });
+
+  // Helper: check if a checkitem is scheduled for a given date
+  const isItemScheduledForDate = (it, dateObj) => {
+    const yNum = dateObj.getFullYear();
+    const mNum = dateObj.getMonth() + 1;
+    const dNum = dateObj.getDate();
+    const dayOfWeek = dateObj.getDay(); // 0 is Sunday, 1 is Monday ... 6 is Saturday
+    const isoDay = dayOfWeek === 0 ? 7 : dayOfWeek; // 1=Mon ... 7=Sun
+    const weekNo = Math.floor(dNum / 7.1) + 1;
+    const isSunday = (dayOfWeek === 0);
+
+    const yArr = Array.isArray(it.y) && it.y.length > 0 ? it.y : [9999];
+    if (!yArr.includes(9999) && !yArr.includes(yNum)) return false;
+
+    const mArr = Array.isArray(it.m) && it.m.length > 0 ? it.m : [9999];
+    if (!mArr.includes(9999) && !mArr.includes(99) && !mArr.includes(mNum)) return false;
+
+    const wArr = Array.isArray(it.w) && it.w.length > 0 ? it.w : [9999];
+    if (!wArr.includes(9999) && !wArr.includes(9) && !wArr.includes(weekNo)) return false;
+
+    const dArr = Array.isArray(it.d) && it.d.length > 0 ? it.d : [9999];
+    if (isSunday && !dArr.includes(7) && !dArr.includes(0)) return false;
+
+    const matchDay = dArr.includes(9999) || dArr.includes(9) || dArr.includes(isoDay) || dArr.includes(dayOfWeek);
+    if (!matchDay) return false;
+
+    return true;
+  };
+
+  const isCardScheduledForDate = (cardItems, dateObj) => {
+    return cardItems.some(it => isItemScheduledForDate(it, dateObj));
+  };
+
+  // 2. Fetch DailyStatus records for this month
+  const monthRegex = new RegExp(`^${year}-0?${month}-`);
+  const ddmmyyyyRegex = new RegExp(`-0?${month}-${year}$`);
+  const slashRegex = new RegExp(`^${year}/0?${month}/`);
+
+  const monthDailyStatuses = await DailyStatus.find({
+    pS: { $regex: new RegExp(`^${pS}$`, "i") },
+    $or: [
+      { entryFor: { $regex: monthRegex } },
+      { entryFor: { $regex: ddmmyyyyRegex } },
+      { entryFor: { $regex: slashRegex } }
+    ],
+    result: { $in: ["OK", "NG", "ok", "ng"] }
+  }).select("checkItem entryFor result checkedAt pS");
+
+  // Helper to parse day from entryFor
+  const parseEntry = (entryStr) => {
+    if (!entryStr) return null;
+    const parts = entryStr.trim().split(/[-/]/).map(Number);
+    if (parts.length < 3 || parts.some(isNaN)) return null;
+    let y, m, d;
+    if (parts[0] > 1000) {
+      y = parts[0]; m = parts[1]; d = parts[2];
+    } else if (parts[2] > 1000) {
+      d = parts[0]; m = parts[1]; y = parts[2];
+    } else {
+      return null;
+    }
+    return { year: y, month: m, day: d };
+  };
+
+  // Group actuals by line and date
+  const todaysCompletedItems = {};
+  const aodCompletedItems = {};
+  const monthCompletedItems = {};
+  const todaysOnTimeItems = {};
+  const todaysBacklogItems = {};
+
+  linesToProcess.forEach(l => {
+    todaysCompletedItems[l] = new Set();
+    aodCompletedItems[l] = new Set();
+    monthCompletedItems[l] = new Set();
+    todaysOnTimeItems[l] = new Set();
+    todaysBacklogItems[l] = new Set();
+  });
+
+  monthDailyStatuses.forEach(st => {
+    const parsed = parseEntry(st.entryFor);
+    if (!parsed || parsed.year !== year || parsed.month !== month) return;
+
+    const ciInfo = checkItemMap.get(String(st.checkItem));
+    if (!ciInfo) return;
+
+    const lineName = ciInfo.line;
+    const itemId = String(st.checkItem);
+
+    if (!monthCompletedItems[lineName]) {
+      monthCompletedItems[lineName] = new Set();
+      aodCompletedItems[lineName] = new Set();
+      todaysCompletedItems[lineName] = new Set();
+      todaysOnTimeItems[lineName] = new Set();
+      todaysBacklogItems[lineName] = new Set();
+    }
+
+    // Month actuals: key = day_itemId
+    monthCompletedItems[lineName].add(`${parsed.day}_${itemId}`);
+
+    // AOD actuals
+    if (parsed.day <= day) {
+      aodCompletedItems[lineName].add(`${parsed.day}_${itemId}`);
+    }
+
+    // Today's actuals
+    if (parsed.day === day) {
+      todaysCompletedItems[lineName].add(itemId);
+      todaysOnTimeItems[lineName].add(itemId);
+    } else if (st.checkedAt) {
+      // Check if checkedAt date is today's date
+      const chkDate = new Date(st.checkedAt);
+      if (
+        chkDate.getFullYear() === year &&
+        chkDate.getMonth() + 1 === month &&
+        chkDate.getDate() === day
+      ) {
+        todaysBacklogItems[lineName].add(itemId);
+      }
+    }
+  });
+
+  // 3. Build matrix rows
+  const linesData = [];
+  const totals = {
+    todaysPlan: 0,
+    todaysActual: 0,
+    cumPlanAod: 0,
+    cumActualAod: 0,
+    cumPendingAod: 0,
+    cumPlanMonth: 0,
+    cumActualMonth: 0,
+    cumPendingMonth: 0
+  };
+
+  const todaysTbmStatus = {
+    todaysCompleted: {},
+    otherDaysCompleted: {}
+  };
+
+  linesToProcess.forEach(lineName => {
+    const cardMap = cardsByLine[lineName] || new Map();
+    const cardList = Array.from(cardMap.entries()).map(([proc, items]) => ({ proc, items }));
+    const totalItemsOnLine = cardList.reduce((acc, c) => acc + c.items.length, 0);
+
+    let todaysPlan = 0;
+    let cumPlanAod = 0;
+    let cumPlanMonth = 0;
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dObj = new Date(year, month - 1, d);
+      const isSunday = (dObj.getDay() === 0);
+
+      let dayPlan = cardList.reduce((acc, c) => {
+        return acc + c.items.filter(it => isItemScheduledForDate(it, dObj)).length;
+      }, 0);
+
+
+
+      if (d === day) {
+        todaysPlan = dayPlan;
+      }
+      if (d <= day) {
+        cumPlanAod += dayPlan;
+      }
+      cumPlanMonth += dayPlan;
+    }
+
+    const todaysActual = todaysCompletedItems[lineName]?.size || 0;
+    const cumActualAod = aodCompletedItems[lineName]?.size || 0;
+    const cumActualMonth = monthCompletedItems[lineName]?.size || 0;
+
+    const cumPendingAod = Math.max(0, cumPlanAod - cumActualAod);
+    const cumPendingMonth = Math.max(0, cumPlanMonth - cumActualMonth);
+
+    todaysTbmStatus.todaysCompleted[lineName] = todaysOnTimeItems[lineName]?.size || 0;
+    todaysTbmStatus.otherDaysCompleted[lineName] = todaysBacklogItems[lineName]?.size || 0;
+
+    totals.todaysPlan += todaysPlan;
+    totals.todaysActual += todaysActual;
+    totals.cumPlanAod += cumPlanAod;
+    totals.cumActualAod += cumActualAod;
+    totals.cumPendingAod += cumPendingAod;
+    totals.cumPlanMonth += cumPlanMonth;
+    totals.cumActualMonth += cumActualMonth;
+    totals.cumPendingMonth += cumPendingMonth;
+
+    linesData.push({
+      line: lineName,
+      todaysPlan,
+      todaysActual,
+      cumPlanAod,
+      cumActualAod,
+      cumPendingAod,
+      cumPlanMonth,
+      cumActualMonth,
+      cumPendingMonth
+    });
+  });
+
+  todaysTbmStatus.todaysCompleted["TOTAL"] = Object.values(todaysTbmStatus.todaysCompleted).reduce((a, b) => a + b, 0);
+  todaysTbmStatus.otherDaysCompleted["TOTAL"] = Object.values(todaysTbmStatus.otherDaysCompleted).reduce((a, b) => a + b, 0);
+
+  return res.status(200).json({
+    success: true,
+    date: formattedSelectedDate,
+    pS: pS,
+    departmentName: pS === "P" ? "Maintenance (TBM)" : "Production (Smile Card)",
+    lines: linesData,
+    total: totals,
+    todaysTbmStatus: todaysTbmStatus
+  });
+});
+

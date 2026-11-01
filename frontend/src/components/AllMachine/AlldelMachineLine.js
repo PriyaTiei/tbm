@@ -4,36 +4,60 @@ import { useDispatch } from 'react-redux';
 import { setProcessData } from '../../redux/processData/processActions';
 import Loading from "../Loading";
 
-export default function AlldelMachineLine({ line, processList , counts  }) { 
- 
-  
+export default function AlldelMachineLine({ line, processList, counts }) { 
   const dispatch = useDispatch();
 
   const handleClick = (processData) => {
     dispatch(setProcessData(processData)); 
   };
 
-  let totalSum = Object.values(counts).reduce((acc, curr) => acc + curr, 0);
+  let totalSum = processList ? processList.length : 0;
 
   return (
     <Fragment>
-      <h3 className="mx-3 p-1 bg-info text-center ">{`${line} - ${totalSum}`}</h3>
-      <div className="d-flex flex-wrap">
-        {processList ?  processList
-        .map((processNo) => {
-             
-          return (
+      {/* Mild Slate Line Header (No dark blue, no red!) */}
+      <div
+        className="d-flex align-items-center justify-content-between flex-wrap gap-2 px-3 py-2 mx-3 my-3 rounded-3 shadow-sm text-white"
+        style={{
+          background: "linear-gradient(135deg, #475569 0%, #334155 100%)",
+          border: "1px solid rgba(255, 255, 255, 0.18)",
+        }}
+      >
+        <div className="d-flex align-items-center gap-2">
+          <h5 className="m-0 fw-bold d-flex align-items-center" style={{ letterSpacing: "0.4px", fontSize: "1.1rem" }}>
+            <i className="bi bi-archive me-2 text-white-50"></i>
+            {line}
+          </h5>
+          <span
+            className="badge rounded-pill fw-bold ms-1"
+            style={{
+              background: "rgba(255, 255, 255, 0.22)",
+              color: "#ffffff",
+              fontSize: "0.82rem",
+              padding: "3px 10px",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
+            }}
+            title="Deleted Stations"
+          >
+            {totalSum} Deleted {totalSum === 1 ? "Station" : "Stations"}
+          </span>
+        </div>
+      </div>
+
+      <div className="d-flex flex-wrap gap-3 mx-3 mb-4">
+        {processList ? (
+          processList.map((processNo) => (
             <AlldelMachineCard
               onClick={() => handleClick(processNo.processData)}
               processNo={processNo.processNo}
-              key={processNo.processNo} 
+              key={processNo.processNo}
               processData={processNo.processData}
-             
             />
-          );
-        }) : <Loading/>}
+          ))
+        ) : (
+          <Loading />
+        )}
       </div>
     </Fragment>
   );
 }
- 

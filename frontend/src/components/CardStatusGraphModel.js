@@ -24,42 +24,45 @@ function CardStatusGraphModel({ showModal, setShowModal, line }) {
     info[f] = v;
   }
 
-  // begining of Month
-  var beginingDate = new Date(Date.now());
-  beginingDate.setDate(-1);
+  // 30 days ago
+  const getInitialFromDate = () => {
+    const d = new Date();
+    d.setDate(d.getDate() - 30);
+    return d;
+  };
 
-  //from date
-  const [fromDate, setFromDate] = useState(beginingDate);
-  const fromDt = fromDate.getDate();
-  const fromMonth = fromDate.getMonth() + 1;
-  const fromYear = fromDate.getFullYear();
-  const fromDateSt = `${fromYear}-${fromMonth}-${fromDt}`;
-
+  const [fromDate, setFromDate] = useState(getInitialFromDate);
   const [toDate, setToDate] = useState(new Date(Date.now()));
-  var toNextDate = new Date(toDate);
-  toNextDate.setDate(toNextDate.getDate() + 1);
-  const toDt = toNextDate.getDate();
-  const toMonth = toNextDate.getMonth() + 1;
-  const toYear = toNextDate.getFullYear();
-  const toDateSt = `${toYear}-${toMonth}-${toDt}`;
+
+  const formatDateToYYYYMMDD = (d) => {
+    if (!d) return "";
+    const dateObj = new Date(d);
+    if (isNaN(dateObj.getTime())) return "";
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  };
 
   useEffect(() => {
+    if (!fromDate || !toDate) return;
     axios
       .post(
-        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/getGraphData`, {
-        "line": line,
-        "startDate": fromDate.toLocaleDateString(),
-        "endDate": toDate.toLocaleDateString(),
-        "pS": filters.pS
-      }
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/dailyStatus/getGraphData`,
+        {
+          line: line,
+          startDate: formatDateToYYYYMMDD(fromDate),
+          endDate: formatDateToYYYYMMDD(toDate),
+          pS: filters.pS || "S",
+        }
       )
       .then((result) => {
-        setData(result.data.totalData)
+        setData(result.data?.totalData || {});
       })
       .catch((err) => {
         console.log("error : ", err);
       });
-  }, [fromDate, toDate]);
+  }, [fromDate, toDate, line, filters.pS]);
 
   return (
     <Modal

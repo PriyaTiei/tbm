@@ -456,12 +456,50 @@ import CardDoc from "./CardDoc";
 import DatePicker from "react-date-picker";
 import GraphCard from "./GraphCard";
 import Select from "react-select";
+import "./summaryCard.css";
 
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 
 function SummaryCard() {
   const [showGraph, setShowGraph] = useState(true);
+
+  const customFilterSelectStyles = {
+    control: (provided) => ({
+      ...provided,
+      minHeight: "31px",
+      height: "31px",
+      fontSize: "0.8rem",
+      borderColor: "#cbd5e1",
+      borderRadius: "5px",
+      boxShadow: "none",
+    }),
+    valueContainer: (provided) => ({
+      ...provided,
+      padding: "0 6px",
+    }),
+    input: (provided) => ({
+      ...provided,
+      margin: "0px",
+    }),
+    indicatorsContainer: (provided) => ({
+      ...provided,
+      height: "31px",
+    }),
+    dropdownIndicator: (provided) => ({
+      ...provided,
+      padding: "2px",
+    }),
+    clearIndicator: (provided) => ({
+      ...provided,
+      padding: "2px",
+    }),
+    menu: (provided) => ({
+      ...provided,
+      zIndex: 9999,
+      fontSize: "0.8rem",
+    }),
+  };
 
   // beginning of Month
   var beginingDate = new Date(Date.now());
@@ -701,219 +739,269 @@ function SummaryCard() {
   console.log("Filtered cardList:", filteredCardList); // Debug log
 
   return (
-    <div>
-      <div className="d-flex align-items-center bg-info">
-        <h3 className="mx-3 text-center">Summary of Cards</h3>
-        {showGraph ? (
+    <div className="summary-cards-container">
+      {/* Top Header & Navigation Toolbar */}
+      <div className="summary-top-bar">
+        <div className="summary-title-section">
+          <h4>
+            <i className="bi bi-card-checklist text-primary"></i> Summary of Cards
+          </h4>
+        </div>
+
+        <div className="summary-controls">
+          <div className="summary-date-box">
+            <span className="date-label">
+              <i className="bi bi-calendar3 me-1"></i> From:
+            </span>
+            <DatePicker
+              format="dd/MM/yyyy"
+              value={fromDate}
+              onChange={setFromDate}
+              clearIcon={null}
+            />
+            <span className="date-label ms-3">
+              <i className="bi bi-calendar3 me-1"></i> To:
+            </span>
+            <DatePicker
+              format="dd/MM/yyyy"
+              value={toDate}
+              onChange={setToDate}
+              clearIcon={null}
+            />
+          </div>
+
           <button
-            className="btn btn-outline-primary"
-            onClick={() => setShowGraph(false)}
+            type="button"
+            className={`btn btn-sm ${showGraph ? "btn-outline-primary" : "btn-primary"} fw-semibold`}
+            onClick={() => setShowGraph(!showGraph)}
           >
-            Hide Graph
+            <i className={`bi ${showGraph ? "bi-eye-slash" : "bi-bar-chart-line-fill"} me-1`}></i>
+            {showGraph ? "Hide Graph" : "Show Graph"}
           </button>
-        ) : (
-          <button
-            className="btn btn-outline-primary"
-            onClick={() => setShowGraph(true)}
-          >
-            Show Graph
-          </button>
-        )}
-        <div className="ms-auto me-3 d-flex align-items-center">
-          <span className="me-2">From</span>
-          <DatePicker
-            format="dd/MM/yyyy"
-            value={fromDate}
-            onChange={setFromDate}
-            clearIcon={null}
-          />
-          <span className="ms-3 me-2">To</span>
-          <DatePicker
-            format="dd/MM/yyyy"
-            value={toDate}
-            onChange={setToDate}
-            clearIcon={null}
-          />
         </div>
       </div>
 
+      {/* KPI Metric Cards */}
+      <div className="summary-kpi-grid">
+        <div className="summary-kpi-card kpi-total">
+          <div className="kpi-info">
+            <div className="kpi-label">Total Cards</div>
+            <div className="kpi-val">{total}</div>
+          </div>
+          <div className="kpi-icon">
+            <i className="bi bi-collection-fill"></i>
+          </div>
+        </div>
+
+        <div className="summary-kpi-card kpi-complete">
+          <div className="kpi-info">
+            <div className="kpi-label">Complete</div>
+            <div className="kpi-val text-success">{complete}</div>
+          </div>
+          <div className="kpi-icon">
+            <i className="bi bi-check-circle-fill"></i>
+          </div>
+        </div>
+
+        <div className="summary-kpi-card kpi-inprogress">
+          <div className="kpi-info">
+            <div className="kpi-label">In Progress</div>
+            <div className="kpi-val text-warning">{inprogress}</div>
+          </div>
+          <div className="kpi-icon">
+            <i className="bi bi-hourglass-split"></i>
+          </div>
+        </div>
+
+        <div className="summary-kpi-card kpi-pending">
+          <div className="kpi-info">
+            <div className="kpi-label">Pending</div>
+            <div className="kpi-val text-danger">{pending}</div>
+          </div>
+          <div className="kpi-icon">
+            <i className="bi bi-exclamation-circle-fill"></i>
+          </div>
+        </div>
+      </div>
+
+      {/* Analytics / Status Distribution Graph Card */}
       {showGraph && (
-        <GraphCard labels={labels} data={data} />
+        <div className="summary-graph-card">
+          <div className="summary-graph-header">
+            <h6 className="summary-graph-title">
+              <i className="bi bi-bar-chart-fill text-primary"></i> Status Distribution
+            </h6>
+          </div>
+          <div className="d-flex justify-content-center">
+            <GraphCard labels={labels} data={data} />
+          </div>
+        </div>
       )}
 
-      <div className="d-flex justify-content-end mt-2 me-4">
-        <button
-          className="btn btn-primary me-2"
-          style={{ height: "40px" }}
-          onClick={clearFilterHandler}
-        >
-          Clear Filters
-        </button>
-        <button
-          className="btn btn-success"
-          style={{ height: "40px" }}
-          onClick={handleDownloadExcel}
-        >
-          Download Excel
-        </button>
+      {/* Action Toolbar */}
+      <div className="summary-action-toolbar">
+        <div className="summary-count-badge">
+          Showing <span>{filteredCardList.length}</span> of <span>{cardList.length}</span> total cards
+        </div>
+        <div className="summary-btn-group">
+          <button
+            type="button"
+            className="btn btn-sm btn-outline-secondary fw-semibold"
+            onClick={clearFilterHandler}
+          >
+            <i className="bi bi-arrow-counterclockwise me-1"></i> Clear Filters
+          </button>
+          <button
+            type="button"
+            className="btn btn-sm btn-success fw-semibold"
+            onClick={handleDownloadExcel}
+          >
+            <i className="bi bi-file-earmark-excel-fill me-1"></i> Download Excel
+          </button>
+        </div>
       </div>
 
-      <div className="mt-2 mb-2">
-        <p>Total Cards: {cardList.length} | Filtered Cards: {filteredCardList.length}</p>
-      </div>
-
-      <div
-        className="overflow-auto"
-        style={{ height: "65vh", width: "97vw", paddingBottom: "10%" }}
-      >
-        <table className="m-3 table table-bordered table-sm table-hover text-dark">
-          <thead>
-            <tr>
-              <th>Entry_Date</th>
-              <th>Dept.</th>
-              <th>Line</th>
-              <th>OP</th>
-              <th>Item</th>
-              <th>Abnormality</th>
-              <th>Card Type</th>
-              <th>Status</th>
-              {/* <th>Judgement</th> */}
-              <th style={{ minWidth: "100px" }}>Image</th>
-              <th style={{ minWidth: "100px" }}>Measurement</th>
-              <th style={{ minWidth: "100px" }}>Standard Value</th>
-              <th style={{ minWidth: "100px" }}>Actual Value</th>
-              <th style={{ minWidth: "100px" }}>Delete</th>
-              <th style={{ minWidth: "100px" }}>Update</th>
-              <th></th>
-            </tr>
-            <tr>
-              <td>
-                <DatePicker
-                  format="dd/MM/yyyy"
-                  value={filterObject.entryDate}
-                  onChange={entryDateHandler}
-                  clearIcon={null}
-                />
-              </td>
-              <td>
-                <Select
-                  className="d-inline"
-                  options={deptOptions}
-                  onChange={deptHandler}
-                  isClearable
-                  placeholder="Select Dept"
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  name="line"
-                  onChange={filterHandler}
-                  value={filterObject["line"]}
-                  className="w-100"
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  name="processNo"
-                  onChange={filterHandler}
-                  value={filterObject["processNo"]}
-                  className="w-100"
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  name="item"
-                  onChange={filterHandler}
-                  value={filterObject["item"]}
-                  className="w-100"
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  name="abnormality"
-                  onChange={filterHandler}
-                  value={filterObject["abnormality"]}
-                  className="w-100"
-                />
-              </td>
-              <td>
-                <Select
-                  className="d-inline"
-                  options={cardTypeOptions}
-                  onChange={cardTypeHandler}
-                  isClearable
-                  placeholder="Select Type"
-                />
-              </td>
-              <td>
-                <Select
-                  className="d-inline"
-                  options={options}
-                  onChange={statusHandler}
-                  isClearable
-                  placeholder="Select Status"
-                />
-              </td>
-              {/* <td>
-                <Select
-                  options={judgementOptions}
-                  defaultValue={{ value: "All", label: "All" }}
-                  onChange={setJudgementFilter}
-                  isClearable
-                />
-              </td> */}
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </thead>
-          <tbody>
-            {cards.loading ? (
+      {/* Table Card */}
+      <div className="summary-table-card">
+        <div className="summary-table-scroll">
+          <table className="table summary-table table-bordered table-sm table-hover">
+            <thead>
               <tr>
-                <td colSpan="16" className="text-center">Loading...</td>
+                <th>Entry Date</th>
+                <th>Dept.</th>
+                <th>Line</th>
+                <th>OP</th>
+                <th>Item</th>
+                <th>Abnormality</th>
+                <th>Card Type</th>
+                <th>Status</th>
+                <th style={{ minWidth: "90px" }}>Image</th>
+                <th style={{ minWidth: "120px" }}>Measurement</th>
+                <th style={{ minWidth: "110px" }}>Standard Value</th>
+                <th style={{ minWidth: "100px" }}>Actual Value</th>
+                <th style={{ minWidth: "85px" }}>Delete</th>
+                <th style={{ minWidth: "85px" }}>Update</th>
               </tr>
-            ) : cards.error ? (
-              <tr>
-                <td colSpan="16" className="text-center text-danger">
-                  Error: {cards.error}
+              <tr className="summary-filter-row">
+                <td>
+                  <DatePicker
+                    format="dd/MM/yyyy"
+                    value={filterObject.entryDate}
+                    onChange={entryDateHandler}
+                    clearIcon={null}
+                  />
                 </td>
+                <td>
+                  <Select
+                    options={deptOptions}
+                    styles={customFilterSelectStyles}
+                    onChange={deptHandler}
+                    isClearable
+                    placeholder="Dept"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="line"
+                    placeholder="Filter Line"
+                    onChange={filterHandler}
+                    value={filterObject["line"]}
+                    className="summary-filter-input"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="processNo"
+                    placeholder="Filter OP"
+                    onChange={filterHandler}
+                    value={filterObject["processNo"]}
+                    className="summary-filter-input"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="item"
+                    placeholder="Filter Item"
+                    onChange={filterHandler}
+                    value={filterObject["item"]}
+                    className="summary-filter-input"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="abnormality"
+                    placeholder="Filter Abnormality"
+                    onChange={filterHandler}
+                    value={filterObject["abnormality"]}
+                    className="summary-filter-input"
+                  />
+                </td>
+                <td>
+                  <Select
+                    options={cardTypeOptions}
+                    styles={customFilterSelectStyles}
+                    onChange={cardTypeHandler}
+                    isClearable
+                    placeholder="Type"
+                  />
+                </td>
+                <td>
+                  <Select
+                    options={options}
+                    styles={customFilterSelectStyles}
+                    onChange={statusHandler}
+                    isClearable
+                    placeholder="Status"
+                  />
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
               </tr>
-            ) : filteredCardList.length === 0 ? (
-              <tr>
-                <td colSpan="16" className="text-center">No cards found</td>
-              </tr>
-            ) : (
-              filteredCardList.map((item, index) => (
-                <tr key={item._id || index}>
-                  <td>{item.entryDate ? new Date(item.entryDate).toLocaleDateString() : ''}</td>
-                  <td>{item.pS}</td>
-                  <td>{item.line}</td>
-                  <td>{item.processNo}</td>
-                  <td>{item.item}</td>
-                  <td>{item.abnormality}</td>
-                  <td>{item.cardType}</td>
-                  <td>{item.status}</td>
-                  <td>{item.judgement}</td>
-                  <td>{/* Image */}</td>
-                  <td>{item.measurement}</td>
-                  <td>{item.standardValue}</td>
-                  <td>{item.actualValue}</td>
-                  <td>{/* Delete Button */}</td>
-                  <td>{/* Update Button */}</td>
-                  <td></td>
+            </thead>
+            <tbody>
+              {cards.loading ? (
+                <tr>
+                  <td colSpan="14" className="text-center py-5 text-muted">
+                    <div className="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                    Loading cards data...
+                  </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : cards.error ? (
+                <tr>
+                  <td colSpan="14" className="text-center py-4 text-danger">
+                    <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                    {cards.error}
+                  </td>
+                </tr>
+              ) : filteredCardList.length === 0 ? (
+                <tr>
+                  <td colSpan="14" className="summary-empty-state">
+                    <i className="bi bi-inbox"></i>
+                    <h5>No Cards Found</h5>
+                    <p>No card records found matching the selected date range and filter criteria.</p>
+                  </td>
+                </tr>
+              ) : (
+                filteredCardList.map((item) => (
+                  <CardDoc
+                    key={item._id}
+                    item={item}
+                    fromDateSt={fromDateSt}
+                    toDateSt={toDateSt}
+                  />
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

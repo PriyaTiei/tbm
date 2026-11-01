@@ -1,13 +1,18 @@
+import os
 smtp = "smtp.office365.com"
 # smtp = 'smtp.gmail.com'
 # username= 'manuquickmail@gmail.com'
 # password= 'wojynkuigxyiqaxl'
 # from_email = 'manuquickmail@gmail.com'
 username= "pankaj.jogi@tiei.toyota-industries.com"
-password= "WB4psCxK"
+password = os.getenv("EMAIL_PASSWORD")
 from_email = "pankaj.jogi@tiei.toyota-industries.com"
-server_url = 'http://10.82.126.73:5051'
+server_url = "http://10.82.126.73:5071"
+tnga_server_url = "http://10.82.126.73:5071"
+gd_server_url = 'http://10.82.126.73:5050'
+
 production_to_email =  "yousuf@tiei.toyota-industries.com, benjamindavid.s@tiei.toyota-industries.com"
 maintainance_to_email =  "yousuf@tiei.toyota-industries.com, benjamindavid.s@tiei.toyota-industries.com"
 # production_to_email =  "yousuf@tiei.toyota-industries.com"
 # maintainance_to_email =  "yousuf@tiei.toyota-industries.com"
+

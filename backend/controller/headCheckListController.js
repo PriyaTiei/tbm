@@ -895,13 +895,56 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
 
   console.log("req----", req.query);
 
-
+  if (req.query.checkItemId) {
+    const item = await HeadModel.findById(req.query.checkItemId);
+    if (item) {
+      return res.status(201).json({ success: true, headCheckList: [item], totalCount: 1 });
+    }
+  }
 
   const headObject = new ApiFeatureHead(HeadModel, req.query)
     .search()
     .filter()
     .pagination(1);
   var headCheckList = await headObject.query;
+
+  // Auto-relax schedule filters if no cards found for specific machine/line
+  if (
+    headCheckList.length === 0 &&
+    (req.query.processNo || req.query.line) &&
+    (req.query.d !== undefined || req.query.w !== undefined || req.query.m !== undefined)
+  ) {
+    const relaxedQuery = { ...req.query };
+    delete relaxedQuery.d;
+    delete relaxedQuery.w;
+    delete relaxedQuery.m;
+    delete relaxedQuery.y;
+    const fallbackObject = new ApiFeatureHead(HeadModel, relaxedQuery)
+      .search()
+      .filter()
+      .pagination(1);
+    headCheckList = await fallbackObject.query;
+  }
+
+  // Auto-relax department if still 0
+  if (
+    headCheckList.length === 0 &&
+    (req.query.processNo || req.query.line) &&
+    (req.query.pS !== undefined || req.query.dept !== undefined)
+  ) {
+    const relaxedQuery2 = { ...req.query };
+    delete relaxedQuery2.d;
+    delete relaxedQuery2.w;
+    delete relaxedQuery2.m;
+    delete relaxedQuery2.y;
+    delete relaxedQuery2.pS;
+    delete relaxedQuery2.dept;
+    const fallbackObject2 = new ApiFeatureHead(HeadModel, relaxedQuery2)
+      .search()
+      .filter()
+      .pagination(1);
+    headCheckList = await fallbackObject2.query;
+  }
 
   if (headCheckList.length === 0) {
     return next(new ErrorHandler("could not find check list", 404));

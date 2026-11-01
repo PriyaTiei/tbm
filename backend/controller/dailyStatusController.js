@@ -353,24 +353,45 @@ exports.getDailyStatusAll = catchAsyncError(async (req, res, next) => {
 // });
 
 exports.getDailyStatusByCheckItem = catchAsyncError(async (req, res, next) => {
-  console.log("=== Judgement History API ===");
+  const { checkItem, byData, result, limit, page, date } = req.query;
 
-  const filter =
-    req?.query?.byData === "yes"
-      ? {}
-      : {
-          checkItem: ObjectId(req.query.checkItem),
-        };
+  const filter = {};
 
-  const dailyStatusAll = await DailyStatusModel.find(filter)
-    .sort({ checkedAt: -1 }) // latest first
-    .limit(200)              // fetch only 200 records
-    .lean();
+  if (byData !== "yes" && checkItem && checkItem !== "undefined" && checkItem !== "null") {
+    try {
+      filter.checkItem = ObjectId(checkItem);
+    } catch (err) {
+      console.warn("Invalid checkItem ObjectId in getDailyStatusByCheckItem:", checkItem);
+    }
+  }
 
-  console.log("Records returned:", dailyStatusAll.length);
+  if (result && result !== "All" && result !== "") {
+    filter.result = result;
+  }
+
+  if (date && date !== "undefined" && date !== "") {
+    filter.entryFor = date;
+  }
+
+  const limitNum = Math.min(500, Math.max(10, parseInt(limit, 10) || 100));
+  const pageNum = Math.max(1, parseInt(page, 10) || 1);
+  const skip = (pageNum - 1) * limitNum;
+
+  // Use _id: -1 for lightning fast sorted retrieval using the native indexed primary key
+  const [dailyStatusAll, totalCount] = await Promise.all([
+    DailyStatusModel.find(filter)
+      .sort({ _id: -1 })
+      .skip(skip)
+      .limit(limitNum)
+      .lean(),
+    DailyStatusModel.countDocuments(filter),
+  ]);
 
   return res.status(200).json({
     success: true,
+    total: totalCount,
+    page: pageNum,
+    totalPages: Math.ceil(totalCount / limitNum),
     dailyStatusAll,
   });
 });
@@ -444,17 +465,51 @@ exports.getTrendDailyStatus = catchAsyncError(async (req, res, next) => {
 });
 
 
+function parseDateParam(val) {
+  if (!val) return new Date();
+  if (val instanceof Date) return val;
+  if (typeof val === "string") {
+    if (/^\d{4}-\d{1,2}-\d{1,2}/.test(val)) {
+      const parts = val.split("T")[0].split("-").map(Number);
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+    if (val.includes("/")) {
+      const parts = val.split("/").map(Number);
+      if (parts[2] > 1000) {
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+      }
+      if (parts[0] > 1000) {
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+      }
+    }
+    const d = new Date(val);
+    if (!isNaN(d.getTime())) return d;
+  }
+  return new Date();
+}
+
 function getDatesInRange(startDate, endDate) {
-  const date = new Date(startDate.getTime());
+  const d1 = parseDateParam(startDate);
+  const d2 = parseDateParam(endDate);
+  d1.setHours(0, 0, 0, 0);
+  d2.setHours(0, 0, 0, 0);
+
+  const start = d1 <= d2 ? d1 : d2;
+  const end = d1 <= d2 ? d2 : d1;
+  const curr = new Date(start.getTime());
 
   const dates = [];
-
-  while (date <= endDate) {
-    var cdate = new Date(date).toLocaleDateString()
-    var fdate = cdate.split("/")
-    fdate = fdate[1] + "-" + fdate[0] + "-" + fdate[2]
-    dates.push(fdate);
-    date.setDate(date.getDate() + 1);
+  while (curr <= end) {
+    const yyyy = curr.getFullYear();
+    const mm = String(curr.getMonth() + 1).padStart(2, "0");
+    const dd = String(curr.getDate()).padStart(2, "0");
+    dates.push({
+      dateObj: new Date(curr.getTime()),
+      time: curr.getTime(),
+      yyyyMMdd: `${yyyy}-${mm}-${dd}`,
+      ddMMyyyy: `${dd}-${mm}-${yyyy}`,
+    });
+    curr.setDate(curr.getDate() + 1);
   }
 
   return dates;
@@ -481,46 +536,140 @@ exports.changeVerified = catchAsyncError(async (req, res, next) => {
 })
 
 exports.getGraphData = catchAsyncError(async (req, res, next) => {
-
   const { startDate, endDate, pS, line } = req.body;
-  var start = startDate.split("/")
-  start = start[2] + "-" + start[1] + "-" + start[0]
-  var end = endDate.split("/")
-  end = end[2] + "-" + end[1] + "-" + end[0]
-  const d1 = new Date(start);
-  const d2 = new Date(end);
+  const dateRangeList = getDatesInRange(startDate, endDate);
 
-  var dates = getDatesInRange(d1, d2)
+  if (dateRangeList.length === 0) {
+    return res.json({ totalData: {} });
+  }
 
+  const d1 = dateRangeList[0].dateObj;
+  const d2 = dateRangeList[dateRangeList.length - 1].dateObj;
+  const minDateStr = dateRangeList[0].yyyyMMdd;
+  const maxDateStr = dateRangeList[dateRangeList.length - 1].yyyyMMdd;
+
+  const dateStringsDDMM = dateRangeList.map((d) => d.ddMMyyyy);
+  const dateStringsYYYYMM = dateRangeList.map((d) => d.yyyyMMdd);
+
+  // 1. Fetch from DailyGraphModel if any pre-aggregated records exist
   const dailyGraphData = await DailyGraphModel.find({
     pS: pS,
     line: line,
-    dateString: {
-      $in: dates
+    $or: [
+      { graphFor: { $gte: d1, $lte: new Date(d2.getTime() + 86400000) } },
+      { dateString: { $in: dateStringsDDMM } },
+      { dateString: { $in: dateStringsYYYYMM } }
+    ]
+  });
+
+  const graphDataMap = {};
+  dailyGraphData.forEach((item) => {
+    if (item.dateString) {
+      graphDataMap[item.dateString] = item;
     }
-  })
-
-  var totalData = {}
-
-  console.log(dates);
-
-  dailyGraphData.map(data => {
-    const dd = new Date(data.graphFor)
-    totalData[dd.getTime()] = {
-      date: data.dateString,
-      total: data.total,
-      totalOK: data.totalOK,
-      totalNG: data.totalNG,
-      totalPending: data.totalPending
+    if (item.graphFor) {
+      const gDate = new Date(item.graphFor);
+      const yyyy = gDate.getFullYear();
+      const mm = String(gDate.getMonth() + 1).padStart(2, "0");
+      const dd = String(gDate.getDate()).padStart(2, "0");
+      graphDataMap[`${yyyy}-${mm}-${dd}`] = item;
+      graphDataMap[`${dd}-${mm}-${yyyy}`] = item;
     }
-  })
+  });
 
-  console.log(totalData);
+  // 2. Count total items on this line
+  const checkItems = await HeadModel.find({
+    pS: pS,
+    line: line
+  }).select("_id");
+
+  const lineTotalItems = checkItems.length;
+
+  // 3. Query real-time DailyStatus aggregations for the date range
+  const statuses = await DailyStatusModel.aggregate([
+    {
+      $match: {
+        pS: pS,
+        entryFor: { $gte: minDateStr, $lte: maxDateStr }
+      }
+    },
+    {
+      $lookup: {
+        from: "checkitems",
+        localField: "checkItem",
+        foreignField: "_id",
+        as: "checkItemData"
+      }
+    },
+    {
+      $unwind: "$checkItemData"
+    },
+    {
+      $match: {
+        "checkItemData.line": line
+      }
+    },
+    {
+      $group: {
+        _id: {
+          entryFor: "$entryFor",
+          result: "$result",
+          checkItem: "$checkItem"
+        }
+      }
+    }
+  ]);
+
+  const statusByDate = {};
+  statuses.forEach((st) => {
+    const dateKey = st._id.entryFor;
+    if (!statusByDate[dateKey]) {
+      statusByDate[dateKey] = { okSet: new Set(), ngSet: new Set() };
+    }
+    const itemId = String(st._id.checkItem);
+    if (st._id.result === "OK" || st._id.result === "ok") {
+      statusByDate[dateKey].okSet.add(itemId);
+    } else if (st._id.result === "NG" || st._id.result === "ng") {
+      statusByDate[dateKey].ngSet.add(itemId);
+    }
+  });
+
+  const now = new Date();
+  const todayYyyyMmDd = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
+  const totalData = {};
+  dateRangeList.forEach((d) => {
+    const isToday = d.yyyyMMdd === todayYyyyMmDd;
+    const existing = graphDataMap[d.yyyyMMdd] || graphDataMap[d.ddMMyyyy];
+
+    if (existing && !isToday && existing.total !== undefined) {
+      totalData[d.time] = {
+        date: d.ddMMyyyy,
+        total: existing.total,
+        totalOK: existing.totalOK || 0,
+        totalNG: existing.totalNG || 0,
+        totalPending: existing.totalPending || 0,
+      };
+    } else {
+      const okCount = statusByDate[d.yyyyMMdd]?.okSet.size || 0;
+      const ngCount = statusByDate[d.yyyyMMdd]?.ngSet.size || 0;
+      const total = lineTotalItems;
+      const pendingCount = Math.max(0, total - (okCount + ngCount));
+
+      totalData[d.time] = {
+        date: d.ddMMyyyy,
+        total: total,
+        totalOK: okCount,
+        totalNG: ngCount,
+        totalPending: pendingCount,
+      };
+    }
+  });
 
   res.json({
     totalData: totalData
-  })
-})
+  });
+});
 
 exports.generateDailyGraph = async (req, res, next) => {
   const { pS, reqDate } = req.query;
@@ -543,19 +692,18 @@ exports.generateDailyGraph = async (req, res, next) => {
   }
 
   const headVal = {
-    "d": dateType.getDate(),
+    "d": dateType.getDay(),
     "w": Math.floor(dateType.getDate() / 7.1) + 1,
     "m": dateType.getMonth() + 1,
     "y": dateType.getFullYear(),
     "pS": pS
   }
 
-  var cdate = dateType.toLocaleDateString()
-  var fdate = cdate.split("/")
-  fdate = fdate[2] + "-" + fdate[0] + "-" + fdate[1]
-  var dbDateString = fdate.split("-").reverse().join("-")
-
-  // console.log(dbDateString);
+  const yyyy = dateType.getFullYear();
+  const mm = String(dateType.getMonth() + 1).padStart(2, "0");
+  const dd = String(dateType.getDate()).padStart(2, "0");
+  const fdate = `${yyyy}-${mm}-${dd}`;
+  const dbDateString = `${dd}-${mm}-${yyyy}`;
 
   const deleted = await DailyGraphModel.deleteMany({
     dateString: dbDateString,
@@ -598,12 +746,7 @@ exports.generateDailyGraph = async (req, res, next) => {
   var totalGraphData = {};
 
   machineData.map((machine) => {
-    var total = 0
-    Object.values(machine?.counts).map(val => {
-      if (val) {
-        total += val
-      }
-    });
+    var total = machine?.processNos ? machine.processNos.length : 0;
     totalGraphData[machine.line] = {
       total: total,
       totalOK: 0,
@@ -629,19 +772,19 @@ exports.generateDailyGraph = async (req, res, next) => {
   sortedDailyStatus.map(dailystat => {
     var totalOK = 0, totalNG = 0;
     dailystat?.processes.map(process => {
-      if (process?.result?.OK) {
-        totalOK += process.result.OK
+      if (process?.result?.OK && process?.result?.OK > 0) {
+        totalOK += 1;
       }
-      if (process?.result?.NG) {
-        totalNG += process.result.NG
+      if (process?.result?.NG && process?.result?.NG > 0) {
+        totalNG += 1;
       }
     })
-    var total = totalGraphData && totalGraphData.length > 0 && totalGraphData[dailystat.line] ? totalGraphData[dailystat.line].total : 0;
+    var total = totalGraphData && totalGraphData[dailystat.line] ? totalGraphData[dailystat.line].total : 0;
     totalGraphData[dailystat.line] = {
       total: total,
       totalOK: totalOK,
       totalNG: totalNG,
-      totalPending: total - (totalOK + totalNG)
+      totalPending: Math.max(0, total - (totalOK + totalNG))
     }
   })
 

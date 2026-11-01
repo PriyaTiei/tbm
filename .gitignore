@@ -14,3 +14,6 @@ frontend/node_modules/
 config.py
 card_status_gd.xlsx
 card_status_tnga.xlsx
+__pycache__/
+*.pyc
+extracted_excel/

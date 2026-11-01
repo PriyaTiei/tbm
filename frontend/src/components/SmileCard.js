@@ -58,8 +58,16 @@ function SmileCard() {
   if (filters.w !== undefined && filters.w !== null && filters.w !== "") queryParams.push(`w=${filters.w}`);
   if (filters.m !== undefined && filters.m !== null && filters.m !== "") queryParams.push(`m=${filters.m}`);
   if (filters.y !== undefined && filters.y !== null && filters.y !== "") queryParams.push(`y=${filters.y}`);
-  if (filters.pS !== undefined && filters.pS !== null && filters.pS !== "") queryParams.push(`pS=${filters.pS}`);
+  
+  const urlPs = searchParams.get("pS");
+  const effectivePs = urlPs || filters.pS;
+  if (effectivePs !== undefined && effectivePs !== null && effectivePs !== "") queryParams.push(`pS=${effectivePs}`);
   if (filters.rS !== undefined && filters.rS !== null && filters.rS !== "") queryParams.push(`rS=${filters.rS}`);
+
+  const checkItemIdParam = searchParams.get("checkItemId");
+  if (checkItemIdParam) {
+    queryParams.push(`checkItemId=${encodeURIComponent(checkItemIdParam)}`);
+  }
 
   let processNoAdded = false;
   for (const [key, val] of searchParams.entries()) {
@@ -81,11 +89,12 @@ function SmileCard() {
     queryParams.push(`processNo=${encodeURIComponent(processNoParam)}`);
   }
 
-  const queryStr = queryParams.join("&");
+  let queryStr = queryParams.join("&");
   let entryForQueryStr = `${filters.y}-${filters.m}-${filters.dt}`;
-  for (const e of searchParams.entries()) {
-    let [f, v] = e;
-   queryStr = queryStr + "&" + f + "=" + encodeURIComponent(v);
+  for (const [f, v] of searchParams.entries()) {
+    if (!queryParams.some((item) => item.startsWith(`${f}=`))) {
+      queryStr = queryStr + (queryStr ? "&" : "") + f + "=" + encodeURIComponent(v);
+    }
   }
 
   //use hooks

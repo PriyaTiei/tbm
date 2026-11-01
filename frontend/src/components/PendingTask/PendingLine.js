@@ -9,13 +9,41 @@ function PendingLine({ line, processList, counts }) {
     dispatch(setProcessData(processData));
   };
 
-  const totalSum = counts && typeof counts === "object" ? Object.values(counts).reduce((acc, curr) => acc + curr, 0) : 0;
+  const totalSum = processList ? processList.length : 0;
 
   return (
     <Fragment>
-      <h3 className="mx-3 p-1 bg-info text-center">{`${line} - ${totalSum}`}</h3>
-      <div className="d-flex flex-wrap">
-        {processList.length > 0 ? (
+      {/* Mild Teal Line Header (Neither yellow nor blue) */}
+      <div
+        className="d-flex align-items-center justify-content-between flex-wrap gap-2 px-3 py-2 mx-3 my-3 rounded-3 shadow-sm text-white"
+        style={{
+          background: "linear-gradient(135deg, #0f766e 0%, #0d9488 100%)",
+          border: "1px solid rgba(255, 255, 255, 0.18)",
+        }}
+      >
+        <div className="d-flex align-items-center gap-2">
+          <h5 className="m-0 fw-bold d-flex align-items-center" style={{ letterSpacing: "0.4px", fontSize: "1.1rem" }}>
+            <i className="bi bi-clock-history me-2 text-white-50"></i>
+            {line}
+          </h5>
+          <span
+            className="badge rounded-pill fw-bold ms-1"
+            style={{
+              background: "rgba(255, 255, 255, 0.22)",
+              color: "#ffffff",
+              fontSize: "0.82rem",
+              padding: "3px 10px",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
+            }}
+            title="Pending Stations"
+          >
+            {totalSum} Pending {totalSum === 1 ? "Station" : "Stations"}
+          </span>
+        </div>
+      </div>
+
+      <div className="d-flex flex-wrap gap-3 mx-3 mb-4">
+        {processList && processList.length > 0 ? (
           processList.map((process) => (
             <PendingCard
               key={process.processNo}
@@ -26,7 +54,7 @@ function PendingLine({ line, processList, counts }) {
             />
           ))
         ) : (
-          <div className="text-center w-100 py-4">No pending cards available.</div>
+          <div className="text-center w-100 py-3 text-muted">No pending cards available.</div>
         )}
       </div>
     </Fragment>

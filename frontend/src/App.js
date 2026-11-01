@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense, lazy } from "react";
 import { useDispatch } from 'react-redux';
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+
 import Title from "./components/Title";
 import SmileCard from "./components/SmileCard";
 import Machines from "./components/Machines";
@@ -11,10 +12,10 @@ import SummaryAbnormality from "./components/SummaryAbnormality";
 import SummaryCard from "./components/SummaryCard";
 import SmileCardAdd from "./components/SmileCardAdd";
 import PendingTask from "./components/PendingTask/PendingTask";
-import TeamLeader from "./components/TeamLeader/TeamLeader"
-import PendingSmileCard from "./components/PendingTask/PendingSmileCard"
-import AllMachineSmileCard from "./components/AllMachine/AllMachineSmileCard"
-import AlldelMachineSmileCard from "./components/AllMachine/AlldelMachineSmileCard"
+import TeamLeader from "./components/TeamLeader/TeamLeader";
+import PendingSmileCard from "./components/PendingTask/PendingSmileCard";
+import AllMachineSmileCard from "./components/AllMachine/AllMachineSmileCard";
+import AlldelMachineSmileCard from "./components/AllMachine/AlldelMachineSmileCard";
 import { AppSidebar } from "./components/Sidebar";
 import AllMachine from "./components/AllMachine/AllMachine";
 import DelMachine from "./components/AllMachine/DeletedCheckitems";
@@ -28,8 +29,11 @@ import OldPending from "./components/oldPending";
 import { AddHoliday } from "./components/holiday/addHoliday";
 import Verification from "./components/common/verification";
 
+const TbmOverallStatus = lazy(() => import("./components/TbmStatus/TbmOverallStatus"));
+
 function App() {
   const dispatch = useDispatch();
+  const location = useLocation();
   const [cookies] = useCookies(['token', 'userId']);
   const { token, userId } = cookies;
 
@@ -69,12 +73,21 @@ function App() {
       <AppSidebar>
 
         <Title />
-        <Filters />
+        {location.pathname !== "/overallStatus" && <Filters />}
         {/* <MultiLevelXAxisBarChart /> */}
+
         <Routes>
           <Route path="/" element={<Machines />} />
           <Route path="/checkList" element={<SmileCard />} />
           <Route path="/pendingTasks" element={<PendingTask />} />
+          <Route
+            path="/overallStatus"
+            element={
+              <Suspense fallback={<div className="p-4 text-center">Loading TBM Status...</div>}>
+                <TbmOverallStatus />
+              </Suspense>
+            }
+          />
           <Route path="/judgementHistory" element={<JudgementHistoryPage />} />
           <Route path="/pendingTasks/cardDetails" element={<PendingSmileCard />}></Route>
           <Route path="/allMachine/cardDetails" element={<AllMachineSmileCard />}></Route>

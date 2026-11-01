@@ -36,7 +36,11 @@ export const getCards = (fromDateSt, toDateSt, queryStr) => {
         dispatch(cardFetchSuccess(result.data));
       })
       .catch((error) => {
-        dispatch(cardFetchFail(error.message));
+        if (error.response && error.response.status === 404) {
+          dispatch(cardFetchSuccess({ success: true, totalCards: 0, cards: [] }));
+        } else {
+          dispatch(cardFetchFail(error.message));
+        }
       });
   };
 };

@@ -27,6 +27,68 @@ import { getPendingTasks } from "../redux/pendingTasks/pendingActions";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 
+const customSelectStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    height: "38px",
+    minHeight: "38px",
+    borderRadius: "6px",
+    borderColor: state.isFocused ? "#0d6efd" : "#ced4da",
+    boxShadow: state.isFocused ? "0 0 0 1px #0d6efd" : "none",
+    fontSize: "0.88rem",
+    backgroundColor: "#ffffff",
+    cursor: "pointer",
+    "&:hover": {
+      borderColor: "#0d6efd",
+    },
+  }),
+  valueContainer: (provided) => ({
+    ...provided,
+    height: "38px",
+    padding: "0 8px",
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: "#1e293b",
+    fontWeight: 500,
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: "#64748b",
+    fontSize: "0.85rem",
+  }),
+  input: (provided) => ({
+    ...provided,
+    margin: "0px",
+  }),
+  indicatorSeparator: () => ({
+    display: "none",
+  }),
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    padding: "4px 8px",
+    color: state.isFocused ? "#0d6efd" : "#94a3b8",
+  }),
+  menu: (provided) => ({
+    ...provided,
+    zIndex: 9999,
+    borderRadius: "6px",
+    boxShadow: "0 4px 14px rgba(0,0,0,0.12)",
+    overflow: "hidden",
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    fontSize: "0.86rem",
+    backgroundColor: state.isSelected
+      ? "#0d6efd"
+      : state.isFocused
+      ? "#eff6ff"
+      : "#ffffff",
+    color: state.isSelected ? "#ffffff" : "#1e293b",
+    cursor: "pointer",
+  }),
+};
+
 const todayDate = new Date(Date.now());
 
 
@@ -39,37 +101,65 @@ const todayDate = new Date(Date.now());
 // end week no
 
 function Filters() {
+  const dispatch = useDispatch();
+  const filters = useSelector((state) => state.filters);
+  const location = useLocation();
   const selectLineRef = useRef(null);
   const [cookies] = useCookies(['token', 'userId']);
   const [date, setDate] = useState(todayDate);
-  const [showSearch, setShowSearch] = useState(false)
-  const [showModal, setShowModal] = useState(false)
-  const [showModals, setShowModals] = useState(false)
+  const [showSearch, setShowSearch] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [showModals, setShowModals] = useState(false);
 
   const [relativeUrl, setRelativeUrl] = useState('');
-  const location = useLocation();
+
+  const isPendingActive = location.pathname.startsWith('/pending');
+  const isHomeActive =
+    location.pathname === '/' ||
+    location.pathname === '/checkList' ||
+    location.pathname === '/card';
+  const isVerificationActive = location.pathname.startsWith('/verification');
+  const isHolidaysActive = location.pathname.startsWith('/holidays');
+  const isJudgementActive = location.pathname.startsWith('/judgementHistory');
+  const isDashboardActive = location.pathname.startsWith('/overallStatus');
 
   useEffect(() => {
     // Construct the URL without the host
     const urlWithoutHost = `${location.pathname}`;
     setRelativeUrl(urlWithoutHost);
-
   }, [location]);
 
-
   useEffect(() => {
-    if (relativeUrl == "/checkList" && "changedDate" in localStorage) {
+    if ("changedDate" in localStorage) {
       const dateString = localStorage.getItem("changedDate");
-      const date = new Date(dateString);
+      const dateObj = new Date(dateString);
 
       // Set a specific time if needed
-      date.setHours(12, 22, 49);
+      dateObj.setHours(12, 22, 49);
 
       // Store the Date object, not a string
-      setDate(date);
-      localStorage.removeItem("changedDate")
+      setDate(dateObj);
+      localStorage.removeItem("changedDate");
     }
-  }, [relativeUrl]);
+  }, [relativeUrl, location.search]);
+
+  useEffect(() => {
+    if (location.search) {
+      const params = new URLSearchParams(location.search);
+      const urlPs = params.get("pS");
+      if (urlPs && urlPs !== filters.pS) {
+        dispatch(filterDept(urlPs));
+      }
+      const urlLine = params.get("line");
+      if (urlLine && urlLine !== filters.line) {
+        dispatch(filterMainLine(urlLine));
+      }
+      const urlProcess = params.get("processNo");
+      if (urlProcess && urlProcess !== filters.processNo) {
+        dispatch(filterProcessNo(urlProcess));
+      }
+    }
+  }, [location.search, filters.pS, filters.line, filters.processNo, dispatch]);
 
   useEffect(() => {
     console.log(date)
@@ -85,7 +175,6 @@ function Filters() {
   const level = auth.user ? auth.user.level : 0;
   // const { loading, pendingTasksData } = pendingTasks;
   // const [pendingTasksData, setPendingTasksData] = useState([])
-  const filters = useSelector((state) => state.filters);
   const { machineData } = useSelector((state) => state.machines);
 
   const getLineGroup = (line) => {
@@ -187,8 +276,6 @@ function Filters() {
   //   : { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 };
 
   // const { totalCountBlock, totalCountCrank, totalCountHead } = totalCount;
-
-  const dispatch = useDispatch();
 
   // useEffect(() => {
   //   axios.get(
@@ -338,176 +425,331 @@ function Filters() {
 
   return (
     <Fragment>
-      <hr className="my-2"></hr>
-      <div className="d-flex justify-content-between align-items-center flex-wrap gap-1">
-        <div className="d-flex">
-          <DatePicker
-            value={date}
-            format="dd/MM/yyyy"
-            onChange={setDate}
-            clearIcon={null}
-            className="px-3"
-          />
-        </div>
-        {/* {
-          cookies.userId ? (<>
-            <SlideInNotification message={
-              "An error occurred. Please try again."
-            }
-              duration={5000}
-              type={"info"} handleDownloadExcel={handleDownloadExcel} />  </>) : (<></>)
-        } */}
-        <Link to="/">
-          <Button className="mx-1 bg-blue px-3 py-3">
-            <i className="bi bi-house"></i> Home
-          </Button>
-        </Link>
+      {/* Structured Modern Filter Toolbar */}
+      <div className="bg-white p-2 rounded shadow-sm border my-2 mx-1">
+        {/* Row 1: Primary Navigation, Date & Line Selection Filters */}
+        <div className="d-flex align-items-center flex-wrap gap-2">
+          {/* Home Button */}
+          <Link to="/" style={{ textDecoration: "none" }}>
+            <Button
+              variant={isHomeActive ? "primary" : "outline-primary"}
+              className={`d-flex align-items-center gap-1.5 px-3 shadow-sm ${
+                isHomeActive ? "bg-blue text-white" : ""
+              }`}
+              style={{
+                height: "38px",
+                borderRadius: "6px",
+                fontWeight: isHomeActive ? 600 : 500,
+                background: isHomeActive ? "#0d6efd" : "#ffffff",
+                borderColor: isHomeActive ? "#0d6efd" : "#bfdbfe",
+                color: isHomeActive ? "#ffffff" : "#1d4ed8",
+                transition: "all 0.2s ease",
+              }}
+              title="Home"
+            >
+              <i className="bi bi-house-door-fill"></i>
+              <span>Home</span>
+            </Button>
+          </Link>
 
-        {/* <Link to="/teamleader">
-          <Button variant="secondary" className="mx-3 bg-green px-3">
-            Team Leader
-          </Button>
-        </Link> */}
-
-        {/* 
-        <Container className="mx-3 px-3" style={{ maxWidth: "30vw" }}>
-          <Row className="bg-info text-light border rounded-2 d-flex align-items-center justify-content-center">
-            <Col xs={12} md={6} className="text-center">
-              <h6 className="my-2">Total Check</h6>
-            </Col>
-            <Col xs={12} md={6} className="text-center">
-              <h6 className="my-2">
-                Block: {totalCountBlock} | Crank: {totalCountCrank} | Head:{" "}
-                {totalCountHead}
-              </h6>
-            </Col>
-          </Row>
-        </Container> */}
-
-        <Select
-          options={deptOptions}
-          onChange={selectDeptHandler}
-          className="mx-1 secondary"
-          defaultValue={{ value: "S", label: "Production Dept" }}
-          isSearchable={false}
-        />
-
-        <Select
-          ref={selectLineRef}
-          options={lineOptions}
-          value={selectedMainLineOption}
-          onChange={selectLineHandler}
-          className="mx-1 secondary"
-          placeholder="Main Line"
-          isSearchable={true}
-        />
-
-        <Select
-          options={subLineOptions}
-          value={selectedSubLineOption}
-          onChange={selectSubLineHandler}
-          className="mx-1 secondary"
-          placeholder="Sub Line"
-          isSearchable={true}
-        />
-
-        <Select
-          options={checkOptions}
-          onChange={selectCheckHandler}
-          className="mx-1 secondary"
-          defaultValue={checkOptions[0]}
-          isSearchable={false}
-        />
-        <Select
-          options={groupOptions}
-          onChange={selectGroupHandler}
-          className="mx-1 secondary"
-          defaultValue={groupOptions[0]}
-          isSearchable={false}
-        />
-        {(filters.processNo == "" && filters.cardNo == "") ? <Button className={`mx-1 ${colorSearchButton}`} onClick={() => setShowSearch(true)}>
-          <i className="bi bi-search px-1"></i>
-          Search
-        </Button> :
-          <Button className={`mx-1 ${colorSearchButton}`} onClick={() => clearSearchHandler()}>
-            <i className="bi bi-search px-1"></i>
-            Clear Search
-          </Button>}
-        {date ? <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <Button
-            className=""
-            onClick={() => setShowModal(true)}
-            style={{ background: "transparent", color: "#000" }}
-          >
-            <i className="bi bi-graph-up bi-2x"></i>
-          </Button>
+          {/* Date Picker (React Date Picker) */}
           <div
+            className="d-flex align-items-center bg-white border rounded px-2 position-relative"
             style={{
-              marginTop: '4px',
-              fontSize: '0.8rem',
-              color: '#000',
-              textAlign: 'center',
+              height: "38px",
+              borderColor: "#ced4da",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.02)",
             }}
           >
-            Monthly Report
+            <DatePicker
+              value={date}
+              format="dd/MM/yyyy"
+              onChange={setDate}
+              clearIcon={null}
+            />
           </div>
-        </div> : null}
 
-        {level >= 100 ? (
-          <Link to="/holidays" style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Button style={{ background: "transparent", color: "#000" }}>
-                <i className="bi bi-sunset bi-2x"></i>
-              </Button>
-              <div style={{ marginTop: '4px', fontSize: '0.8rem', color: '#000', textAlign: 'center' }}>
-                Holiday List
-              </div>
-            </div>
-          </Link>
-        ) : null}
+          {/* Department Select */}
+          <div style={{ minWidth: "160px" }}>
+            <Select
+              options={deptOptions}
+              value={deptOptions.find((opt) => opt.value === filters.pS) || deptOptions[0]}
+              onChange={selectDeptHandler}
+              styles={customSelectStyles}
+              isSearchable={false}
+            />
+          </div>
 
-        {level >= 20 ? (
-          <Link to="/verification" style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-              <Button onClick={() => setShowModals(true)} style={{ background: "transparent", color: "#000" }}>
-                <i className="bi bi-calendar-check bi-2x"></i>
-                <span style={{
-                  background: "red",
-                  borderRadius: "50%",
-                  width: "10px",
-                  height: "10px",
-                  position: "absolute",
-                  top: "3px",      
-                  right: "12px", 
-                }}></span>
-              </Button>
-              <div style={{ marginTop: '4px', fontSize: '0.8rem', color: '#000', textAlign: 'center' }}>
-                TL/GL Verification
-              </div>
-            </div>
-          </Link>
-        ) : null}
+          {/* Main Line Select */}
+          <div style={{ minWidth: "150px" }}>
+            <Select
+              ref={selectLineRef}
+              options={lineOptions}
+              value={selectedMainLineOption}
+              onChange={selectLineHandler}
+              styles={customSelectStyles}
+              placeholder="Main Line"
+              isSearchable={true}
+            />
+          </div>
 
-        <Link to="/pendingTasks" style={{ textDecoration: 'none' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '20px' }}>
-            <Button style={{ background: "transparent", color: "#000" }}>
-              <i className="bi bi-hourglass-split"></i>
+          {/* Sub Line Select */}
+          <div style={{ minWidth: "165px" }}>
+            <Select
+              options={subLineOptions}
+              value={selectedSubLineOption}
+              onChange={selectSubLineHandler}
+              styles={customSelectStyles}
+              placeholder="Sub Line"
+              isSearchable={true}
+            />
+          </div>
+
+          {/* Check Type Select */}
+          <div style={{ minWidth: "120px" }}>
+            <Select
+              options={checkOptions}
+              value={checkOptions.find((opt) => opt.value === filters.rS) || checkOptions[0]}
+              onChange={selectCheckHandler}
+              styles={customSelectStyles}
+              isSearchable={false}
+            />
+          </div>
+
+          {/* Group Select */}
+          <div style={{ minWidth: "120px" }}>
+            <Select
+              options={groupOptions}
+              value={groupOptions.find((opt) => opt.value === filters.group) || groupOptions[0]}
+              onChange={selectGroupHandler}
+              styles={customSelectStyles}
+              isSearchable={false}
+            />
+          </div>
+
+          {/* Search / Clear Search */}
+          {filters.processNo === "" && filters.cardNo === "" ? (
+            <Button
+              className={`d-flex align-items-center gap-1.5 px-3 shadow-sm ${colorSearchButton}`}
+              style={{ height: "38px", borderRadius: "6px", fontWeight: 500 }}
+              onClick={() => setShowSearch(true)}
+            >
+              <i className="bi bi-search"></i>
+              <span>Search</span>
             </Button>
-            <div style={{ marginTop: '4px', fontSize: '0.8rem', color: '#000', textAlign: 'center' }}>
-              Pending Items
-            </div>
+          ) : (
+            <Button
+              className={`d-flex align-items-center gap-1.5 px-3 shadow-sm ${colorSearchButton}`}
+              style={{ height: "38px", borderRadius: "6px", fontWeight: 500 }}
+              onClick={() => clearSearchHandler()}
+            >
+              <i className="bi bi-x-circle"></i>
+              <span>Clear Search</span>
+            </Button>
+          )}
+
+          {/* TBM Dashboard Button beside Search */}
+          <Link to="/overallStatus" style={{ textDecoration: "none" }}>
+            <Button
+              variant={isDashboardActive ? "primary" : "outline-primary"}
+              className="d-flex align-items-center gap-2 px-3 shadow-sm fw-semibold"
+              style={{
+                height: "38px",
+                borderRadius: "6px",
+                background: isDashboardActive ? "#1d4ed8" : "#eff6ff",
+                borderColor: isDashboardActive ? "#1d4ed8" : "#bfdbfe",
+                color: isDashboardActive ? "#ffffff" : "#1d4ed8",
+                fontSize: "0.88rem",
+                letterSpacing: "0.2px",
+                transition: "all 0.2s ease",
+              }}
+              title="TBM Overall Status Dashboard"
+            >
+              <i
+                className={`bi bi-speedometer2 fs-6 ${
+                  isDashboardActive ? "text-white" : "text-primary"
+                }`}
+              ></i>
+              <span>TBM Dashboard</span>
+            </Button>
+          </Link>
+        </div>
+
+        {/* Row 2: Action Toolbar & Secondary Navigation */}
+        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 pt-2 border-top mt-2">
+          {/* Left Actions */}
+          <div className="d-flex align-items-center flex-wrap gap-2">
+            {/* Monthly Report */}
+            {date && (
+              <button
+                type="button"
+                onClick={() => setShowModal(true)}
+                className="btn btn-sm d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm"
+                style={{
+                  fontSize: "0.85rem",
+                  fontWeight: 500,
+                  background: "#ffffff",
+                  color: "#475569",
+                  border: "1px solid #cbd5e1",
+                  transition: "all 0.2s ease",
+                  cursor: "pointer",
+                }}
+                title="Monthly Report"
+              >
+                <i className="bi bi-graph-up text-primary"></i>
+                <span>Monthly Report</span>
+              </button>
+            )}
+
+            {/* Pending Items - Highlighted with Mild Teal theme when active */}
+            <Link to="/pendingTasks" style={{ textDecoration: "none" }}>
+              <button
+                type="button"
+                className="btn btn-sm d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm"
+                style={{
+                  fontSize: "0.85rem",
+                  fontWeight: isPendingActive ? 600 : 500,
+                  background: isPendingActive
+                    ? "linear-gradient(135deg, #0f766e 0%, #0d9488 100%)"
+                    : "#ffffff",
+                  color: isPendingActive ? "#ffffff" : "#475569",
+                  border: isPendingActive
+                    ? "1px solid #0f766e"
+                    : "1px solid #cbd5e1",
+                  boxShadow: isPendingActive
+                    ? "0 3px 10px rgba(13, 148, 136, 0.35)"
+                    : "0 1px 2px rgba(0, 0, 0, 0.05)",
+                  transition: "all 0.2s ease",
+                  cursor: "pointer",
+                }}
+                title="Pending Items"
+              >
+                <i
+                  className="bi bi-clock-history"
+                  style={{
+                    color: isPendingActive ? "#ffffff" : "#0d9488",
+                    fontSize: "0.95rem",
+                  }}
+                ></i>
+                <span>Pending Items</span>
+              </button>
+            </Link>
+
+            {/* TL/GL Verification */}
+            {level >= 20 && (
+              <Link to="/verification" style={{ textDecoration: "none" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowModals(true)}
+                  className="btn btn-sm d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm position-relative"
+                  style={{
+                    fontSize: "0.85rem",
+                    fontWeight: isVerificationActive ? 600 : 500,
+                    background: isVerificationActive
+                      ? "linear-gradient(135deg, #15803d 0%, #16a34a 100%)"
+                      : "#ffffff",
+                    color: isVerificationActive ? "#ffffff" : "#475569",
+                    border: isVerificationActive
+                      ? "1px solid #15803d"
+                      : "1px solid #cbd5e1",
+                    boxShadow: isVerificationActive
+                      ? "0 3px 10px rgba(22, 163, 74, 0.35)"
+                      : "0 1px 2px rgba(0, 0, 0, 0.05)",
+                    transition: "all 0.2s ease",
+                    cursor: "pointer",
+                  }}
+                  title="TL/GL Verification"
+                >
+                  <i
+                    className={`bi bi-calendar-check ${
+                      isVerificationActive ? "text-white" : "text-success"
+                    }`}
+                  ></i>
+                  <span>TL/GL Verification</span>
+                  <span
+                    style={{
+                      background: "#ef4444",
+                      borderRadius: "50%",
+                      width: "8px",
+                      height: "8px",
+                      display: "inline-block",
+                      border: isVerificationActive ? "1.5px solid #ffffff" : "none",
+                    }}
+                  ></span>
+                </button>
+              </Link>
+            )}
+
+            {/* Holiday List */}
+            {level >= 100 && (
+              <Link to="/holidays" style={{ textDecoration: "none" }}>
+                <button
+                  type="button"
+                  className="btn btn-sm d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm"
+                  style={{
+                    fontSize: "0.85rem",
+                    fontWeight: isHolidaysActive ? 600 : 500,
+                    background: isHolidaysActive
+                      ? "linear-gradient(135deg, #be123c 0%, #e11d48 100%)"
+                      : "#ffffff",
+                    color: isHolidaysActive ? "#ffffff" : "#475569",
+                    border: isHolidaysActive
+                      ? "1px solid #be123c"
+                      : "1px solid #cbd5e1",
+                    boxShadow: isHolidaysActive
+                      ? "0 3px 10px rgba(225, 29, 72, 0.35)"
+                      : "0 1px 2px rgba(0, 0, 0, 0.05)",
+                    transition: "all 0.2s ease",
+                    cursor: "pointer",
+                  }}
+                  title="Holiday List"
+                >
+                  <i
+                    className={`bi bi-sunset ${
+                      isHolidaysActive ? "text-white" : "text-danger"
+                    }`}
+                  ></i>
+                  <span>Holiday List</span>
+                </button>
+              </Link>
+            )}
           </div>
-        </Link>
 
-
-        <Link to="/judgementHistory">
-          <Button color="blue" className="mx-1">
-            <i className="bi bi-card-list px-1"></i>
-            Judgement History
-          </Button>
-        </Link>
+          {/* Right Action: Judgement History (no whiteout on hover) */}
+          <div>
+            <Link to="/judgementHistory" style={{ textDecoration: "none" }}>
+              <button
+                type="button"
+                className="btn btn-sm d-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm fw-semibold"
+                style={{
+                  fontSize: "0.85rem",
+                  fontWeight: isJudgementActive ? 600 : 500,
+                  background: isJudgementActive
+                    ? "linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)"
+                    : "#ffffff",
+                  color: isJudgementActive ? "#ffffff" : "#1d4ed8",
+                  border: isJudgementActive
+                    ? "1px solid #1d4ed8"
+                    : "1px solid #bfdbfe",
+                  boxShadow: isJudgementActive
+                    ? "0 3px 10px rgba(37, 99, 235, 0.35)"
+                    : "0 1px 2px rgba(0, 0, 0, 0.05)",
+                  transition: "all 0.2s ease",
+                  cursor: "pointer",
+                }}
+                title="Judgement History"
+              >
+                <i
+                  className={`bi bi-card-list ${
+                    isJudgementActive ? "text-white" : "text-primary"
+                  }`}
+                ></i>
+                <span>Judgement History</span>
+              </button>
+            </Link>
+          </div>
+        </div>
       </div>
-      <hr className="my-2"></hr>
       <MultiLevelXAxisBarChart showModal={showModal} setShowModal={setShowModal} chkDate={date} />
       {/* <Verification showModals={showModals} setShowModals={setShowModals} /> */}
       <Search_Modal showModal={showSearch} setShowModal={setShowSearch} />

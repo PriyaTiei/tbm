@@ -68,37 +68,42 @@ function CardDoc({ item, fromDateSt, toDateSt }) {
     <tr
       className={
         status === "complete"
-          ? "bg-success"
+          ? "table-success"
           : status === "inprogress"
-            ? "bg-warning"
-            : "bg-light"
+            ? "table-warning"
+            : ""
       }
     >
-      <td>{createdAt.slice(0, 10)}</td>
+      <td>{createdAt ? createdAt.slice(0, 10) : ""}</td>
       <td>{pS === "P" ? "Maint." : (pS === "S" ? "Prod." : "")}</td>
       <td>{line}</td>
       <td>{processNo}</td>
       <td>{workDetail}</td>
       <td>{abnormality}</td>
-      <td>{cardType.toUpperCase()}</td>
-
-      {/* <td>{countermeasure}</td>
-      <td>{spare}</td>
-
-      <td>{pic}</td>
-      <td>{targetDate?targetDate.slice(0,10):null}</td> */}
-      <td>{status.toUpperCase()}</td>
+      <td>
+        <span className={`badge ${cardType === "red" ? "bg-danger" : "bg-light text-dark border"}`}>
+          {cardType ? cardType.toUpperCase() : ""}
+        </span>
+      </td>
+      <td>
+        <span className={`badge ${
+          status === "complete"
+            ? "bg-success"
+            : status === "inprogress"
+              ? "bg-warning text-dark"
+              : "bg-secondary"
+        }`}>
+          {status ? status.toUpperCase() : "N/A"}
+        </span>
+      </td>
 
       <td>
         <button
-          className="btn btn-primary"
+          className="btn btn-sm btn-outline-primary"
           onClick={() => setShowModalImage(true)}
-          title="Image"
+          title="View Image"
         >
-          <i
-            className="bi bi-image"
-            style={{ fontSize: "1.5rem", color: "white" }}
-          ></i>
+          <i className="bi bi-image me-1"></i>
           Image
         </button>
       </td>
@@ -165,38 +170,32 @@ function CardDoc({ item, fromDateSt, toDateSt }) {
         ) : ""}
       </td>
 
-      {level >= 100 && (
-        <td>
+      <td>
+        {level >= 100 ? (
           <button
-            className="btn btn-danger"
+            className="btn btn-sm btn-outline-danger"
             onClick={deleteConfirmation}
-            // data-toggle="tooltip"
-            // data-placement="top"
             title="Delete the entry"
           >
-            <i
-              className="bi bi-trash"
-              style={{ fontSize: "1.5rem", color: "white" }}
-            ></i>
-            Delete
+            <i className="bi bi-trash me-1"></i> Delete
           </button>
-        </td>
-      )}
-      {level >= 30 && (
-        <td>
+        ) : (
+          <span className="text-muted small">-</span>
+        )}
+      </td>
+      <td>
+        {level >= 30 ? (
           <button
-            className="btn btn-warning"
+            className="btn btn-sm btn-outline-warning text-dark"
             title="Update the entry"
             onClick={() => setShowModal(true)}
           >
-            <i
-              className="bi bi-pencil-square"
-              style={{ fontSize: "1.5rem", color: "white" }}
-            ></i>
-            Update
+            <i className="bi bi-pencil-square me-1"></i> Update
           </button>
-        </td>
-      )}
+        ) : (
+          <span className="text-muted small">-</span>
+        )}
+      </td>
 
       {showModal ? (
         <CardRecordUpdate

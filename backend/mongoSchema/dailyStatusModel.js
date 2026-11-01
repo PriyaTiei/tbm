@@ -90,4 +90,9 @@ const dailyStatusSchema = new mongoose.Schema({
   ],
 });
 
+// Performance optimization indexes for fast lookup and sorted retrieval
+dailyStatusSchema.index({ checkedAt: -1, _id: -1 });
+dailyStatusSchema.index({ checkItem: 1, checkedAt: -1 });
+dailyStatusSchema.index({ entryFor: -1 });
+
 module.exports = mongoose.model("dailystatus", dailyStatusSchema);

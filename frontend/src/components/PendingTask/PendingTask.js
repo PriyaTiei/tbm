@@ -957,6 +957,7 @@ export default function PendingTask() {
 
     const columns = [
       "SL NO",
+      "FIRST MISSED DATE",
       "LATEST PLAN DATE", 
       "LINE",
       "OP NO",
@@ -1073,11 +1074,13 @@ function buildExcelRowsFromData(data) {
 
     pending.processList.forEach((process) => {
       if (!process.processData || process.processData.length === 0) {
+        const fallbackDate = process.createdAt?.split("T")[0] || "";
         rows.push([
           index++,
-          process.createdAt?.split("T")[0] || "",
+          fallbackDate,
+          fallbackDate,
           pending.line || "",
-          process.processNo || "",
+          process.processNo || "N/A",
           "No process data available",
           "",
           "",
@@ -1109,16 +1112,30 @@ function buildExcelRowsFromData(data) {
           }
         }
         
-        // Use the first entry date or fallback to empty string
-        const latestPlanDate = dataItem.entryDates?.[0] 
-          ? new Date(dataItem.entryDates[0]).toISOString().split("T")[0] 
-          : "";
+        // Extract and sort all plan dates from entryDates to accurately find first missed date and latest plan date
+        const sortedDates = (dataItem.entryDates || [])
+          .map((d) => (d ? new Date(d) : null))
+          .filter((d) => d && !isNaN(d.getTime()))
+          .sort((a, b) => a.getTime() - b.getTime());
+
+        const firstMissedDate = sortedDates.length > 0
+          ? sortedDates[0].toISOString().split("T")[0]
+          : (dataItem.createdAt ? new Date(dataItem.createdAt).toISOString().split("T")[0] : "");
+
+        const latestPlanDate = sortedDates.length > 0
+          ? sortedDates[sortedDates.length - 1].toISOString().split("T")[0]
+          : firstMissedDate;
+
+        const opNo = (process.processNo && process.processNo !== "#N/A" && process.processNo !== "N/A")
+          ? process.processNo
+          : (dataItem.processNo || dataItem.checkItem?.processNo || process.processNo || "N/A");
         
         rows.push([
           index++,
+          firstMissedDate,
           latestPlanDate,
           pending.line || "",
-          process.processNo || "",
+          opNo,
           workDetail,
           frequency,
           measurement,
@@ -1163,55 +1180,69 @@ function buildExcelRowsFromData(data) {
         <div className="text-center text-danger py-4">Error: {error}</div>
       ) : (
         <Fragment>
-          <div className="mx-3 my-2 d-flex align-items-center gap-3">
-            <div>
-              <label className="me-2">
-                <strong>Filter by Age:</strong>
-              </label>
-              <select
-                className="form-select-sm"
-                value={ageFilter}
-                onChange={(e) => setAgeFilter(e.target.value)}
-              >
-                <option value="ALL">All</option>
-                <option value="1-10">1–10 days</option>
-                <option value="11-20">11–20 days</option>
-                <option value=">20">More than 20 days</option>
-              </select>
-            </div>
-            
-            {/* Age Summary Display */}
-            <div className="text-muted small">
-              <span className="me-3">1-10 days: <strong>{ageSummary["1-10"]}</strong></span>
-              <span className="me-3">11-20 days: <strong>{ageSummary["11-20"]}</strong></span>
-              <span>20+ days: <strong>{ageSummary["20+"]}</strong></span>
-            </div>
-          </div>
+          <div className="mx-3 my-2 p-2 px-3 bg-white rounded-3 border d-flex justify-content-between align-items-center flex-wrap gap-2 shadow-sm">
+            <div className="d-flex align-items-center flex-wrap gap-3">
+              <div className="d-flex align-items-center">
+                <label className="me-2 mb-0 fw-semibold text-secondary" style={{ fontSize: "0.88rem" }}>
+                  <i className="bi bi-funnel-fill me-1" style={{ color: "#0d9488" }}></i> Filter by Age:
+                </label>
+                <select
+                  className="form-select form-select-sm"
+                  style={{ width: "160px", borderRadius: "6px" }}
+                  value={ageFilter}
+                  onChange={(e) => setAgeFilter(e.target.value)}
+                >
+                  <option value="ALL">All Days</option>
+                  <option value="1-10">1–10 days</option>
+                  <option value="11-20">11–20 days</option>
+                  <option value=">20">More than 20 days</option>
+                </select>
+              </div>
 
-          <div>
-            {isExcelDataReady && body.length > 0 ? (
-              <Button
-                variant="warning"
-                style={{ position: "absolute", right: 150 }}
-                onClick={handleDownloadExcel}
-              >
-                Download Excel ({body.length} rows)
-              </Button>
-            ) : (
-              <Button
-                disabled
-                style={{
-                  position: "absolute",
-                  right: 150,
-                  backgroundColor: "#666",
-                  cursor: "not-allowed",
-                }}
-              >
-                {isLoading ? "Loading data..." : 
-                 !isExcelDataReady ? "Preparing Excel data..." : 
-                 "No data to export"}
-              </Button>
-            )}
+              {/* Age Summary Display */}
+              <div className="d-flex align-items-center gap-2 small">
+                <span className="badge bg-light text-dark border">
+                  1-10d: <strong className="text-primary">{ageSummary["1-10"]}</strong>
+                </span>
+                <span className="badge bg-light text-dark border">
+                  11-20d: <strong className="text-warning">{ageSummary["11-20"]}</strong>
+                </span>
+                <span className="badge bg-light text-dark border">
+                  20+d: <strong className="text-danger">{ageSummary["20+"]}</strong>
+                </span>
+              </div>
+            </div>
+
+            <div>
+              {isExcelDataReady && body.length > 0 ? (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="fw-semibold shadow-sm d-flex align-items-center gap-1.5 text-white"
+                  style={{ background: "#0d9488", borderColor: "#0d9488" }}
+                  onClick={handleDownloadExcel}
+                >
+                  <i className="bi bi-file-earmark-excel-fill"></i>
+                  <span>Download Excel ({body.length} rows)</span>
+                </Button>
+              ) : (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  disabled
+                  className="shadow-sm d-flex align-items-center gap-1.5"
+                >
+                  <i className="bi bi-file-earmark-excel"></i>
+                  <span>
+                    {isLoading
+                      ? "Loading data..."
+                      : !isExcelDataReady
+                      ? "Preparing Excel..."
+                      : "No data to export"}
+                  </span>
+                </Button>
+              )}
+            </div>
           </div>
 
           <div className="overflow-auto" style={{ height: "75vh", paddingBottom: "10%" }}>

@@ -32,7 +32,51 @@ export const getCheckItem = (queryStr, page, entryForQueryStr) => {
     try {
       console.log("FINAL QUERY STRING =", queryStr);
       const url = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/headCheckList?${queryStr}&page=${page}`;
-      const result = await axios.get(url);
+      let result;
+      try {
+        result = await axios.get(url);
+      } catch (firstErr) {
+        if (firstErr.response && firstErr.response.status === 404) {
+          // If 404 occurred and queryStr had schedule or dept filters, retry relaxed
+          const parsed = new URLSearchParams(queryStr);
+          let modified = false;
+          if (
+            parsed.has("d") ||
+            parsed.has("w") ||
+            parsed.has("m") ||
+            parsed.has("y")
+          ) {
+            parsed.delete("d");
+            parsed.delete("w");
+            parsed.delete("m");
+            parsed.delete("y");
+            modified = true;
+          }
+          if (modified) {
+            try {
+              const retryUrl = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/headCheckList?${parsed.toString()}&page=${page}`;
+              result = await axios.get(retryUrl);
+            } catch (secondErr) {
+              if (parsed.has("pS")) {
+                parsed.delete("pS");
+                const retryUrl2 = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/headCheckList?${parsed.toString()}&page=${page}`;
+                result = await axios.get(retryUrl2);
+              } else {
+                throw secondErr;
+              }
+            }
+          } else if (parsed.has("pS")) {
+            parsed.delete("pS");
+            const retryUrl2 = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/headCheckList?${parsed.toString()}&page=${page}`;
+            result = await axios.get(retryUrl2);
+          } else {
+            throw firstErr;
+          }
+        } else {
+          throw firstErr;
+        }
+      }
+
       const checklist = result.data.headCheckList || [];
 
       console.log("Fetched checklist:", checklist);

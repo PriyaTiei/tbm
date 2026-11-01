@@ -157,7 +157,7 @@ exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
   const year = date.getUTCFullYear();
   const month = date.getUTCMonth() + 1;
   const week = Math.ceil(date.getUTCDate() / 7);
-  const day = date.getUTCDate();
+  const day = date.getUTCDay();
   const dated = date.getUTCDate();
 
   const pendingTaskObject = new ApiFeaturePendingTask(HeadModel, {

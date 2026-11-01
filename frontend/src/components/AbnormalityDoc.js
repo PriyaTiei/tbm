@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { getAbnormality } from "../redux/abnormality/abnormalityActions";
+import {
+  filterDate,
+  filterDept,
+  filterMainLine,
+  filterProcessNo,
+} from "../redux/filter/filterActions";
 import AbnormalityRecordUpdate from "./AbnormalityRecordUpdate";
 import RaiseCardModal from "./RaiseCardModal";
 import AbnormalityImageModal from "./AbnormalityImageModal";
 
-function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
+function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
+  const navigate = useNavigate();
   const {
     createdAt,
     line,
@@ -21,20 +29,15 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
     beforeImage,
     afterImage,
     _id,
-    pS
+    pS,
   } = item;
-  console.log(item);
-  var workDetail = ""
-  if (checkItem == null) {
-    workDetail = ""
-  }
-  else {
-    workDetail = checkItem.workDetail
-  }
+
+  const workDetail = checkItem ? checkItem.workDetail || "" : "";
 
   const [showModal, setShowModal] = useState(false);
   const [showModalRaiseCard, setShowModalRaiseCard] = useState(false);
   const [showModalImage, setShowModalImage] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const auth = useSelector((state) => state.auth);
   const level = auth.user ? auth.user.level : 0;
@@ -46,160 +49,532 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
       if (beforeImage instanceof File) {
         setBeforeImageUrl(URL.createObjectURL(beforeImage));
       } else if (typeof beforeImage === "string") {
-        setBeforeImageUrl(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${beforeImage}`);
+        setBeforeImageUrl(
+          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${beforeImage}`,
+        );
       } else {
         setBeforeImageUrl(null);
       }
+    } else {
+      setBeforeImageUrl(null);
+    }
 
+    if (afterImage) {
       if (afterImage instanceof File) {
         setAfterImageUrl(URL.createObjectURL(afterImage));
       } else if (typeof afterImage === "string") {
-        setAfterImageUrl(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${afterImage}`);
+        setAfterImageUrl(
+          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${afterImage}`,
+        );
       } else {
         setAfterImageUrl(null);
       }
     } else {
-      setBeforeImageUrl(null);
       setAfterImageUrl(null);
     }
 
-    // Cleanup blob URLs when component unmounts or image changes:
     return () => {
-      if (beforeImageUrl) URL.revokeObjectURL(beforeImageUrl);
-      if (afterImageUrl) URL.revokeObjectURL(afterImageUrl);
+      if (
+        beforeImageUrl &&
+        typeof beforeImageUrl === "string" &&
+        beforeImageUrl.startsWith("blob:")
+      ) {
+        URL.revokeObjectURL(beforeImageUrl);
+      }
+      if (
+        afterImageUrl &&
+        typeof afterImageUrl === "string" &&
+        afterImageUrl.startsWith("blob:")
+      ) {
+        URL.revokeObjectURL(afterImageUrl);
+      }
     };
-  }, [beforeImage]);
-
-
-  useEffect(() => {
-    console.log(item)
-  }, [item])
-  useEffect(() => {
-    console.log("Image inside AbnormilityDoc:", beforeImage);
-  }, [beforeImage]);
+  }, [beforeImage, afterImage]);
 
   const dispatch = useDispatch();
+
   const deleteItem = (itemId) => {
     axios
       .delete(
-        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/update/${itemId}`
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/update/${itemId}`,
       )
-      .then((result) => {
+      .then(() => {
         dispatch(getAbnormality(fromDateSt, toDateSt));
       })
-
+      .catch((err) => {
+        console.error("Error deleting abnormality record:", err);
+      });
   };
 
   const deleteConfirmation = () => {
     if (window.confirm("Are you sure you want to Delete this item?")) {
       deleteItem(_id);
-    } else {
-      // Do nothing!
     }
   };
 
+  // Parse date safely at local noon to avoid any timezone shifts
+  const parseDateSafe = (dateStr) => {
+    if (!dateStr) return null;
+    if (dateStr instanceof Date) return dateStr;
+    const str = String(dateStr);
+    const match = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (match) {
+      const y = parseInt(match[1], 10);
+      const m = parseInt(match[2], 10) - 1;
+      const d = parseInt(match[3], 10);
+      return new Date(y, m, d, 12, 0, 0);
+    }
+    return new Date(dateStr);
+  };
 
+  // Get valid card date string, discarding any stale query match from a previous year
+  const getValidCardDateStr = () => {
+    if (!item.cardCreatedDate) return createdAt;
+    const rDate = parseDateSafe(createdAt);
+    const cDate = parseDateSafe(item.cardCreatedDate);
+    if (rDate && cDate && cDate.getFullYear() < rDate.getFullYear()) {
+      return createdAt;
+    }
+    return item.cardCreatedDate || createdAt;
+  };
+
+  const handleNavigateToHome = () => {
+    const cardDateStr = getValidCardDateStr();
+    if (!cardDateStr) return;
+    const target = parseDateSafe(cardDateStr);
+    if (!target) return;
+
+    localStorage.setItem("changedDate", target.toISOString());
+
+    dispatch(
+      filterDate(
+        target.getDay(),
+        Math.floor(target.getDate() / 7.1) + 1,
+        target.getMonth() + 1,
+        target.getFullYear(),
+        target.getDate(),
+      ),
+    );
+
+    if (pS) {
+      dispatch(filterDept(pS));
+    }
+    if (line) {
+      dispatch(filterMainLine(line));
+    }
+    if (processNo) {
+      dispatch(filterProcessNo(processNo));
+    }
+
+    const checkItemId =
+      checkItem && typeof checkItem === "object"
+        ? checkItem._id
+        : checkItem || "";
+
+    const params = new URLSearchParams();
+    if (line) params.set("line", line);
+    if (processNo) params.set("processNo", processNo);
+    if (pS) params.set("pS", pS);
+    if (checkItemId) params.set("checkItemId", checkItemId);
+
+    if (line && processNo) {
+      navigate(`/checkList?${params.toString()}`);
+    } else {
+      navigate("/");
+    }
+  };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "—";
+    try {
+      return dateStr.slice(0, 10);
+    } catch (e) {
+      return dateStr;
+    }
+  };
+
+  const validCardDateStr = getValidCardDateStr();
+  const cardDateDisplay = validCardDateStr ? formatDate(validCardDateStr) : "—";
+
+  const isComplete = status === "complete";
+  const isInProgress = status === "inprogress";
+
+  // Check if target date is overdue (in the past and not yet complete)
+  const isOverdue =
+    targetDate &&
+    !isComplete &&
+    new Date(targetDate.slice(0, 10)) <
+      new Date(new Date().toISOString().slice(0, 10));
 
   return (
     <tr
-      className={
-        status === "complete"
-          ? "bg-success"
-          : status === "inprogress"
-            ? "bg-warning"
-            : "bg-light"
-      }
+      style={{
+        borderLeft: isComplete
+          ? "4px solid #10b981"
+          : isInProgress
+            ? "4px solid #0284c7"
+            : "4px solid #f59e0b",
+        background: isHovered
+          ? isComplete
+            ? "rgba(16, 185, 129, 0.04)"
+            : isInProgress
+              ? "rgba(2, 132, 199, 0.04)"
+              : "rgba(245, 158, 11, 0.04)"
+          : "#ffffff",
+        transition: "background 0.15s ease",
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <td>{createdAt.slice(0, 10)}</td>
-
-      <td>
-        {item.cardCreatedDate
-          ? item.cardCreatedDate.slice(0, 10)
-          : "-"}
+      {/* 1. S.No */}
+      <td
+        className="align-middle text-center text-muted fw-semibold"
+        style={{
+          fontSize: "0.75rem",
+          padding: "6px 2px",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {index || "•"}
       </td>
 
-      <td>{pS === "P" ? "Maint." : (pS === "S" ? "Prod." : "")}</td>
-      ``
-      <td>{line}</td>
-      <td>{processNo}</td>
-      <td>{workDetail}</td>
-      <td>{abnormality}</td>
-      <td>{countermeasure}</td>
-      <td>{spare}</td>
+      {/* 2. Issue Reported Date */}
+      <td
+        className="align-middle text-nowrap"
+        style={{
+          fontSize: "0.78rem",
+          color: "#334155",
+          padding: "6px 4px",
+          whiteSpace: "nowrap",
+        }}
+      >
+        <span>{formatDate(createdAt)}</span>
+      </td>
 
-      <td>{pic}</td>
-      <td>{targetDate ? targetDate.slice(0, 10) : null}</td>
-      <td>{status.toUpperCase()}</td>
+      {/* 3. Card Created Date + Home Button */}
+      <td
+        className="align-middle text-nowrap"
+        style={{ padding: "6px 4px", whiteSpace: "nowrap" }}
+      >
+        <div className="d-flex align-items-center gap-1">
+          <span style={{ fontSize: "0.78rem", color: "#334155" }}>
+            {cardDateDisplay}
+          </span>
+          <button
+            type="button"
+            className="btn btn-sm btn-outline-primary p-0 d-inline-flex align-items-center justify-content-center rounded-circle shadow-xs"
+            style={{
+              width: "20px",
+              height: "20px",
+              fontSize: "0.68rem",
+              flexShrink: 0,
+            }}
+            title="Open checklist card for this date"
+            onClick={handleNavigateToHome}
+          >
+            <i className="bi bi-box-arrow-up-right"></i>
+          </button>
+        </div>
+      </td>
 
-      <td>
-        <button
-          className="btn btn-primary"
-          onClick={() => setShowModalImage(true)}
-          title="Image"
+      {/* 4. Department Badge */}
+      <td
+        className="align-middle text-center"
+        style={{ padding: "6px 2px", whiteSpace: "nowrap" }}
+      >
+        {pS === "S" ? (
+          <span
+            className="badge rounded-pill fw-semibold"
+            style={{
+              background: "#eff6ff",
+              color: "#1d4ed8",
+              border: "1px solid #bfdbfe",
+              fontSize: "0.68rem",
+              padding: "2px 6px",
+            }}
+            title="Production"
+          >
+            Prod
+          </span>
+        ) : pS === "P" ? (
+          <span
+            className="badge rounded-pill fw-semibold"
+            style={{
+              background: "#f5f3ff",
+              color: "#6d28d9",
+              border: "1px solid #ddd6fe",
+              fontSize: "0.68rem",
+              padding: "2px 6px",
+            }}
+            title="Maintenance"
+          >
+            Maint
+          </span>
+        ) : (
+          <span className="text-muted">—</span>
+        )}
+      </td>
+
+      {/* 5. Line */}
+      <td
+        className="align-middle fw-semibold text-dark"
+        style={{ fontSize: "0.78rem", padding: "6px 4px" }}
+      >
+        <div className="text-truncate" title={line}>
+          {line || "—"}
+        </div>
+      </td>
+
+      {/* 6. Station (OP) */}
+      <td
+        className="align-middle"
+        style={{ fontSize: "0.78rem", padding: "6px 4px" }}
+      >
+        <span
+          className="badge bg-light text-dark border fw-bold px-1.5 py-0.5 rounded text-truncate d-inline-block"
+          style={{ fontSize: "0.72rem", maxWidth: "100%" }}
+          title={processNo}
+        >
+          {processNo || "—"}
+        </span>
+      </td>
+
+      {/* 7. Inspection Item */}
+      <td
+        className="align-middle"
+        style={{ padding: "6px 4px" }}
+        title={workDetail}
+      >
+        <div
+          className="text-truncate fw-medium text-dark"
+          style={{ fontSize: "0.78rem" }}
+        >
+          {workDetail || "—"}
+        </div>
+      </td>
+
+      {/* 8. Abnormality / Defect */}
+      <td
+        className="align-middle"
+        style={{ padding: "6px 4px" }}
+        title={abnormality}
+      >
+        <div
+          className="d-flex align-items-center text-danger fw-semibold"
+          style={{ fontSize: "0.78rem" }}
         >
           <i
-            className="bi bi-image"
-            style={{ fontSize: "1.5rem", color: "white" }}
+            className="bi bi-exclamation-triangle-fill text-danger me-1 flex-shrink-0"
+            style={{ fontSize: "0.75rem" }}
           ></i>
-          Images
-        </button>
+          <span className="text-truncate">{abnormality || "—"}</span>
+        </div>
       </td>
 
-      {level >= 40 && (
-        <td>
-          <button
-            className="btn btn-danger"
-            onClick={deleteConfirmation}
-            // data-toggle="tooltip"
-            // data-placement="top"
-            title="Delete the entry"
+      {/* 9. Countermeasure */}
+      <td
+        className="align-middle"
+        style={{ padding: "6px 4px" }}
+        title={countermeasure}
+      >
+        {countermeasure ? (
+          <div
+            className="text-truncate text-secondary"
+            style={{ fontSize: "0.78rem" }}
           >
-            <i
-              className="bi bi-trash"
-              style={{ fontSize: "1.5rem", color: "white" }}
-            ></i>
-            Delete
-          </button>
-        </td>
-      )}
-      {level >= 20 && (
-        <td>
-          <button
-            className="btn btn-warning"
-            title="Update the entry"
-            onClick={() => setShowModal(true)}
-          >
-            <i
-              className="bi bi-pencil-square"
-              style={{ fontSize: "1.5rem", color: "white" }}
-            ></i>
-            Update
-          </button>
-        </td>
-      )}
+            {countermeasure}
+          </div>
+        ) : (
+          <span className="text-muted fst-italic">—</span>
+        )}
+      </td>
 
-      {level >= 100 && (
-        <td>
-          <button
-            className="btn btn-warning"
-            title="Raise Card"
-            onClick={() => setShowModalRaiseCard(true)}
+      {/* 10. Spare */}
+      <td
+        className="align-middle text-center"
+        style={{
+          fontSize: "0.75rem",
+          padding: "6px 2px",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+        title={spare || ""}
+      >
+        {spare ? (
+          <span
+            className="badge bg-light text-secondary border px-1.5 py-0.5 rounded text-truncate d-inline-block"
+            style={{
+              fontSize: "0.7rem",
+              maxWidth: "100%",
+              verticalAlign: "middle",
+            }}
+            title={spare}
           >
-            <i
-              className="bi bi-files"
-              style={{ fontSize: "1.5rem", color: "white" }}
-            ></i>
-            Raise_Card
-          </button>
-        </td>
-      )}
+            {spare}
+          </span>
+        ) : (
+          <span className="text-muted">—</span>
+        )}
+      </td>
 
-      {showModal ? (
+      {/* 11. PIC (Person in Charge) */}
+      <td
+        className="align-middle"
+        style={{
+          fontSize: "0.78rem",
+          padding: "6px 4px",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {pic ? (
+          <div className="text-truncate text-dark fw-medium" title={pic}>
+            <i
+              className="bi bi-person-fill text-secondary me-1"
+              style={{ fontSize: "0.72rem" }}
+            ></i>
+            <span>{pic}</span>
+          </div>
+        ) : (
+          <span
+            className="text-muted fst-italic"
+            style={{ fontSize: "0.74rem" }}
+          >
+            Unassigned
+          </span>
+        )}
+      </td>
+
+      {/* 12. Target Date (with Overdue pill if past deadline) */}
+      <td
+        className="align-middle"
+        style={{
+          padding: "4px 4px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+        }}
+      >
+        {targetDate ? (
+          <div className="d-flex flex-column justify-content-center">
+            <span
+              style={{
+                fontSize: "0.75rem",
+                color: isOverdue ? "#dc2626" : "#475569",
+                fontWeight: isOverdue ? 700 : 500,
+                lineHeight: 1.2,
+              }}
+            >
+              {formatDate(targetDate)}
+            </span>
+            {isOverdue && (
+              <span
+                className="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-40 fw-bold align-self-start"
+                style={{
+                  fontSize: "0.58rem",
+                  padding: "1px 4px",
+                  lineHeight: "1.1",
+                  marginTop: "2px",
+                  borderRadius: "3px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <i
+                  className="bi bi-clock-history me-0.5"
+                  style={{ fontSize: "0.55rem" }}
+                ></i>
+                Overdue
+              </span>
+            )}
+          </div>
+        ) : (
+          <span className="text-muted">—</span>
+        )}
+      </td>
+
+      {/* 13. Sleek Action Buttons Toolbar */}
+      <td
+        className="align-middle text-center"
+        style={{ padding: "6px 2px", whiteSpace: "nowrap" }}
+      >
+        <div className="d-inline-flex align-items-center gap-1 justify-content-center flex-nowrap">
+          {/* Images Button */}
+          <button
+            type="button"
+            className="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 px-1.5 py-0.5 rounded shadow-xs"
+            style={{ fontSize: "0.68rem", fontWeight: 500, lineHeight: 1.15 }}
+            onClick={() => setShowModalImage(true)}
+            title="View Defect Photos (Before/After)"
+          >
+            <i className="bi bi-image" style={{ fontSize: "0.7rem" }}></i>
+            <span>Images</span>
+            {(beforeImage || afterImage) && (
+              <span
+                className="badge bg-primary text-white rounded-circle p-0"
+                style={{ width: "5px", height: "5px" }}
+              ></span>
+            )}
+          </button>
+
+          {/* Update Button (Level >= 20) */}
+          {level >= 20 && (
+            <button
+              type="button"
+              className="btn btn-sm btn-warning d-inline-flex align-items-center gap-1 px-1.5 py-0.5 rounded shadow-xs text-dark fw-semibold"
+              style={{ fontSize: "0.68rem", lineHeight: 1.15 }}
+              onClick={() => setShowModal(true)}
+              title="Update Status & Countermeasure"
+            >
+              <i
+                className="bi bi-pencil-square"
+                style={{ fontSize: "0.7rem" }}
+              ></i>
+              <span>Update</span>
+            </button>
+          )}
+
+          {/* Raise Card Button (Level >= 100) */}
+          {level >= 100 && (
+            <button
+              type="button"
+              className="btn btn-sm btn-info text-white d-inline-flex align-items-center gap-1 px-1.5 py-0.5 rounded shadow-xs"
+              style={{
+                fontSize: "0.68rem",
+                lineHeight: 1.15,
+                background: "#0284c7",
+                borderColor: "#0284c7",
+              }}
+              onClick={() => setShowModalRaiseCard(true)}
+              title="Raise Preventive Maintenance Card"
+            >
+              <i className="bi bi-files" style={{ fontSize: "0.7rem" }}></i>
+              <span>Raise</span>
+            </button>
+          )}
+
+          {/* Delete Button (Level >= 40) */}
+          {level >= 40 && (
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center p-0 rounded-circle shadow-xs"
+              style={{ width: "20px", height: "20px", flexShrink: 0 }}
+              onClick={deleteConfirmation}
+              title="Delete Abnormality Record"
+            >
+              <i className="bi bi-trash3" style={{ fontSize: "0.7rem" }}></i>
+            </button>
+          )}
+        </div>
+      </td>
+
+      {/* Modals */}
+      {showModal && (
         <AbnormalityRecordUpdate
           showModal={showModal}
           setShowModal={setShowModal}
           id={_id}
-          checkItem={checkItem._id}
+          checkItem={checkItem ? checkItem._id : null}
           line={line}
           processNo={processNo}
           workDetail={workDetail}
@@ -214,13 +589,14 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
           beforeImage={beforeImage}
           afterImage={afterImage}
         />
-      ) : null}
-      {showModalRaiseCard ? (
+      )}
+
+      {showModalRaiseCard && (
         <RaiseCardModal
           showModal={showModalRaiseCard}
           setShowModal={setShowModalRaiseCard}
           id={_id}
-          checkItem={checkItem._id}
+          checkItem={checkItem ? checkItem._id : null}
           line={line}
           processNo={processNo}
           workDetail={workDetail}
@@ -235,7 +611,7 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
           pS={pS}
           abnormalityId={item._id}
         />
-      ) : null}
+      )}
 
       {showModalImage && (
         <AbnormalityImageModal
@@ -245,8 +621,6 @@ function AbnormilityDoc({ item, fromDateSt, toDateSt }) {
           afterImageUrl={afterImageUrl}
         />
       )}
-
-
     </tr>
   );
 }

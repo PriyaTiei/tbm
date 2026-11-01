@@ -1,51 +1,113 @@
-import React, { Fragment } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import styles from "../styles/smilecard.module.css";
 
-
-export default function AlldelMachineCard(props) {
-  const { processNo, result, processData, onClick } = props;
-
-  let statusColor = "rgba(76,74,75)";
-  const counts = processData.length;
-
- 
+export default function AlldelMachineCard({ processNo, processData, onClick }) {
+  const counts = Array.isArray(processData)
+    ? processData.length
+    : processData?.length || 0;
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <Fragment >
-      <Link
-     
-        to={ `/delMachine/cardDetails/`}
-        style={{ textDecoration: "none" }}
+    <Link
+      to={`/delMachine/cardDetails/`}
+      onClick={onClick}
+      style={{ textDecoration: "none", color: "inherit" }}
+    >
+      <div
+        className="card shadow-sm"
+        style={{
+          width: "152px",
+          height: "154px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          background: "#ffffff",
+          borderRadius: "12px",
+          border: isHovered ? "1px solid #94a3b8" : "1px solid #e2e8f0",
+          borderTop: "3px solid #64748b",
+          boxShadow: isHovered
+            ? "0 8px 18px rgba(71, 85, 105, 0.15)"
+            : "0 2px 6px rgba(15, 23, 42, 0.05)",
+          transform: isHovered ? "translateY(-4px)" : "translateY(0)",
+          transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+          cursor: "pointer",
+          overflow: "hidden",
+          boxSizing: "border-box",
+        }}
+        onClick={onClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
+        {/* Header: Station / Process Name with vertical centering & 2-line clamp */}
         <div
-          className={`card  mx-3 mb-3  ${styles.bg} ${styles.translate}`}
+          className="px-2 py-1 text-center d-flex align-items-center justify-content-center"
           style={{
-            width: "8vmax",
-            background: statusColor,
-            color: "white",
+            height: "46px",
+            minHeight: "46px",
+            maxHeight: "46px",
+            background: "#f8fafc",
+            borderBottom: "1px solid #f1f5f9",
           }}
-          onClick={onClick}
         >
-          <div className="card-header">
-            <h6 className="text-center">{processNo} </h6>
-          </div>
-          <div className="m-auto">
+          <span
+            className="fw-bold text-dark text-center"
+            style={{
+              fontSize: "0.82rem",
+              lineHeight: "1.25",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              wordBreak: "break-word",
+              letterSpacing: "0.2px",
+            }}
+            title={processNo || ""}
+          >
+            {processNo || "—"}
+          </span>
+        </div>
+
+        {/* Middle: Archived / Deleted Station Emblem */}
+        <div className="d-flex align-items-center justify-content-center py-2 flex-grow-1">
+          <div
+            className="d-flex align-items-center justify-content-center rounded-circle"
+            style={{
+              width: "44px",
+              height: "44px",
+              background: "#f1f5f9",
+              border: "1px solid #e2e8f0",
+              boxShadow: "0 2px 5px rgba(0, 0, 0, 0.04)",
+              transition: "transform 0.2s ease",
+              transform: isHovered ? "scale(1.08)" : "scale(1)",
+            }}
+          >
             <i
-              className="bi bi-file-easel-fill"
-              style={{ fontSize: "3rem", color: "white" }}
+              className="bi bi-archive"
+              style={{
+                fontSize: "1.35rem",
+                color: "#64748b",
+              }}
             ></i>
           </div>
-          <div className="text-center">Total {counts} </div>
-          <div
-            style={{
-              height: 10,
-            }}
-          ></div>
-          {result === "PENDING" && <div className="text-center">result</div>}
         </div>
-      </Link>
-    </Fragment>
+
+        {/* Footer: Metrics (Total Count only - No status/pill badges) */}
+        <div
+          className="px-2 py-2 text-center d-flex justify-content-center align-items-center"
+          style={{
+            borderTop: "1px solid #f1f5f9",
+            background: "#ffffff",
+          }}
+        >
+          <div
+            className="text-muted fw-semibold"
+            style={{ fontSize: "0.78rem" }}
+          >
+            Total: <strong className="text-dark">{counts}</strong>
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 }
- 
