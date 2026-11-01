@@ -774,7 +774,7 @@ function SummaryAbnormality() {
               >
                 <th
                   style={{
-                    width: "3%",
+                    width: "2.5%",
                     textAlign: "center",
                     fontSize: "0.74rem",
                     fontWeight: 700,
@@ -786,7 +786,7 @@ function SummaryAbnormality() {
                 </th>
                 <th
                   style={{
-                    width: "7%",
+                    width: "6.5%",
                     fontSize: "0.74rem",
                     fontWeight: 700,
                     color: "#475569",
@@ -797,7 +797,7 @@ function SummaryAbnormality() {
                 </th>
                 <th
                   style={{
-                    width: "8%",
+                    width: "7%",
                     fontSize: "0.74rem",
                     fontWeight: 700,
                     color: "#475569",
@@ -805,73 +805,6 @@ function SummaryAbnormality() {
                   }}
                 >
                   Card Date
-                </th>
-                <th
-                  style={{
-                    width: "5%",
-                    textAlign: "center",
-                    fontSize: "0.74rem",
-                    fontWeight: 700,
-                    color: "#475569",
-                    padding: "8px 2px",
-                  }}
-                >
-                  Dept
-                </th>
-                <th
-                  style={{
-                    width: "6%",
-                    fontSize: "0.74rem",
-                    fontWeight: 700,
-                    color: "#475569",
-                    padding: "8px 4px",
-                  }}
-                >
-                  Line
-                </th>
-                <th
-                  style={{
-                    width: "6%",
-                    fontSize: "0.74rem",
-                    fontWeight: 700,
-                    color: "#475569",
-                    padding: "8px 4px",
-                  }}
-                >
-                  Station
-                </th>
-                <th
-                  style={{
-                    width: "13%",
-                    fontSize: "0.74rem",
-                    fontWeight: 700,
-                    color: "#475569",
-                    padding: "8px 4px",
-                  }}
-                >
-                  Inspection Item
-                </th>
-                <th
-                  style={{
-                    width: "16%",
-                    fontSize: "0.74rem",
-                    fontWeight: 700,
-                    color: "#475569",
-                    padding: "8px 4px",
-                  }}
-                >
-                  Defect / Abnormality
-                </th>
-                <th
-                  style={{
-                    width: "13%",
-                    fontSize: "0.74rem",
-                    fontWeight: 700,
-                    color: "#475569",
-                    padding: "8px 4px",
-                  }}
-                >
-                  Countermeasure
                 </th>
                 <th
                   style={{
@@ -883,11 +816,78 @@ function SummaryAbnormality() {
                     padding: "8px 2px",
                   }}
                 >
+                  Dept
+                </th>
+                <th
+                  style={{
+                    width: "5.5%",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 4px",
+                  }}
+                >
+                  Line
+                </th>
+                <th
+                  style={{
+                    width: "5%",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 4px",
+                  }}
+                >
+                  Station
+                </th>
+                <th
+                  style={{
+                    width: "12%",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 4px",
+                  }}
+                >
+                  Inspection Item
+                </th>
+                <th
+                  style={{
+                    width: "14%",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 4px",
+                  }}
+                >
+                  Defect / Abnormality
+                </th>
+                <th
+                  style={{
+                    width: "11%",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 4px",
+                  }}
+                >
+                  Countermeasure
+                </th>
+                <th
+                  style={{
+                    width: "3.5%",
+                    textAlign: "center",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 2px",
+                  }}
+                >
                   Spare
                 </th>
                 <th
                   style={{
-                    width: "7%",
+                    width: "6%",
                     fontSize: "0.74rem",
                     fontWeight: 700,
                     color: "#475569",
@@ -898,7 +898,7 @@ function SummaryAbnormality() {
                 </th>
                 <th
                   style={{
-                    width: "8%",
+                    width: "7.5%",
                     fontSize: "0.74rem",
                     fontWeight: 700,
                     color: "#475569",
@@ -909,7 +909,7 @@ function SummaryAbnormality() {
                 </th>
                 <th
                   style={{
-                    width: "14%",
+                    width: "17.5%",
                     textAlign: "center",
                     fontSize: "0.74rem",
                     fontWeight: 700,

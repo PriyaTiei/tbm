@@ -393,24 +393,35 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
       {/* 12. Target Date (with Overdue pill if past deadline) */}
       <td
         className="align-middle"
-        style={{ padding: "6px 4px", whiteSpace: "nowrap" }}
+        style={{ padding: "4px 4px", whiteSpace: "nowrap" }}
       >
         {targetDate ? (
-          <div className="d-flex align-items-center gap-1">
+          <div className="d-flex flex-column justify-content-center">
             <span
               style={{
-                fontSize: "0.76rem",
+                fontSize: "0.75rem",
                 color: isOverdue ? "#dc2626" : "#475569",
                 fontWeight: isOverdue ? 700 : 500,
+                lineHeight: 1.2,
               }}
             >
               {formatDate(targetDate)}
             </span>
             {isOverdue && (
               <span
-                className="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-50 fw-bold"
-                style={{ fontSize: "0.6rem", padding: "1px 4px" }}
+                className="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-40 fw-bold align-self-start"
+                style={{
+                  fontSize: "0.58rem",
+                  padding: "1px 4px",
+                  lineHeight: "1.1",
+                  marginTop: "2px",
+                  borderRadius: "3px",
+                }}
               >
+                <i
+                  className="bi bi-clock-history me-0.5"
+                  style={{ fontSize: "0.55rem" }}
+                ></i>
                 Overdue
               </span>
             )}
@@ -425,16 +436,16 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
         className="align-middle text-center"
         style={{ padding: "6px 2px", whiteSpace: "nowrap" }}
       >
-        <div className="d-inline-flex align-items-center gap-1 justify-content-center">
+        <div className="d-inline-flex align-items-center gap-1 justify-content-center flex-nowrap">
           {/* Images Button */}
           <button
             type="button"
-            className="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 px-2 py-0.5 rounded-pill shadow-xs"
-            style={{ fontSize: "0.72rem", fontWeight: 500 }}
+            className="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 px-1.5 py-0.5 rounded shadow-xs"
+            style={{ fontSize: "0.7rem", fontWeight: 500, lineHeight: 1.2 }}
             onClick={() => setShowModalImage(true)}
             title="View Defect Photos (Before/After)"
           >
-            <i className="bi bi-image" style={{ fontSize: "0.75rem" }}></i>
+            <i className="bi bi-image" style={{ fontSize: "0.72rem" }}></i>
             <span>Images</span>
             {(beforeImage || afterImage) && (
               <span
@@ -448,14 +459,14 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
           {level >= 20 && (
             <button
               type="button"
-              className="btn btn-sm btn-warning d-inline-flex align-items-center gap-1 px-2 py-0.5 rounded-pill shadow-xs text-dark fw-semibold"
-              style={{ fontSize: "0.72rem" }}
+              className="btn btn-sm btn-warning d-inline-flex align-items-center gap-1 px-1.5 py-0.5 rounded shadow-xs text-dark fw-semibold"
+              style={{ fontSize: "0.7rem", lineHeight: 1.2 }}
               onClick={() => setShowModal(true)}
               title="Update Status & Countermeasure"
             >
               <i
                 className="bi bi-pencil-square"
-                style={{ fontSize: "0.75rem" }}
+                style={{ fontSize: "0.72rem" }}
               ></i>
               <span>Update</span>
             </button>
@@ -465,16 +476,17 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
           {level >= 100 && (
             <button
               type="button"
-              className="btn btn-sm btn-info text-white d-inline-flex align-items-center gap-1 px-2 py-0.5 rounded-pill shadow-xs"
+              className="btn btn-sm btn-info text-white d-inline-flex align-items-center gap-1 px-1.5 py-0.5 rounded shadow-xs"
               style={{
-                fontSize: "0.72rem",
+                fontSize: "0.7rem",
+                lineHeight: 1.2,
                 background: "#0284c7",
                 borderColor: "#0284c7",
               }}
               onClick={() => setShowModalRaiseCard(true)}
               title="Raise Preventive Maintenance Card"
             >
-              <i className="bi bi-files" style={{ fontSize: "0.75rem" }}></i>
+              <i className="bi bi-files" style={{ fontSize: "0.72rem" }}></i>
               <span>Raise</span>
             </button>
           )}
@@ -484,11 +496,11 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
             <button
               type="button"
               className="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center p-0 rounded-circle shadow-xs"
-              style={{ width: "24px", height: "24px" }}
+              style={{ width: "22px", height: "22px", flexShrink: 0 }}
               onClick={deleteConfirmation}
               title="Delete Abnormality Record"
             >
-              <i className="bi bi-trash3" style={{ fontSize: "0.75rem" }}></i>
+              <i className="bi bi-trash3" style={{ fontSize: "0.72rem" }}></i>
             </button>
           )}
         </div>
