@@ -101,15 +101,17 @@ const todayDate = new Date(Date.now());
 // end week no
 
 function Filters() {
+  const dispatch = useDispatch();
+  const filters = useSelector((state) => state.filters);
+  const location = useLocation();
   const selectLineRef = useRef(null);
   const [cookies] = useCookies(['token', 'userId']);
   const [date, setDate] = useState(todayDate);
-  const [showSearch, setShowSearch] = useState(false)
-  const [showModal, setShowModal] = useState(false)
-  const [showModals, setShowModals] = useState(false)
+  const [showSearch, setShowSearch] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [showModals, setShowModals] = useState(false);
 
   const [relativeUrl, setRelativeUrl] = useState('');
-  const location = useLocation();
 
   const isPendingActive = location.pathname.startsWith('/pending');
   const isHomeActive =
@@ -139,7 +141,9 @@ function Filters() {
       setDate(dateObj);
       localStorage.removeItem("changedDate");
     }
+  }, [relativeUrl, location.search]);
 
+  useEffect(() => {
     if (location.search) {
       const params = new URLSearchParams(location.search);
       const urlPs = params.get("pS");
@@ -155,7 +159,7 @@ function Filters() {
         dispatch(filterProcessNo(urlProcess));
       }
     }
-  }, [relativeUrl, location.search, dispatch]);
+  }, [location.search, filters.pS, filters.line, filters.processNo, dispatch]);
 
   useEffect(() => {
     console.log(date)
@@ -171,7 +175,6 @@ function Filters() {
   const level = auth.user ? auth.user.level : 0;
   // const { loading, pendingTasksData } = pendingTasks;
   // const [pendingTasksData, setPendingTasksData] = useState([])
-  const filters = useSelector((state) => state.filters);
   const { machineData } = useSelector((state) => state.machines);
 
   const getLineGroup = (line) => {
@@ -273,8 +276,6 @@ function Filters() {
   //   : { totalCountBlock: 0, totalCountCrank: 0, totalCountHead: 0 };
 
   // const { totalCountBlock, totalCountCrank, totalCountHead } = totalCount;
-
-  const dispatch = useDispatch();
 
   // useEffect(() => {
   //   axios.get(
