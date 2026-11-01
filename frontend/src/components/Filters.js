@@ -125,23 +125,37 @@ function Filters() {
     // Construct the URL without the host
     const urlWithoutHost = `${location.pathname}`;
     setRelativeUrl(urlWithoutHost);
-
   }, [location]);
-
 
   useEffect(() => {
     if ("changedDate" in localStorage) {
       const dateString = localStorage.getItem("changedDate");
-      const date = new Date(dateString);
+      const dateObj = new Date(dateString);
 
       // Set a specific time if needed
-      date.setHours(12, 22, 49);
+      dateObj.setHours(12, 22, 49);
 
       // Store the Date object, not a string
-      setDate(date);
+      setDate(dateObj);
       localStorage.removeItem("changedDate");
     }
-  }, [relativeUrl]);
+
+    if (location.search) {
+      const params = new URLSearchParams(location.search);
+      const urlPs = params.get("pS");
+      if (urlPs && urlPs !== filters.pS) {
+        dispatch(filterDept(urlPs));
+      }
+      const urlLine = params.get("line");
+      if (urlLine && urlLine !== filters.line) {
+        dispatch(filterMainLine(urlLine));
+      }
+      const urlProcess = params.get("processNo");
+      if (urlProcess && urlProcess !== filters.processNo) {
+        dispatch(filterProcessNo(urlProcess));
+      }
+    }
+  }, [relativeUrl, location.search, dispatch]);
 
   useEffect(() => {
     console.log(date)

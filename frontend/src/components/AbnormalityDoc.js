@@ -166,10 +166,19 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
       dispatch(filterProcessNo(processNo));
     }
 
+    const checkItemId =
+      checkItem && typeof checkItem === "object"
+        ? checkItem._id
+        : checkItem || "";
+
+    const params = new URLSearchParams();
+    if (line) params.set("line", line);
+    if (processNo) params.set("processNo", processNo);
+    if (pS) params.set("pS", pS);
+    if (checkItemId) params.set("checkItemId", checkItemId);
+
     if (line && processNo) {
-      navigate(
-        `/checkList?line=${encodeURIComponent(line)}&processNo=${encodeURIComponent(processNo)}`,
-      );
+      navigate(`/checkList?${params.toString()}`);
     } else {
       navigate("/");
     }
@@ -383,12 +392,24 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
       {/* 10. Spare */}
       <td
         className="align-middle text-center"
-        style={{ fontSize: "0.75rem", padding: "6px 2px" }}
+        style={{
+          fontSize: "0.75rem",
+          padding: "6px 2px",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+        title={spare || ""}
       >
         {spare ? (
           <span
-            className="badge bg-light text-secondary border px-1.5 py-0.5 rounded"
-            style={{ fontSize: "0.7rem" }}
+            className="badge bg-light text-secondary border px-1.5 py-0.5 rounded text-truncate d-inline-block"
+            style={{
+              fontSize: "0.7rem",
+              maxWidth: "100%",
+              verticalAlign: "middle",
+            }}
+            title={spare}
           >
             {spare}
           </span>
@@ -400,7 +421,13 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
       {/* 11. PIC (Person in Charge) */}
       <td
         className="align-middle"
-        style={{ fontSize: "0.78rem", padding: "6px 4px" }}
+        style={{
+          fontSize: "0.78rem",
+          padding: "6px 4px",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
       >
         {pic ? (
           <div className="text-truncate text-dark fw-medium" title={pic}>
@@ -423,7 +450,11 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
       {/* 12. Target Date (with Overdue pill if past deadline) */}
       <td
         className="align-middle"
-        style={{ padding: "4px 4px", whiteSpace: "nowrap" }}
+        style={{
+          padding: "4px 4px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+        }}
       >
         {targetDate ? (
           <div className="d-flex flex-column justify-content-center">
@@ -446,6 +477,7 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
                   lineHeight: "1.1",
                   marginTop: "2px",
                   borderRadius: "3px",
+                  whiteSpace: "nowrap",
                 }}
               >
                 <i
@@ -471,11 +503,11 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
           <button
             type="button"
             className="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 px-1.5 py-0.5 rounded shadow-xs"
-            style={{ fontSize: "0.7rem", fontWeight: 500, lineHeight: 1.2 }}
+            style={{ fontSize: "0.68rem", fontWeight: 500, lineHeight: 1.15 }}
             onClick={() => setShowModalImage(true)}
             title="View Defect Photos (Before/After)"
           >
-            <i className="bi bi-image" style={{ fontSize: "0.72rem" }}></i>
+            <i className="bi bi-image" style={{ fontSize: "0.7rem" }}></i>
             <span>Images</span>
             {(beforeImage || afterImage) && (
               <span
@@ -490,13 +522,13 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
             <button
               type="button"
               className="btn btn-sm btn-warning d-inline-flex align-items-center gap-1 px-1.5 py-0.5 rounded shadow-xs text-dark fw-semibold"
-              style={{ fontSize: "0.7rem", lineHeight: 1.2 }}
+              style={{ fontSize: "0.68rem", lineHeight: 1.15 }}
               onClick={() => setShowModal(true)}
               title="Update Status & Countermeasure"
             >
               <i
                 className="bi bi-pencil-square"
-                style={{ fontSize: "0.72rem" }}
+                style={{ fontSize: "0.7rem" }}
               ></i>
               <span>Update</span>
             </button>
@@ -508,15 +540,15 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
               type="button"
               className="btn btn-sm btn-info text-white d-inline-flex align-items-center gap-1 px-1.5 py-0.5 rounded shadow-xs"
               style={{
-                fontSize: "0.7rem",
-                lineHeight: 1.2,
+                fontSize: "0.68rem",
+                lineHeight: 1.15,
                 background: "#0284c7",
                 borderColor: "#0284c7",
               }}
               onClick={() => setShowModalRaiseCard(true)}
               title="Raise Preventive Maintenance Card"
             >
-              <i className="bi bi-files" style={{ fontSize: "0.72rem" }}></i>
+              <i className="bi bi-files" style={{ fontSize: "0.7rem" }}></i>
               <span>Raise</span>
             </button>
           )}
@@ -526,11 +558,11 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
             <button
               type="button"
               className="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center p-0 rounded-circle shadow-xs"
-              style={{ width: "22px", height: "22px", flexShrink: 0 }}
+              style={{ width: "20px", height: "20px", flexShrink: 0 }}
               onClick={deleteConfirmation}
               title="Delete Abnormality Record"
             >
-              <i className="bi bi-trash3" style={{ fontSize: "0.72rem" }}></i>
+              <i className="bi bi-trash3" style={{ fontSize: "0.7rem" }}></i>
             </button>
           )}
         </div>

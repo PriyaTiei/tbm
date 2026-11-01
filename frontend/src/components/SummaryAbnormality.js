@@ -797,7 +797,7 @@ function SummaryAbnormality() {
                 </th>
                 <th
                   style={{
-                    width: "7%",
+                    width: "6.5%",
                     fontSize: "0.74rem",
                     fontWeight: 700,
                     color: "#475569",
@@ -808,7 +808,7 @@ function SummaryAbnormality() {
                 </th>
                 <th
                   style={{
-                    width: "4%",
+                    width: "3.5%",
                     textAlign: "center",
                     fontSize: "0.74rem",
                     fontWeight: 700,
@@ -820,7 +820,7 @@ function SummaryAbnormality() {
                 </th>
                 <th
                   style={{
-                    width: "5.5%",
+                    width: "5%",
                     fontSize: "0.74rem",
                     fontWeight: 700,
                     color: "#475569",
@@ -842,7 +842,7 @@ function SummaryAbnormality() {
                 </th>
                 <th
                   style={{
-                    width: "12%",
+                    width: "11%",
                     fontSize: "0.74rem",
                     fontWeight: 700,
                     color: "#475569",
@@ -853,7 +853,7 @@ function SummaryAbnormality() {
                 </th>
                 <th
                   style={{
-                    width: "14%",
+                    width: "12.5%",
                     fontSize: "0.74rem",
                     fontWeight: 700,
                     color: "#475569",
@@ -864,7 +864,7 @@ function SummaryAbnormality() {
                 </th>
                 <th
                   style={{
-                    width: "11%",
+                    width: "10.5%",
                     fontSize: "0.74rem",
                     fontWeight: 700,
                     color: "#475569",
@@ -875,7 +875,7 @@ function SummaryAbnormality() {
                 </th>
                 <th
                   style={{
-                    width: "3.5%",
+                    width: "5.5%",
                     textAlign: "center",
                     fontSize: "0.74rem",
                     fontWeight: 700,
@@ -898,7 +898,7 @@ function SummaryAbnormality() {
                 </th>
                 <th
                   style={{
-                    width: "7.5%",
+                    width: "8.5%",
                     fontSize: "0.74rem",
                     fontWeight: 700,
                     color: "#475569",
@@ -909,7 +909,7 @@ function SummaryAbnormality() {
                 </th>
                 <th
                   style={{
-                    width: "17.5%",
+                    width: "17%",
                     textAlign: "center",
                     fontSize: "0.74rem",
                     fontWeight: 700,
