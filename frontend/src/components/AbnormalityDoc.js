@@ -112,10 +112,37 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
     }
   };
 
+  // Parse date safely at local noon to avoid any timezone shifts
+  const parseDateSafe = (dateStr) => {
+    if (!dateStr) return null;
+    if (dateStr instanceof Date) return dateStr;
+    const str = String(dateStr);
+    const match = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (match) {
+      const y = parseInt(match[1], 10);
+      const m = parseInt(match[2], 10) - 1;
+      const d = parseInt(match[3], 10);
+      return new Date(y, m, d, 12, 0, 0);
+    }
+    return new Date(dateStr);
+  };
+
+  // Get valid card date string, discarding any stale query match from a previous year
+  const getValidCardDateStr = () => {
+    if (!item.cardCreatedDate) return createdAt;
+    const rDate = parseDateSafe(createdAt);
+    const cDate = parseDateSafe(item.cardCreatedDate);
+    if (rDate && cDate && cDate.getFullYear() < rDate.getFullYear()) {
+      return createdAt;
+    }
+    return item.cardCreatedDate || createdAt;
+  };
+
   const handleNavigateToHome = () => {
-    const cardDateStr = item.cardCreatedDate || createdAt;
+    const cardDateStr = getValidCardDateStr();
     if (!cardDateStr) return;
-    const target = new Date(cardDateStr);
+    const target = parseDateSafe(cardDateStr);
+    if (!target) return;
 
     localStorage.setItem("changedDate", target.toISOString());
 
@@ -139,7 +166,13 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
       dispatch(filterProcessNo(processNo));
     }
 
-    navigate("/");
+    if (line && processNo) {
+      navigate(
+        `/checkList?line=${encodeURIComponent(line)}&processNo=${encodeURIComponent(processNo)}`,
+      );
+    } else {
+      navigate("/");
+    }
   };
 
   const formatDate = (dateStr) => {
@@ -151,11 +184,8 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
     }
   };
 
-  const cardDateDisplay = item.cardCreatedDate
-    ? formatDate(item.cardCreatedDate)
-    : createdAt
-      ? formatDate(createdAt)
-      : "—";
+  const validCardDateStr = getValidCardDateStr();
+  const cardDateDisplay = validCardDateStr ? formatDate(validCardDateStr) : "—";
 
   const isComplete = status === "complete";
   const isInProgress = status === "inprogress";
@@ -230,10 +260,10 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
               fontSize: "0.68rem",
               flexShrink: 0,
             }}
-            title="Jump to this card on Home Page"
+            title="Open checklist card for this date"
             onClick={handleNavigateToHome}
           >
-            <i className="bi bi-house-door-fill"></i>
+            <i className="bi bi-box-arrow-up-right"></i>
           </button>
         </div>
       </td>
