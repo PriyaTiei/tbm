@@ -3,7 +3,12 @@ import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getAbnormality } from "../redux/abnormality/abnormalityActions";
-import { filterDate, filterDept, filterMainLine, filterProcessNo } from "../redux/filter/filterActions";
+import {
+  filterDate,
+  filterDept,
+  filterMainLine,
+  filterProcessNo,
+} from "../redux/filter/filterActions";
 import AbnormalityRecordUpdate from "./AbnormalityRecordUpdate";
 import RaiseCardModal from "./RaiseCardModal";
 import AbnormalityImageModal from "./AbnormalityImageModal";
@@ -45,7 +50,7 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
         setBeforeImageUrl(URL.createObjectURL(beforeImage));
       } else if (typeof beforeImage === "string") {
         setBeforeImageUrl(
-          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${beforeImage}`
+          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${beforeImage}`,
         );
       } else {
         setBeforeImageUrl(null);
@@ -59,7 +64,7 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
         setAfterImageUrl(URL.createObjectURL(afterImage));
       } else if (typeof afterImage === "string") {
         setAfterImageUrl(
-          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${afterImage}`
+          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/assets/abnormalityImage/${afterImage}`,
         );
       } else {
         setAfterImageUrl(null);
@@ -69,10 +74,18 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
     }
 
     return () => {
-      if (beforeImageUrl && typeof beforeImageUrl === "string" && beforeImageUrl.startsWith("blob:")) {
+      if (
+        beforeImageUrl &&
+        typeof beforeImageUrl === "string" &&
+        beforeImageUrl.startsWith("blob:")
+      ) {
         URL.revokeObjectURL(beforeImageUrl);
       }
-      if (afterImageUrl && typeof afterImageUrl === "string" && afterImageUrl.startsWith("blob:")) {
+      if (
+        afterImageUrl &&
+        typeof afterImageUrl === "string" &&
+        afterImageUrl.startsWith("blob:")
+      ) {
         URL.revokeObjectURL(afterImageUrl);
       }
     };
@@ -83,7 +96,7 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
   const deleteItem = (itemId) => {
     axios
       .delete(
-        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/update/${itemId}`
+        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/abnormality/update/${itemId}`,
       )
       .then(() => {
         dispatch(getAbnormality(fromDateSt, toDateSt));
@@ -112,8 +125,8 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
         Math.floor(target.getDate() / 7.1) + 1,
         target.getMonth() + 1,
         target.getFullYear(),
-        target.getDate()
-      )
+        target.getDate(),
+      ),
     );
 
     if (pS) {
@@ -141,8 +154,8 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
   const cardDateDisplay = item.cardCreatedDate
     ? formatDate(item.cardCreatedDate)
     : createdAt
-    ? formatDate(createdAt)
-    : "—";
+      ? formatDate(createdAt)
+      : "—";
 
   const isComplete = status === "complete";
   const isInProgress = status === "inprogress";
@@ -151,7 +164,8 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
   const isOverdue =
     targetDate &&
     !isComplete &&
-    new Date(targetDate.slice(0, 10)) < new Date(new Date().toISOString().slice(0, 10));
+    new Date(targetDate.slice(0, 10)) <
+      new Date(new Date().toISOString().slice(0, 10));
 
   return (
     <tr
@@ -159,14 +173,14 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
         borderLeft: isComplete
           ? "4px solid #10b981"
           : isInProgress
-          ? "4px solid #0284c7"
-          : "4px solid #f59e0b",
+            ? "4px solid #0284c7"
+            : "4px solid #f59e0b",
         background: isHovered
           ? isComplete
             ? "rgba(16, 185, 129, 0.04)"
             : isInProgress
-            ? "rgba(2, 132, 199, 0.04)"
-            : "rgba(245, 158, 11, 0.04)"
+              ? "rgba(2, 132, 199, 0.04)"
+              : "rgba(245, 158, 11, 0.04)"
           : "#ffffff",
         transition: "background 0.15s ease",
       }}
@@ -176,7 +190,11 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
       {/* 1. S.No */}
       <td
         className="align-middle text-center text-muted fw-semibold"
-        style={{ fontSize: "0.78rem", whiteSpace: "nowrap" }}
+        style={{
+          fontSize: "0.75rem",
+          padding: "6px 2px",
+          whiteSpace: "nowrap",
+        }}
       >
         {index || "•"}
       </td>
@@ -184,20 +202,34 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
       {/* 2. Issue Reported Date */}
       <td
         className="align-middle text-nowrap"
-        style={{ fontSize: "0.82rem", color: "#334155", whiteSpace: "nowrap" }}
+        style={{
+          fontSize: "0.78rem",
+          color: "#334155",
+          padding: "6px 4px",
+          whiteSpace: "nowrap",
+        }}
       >
-        <i className="bi bi-calendar-check text-secondary me-1" style={{ fontSize: "0.78rem" }}></i>
         <span>{formatDate(createdAt)}</span>
       </td>
 
       {/* 3. Card Created Date + Home Button */}
-      <td className="align-middle text-nowrap" style={{ whiteSpace: "nowrap" }}>
-        <div className="d-flex align-items-center gap-1.5">
-          <span style={{ fontSize: "0.82rem", color: "#334155" }}>{cardDateDisplay}</span>
+      <td
+        className="align-middle text-nowrap"
+        style={{ padding: "6px 4px", whiteSpace: "nowrap" }}
+      >
+        <div className="d-flex align-items-center gap-1">
+          <span style={{ fontSize: "0.78rem", color: "#334155" }}>
+            {cardDateDisplay}
+          </span>
           <button
             type="button"
             className="btn btn-sm btn-outline-primary p-0 d-inline-flex align-items-center justify-content-center rounded-circle shadow-xs"
-            style={{ width: "22px", height: "22px", fontSize: "0.72rem" }}
+            style={{
+              width: "20px",
+              height: "20px",
+              fontSize: "0.68rem",
+              flexShrink: 0,
+            }}
             title="Jump to this card on Home Page"
             onClick={handleNavigateToHome}
           >
@@ -207,7 +239,10 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
       </td>
 
       {/* 4. Department Badge */}
-      <td className="align-middle text-center" style={{ whiteSpace: "nowrap" }}>
+      <td
+        className="align-middle text-center"
+        style={{ padding: "6px 2px", whiteSpace: "nowrap" }}
+      >
         {pS === "S" ? (
           <span
             className="badge rounded-pill fw-semibold"
@@ -215,11 +250,12 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
               background: "#eff6ff",
               color: "#1d4ed8",
               border: "1px solid #bfdbfe",
-              fontSize: "0.72rem",
-              padding: "2.5px 8px",
+              fontSize: "0.68rem",
+              padding: "2px 6px",
             }}
+            title="Production"
           >
-            Production
+            Prod
           </span>
         ) : pS === "P" ? (
           <span
@@ -228,11 +264,12 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
               background: "#f5f3ff",
               color: "#6d28d9",
               border: "1px solid #ddd6fe",
-              fontSize: "0.72rem",
-              padding: "2.5px 8px",
+              fontSize: "0.68rem",
+              padding: "2px 6px",
             }}
+            title="Maintenance"
           >
-            Maintenance
+            Maint
           </span>
         ) : (
           <span className="text-muted">—</span>
@@ -240,46 +277,89 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
       </td>
 
       {/* 5. Line */}
-      <td className="align-middle text-nowrap fw-semibold text-dark" style={{ fontSize: "0.82rem" }}>
-        {line || "—"}
+      <td
+        className="align-middle fw-semibold text-dark"
+        style={{ fontSize: "0.78rem", padding: "6px 4px" }}
+      >
+        <div className="text-truncate" title={line}>
+          {line || "—"}
+        </div>
       </td>
 
       {/* 6. Station (OP) */}
-      <td className="align-middle text-nowrap" style={{ fontSize: "0.82rem" }}>
+      <td
+        className="align-middle"
+        style={{ fontSize: "0.78rem", padding: "6px 4px" }}
+      >
         <span
-          className="badge bg-light text-dark border fw-bold px-2 py-1 rounded"
-          style={{ fontSize: "0.76rem" }}
+          className="badge bg-light text-dark border fw-bold px-1.5 py-0.5 rounded text-truncate d-inline-block"
+          style={{ fontSize: "0.72rem", maxWidth: "100%" }}
+          title={processNo}
         >
           {processNo || "—"}
         </span>
       </td>
 
       {/* 7. Inspection Item */}
-      <td className="align-middle" style={{ maxWidth: "220px" }} title={workDetail}>
-        <div className="text-truncate fw-medium text-dark">{workDetail || "—"}</div>
+      <td
+        className="align-middle"
+        style={{ padding: "6px 4px" }}
+        title={workDetail}
+      >
+        <div
+          className="text-truncate fw-medium text-dark"
+          style={{ fontSize: "0.78rem" }}
+        >
+          {workDetail || "—"}
+        </div>
       </td>
 
-      {/* 8. Abnormality / Defect (Prominent warning style) */}
-      <td className="align-middle" style={{ maxWidth: "260px" }} title={abnormality}>
-        <div className="d-flex align-items-center text-danger fw-semibold">
-          <i className="bi bi-exclamation-triangle-fill text-danger me-1.5 flex-shrink-0" style={{ fontSize: "0.85rem" }}></i>
+      {/* 8. Abnormality / Defect */}
+      <td
+        className="align-middle"
+        style={{ padding: "6px 4px" }}
+        title={abnormality}
+      >
+        <div
+          className="d-flex align-items-center text-danger fw-semibold"
+          style={{ fontSize: "0.78rem" }}
+        >
+          <i
+            className="bi bi-exclamation-triangle-fill text-danger me-1 flex-shrink-0"
+            style={{ fontSize: "0.75rem" }}
+          ></i>
           <span className="text-truncate">{abnormality || "—"}</span>
         </div>
       </td>
 
       {/* 9. Countermeasure */}
-      <td className="align-middle" style={{ maxWidth: "220px" }} title={countermeasure}>
+      <td
+        className="align-middle"
+        style={{ padding: "6px 4px" }}
+        title={countermeasure}
+      >
         {countermeasure ? (
-          <div className="text-truncate text-secondary">{countermeasure}</div>
+          <div
+            className="text-truncate text-secondary"
+            style={{ fontSize: "0.78rem" }}
+          >
+            {countermeasure}
+          </div>
         ) : (
           <span className="text-muted fst-italic">—</span>
         )}
       </td>
 
       {/* 10. Spare */}
-      <td className="align-middle text-nowrap" style={{ fontSize: "0.8rem" }}>
+      <td
+        className="align-middle text-center"
+        style={{ fontSize: "0.75rem", padding: "6px 2px" }}
+      >
         {spare ? (
-          <span className="badge bg-light text-secondary border px-2 py-0.5 rounded">
+          <span
+            className="badge bg-light text-secondary border px-1.5 py-0.5 rounded"
+            style={{ fontSize: "0.7rem" }}
+          >
             {spare}
           </span>
         ) : (
@@ -288,24 +368,38 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
       </td>
 
       {/* 11. PIC (Person in Charge) */}
-      <td className="align-middle text-nowrap" style={{ fontSize: "0.82rem" }}>
+      <td
+        className="align-middle"
+        style={{ fontSize: "0.78rem", padding: "6px 4px" }}
+      >
         {pic ? (
-          <div className="d-inline-flex align-items-center gap-1 text-dark fw-medium">
-            <i className="bi bi-person-fill text-secondary" style={{ fontSize: "0.78rem" }}></i>
+          <div className="text-truncate text-dark fw-medium" title={pic}>
+            <i
+              className="bi bi-person-fill text-secondary me-1"
+              style={{ fontSize: "0.72rem" }}
+            ></i>
             <span>{pic}</span>
           </div>
         ) : (
-          <span className="text-muted fst-italic">Unassigned</span>
+          <span
+            className="text-muted fst-italic"
+            style={{ fontSize: "0.74rem" }}
+          >
+            Unassigned
+          </span>
         )}
       </td>
 
       {/* 12. Target Date (with Overdue pill if past deadline) */}
-      <td className="align-middle text-nowrap" style={{ whiteSpace: "nowrap" }}>
+      <td
+        className="align-middle"
+        style={{ padding: "6px 4px", whiteSpace: "nowrap" }}
+      >
         {targetDate ? (
-          <div className="d-flex align-items-center gap-1.5">
+          <div className="d-flex align-items-center gap-1">
             <span
               style={{
-                fontSize: "0.8rem",
+                fontSize: "0.76rem",
                 color: isOverdue ? "#dc2626" : "#475569",
                 fontWeight: isOverdue ? 700 : 500,
               }}
@@ -315,7 +409,7 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
             {isOverdue && (
               <span
                 className="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-50 fw-bold"
-                style={{ fontSize: "0.65rem", padding: "1px 5px" }}
+                style={{ fontSize: "0.6rem", padding: "1px 4px" }}
               >
                 Overdue
               </span>
@@ -326,68 +420,21 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
         )}
       </td>
 
-      {/* 13. Status Badge */}
-      <td className="align-middle text-center text-nowrap" style={{ whiteSpace: "nowrap" }}>
-        {isComplete ? (
-          <span
-            className="badge rounded-pill fw-semibold d-inline-flex align-items-center"
-            style={{
-              background: "#dcfce7",
-              color: "#15803d",
-              border: "1px solid #86efac",
-              fontSize: "0.72rem",
-              padding: "3.5px 9px",
-              letterSpacing: "0.2px",
-            }}
-          >
-            <i className="bi bi-check-circle-fill me-1" style={{ fontSize: "0.72rem" }}></i>
-            COMPLETE
-          </span>
-        ) : isInProgress ? (
-          <span
-            className="badge rounded-pill fw-semibold d-inline-flex align-items-center"
-            style={{
-              background: "#e0f2fe",
-              color: "#0369a1",
-              border: "1px solid #7dd3fc",
-              fontSize: "0.72rem",
-              padding: "3.5px 9px",
-              letterSpacing: "0.2px",
-            }}
-          >
-            <i className="bi bi-gear-wide-connected me-1" style={{ fontSize: "0.72rem" }}></i>
-            IN PROGRESS
-          </span>
-        ) : (
-          <span
-            className="badge rounded-pill fw-semibold d-inline-flex align-items-center"
-            style={{
-              background: "#fef3c7",
-              color: "#92400e",
-              border: "1px solid #fde68a",
-              fontSize: "0.72rem",
-              padding: "3.5px 9px",
-              letterSpacing: "0.2px",
-            }}
-          >
-            <i className="bi bi-clock-history me-1" style={{ fontSize: "0.72rem" }}></i>
-            PENDING
-          </span>
-        )}
-      </td>
-
-      {/* 14. Sleek Action Buttons Toolbar */}
-      <td className="align-middle text-center" style={{ whiteSpace: "nowrap" }}>
-        <div className="d-inline-flex align-items-center gap-1.5">
+      {/* 13. Sleek Action Buttons Toolbar */}
+      <td
+        className="align-middle text-center"
+        style={{ padding: "6px 2px", whiteSpace: "nowrap" }}
+      >
+        <div className="d-inline-flex align-items-center gap-1 justify-content-center">
           {/* Images Button */}
           <button
             type="button"
-            className="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 px-2.5 py-1 rounded-pill shadow-xs"
-            style={{ fontSize: "0.75rem", fontWeight: 500 }}
+            className="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 px-2 py-0.5 rounded-pill shadow-xs"
+            style={{ fontSize: "0.72rem", fontWeight: 500 }}
             onClick={() => setShowModalImage(true)}
             title="View Defect Photos (Before/After)"
           >
-            <i className="bi bi-image" style={{ fontSize: "0.8rem" }}></i>
+            <i className="bi bi-image" style={{ fontSize: "0.75rem" }}></i>
             <span>Images</span>
             {(beforeImage || afterImage) && (
               <span
@@ -401,12 +448,15 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
           {level >= 20 && (
             <button
               type="button"
-              className="btn btn-sm btn-warning d-inline-flex align-items-center gap-1 px-2.5 py-1 rounded-pill shadow-xs text-dark fw-semibold"
-              style={{ fontSize: "0.75rem" }}
+              className="btn btn-sm btn-warning d-inline-flex align-items-center gap-1 px-2 py-0.5 rounded-pill shadow-xs text-dark fw-semibold"
+              style={{ fontSize: "0.72rem" }}
               onClick={() => setShowModal(true)}
               title="Update Status & Countermeasure"
             >
-              <i className="bi bi-pencil-square" style={{ fontSize: "0.8rem" }}></i>
+              <i
+                className="bi bi-pencil-square"
+                style={{ fontSize: "0.75rem" }}
+              ></i>
               <span>Update</span>
             </button>
           )}
@@ -415,16 +465,16 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
           {level >= 100 && (
             <button
               type="button"
-              className="btn btn-sm btn-info text-white d-inline-flex align-items-center gap-1 px-2.5 py-1 rounded-pill shadow-xs"
+              className="btn btn-sm btn-info text-white d-inline-flex align-items-center gap-1 px-2 py-0.5 rounded-pill shadow-xs"
               style={{
-                fontSize: "0.75rem",
+                fontSize: "0.72rem",
                 background: "#0284c7",
                 borderColor: "#0284c7",
               }}
               onClick={() => setShowModalRaiseCard(true)}
               title="Raise Preventive Maintenance Card"
             >
-              <i className="bi bi-files" style={{ fontSize: "0.8rem" }}></i>
+              <i className="bi bi-files" style={{ fontSize: "0.75rem" }}></i>
               <span>Raise</span>
             </button>
           )}
@@ -434,11 +484,11 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
             <button
               type="button"
               className="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center p-0 rounded-circle shadow-xs"
-              style={{ width: "26px", height: "26px" }}
+              style={{ width: "24px", height: "24px" }}
               onClick={deleteConfirmation}
               title="Delete Abnormality Record"
             >
-              <i className="bi bi-trash3" style={{ fontSize: "0.78rem" }}></i>
+              <i className="bi bi-trash3" style={{ fontSize: "0.75rem" }}></i>
             </button>
           )}
         </div>

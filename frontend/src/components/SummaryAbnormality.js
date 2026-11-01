@@ -42,7 +42,11 @@ const compactFilterSelect = {
     ...provided,
     padding: "4px 8px",
     fontSize: "0.78rem",
-    backgroundColor: state.isSelected ? "#2563eb" : state.isFocused ? "#eff6ff" : "#fff",
+    backgroundColor: state.isSelected
+      ? "#2563eb"
+      : state.isFocused
+        ? "#eff6ff"
+        : "#fff",
     color: state.isSelected ? "#fff" : "#1e293b",
     cursor: "pointer",
   }),
@@ -106,8 +110,8 @@ function SummaryAbnormality() {
   const abnormalityList = abnormalities.loading
     ? []
     : abnormalities.abnormalities?.success
-    ? abnormalities.abnormalities.abnormalities
-    : [];
+      ? abnormalities.abnormalities.abnormalities
+      : [];
 
   let total = 0;
   let complete = 0;
@@ -203,10 +207,14 @@ function SummaryAbnormality() {
       "Card Created Date": item.cardCreatedDate
         ? new Date(item.cardCreatedDate).toLocaleDateString()
         : item.createdAt
-        ? new Date(item.createdAt).toLocaleDateString()
-        : "",
+          ? new Date(item.createdAt).toLocaleDateString()
+          : "",
       Department:
-        item.pS === "S" ? "Production" : item.pS === "P" ? "Maintenance" : item.pS || "",
+        item.pS === "S"
+          ? "Production"
+          : item.pS === "P"
+            ? "Maintenance"
+            : item.pS || "",
       Line: item.line || "",
       "Process No": item.processNo || "",
       Item: item.workDetail || "",
@@ -217,19 +225,117 @@ function SummaryAbnormality() {
       "Target Date": item.targetDate
         ? new Date(item.targetDate).toLocaleDateString()
         : item.target
-        ? new Date(item.target).toLocaleDateString()
-        : "",
+          ? new Date(item.target).toLocaleDateString()
+          : "",
       Status: item.status || "",
     }));
 
     const summaryData = [
-      { "S.No": "SUMMARY", "Issue Reported Date": "", "Card Created Date": "", Department: "", Line: "", "Process No": "", Item: "", Abnormality: "", Countermeasure: "", Spare: "", PIC: "", "Target Date": "", Status: "" },
-      { "S.No": "Total Records", "Issue Reported Date": total, "Card Created Date": "", Department: "", Line: "", "Process No": "", Item: "", Abnormality: "", Countermeasure: "", Spare: "", PIC: "", "Target Date": "", Status: "" },
-      { "S.No": "Complete", "Issue Reported Date": complete, "Card Created Date": "", Department: "", Line: "", "Process No": "", Item: "", Abnormality: "", Countermeasure: "", Spare: "", PIC: "", "Target Date": "", Status: "" },
-      { "S.No": "Pending", "Issue Reported Date": pending, "Card Created Date": "", Department: "", Line: "", "Process No": "", Item: "", Abnormality: "", Countermeasure: "", Spare: "", PIC: "", "Target Date": "", Status: "" },
-      { "S.No": "In Progress", "Issue Reported Date": inprogress, "Card Created Date": "", Department: "", Line: "", "Process No": "", Item: "", Abnormality: "", Countermeasure: "", Spare: "", PIC: "", "Target Date": "", Status: "" },
-      { "S.No": "", "Issue Reported Date": "", "Card Created Date": "", Department: "", Line: "", "Process No": "", Item: "", Abnormality: "", Countermeasure: "", Spare: "", PIC: "", "Target Date": "", Status: "" },
-      { "S.No": "ABNORMALITY RECORDS", "Issue Reported Date": "", "Card Created Date": "", Department: "", Line: "", "Process No": "", Item: "", Abnormality: "", Countermeasure: "", Spare: "", PIC: "", "Target Date": "", Status: "" }
+      {
+        "S.No": "SUMMARY",
+        "Issue Reported Date": "",
+        "Card Created Date": "",
+        Department: "",
+        Line: "",
+        "Process No": "",
+        Item: "",
+        Abnormality: "",
+        Countermeasure: "",
+        Spare: "",
+        PIC: "",
+        "Target Date": "",
+        Status: "",
+      },
+      {
+        "S.No": "Total Records",
+        "Issue Reported Date": total,
+        "Card Created Date": "",
+        Department: "",
+        Line: "",
+        "Process No": "",
+        Item: "",
+        Abnormality: "",
+        Countermeasure: "",
+        Spare: "",
+        PIC: "",
+        "Target Date": "",
+        Status: "",
+      },
+      {
+        "S.No": "Complete",
+        "Issue Reported Date": complete,
+        "Card Created Date": "",
+        Department: "",
+        Line: "",
+        "Process No": "",
+        Item: "",
+        Abnormality: "",
+        Countermeasure: "",
+        Spare: "",
+        PIC: "",
+        "Target Date": "",
+        Status: "",
+      },
+      {
+        "S.No": "Pending",
+        "Issue Reported Date": pending,
+        "Card Created Date": "",
+        Department: "",
+        Line: "",
+        "Process No": "",
+        Item: "",
+        Abnormality: "",
+        Countermeasure: "",
+        Spare: "",
+        PIC: "",
+        "Target Date": "",
+        Status: "",
+      },
+      {
+        "S.No": "In Progress",
+        "Issue Reported Date": inprogress,
+        "Card Created Date": "",
+        Department: "",
+        Line: "",
+        "Process No": "",
+        Item: "",
+        Abnormality: "",
+        Countermeasure: "",
+        Spare: "",
+        PIC: "",
+        "Target Date": "",
+        Status: "",
+      },
+      {
+        "S.No": "",
+        "Issue Reported Date": "",
+        "Card Created Date": "",
+        Department: "",
+        Line: "",
+        "Process No": "",
+        Item: "",
+        Abnormality: "",
+        Countermeasure: "",
+        Spare: "",
+        PIC: "",
+        "Target Date": "",
+        Status: "",
+      },
+      {
+        "S.No": "ABNORMALITY RECORDS",
+        "Issue Reported Date": "",
+        "Card Created Date": "",
+        Department: "",
+        Line: "",
+        "Process No": "",
+        Item: "",
+        Abnormality: "",
+        Countermeasure: "",
+        Spare: "",
+        PIC: "",
+        "Target Date": "",
+        Status: "",
+      },
     ];
 
     const finalData = [...summaryData, ...excelData];
@@ -250,7 +356,7 @@ function SummaryAbnormality() {
       { wch: 12 },
       { wch: 12 },
       { wch: 14 },
-      { wch: 14 }
+      { wch: 14 },
     ];
     ws["!cols"] = colWidths;
 
@@ -297,7 +403,10 @@ function SummaryAbnormality() {
                 <i className="bi bi-exclamation-octagon-fill"></i>
               </div>
               <div>
-                <h5 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2" style={{ letterSpacing: "0.2px" }}>
+                <h5
+                  className="mb-0 fw-bold text-dark d-flex align-items-center gap-2"
+                  style={{ letterSpacing: "0.2px" }}
+                >
                   <span>Summary of Abnormality</span>
                   <span
                     className="badge rounded-pill fw-semibold"
@@ -312,14 +421,47 @@ function SummaryAbnormality() {
                     {total} Total
                   </span>
                 </h5>
-                <small className="text-muted d-block mt-0.5" style={{ fontSize: "0.82rem" }}>
-                  Monitor machine defects, assign countermeasures, and track resolution target dates
+                <small
+                  className="text-muted d-block mt-0.5"
+                  style={{ fontSize: "0.82rem" }}
+                >
+                  Monitor machine defects, assign countermeasures, and track
+                  resolution target dates
                 </small>
               </div>
             </div>
 
-            {/* Action Buttons: Toggle Graph, Excel, Date Range */}
+            {/* Action Buttons: Status Filter, Date Range, Toggle Graph, Excel */}
             <div className="d-flex align-items-center flex-wrap gap-2">
+              {/* Status Filter Dropdown */}
+              <div
+                className="d-flex align-items-center gap-1.5 rounded-pill px-3 py-1 shadow-sm"
+                style={{
+                  background: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                }}
+              >
+                <span
+                  className="text-secondary small fw-semibold"
+                  style={{ fontSize: "0.78rem" }}
+                >
+                  Status:
+                </span>
+                <div style={{ minWidth: "125px" }}>
+                  <Select
+                    options={options}
+                    value={
+                      options.find((o) => o.value === filterObject.status) ||
+                      options[0]
+                    }
+                    menuPlacement="bottom"
+                    onChange={statusHandler}
+                    styles={compactFilterSelect}
+                    isSearchable={false}
+                  />
+                </div>
+              </div>
+
               {/* Date Range Picker */}
               <div
                 className="d-flex align-items-center gap-1.5 rounded-pill px-3 py-1 shadow-sm"
@@ -328,7 +470,10 @@ function SummaryAbnormality() {
                   border: "1px solid #e2e8f0",
                 }}
               >
-                <i className="bi bi-calendar3 text-primary me-1" style={{ fontSize: "0.85rem" }}></i>
+                <i
+                  className="bi bi-calendar3 text-primary me-1"
+                  style={{ fontSize: "0.85rem" }}
+                ></i>
                 <span className="text-secondary small fw-semibold">From:</span>
                 <DatePicker
                   format="dd/MM/yyyy"
@@ -336,7 +481,9 @@ function SummaryAbnormality() {
                   onChange={setFromDate}
                   clearIcon={null}
                 />
-                <span className="text-secondary small fw-semibold ms-2">To:</span>
+                <span className="text-secondary small fw-semibold ms-2">
+                  To:
+                </span>
                 <DatePicker
                   format="dd/MM/yyyy"
                   value={toDate}
@@ -358,7 +505,9 @@ function SummaryAbnormality() {
                 onClick={() => setShowGraph(!showGraph)}
                 title="Toggle Abnormality Status Chart"
               >
-                <i className={`bi ${showGraph ? "bi-eye-slash-fill" : "bi-bar-chart-fill"}`}></i>
+                <i
+                  className={`bi ${showGraph ? "bi-eye-slash-fill" : "bi-bar-chart-fill"}`}
+                ></i>
                 <span>{showGraph ? "Hide Graph" : "Show Graph"}</span>
               </button>
 
@@ -391,8 +540,14 @@ function SummaryAbnormality() {
               filterObject.status === "" ? "border-primary" : ""
             }`}
             style={{
-              background: filterObject.status === "" ? "linear-gradient(135deg, #eff6ff 0%, #ffffff 100%)" : "#ffffff",
-              border: filterObject.status === "" ? "1.5px solid #3b82f6" : "1px solid #e2e8f0",
+              background:
+                filterObject.status === ""
+                  ? "linear-gradient(135deg, #eff6ff 0%, #ffffff 100%)"
+                  : "#ffffff",
+              border:
+                filterObject.status === ""
+                  ? "1.5px solid #3b82f6"
+                  : "1px solid #e2e8f0",
               cursor: "pointer",
               transition: "all 0.15s ease",
             }}
@@ -401,16 +556,27 @@ function SummaryAbnormality() {
           >
             <div className="d-flex align-items-center justify-content-between">
               <div>
-                <small className="text-secondary fw-semibold d-block" style={{ fontSize: "0.74rem" }}>
+                <small
+                  className="text-secondary fw-semibold d-block"
+                  style={{ fontSize: "0.74rem" }}
+                >
                   TOTAL ABNORMALITIES
                 </small>
-                <h4 className="fw-bold mb-0 text-dark" style={{ fontSize: "1.45rem" }}>
+                <h4
+                  className="fw-bold mb-0 text-dark"
+                  style={{ fontSize: "1.45rem" }}
+                >
                   {total}
                 </h4>
               </div>
               <div
                 className="d-flex align-items-center justify-content-center rounded-circle"
-                style={{ width: "36px", height: "36px", background: "rgba(37, 99, 235, 0.1)", color: "#2563eb" }}
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  background: "rgba(37, 99, 235, 0.1)",
+                  color: "#2563eb",
+                }}
               >
                 <i className="bi bi-collection-fill fs-6"></i>
               </div>
@@ -423,8 +589,14 @@ function SummaryAbnormality() {
           <div
             className={`card border-0 shadow-sm rounded-3 p-2.5 px-3 h-100`}
             style={{
-              background: filterObject.status === "pending" ? "linear-gradient(135deg, #fffbeb 0%, #ffffff 100%)" : "#ffffff",
-              border: filterObject.status === "pending" ? "1.5px solid #f59e0b" : "1px solid #e2e8f0",
+              background:
+                filterObject.status === "pending"
+                  ? "linear-gradient(135deg, #fffbeb 0%, #ffffff 100%)"
+                  : "#ffffff",
+              border:
+                filterObject.status === "pending"
+                  ? "1.5px solid #f59e0b"
+                  : "1px solid #e2e8f0",
               cursor: "pointer",
               transition: "all 0.15s ease",
             }}
@@ -433,16 +605,27 @@ function SummaryAbnormality() {
           >
             <div className="d-flex align-items-center justify-content-between">
               <div>
-                <small className="text-secondary fw-semibold d-block" style={{ fontSize: "0.74rem" }}>
+                <small
+                  className="text-secondary fw-semibold d-block"
+                  style={{ fontSize: "0.74rem" }}
+                >
                   PENDING ACTION
                 </small>
-                <h4 className="fw-bold mb-0 text-warning" style={{ fontSize: "1.45rem", color: "#d97706" }}>
+                <h4
+                  className="fw-bold mb-0 text-warning"
+                  style={{ fontSize: "1.45rem", color: "#d97706" }}
+                >
                   {pending}
                 </h4>
               </div>
               <div
                 className="d-flex align-items-center justify-content-center rounded-circle"
-                style={{ width: "36px", height: "36px", background: "#fef3c7", color: "#d97706" }}
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  background: "#fef3c7",
+                  color: "#d97706",
+                }}
               >
                 <i className="bi bi-clock-history fs-6"></i>
               </div>
@@ -455,8 +638,14 @@ function SummaryAbnormality() {
           <div
             className={`card border-0 shadow-sm rounded-3 p-2.5 px-3 h-100`}
             style={{
-              background: filterObject.status === "inprogress" ? "linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%)" : "#ffffff",
-              border: filterObject.status === "inprogress" ? "1.5px solid #0284c7" : "1px solid #e2e8f0",
+              background:
+                filterObject.status === "inprogress"
+                  ? "linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%)"
+                  : "#ffffff",
+              border:
+                filterObject.status === "inprogress"
+                  ? "1.5px solid #0284c7"
+                  : "1px solid #e2e8f0",
               cursor: "pointer",
               transition: "all 0.15s ease",
             }}
@@ -465,16 +654,27 @@ function SummaryAbnormality() {
           >
             <div className="d-flex align-items-center justify-content-between">
               <div>
-                <small className="text-secondary fw-semibold d-block" style={{ fontSize: "0.74rem" }}>
+                <small
+                  className="text-secondary fw-semibold d-block"
+                  style={{ fontSize: "0.74rem" }}
+                >
                   IN PROGRESS
                 </small>
-                <h4 className="fw-bold mb-0" style={{ fontSize: "1.45rem", color: "#0284c7" }}>
+                <h4
+                  className="fw-bold mb-0"
+                  style={{ fontSize: "1.45rem", color: "#0284c7" }}
+                >
                   {inprogress}
                 </h4>
               </div>
               <div
                 className="d-flex align-items-center justify-content-center rounded-circle"
-                style={{ width: "36px", height: "36px", background: "#e0f2fe", color: "#0284c7" }}
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  background: "#e0f2fe",
+                  color: "#0284c7",
+                }}
               >
                 <i className="bi bi-gear-wide-connected fs-6"></i>
               </div>
@@ -487,8 +687,14 @@ function SummaryAbnormality() {
           <div
             className={`card border-0 shadow-sm rounded-3 p-2.5 px-3 h-100`}
             style={{
-              background: filterObject.status === "complete" ? "linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%)" : "#ffffff",
-              border: filterObject.status === "complete" ? "1.5px solid #16a34a" : "1px solid #e2e8f0",
+              background:
+                filterObject.status === "complete"
+                  ? "linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%)"
+                  : "#ffffff",
+              border:
+                filterObject.status === "complete"
+                  ? "1.5px solid #16a34a"
+                  : "1px solid #e2e8f0",
               cursor: "pointer",
               transition: "all 0.15s ease",
             }}
@@ -497,16 +703,27 @@ function SummaryAbnormality() {
           >
             <div className="d-flex align-items-center justify-content-between">
               <div>
-                <small className="text-secondary fw-semibold d-block" style={{ fontSize: "0.74rem" }}>
+                <small
+                  className="text-secondary fw-semibold d-block"
+                  style={{ fontSize: "0.74rem" }}
+                >
                   RESOLVED & COMPLETE
                 </small>
-                <h4 className="fw-bold mb-0 text-success" style={{ fontSize: "1.45rem" }}>
+                <h4
+                  className="fw-bold mb-0 text-success"
+                  style={{ fontSize: "1.45rem" }}
+                >
                   {complete}
                 </h4>
               </div>
               <div
                 className="d-flex align-items-center justify-content-center rounded-circle"
-                style={{ width: "36px", height: "36px", background: "#dcfce7", color: "#16a34a" }}
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  background: "#dcfce7",
+                  color: "#16a34a",
+                }}
               >
                 <i className="bi bi-check2-circle fs-6"></i>
               </div>
@@ -531,169 +748,322 @@ function SummaryAbnormality() {
         }}
       >
         <div
-          className="overflow-auto"
-          style={{ maxHeight: "65vh", width: "100%", paddingBottom: "16px" }}
+          style={{
+            maxHeight: "68vh",
+            width: "100%",
+            overflowY: "auto",
+            overflowX: "hidden",
+            paddingBottom: "8px",
+          }}
         >
           <table
-            className="table table-hover align-middle mb-0"
-            style={{ fontSize: "0.82rem", minWidth: "1480px" }}
+            className="table table-hover align-middle mb-0 w-100"
+            style={{
+              fontSize: "0.8rem",
+              tableLayout: "fixed",
+              width: "100%",
+            }}
           >
             <thead style={{ position: "sticky", top: 0, zIndex: 10 }}>
-              {/* Header Titles */}
-              <tr style={{ background: "#f8fafc", borderBottom: "2px solid #e2e8f0" }}>
-                <th style={{ width: "45px", textAlign: "center", fontSize: "0.75rem", fontWeight: 700, color: "#475569", padding: "10px 4px" }}>
+              {/* Header Titles (13 columns, table-layout: fixed) */}
+              <tr
+                style={{
+                  background: "#f8fafc",
+                  borderBottom: "2px solid #e2e8f0",
+                }}
+              >
+                <th
+                  style={{
+                    width: "3%",
+                    textAlign: "center",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 2px",
+                  }}
+                >
                   #
                 </th>
-                <th style={{ minWidth: "110px", fontSize: "0.75rem", fontWeight: 700, color: "#475569", padding: "10px 8px" }}>
-                  Reported Date
+                <th
+                  style={{
+                    width: "7%",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 4px",
+                  }}
+                >
+                  Reported
                 </th>
-                <th style={{ minWidth: "135px", fontSize: "0.75rem", fontWeight: 700, color: "#475569", padding: "10px 8px" }}>
+                <th
+                  style={{
+                    width: "8%",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 4px",
+                  }}
+                >
                   Card Date
                 </th>
-                <th style={{ minWidth: "90px", textAlign: "center", fontSize: "0.75rem", fontWeight: 700, color: "#475569", padding: "10px 8px" }}>
-                  Dept.
+                <th
+                  style={{
+                    width: "5%",
+                    textAlign: "center",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 2px",
+                  }}
+                >
+                  Dept
                 </th>
-                <th style={{ minWidth: "95px", fontSize: "0.75rem", fontWeight: 700, color: "#475569", padding: "10px 8px" }}>
+                <th
+                  style={{
+                    width: "6%",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 4px",
+                  }}
+                >
                   Line
                 </th>
-                <th style={{ minWidth: "85px", fontSize: "0.75rem", fontWeight: 700, color: "#475569", padding: "10px 8px" }}>
+                <th
+                  style={{
+                    width: "6%",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 4px",
+                  }}
+                >
                   Station
                 </th>
-                <th style={{ minWidth: "165px", fontSize: "0.75rem", fontWeight: 700, color: "#475569", padding: "10px 8px" }}>
+                <th
+                  style={{
+                    width: "13%",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 4px",
+                  }}
+                >
                   Inspection Item
                 </th>
-                <th style={{ minWidth: "210px", fontSize: "0.75rem", fontWeight: 700, color: "#475569", padding: "10px 8px" }}>
-                  Abnormality / Defect
+                <th
+                  style={{
+                    width: "16%",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 4px",
+                  }}
+                >
+                  Defect / Abnormality
                 </th>
-                <th style={{ minWidth: "180px", fontSize: "0.75rem", fontWeight: 700, color: "#475569", padding: "10px 8px" }}>
+                <th
+                  style={{
+                    width: "13%",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 4px",
+                  }}
+                >
                   Countermeasure
                 </th>
-                <th style={{ minWidth: "90px", fontSize: "0.75rem", fontWeight: 700, color: "#475569", padding: "10px 8px" }}>
+                <th
+                  style={{
+                    width: "4%",
+                    textAlign: "center",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 2px",
+                  }}
+                >
                   Spare
                 </th>
-                <th style={{ minWidth: "95px", fontSize: "0.75rem", fontWeight: 700, color: "#475569", padding: "10px 8px" }}>
+                <th
+                  style={{
+                    width: "7%",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 4px",
+                  }}
+                >
                   PIC
                 </th>
-                <th style={{ minWidth: "115px", fontSize: "0.75rem", fontWeight: 700, color: "#475569", padding: "10px 8px" }}>
+                <th
+                  style={{
+                    width: "8%",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 4px",
+                  }}
+                >
                   Target Date
                 </th>
-                <th style={{ minWidth: "120px", textAlign: "center", fontSize: "0.75rem", fontWeight: 700, color: "#475569", padding: "10px 8px" }}>
-                  Status
-                </th>
-                <th style={{ minWidth: "185px", textAlign: "center", fontSize: "0.75rem", fontWeight: 700, color: "#475569", padding: "10px 8px" }}>
+                <th
+                  style={{
+                    width: "14%",
+                    textAlign: "center",
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    padding: "8px 4px",
+                  }}
+                >
                   Actions
                 </th>
               </tr>
 
               {/* Sub-header: Live Filter Row */}
-              <tr style={{ background: "#f1f5f9", borderBottom: "1px solid #cbd5e1" }}>
+              <tr
+                style={{
+                  background: "#f1f5f9",
+                  borderBottom: "1px solid #cbd5e1",
+                }}
+              >
                 <td style={{ padding: "4px 2px", textAlign: "center" }}>
-                  <i className="bi bi-funnel text-secondary" style={{ fontSize: "0.78rem" }}></i>
+                  <i
+                    className="bi bi-funnel text-secondary"
+                    style={{ fontSize: "0.75rem" }}
+                  ></i>
                 </td>
-                <td style={{ padding: "4px 6px" }}></td>
-                <td style={{ padding: "4px 6px" }}></td>
-                <td style={{ padding: "4px 6px" }}>
+                <td style={{ padding: "4px 2px" }}></td>
+                <td style={{ padding: "4px 2px" }}></td>
+                <td style={{ padding: "4px 2px" }}>
                   <Select
                     options={deptOptions}
-                    value={deptOptions.find((o) => o.value === filterObject.pS) || deptOptions[0]}
+                    value={
+                      deptOptions.find((o) => o.value === filterObject.pS) ||
+                      deptOptions[0]
+                    }
                     menuPlacement="bottom"
                     onChange={deptHandler}
                     styles={compactFilterSelect}
                     isSearchable={false}
                   />
                 </td>
-                <td style={{ padding: "4px 6px" }}>
+                <td style={{ padding: "4px 2px" }}>
                   <input
                     type="text"
                     name="line"
                     placeholder="Line..."
                     onChange={filterHandler}
                     value={filterObject.line}
-                    className="form-control form-control-sm"
-                    style={{ height: "28px", fontSize: "0.78rem", borderRadius: "6px" }}
+                    className="form-control form-control-sm px-1"
+                    style={{
+                      height: "26px",
+                      fontSize: "0.74rem",
+                      borderRadius: "4px",
+                    }}
                   />
                 </td>
-                <td style={{ padding: "4px 6px" }}>
+                <td style={{ padding: "4px 2px" }}>
                   <input
                     type="text"
                     name="processNo"
                     placeholder="OP..."
                     onChange={filterHandler}
                     value={filterObject.processNo}
-                    className="form-control form-control-sm"
-                    style={{ height: "28px", fontSize: "0.78rem", borderRadius: "6px" }}
+                    className="form-control form-control-sm px-1"
+                    style={{
+                      height: "26px",
+                      fontSize: "0.74rem",
+                      borderRadius: "4px",
+                    }}
                   />
                 </td>
-                <td style={{ padding: "4px 6px" }}>
+                <td style={{ padding: "4px 2px" }}>
                   <input
                     type="text"
                     name="item"
-                    placeholder="Search Item..."
+                    placeholder="Item..."
                     onChange={filterHandler}
                     value={filterObject.item}
-                    className="form-control form-control-sm"
-                    style={{ height: "28px", fontSize: "0.78rem", borderRadius: "6px" }}
+                    className="form-control form-control-sm px-1"
+                    style={{
+                      height: "26px",
+                      fontSize: "0.74rem",
+                      borderRadius: "4px",
+                    }}
                   />
                 </td>
-                <td style={{ padding: "4px 6px" }}>
+                <td style={{ padding: "4px 2px" }}>
                   <input
                     type="text"
                     name="abnormality"
-                    placeholder="Search Defect..."
+                    placeholder="Defect..."
                     onChange={filterHandler}
                     value={filterObject.abnormality}
-                    className="form-control form-control-sm"
-                    style={{ height: "28px", fontSize: "0.78rem", borderRadius: "6px" }}
+                    className="form-control form-control-sm px-1"
+                    style={{
+                      height: "26px",
+                      fontSize: "0.74rem",
+                      borderRadius: "4px",
+                    }}
                   />
                 </td>
-                <td style={{ padding: "4px 6px" }}>
+                <td style={{ padding: "4px 2px" }}>
                   <input
                     type="text"
                     name="countermeasure"
                     placeholder="Countermeasure..."
                     onChange={filterHandler}
                     value={filterObject.countermeasure}
-                    className="form-control form-control-sm"
-                    style={{ height: "28px", fontSize: "0.78rem", borderRadius: "6px" }}
+                    className="form-control form-control-sm px-1"
+                    style={{
+                      height: "26px",
+                      fontSize: "0.74rem",
+                      borderRadius: "4px",
+                    }}
                   />
                 </td>
-                <td style={{ padding: "4px 6px" }}>
+                <td style={{ padding: "4px 2px" }}>
                   <input
                     type="text"
                     name="spare"
                     placeholder="Spare..."
                     onChange={filterHandler}
                     value={filterObject.spare}
-                    className="form-control form-control-sm"
-                    style={{ height: "28px", fontSize: "0.78rem", borderRadius: "6px" }}
+                    className="form-control form-control-sm px-1"
+                    style={{
+                      height: "26px",
+                      fontSize: "0.74rem",
+                      borderRadius: "4px",
+                    }}
                   />
                 </td>
-                <td style={{ padding: "4px 6px" }}>
+                <td style={{ padding: "4px 2px" }}>
                   <input
                     type="text"
                     name="pic"
                     placeholder="PIC..."
                     onChange={filterHandler}
                     value={filterObject.pic}
-                    className="form-control form-control-sm"
-                    style={{ height: "28px", fontSize: "0.78rem", borderRadius: "6px" }}
+                    className="form-control form-control-sm px-1"
+                    style={{
+                      height: "26px",
+                      fontSize: "0.74rem",
+                      borderRadius: "4px",
+                    }}
                   />
                 </td>
-                <td style={{ padding: "4px 6px" }}></td>
-                <td style={{ padding: "4px 6px" }}>
-                  <Select
-                    options={options}
-                    value={options.find((o) => o.value === filterObject.status) || options[0]}
-                    menuPlacement="bottom"
-                    onChange={statusHandler}
-                    styles={compactFilterSelect}
-                    isSearchable={false}
-                  />
-                </td>
-                <td style={{ padding: "4px 6px", textAlign: "center" }}>
+                <td style={{ padding: "4px 2px" }}></td>
+                <td style={{ padding: "4px 2px", textAlign: "center" }}>
                   <button
-                    className="btn btn-sm btn-outline-secondary p-0 px-2.5 d-inline-flex align-items-center gap-1 shadow-xs"
-                    style={{ height: "28px", fontSize: "0.74rem", borderRadius: "6px", fontWeight: 500 }}
+                    className="btn btn-sm btn-outline-secondary p-0 px-2 d-inline-flex align-items-center gap-1 shadow-xs"
+                    style={{
+                      height: "26px",
+                      fontSize: "0.72rem",
+                      borderRadius: "4px",
+                      fontWeight: 500,
+                    }}
                     onClick={clearFilterHandler}
                     title="Reset all column filters"
                   >
@@ -708,10 +1078,14 @@ function SummaryAbnormality() {
                 list
               ) : (
                 <tr>
-                  <td colSpan={14} className="text-center py-5 text-muted">
+                  <td colSpan={13} className="text-center py-5 text-muted">
                     <i className="bi bi-inbox fs-2 d-block mb-2 text-secondary opacity-50"></i>
-                    <div className="fw-semibold">No abnormality records found</div>
-                    <small className="text-muted">Try adjusting the date range or filter criteria above</small>
+                    <div className="fw-semibold">
+                      No abnormality records found
+                    </div>
+                    <small className="text-muted">
+                      Try adjusting the date range or filter criteria above
+                    </small>
                   </td>
                 </tr>
               )}
