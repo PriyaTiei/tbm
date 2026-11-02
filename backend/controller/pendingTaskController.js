@@ -1136,7 +1136,7 @@ exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
       return 0;
     });
 
-    // Calculate age summary from all pending tasks
+    // Calculate age summary - only count tasks with valid checkItem (matches what cards show)
     const ageSummary = {
       '1-10': 0,
       '11-20': 0,
@@ -1144,6 +1144,7 @@ exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
     };
 
     allPendingTasks.forEach(task => {
+      if (!task.checkItem) return; // skip orphaned tasks - these are excluded from card display too
       const daysOld = calculateDaysOld(task.entryDates);
       if (daysOld >= 1 && daysOld <= 10) {
         ageSummary['1-10']++;
