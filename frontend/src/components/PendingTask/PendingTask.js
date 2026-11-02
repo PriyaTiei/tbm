@@ -1201,16 +1201,27 @@ function buildExcelRowsFromData(data) {
 
               {/* Age Summary Display */}
               <div className="d-flex align-items-center gap-2 small">
-                <span className="badge bg-light text-dark border">
-                  1-10d: <strong className="text-primary">{ageSummary["1-10"]}</strong>
+                <span className="badge bg-light text-dark border shadow-sm px-2 py-1" title="Items pending 1-10 days">
+                  1–10d: <strong className="text-primary">{ageSummary["1-10"]}</strong> items
                 </span>
-                <span className="badge bg-light text-dark border">
-                  11-20d: <strong className="text-warning">{ageSummary["11-20"]}</strong>
+                <span className="badge bg-light text-dark border shadow-sm px-2 py-1" title="Items pending 11-20 days">
+                  11–20d: <strong className="text-warning">{ageSummary["11-20"]}</strong> items
                 </span>
-                <span className="badge bg-light text-dark border">
-                  20+d: <strong className="text-danger">{ageSummary["20+"]}</strong>
+                <span className="badge bg-light text-dark border shadow-sm px-2 py-1" title="Items pending more than 20 days">
+                  20+d: <strong className="text-danger">{ageSummary["20+"]}</strong> items
                 </span>
               </div>
+
+              {/* Clarify Station Cards vs Individual Pending Items */}
+              {displayData && displayData.length > 0 && (
+                <div className="d-none d-md-flex align-items-center text-muted small border-start ps-3 ms-1" style={{ fontSize: "0.82rem" }}>
+                  <i className="bi bi-info-circle me-1 text-primary"></i>
+                  <span>
+                    Showing <strong>{displayData.reduce((acc, l) => acc + (l.processList || []).length, 0)}</strong> Cards&nbsp;
+                    (<strong>{displayData.reduce((acc, l) => acc + (l.processList || []).reduce((pAcc, p) => pAcc + (p.processData || []).length, 0), 0)}</strong> Pending Items)
+                  </span>
+                </div>
+              )}
             </div>
 
             <div>

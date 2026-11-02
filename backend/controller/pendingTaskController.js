@@ -952,7 +952,7 @@ exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
   const isInAgeRange = (daysOld, range) => {
     switch (range) {
       case '1-10':
-        return daysOld >= 1 && daysOld <= 10;
+        return daysOld >= 0 && daysOld <= 10;
       case '11-20':
         return daysOld >= 11 && daysOld <= 20;
       case '20+':
@@ -1146,7 +1146,7 @@ exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
     allPendingTasks.forEach(task => {
       if (!task.checkItem) return; // skip orphaned tasks - these are excluded from card display too
       const daysOld = calculateDaysOld(task.entryDates);
-      if (daysOld >= 1 && daysOld <= 10) {
+      if (daysOld >= 0 && daysOld <= 10) {
         ageSummary['1-10']++;
       } else if (daysOld >= 11 && daysOld <= 20) {
         ageSummary['11-20']++;
