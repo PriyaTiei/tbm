@@ -9,7 +9,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const mongoose = require('mongoose');
 
 const args = process.argv.slice(2);
 const getArg = (name, fallback) => {
@@ -43,6 +42,18 @@ async function seedFacility() {
     process.exit(0);
   }
 
+  let mongoose;
+  try {
+    mongoose = require('mongoose');
+  } catch (e) {
+    try {
+      mongoose = require(path.join(__dirname, '..', 'node_modules', 'mongoose'));
+    } catch (e2) {
+      console.error('❌ Mongoose not found. Run npm install inside backend/ first.');
+      process.exit(1);
+    }
+  }
+
   const connUri = `mongodb://${host}:27017/${DB_NAME}`;
   console.log(`⏳ Connecting to ${connUri}...`);
 
@@ -67,6 +78,25 @@ async function seedFacility() {
 
   const result = await checkItemCollection.insertMany(docsToInsert);
   console.log(`\n🎉 SUCCESS! Inserted ${result.insertedCount} Facility cards into ${DB_NAME}.checkitems.`);
+
+  // Ensure users collection is populated so operators & TLs can log in
+  try {
+    const usersCollection = connection.collection('users');
+    const userCount = await usersCollection.countDocuments();
+    if (userCount === 0) {
+      console.log(`ℹ️ No users found in ${DB_NAME}.users. Copying existing users from autoMaint...`);
+      const sourceDb = connection.client.db('autoMaint');
+      const sourceUsers = await sourceDb.collection('users').find({}).toArray();
+      if (sourceUsers.length > 0) {
+        await usersCollection.insertMany(sourceUsers);
+        console.log(`✅ Copied ${sourceUsers.length} user accounts from autoMaint into ${DB_NAME}.users.`);
+      }
+    } else {
+      console.log(`ℹ️ Users collection already has ${userCount} accounts.`);
+    }
+  } catch (userErr) {
+    console.log(`ℹ️ User copy note: ${userErr.message}`);
+  }
 
   await connection.close();
   console.log(`🔌 Disconnected from ${DB_NAME}.`);
