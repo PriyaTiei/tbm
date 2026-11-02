@@ -13,7 +13,7 @@ if (!validPlants.includes(plant)) {
 const portMap = {
   gd: '3000',
   tnga: '3001',
-  utility: '3002',
+  utility: '5072',
   facility: '3003',
 };
 
@@ -29,7 +29,7 @@ if (!fs.existsSync(envSrc)) {
 console.log(`\n========================================`);
 console.log(` Starting Dev Server for Plant: ${plant.toUpperCase()}`);
 console.log(` Active Config: ${envSrc}`);
-console.log(` Port: ${portMap[plant] || '3000'}`);
+console.log(` Port: ${portMap[plant] || '5072'}`);
 console.log(`========================================\n`);
 
 fs.copyFileSync(envSrc, envDest);

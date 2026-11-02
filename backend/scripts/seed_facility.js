@@ -54,6 +54,17 @@ async function seedFacility() {
     }
   }
 
+  let bcryptjs;
+  try {
+    bcryptjs = require('bcryptjs');
+  } catch (e) {
+    try {
+      bcryptjs = require(path.join(__dirname, '..', 'node_modules', 'bcryptjs'));
+    } catch (e2) {
+      bcryptjs = null;
+    }
+  }
+
   const connUri = `mongodb://${host}:27017/${DB_NAME}`;
   console.log(`⏳ Connecting to ${connUri}...`);
 
@@ -76,6 +87,11 @@ async function seedFacility() {
     isDeleted: false,
   }));
 
+  if (existingCount > 0) {
+    console.log(`⚠️ Overwriting existing ${existingCount} records in ${DB_NAME}.checkitems...`);
+    await checkItemCollection.deleteMany({});
+  }
+
   const result = await checkItemCollection.insertMany(docsToInsert);
   console.log(`\n🎉 SUCCESS! Inserted ${result.insertedCount} Facility cards into ${DB_NAME}.checkitems.`);
 
@@ -83,23 +99,46 @@ async function seedFacility() {
   try {
     const usersCollection = connection.collection('users');
     const userCount = await usersCollection.countDocuments();
+
+    // 1. Try copying existing users from autoMaint
     if (userCount === 0) {
-      console.log(`ℹ️ No users found in ${DB_NAME}.users. Copying existing users from autoMaint...`);
-      const sourceDb = connection.client.db('autoMaint');
-      const sourceUsers = await sourceDb.collection('users').find({}).toArray();
-      if (sourceUsers.length > 0) {
-        await usersCollection.insertMany(sourceUsers);
-        console.log(`✅ Copied ${sourceUsers.length} user accounts from autoMaint into ${DB_NAME}.users.`);
+      console.log(`ℹ️ No users found in ${DB_NAME}.users. Attempting to copy from autoMaint...`);
+      try {
+        const sourceDb = connection.client.db('autoMaint');
+        const sourceUsers = await sourceDb.collection('users').find({}).toArray();
+        if (sourceUsers.length > 0) {
+          await usersCollection.insertMany(sourceUsers);
+          console.log(`✅ Copied ${sourceUsers.length} user accounts from autoMaint into ${DB_NAME}.users.`);
+        }
+      } catch (err) {
+        console.log(`ℹ️ Could not copy from autoMaint: ${err.message}`);
       }
-    } else {
-      console.log(`ℹ️ Users collection already has ${userCount} accounts.`);
     }
+
+    // 2. Ensure admin account exists with admin123
+    const adminExists = await usersCollection.findOne({ name: 'admin' });
+    if (!adminExists && bcryptjs) {
+      const hashedPassword = await bcryptjs.hash('admin123', 10);
+      await usersCollection.insertOne({
+        name: 'admin',
+        password: hashedPassword,
+        role: 'admin',
+        level: 100,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      console.log(`✅ Created default admin account: Username: "admin" | Password: "admin123"`);
+    }
+
+    const finalUsers = await usersCollection.find({}, { projection: { name: 1, role: 1, level: 1 } }).toArray();
+    console.log(`\n📋 Available Users in ${DB_NAME}:`);
+    finalUsers.forEach((u) => console.log(`   - ${u.name} (Role: ${u.role || 'user'}, Level: ${u.level})`));
   } catch (userErr) {
     console.log(`ℹ️ User copy note: ${userErr.message}`);
   }
 
   await connection.close();
-  console.log(`🔌 Disconnected from ${DB_NAME}.`);
+  console.log(`\n🔌 Disconnected from ${DB_NAME}.`);
   process.exit(0);
 }
 
