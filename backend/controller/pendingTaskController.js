@@ -272,11 +272,10 @@ const deleteOkTasks = async () => {
   try {
     const resultOk = await PendingTask.deleteMany({ result: "OK" });
     const resultNG = await PendingTask.deleteMany({ result: "NG" });
+    // Also clean up any orphaned pending tasks where checkItem is null
+    await PendingTask.deleteMany({ checkItem: null });
     console.log(
-      `Deleted ${resultOk.deletedCount} documents from PendingTask collection`
-    );
-    console.log(
-      `Deleted ${resultNG.deletedCount} documents from PendingTask collection`
+      `Deleted ${resultOk.deletedCount} OK tasks and ${resultNG.deletedCount} NG tasks from PendingTask collection`
     );
   } catch (err) {
     console.error(err);
@@ -284,10 +283,11 @@ const deleteOkTasks = async () => {
 };
 
 async function deletePendingTasks(pendingTaskList) {
-  if(pendingTaskList) {
-    pendingTaskList.forEach((pendingTask) => {
-      PendingTask.remove({checkItem: pendingTask.checkItem});
-    });
+  if (pendingTaskList && pendingTaskList.length > 0) {
+    const itemIds = pendingTaskList.map((pt) => pt.checkItem).filter(Boolean);
+    if (itemIds.length > 0) {
+      await PendingTask.deleteMany({ checkItem: { $in: itemIds } });
+    }
   }
 } 
 

@@ -736,18 +736,26 @@ function getLineMatchCondition(line) {
 }
 
 async function getItemsOKCountByLine(report, pS, line) {
+  const matchCriteria = {
+    dateEntryFor: { $gte: report.startDate, $lte: report.endDate },
+    result: { $in: ["OK", "ok"] },
+  };
+  if (pS) matchCriteria.pS = pS;
+
   const pipeline = [
     {
       $addFields: {
-        dateEntryFor: { $dateFromString: { dateString: "$entryFor" } },
+        dateEntryFor: {
+          $dateFromString: {
+            dateString: "$entryFor",
+            onError: null,
+            onNull: null,
+          },
+        },
       },
     },
     {
-      $match: {
-        dateEntryFor: { $gte: report.startDate, $lte: report.endDate },
-        result: { $eq: "OK" },
-        pS: pS,
-      },
+      $match: matchCriteria,
     },
     {
       $lookup: {
@@ -805,18 +813,26 @@ async function getItemsOKCountByLine(report, pS, line) {
 }
 
 async function getItemsNGCountByLine(report, pS, line) {
+  const matchCriteria = {
+    dateEntryFor: { $gte: report.startDate, $lte: report.endDate },
+    result: { $in: ["NG", "ng"] },
+  };
+  if (pS) matchCriteria.pS = pS;
+
   const pipeline = [
     {
       $addFields: {
-        dateEntryFor: { $dateFromString: { dateString: "$entryFor" } },
+        dateEntryFor: {
+          $dateFromString: {
+            dateString: "$entryFor",
+            onError: null,
+            onNull: null,
+          },
+        },
       },
     },
     {
-      $match: {
-        dateEntryFor: { $gte: report.startDate, $lte: report.endDate },
-        result: { $eq: "NG" },
-        pS: pS,
-      },
+      $match: matchCriteria,
     },
     {
       $lookup: {
