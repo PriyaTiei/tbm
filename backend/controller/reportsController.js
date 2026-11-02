@@ -1010,13 +1010,18 @@ async function refineDataByLine(report, selectedLine) {
           let tObj = findAndSetDataByLine(dataArray, strDate, line);
           tObj.entryFor = strDate;
           tObj.line = line;
-          if (o.hasOwnProperty("okCount")) tObj.okCount = o.okCount;
-          if (o.hasOwnProperty("ngCount")) tObj.ngCount = o.ngCount;
+          if (o.hasOwnProperty("okCount")) tObj.okCount = (tObj.okCount || 0) + o.okCount;
+          if (o.hasOwnProperty("ngCount")) tObj.ngCount = (tObj.ngCount || 0) + o.ngCount;
           if (o.hasOwnProperty("pendingCount"))
             tObj.pendingCount = o.pendingCount;
           if (o.hasOwnProperty("holiday")) tObj.holiday = o.holiday;
           if (o.hasOwnProperty("totalItemCount"))
             tObj.totalItemCount = o.totalItemCount;
+          // If work was done (okCount/ngCount > 0), ensure totalItemCount >= actual completed
+          const actualDone = (tObj.okCount || 0) + (tObj.ngCount || 0);
+          if (actualDone > 0 && (tObj.totalItemCount || 0) < actualDone) {
+            tObj.totalItemCount = actualDone;
+          }
         });
       } else {
         let tObj = findAndSetDataByLine(dataArray, strDate, line);

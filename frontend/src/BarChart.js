@@ -618,19 +618,21 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
 
         if (chartData && Array.isArray(chartData) && firstMondayCurrent) {
             chartData.forEach((ddd) => {
-                let dateParts = ddd.entryFor?.split('-');
-                let day = parseInt(dateParts && dateParts[2]);
-
-                let firstParts = firstMondayCurrent.split('-');
                 let difference;
-                let newDate;
-
-                let firstday = parseInt(firstParts[2]);
-                if (parseInt(firstParts[1]) === parseInt(dateParts && dateParts[1])) {
-                    difference = day - firstday;
+                if (ddd.entryFor && firstMondayCurrent) {
+                    const dDate = new Date(ddd.entryFor.split('T')[0] + 'T00:00:00');
+                    const fDate = new Date(firstMondayCurrent.split('T')[0] + 'T00:00:00');
+                    difference = Math.round((dDate - fDate) / (24 * 60 * 60 * 1000));
                 } else {
-                    newDate = daysInMonth + day;
-                    difference = newDate - firstday;
+                    let dateParts = ddd.entryFor?.split('-');
+                    let day = parseInt(dateParts && dateParts[2]);
+                    let firstParts = firstMondayCurrent.split('-');
+                    let firstday = parseInt(firstParts[2]);
+                    if (parseInt(firstParts[1]) === parseInt(dateParts && dateParts[1])) {
+                        difference = day - firstday;
+                    } else {
+                        difference = (daysInMonth + day) - firstday;
+                    }
                 }
 
                 const okCount = parseInt(ddd.okCount ?? 0) || 0;
@@ -649,15 +651,24 @@ const MultiLevelXAxisBarChart = ({ showModal, setShowModal, chkDate }) => {
                     );
 
                     const maxCount = maxItemCountss;
-                    modifyLabelPending(difference, 0);
-                    modifypends(difference, pendingCount);
 
-                    modifyDataHolidayAtIndex(
-                        difference,
-                        typeof maxCount === "number" && maxCount !== -Infinity && maxCount !== 0
-                            ? roundUpToNearest10(maxCount - totalOkNgCount)
-                            : 2
-                    );
+                    if (totalOkNgCount > 0) {
+                        // Work was done on holiday/weekend: display actual work done
+                        const pendingForDay = Math.max(0, totalItemCount - totalOkNgCount);
+                        modifyLabelPending(difference, pendingForDay);
+                        modifypends(difference, pendingForDay);
+                        modifyDataHolidayAtIndex(difference, 0);
+                    } else {
+                        // No work done on holiday: display holiday placeholder bar
+                        modifyLabelPending(difference, 0);
+                        modifypends(difference, pendingCount);
+                        modifyDataHolidayAtIndex(
+                            difference,
+                            typeof maxCount === "number" && maxCount !== -Infinity && maxCount !== 0
+                                ? roundUpToNearest10(maxCount)
+                                : 2
+                        );
+                    }
                 } else {
                     const pendingForDay = Math.max(0, totalItemCount - totalOkNgCount);
                     modifyLabelPending(difference, pendingForDay);
