@@ -939,7 +939,54 @@ export default function PendingTask() {
     }
     
     // Normalize the data structure to ensure consistency
-    return normalizeData(rawData);
+    const normalized = normalizeData(rawData);
+
+    // If an age filter is active, enforce strict client-side filtering so UI & Excel always match the badge
+    if (ageFilter === "ALL") {
+      return normalized;
+    }
+
+    const matchesAge = (item) => {
+      let days = item.daysOld;
+      if (days === undefined || days === null || isNaN(days)) {
+        if (item.entryDates && item.entryDates.length > 0) {
+          const earliestDate = new Date(Math.min(...item.entryDates.map((d) => new Date(d))));
+          days = Math.ceil((new Date().getTime() - earliestDate.getTime()) / (1000 * 3600 * 24));
+        } else {
+          days = 0;
+        }
+      }
+      const numDays = Number(days);
+      if (ageFilter === "1-10") return numDays >= 0 && numDays <= 10;
+      if (ageFilter === "11-20") return numDays >= 11 && numDays <= 20;
+      if (ageFilter === ">20" || ageFilter === "20+") return numDays > 20;
+      return true;
+    };
+
+    return normalized
+      .map((lineItem) => {
+        const filteredProcesses = (lineItem.processList || [])
+          .map((proc) => {
+            const matchingItems = (proc.processData || []).filter(matchesAge);
+            return {
+              ...proc,
+              processData: matchingItems,
+            };
+          })
+          .filter((proc) => proc.processData.length > 0);
+
+        const updatedCounts = {};
+        filteredProcesses.forEach((p) => {
+          updatedCounts[p.processNo] = p.processData.length;
+        });
+
+        return {
+          ...lineItem,
+          processList: filteredProcesses,
+          counts: updatedCounts,
+        };
+      })
+      .filter((lineItem) => lineItem.processList.length > 0);
   }, [ageFilter, pendingTasksData, ageFilteredData]);
 
   // Determine loading state
