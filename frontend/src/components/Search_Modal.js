@@ -8,6 +8,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { filterCardNo, filterProcessNo } from "../redux/filter/filterActions";
 // import { toast } from "react-toastify";
 function Search_Modal({ showModal, setShowModal, workDetail, itemId }) {
+  const plantNameUpper = (process.env.REACT_APP_PLANT || "").toUpperCase();
+  const isUtilityOrFacility = plantNameUpper.includes("UTIL") || plantNameUpper.includes("FACIL");
   console.log(showModal)
   // const [isOpen, setIsOpen] = useState(true)
   const handleClose = () => {
@@ -158,7 +160,7 @@ function Search_Modal({ showModal, setShowModal, workDetail, itemId }) {
             <div className="d-flex justify-content-betweem my-2">
               <div className="me-3 d-flex flex-column">
                 <label className="me-1" htmlFor="op">
-                  OP number
+                  {isUtilityOrFacility ? "Equipment Name" : "OP number"}
                 </label>
                 <input
                   type="text"
