@@ -87,6 +87,7 @@
 .excel-date-box {
   display: inline-flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
   background-color: #f8fafc;
   border: 1px solid #cbd5e1;

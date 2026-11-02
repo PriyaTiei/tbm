@@ -14,11 +14,14 @@ export default function TbmOverallStatus() {
     return `${y}-${m}-${d}`;
   };
 
-  const [selectedDate, setSelectedDate] = useState(getTodayStr());
+  const [fromDate, setFromDate] = useState(getTodayStr());
+  const [toDate, setToDate] = useState(getTodayStr());
   // Department: 'P' = Maintenance (TBM), 'S' = Production (Smile Card)
   const [department, setDepartment] = useState("P");
   // Line Filter: 'ALL' | '3C' (Machining) | 'ASSEMBLY'
   const [lineFilter, setLineFilter] = useState("ALL");
+
+  const isDateRange = fromDate !== toDate;
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -45,10 +48,11 @@ export default function TbmOverallStatus() {
     try {
       const res = await axios.get(`${apiBaseUrl}/reports/overallTbmStatus`, {
         params: {
-          date: selectedDate,
+          fromDate: fromDate,
+          toDate: toDate,
           pS: department,
         },
-        timeout: 8000,
+        timeout: 10000,
       });
 
       if (res.data && res.data.success) {
@@ -62,14 +66,18 @@ export default function TbmOverallStatus() {
 
     // Client-side fallback
     try {
-      const parts = selectedDate.split(/[-/]/).map(Number);
-      const year = parts[0] > 1000 ? parts[0] : parts[2];
-      const month = parts[1];
-      const day = parts[0] > 1000 ? parts[2] : parts[0];
-      const daysInMonth = new Date(year, month, 0).getDate();
+      const startParts = fromDate.split(/[-/]/).map(Number);
+      const endParts = toDate.split(/[-/]/).map(Number);
+      const startD = new Date(startParts[0], startParts[1] - 1, startParts[2]);
+      const endD = new Date(endParts[0], endParts[1] - 1, endParts[2]);
 
-      const startOfMonth = `${year}-${String(month).padStart(2, "0")}-01`;
-      const endOfMonth = `${year}-${String(month).padStart(2, "0")}-${String(daysInMonth).padStart(2, "0")}`;
+      const endYear = endD.getFullYear();
+      const endMonth = endD.getMonth() + 1;
+      const endDay = endD.getDate();
+      const daysInEndMonth = new Date(endYear, endMonth, 0).getDate();
+
+      const startOfMonth = `${endYear}-${String(endMonth).padStart(2, "0")}-01`;
+      const endOfMonth = `${endYear}-${String(endMonth).padStart(2, "0")}-${String(daysInEndMonth).padStart(2, "0")}`;
 
       const lines = ["BLOCK", "CRANK", "HEAD"];
       const linesData = [];
@@ -85,8 +93,8 @@ export default function TbmOverallStatus() {
       };
 
       for (const lineName of lines) {
-        let todaysPlan = 0;
-        let todaysActual = 0;
+        let periodPlan = 0;
+        let periodActual = 0;
         let cumPlanAod = 0;
         let cumActualAod = 0;
         let cumPlanMonth = 0;
@@ -109,17 +117,22 @@ export default function TbmOverallStatus() {
             const ng = Number(entry.totalNG) || 0;
             const actual = ok + ng;
 
+            let entryDateObj = null;
             let entryDay = null;
             if (entry.date) {
               const dParts = entry.date.split("-").map(Number);
-              entryDay = dParts[0] > 1000 ? dParts[2] : dParts[0];
+              const eYear = dParts[0] > 1000 ? dParts[0] : dParts[2];
+              const eMonth = dParts[1];
+              const eDay = dParts[0] > 1000 ? dParts[2] : dParts[0];
+              entryDay = eDay;
+              entryDateObj = new Date(eYear, eMonth - 1, eDay);
             }
 
-            if (entryDay === day) {
-              todaysPlan = plan;
-              todaysActual = actual;
+            if (entryDateObj && entryDateObj >= startD && entryDateObj <= endD) {
+              periodPlan += plan;
+              periodActual += actual;
             }
-            if (entryDay && entryDay <= day) {
+            if (entryDay && entryDay <= endDay) {
               cumPlanAod += plan;
               cumActualAod += actual;
             }
@@ -133,8 +146,8 @@ export default function TbmOverallStatus() {
         const cumPendingAod = Math.max(0, cumPlanAod - cumActualAod);
         const cumPendingMonth = Math.max(0, cumPlanMonth - cumActualMonth);
 
-        totals.todaysPlan += todaysPlan;
-        totals.todaysActual += todaysActual;
+        totals.todaysPlan += periodPlan;
+        totals.todaysActual += periodActual;
         totals.cumPlanAod += cumPlanAod;
         totals.cumActualAod += cumActualAod;
         totals.cumPendingAod += cumPendingAod;
@@ -144,8 +157,8 @@ export default function TbmOverallStatus() {
 
         linesData.push({
           line: lineName,
-          todaysPlan,
-          todaysActual,
+          todaysPlan: periodPlan,
+          todaysActual: periodActual,
           cumPlanAod,
           cumActualAod,
           cumPendingAod,
@@ -157,7 +170,10 @@ export default function TbmOverallStatus() {
 
       setDashboardData({
         success: true,
-        date: selectedDate,
+        date: fromDate === toDate ? fromDate : `${fromDate} to ${toDate}`,
+        fromDate: fromDate,
+        toDate: toDate,
+        isRange: fromDate !== toDate,
         pS: department,
         departmentName: department === "P" ? "Maintenance (TBM)" : "Production (Smile Card)",
         lines: linesData,
@@ -177,7 +193,7 @@ export default function TbmOverallStatus() {
     } finally {
       setLoading(false);
     }
-  }, [selectedDate, department, apiBaseUrl]);
+  }, [fromDate, toDate, department, apiBaseUrl]);
 
   useEffect(() => {
     fetchData();
@@ -277,14 +293,15 @@ export default function TbmOverallStatus() {
     const wsData = [
       ["TBM DASHBOARD"],
       [],
-      ["ENTER DATE HERE", dashboardData.date],
+      ["FROM DATE", fromDate],
+      ["TO DATE", toDate],
       ["DEPARTMENT", department === "P" ? "Maintenance (TBM)" : "Production (Smile Card)"],
       ["FILTER VIEW", lineFilter],
       [],
       [
         "Line",
-        "Todays plan",
-        "Todays actual",
+        isDateRange ? "Period plan" : "Todays plan",
+        isDateRange ? "Period actual" : "Todays actual",
         "Cum plan (Aod)",
         "Cum Actual (Aod)",
         "Cum pending (Aod)",
@@ -321,13 +338,13 @@ export default function TbmOverallStatus() {
     ]);
 
     wsData.push([]);
-    wsData.push(["Todays TBM STATUS"]);
+    wsData.push([isDateRange ? "Period TBM STATUS" : "Todays TBM STATUS"]);
 
     const cols = ["Status Category", ...table2Columns, "TOTAL"];
     wsData.push(cols);
 
     wsData.push([
-      "Todays: No of TBMs completed",
+      isDateRange ? "In-Period: No of TBMs completed" : "Todays: No of TBMs completed",
       ...table2Columns.map((c) => todaysCompletedMap[c] || 0),
       table2Totals.todays,
     ]);
@@ -340,7 +357,8 @@ export default function TbmOverallStatus() {
 
     const ws = XLSX.utils.aoa_to_sheet(wsData);
     XLSX.utils.book_append_sheet(wb, ws, "overall status");
-    XLSX.writeFile(wb, `TBM_Dashboard_${dashboardData.date}.xlsx`);
+    const filename = isDateRange ? `TBM_Dashboard_${fromDate}_to_${toDate}.xlsx` : `TBM_Dashboard_${fromDate}.xlsx`;
+    XLSX.writeFile(wb, filename);
   };
 
   return (
@@ -415,21 +433,59 @@ export default function TbmOverallStatus() {
         </div>
 
         <div className="excel-actions">
-          {/* Date Picker Box */}
+          {/* From - To Date Filter Box */}
           <div className="excel-date-box">
-            <span className="excel-date-label">Date:</span>
+            <span className="excel-date-label">From:</span>
             <input
               type="date"
               className="excel-date-input"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
+              value={fromDate}
+              onChange={(e) => {
+                const val = e.target.value;
+                setFromDate(val);
+                if (toDate && val > toDate) {
+                  setToDate(val);
+                }
+              }}
+            />
+            <span className="excel-date-label" style={{ marginLeft: "4px" }}>To:</span>
+            <input
+              type="date"
+              className="excel-date-input"
+              value={toDate}
+              min={fromDate}
+              onChange={(e) => {
+                const val = e.target.value;
+                setToDate(val);
+                if (fromDate && val < fromDate) {
+                  setFromDate(val);
+                }
+              }}
             />
             <button
               className="excel-btn"
               style={{ padding: "2px 8px", fontSize: "11px" }}
-              onClick={() => setSelectedDate(getTodayStr())}
+              onClick={() => {
+                const today = getTodayStr();
+                setFromDate(today);
+                setToDate(today);
+              }}
+              title="Set to Today"
             >
               Today
+            </button>
+            <button
+              className="excel-btn"
+              style={{ padding: "2px 8px", fontSize: "11px" }}
+              onClick={() => {
+                const now = new Date();
+                const startOfMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+                setFromDate(startOfMonth);
+                setToDate(getTodayStr());
+              }}
+              title="From start of this month to Today"
+            >
+              This Month
             </button>
           </div>
 
@@ -449,7 +505,7 @@ export default function TbmOverallStatus() {
             <tr>
               <th rowSpan={2} style={{ width: "16%" }}>Line</th>
               <th colSpan={2} className="header-dark" style={{ width: "20%" }}>
-                TODAY'S TARGET
+                {isDateRange ? `TARGET (${fromDate} to ${toDate})` : "TODAY'S TARGET"}
               </th>
               <th colSpan={3} className="header-dark" style={{ width: "32%" }}>
                 CUMULATIVE AS OF DATE (AOD)
@@ -459,8 +515,8 @@ export default function TbmOverallStatus() {
               </th>
             </tr>
             <tr>
-              <th>Todays plan</th>
-              <th>Todays actual</th>
+              <th>{isDateRange ? "Period plan" : "Todays plan"}</th>
+              <th>{isDateRange ? "Period actual" : "Todays actual"}</th>
               <th>Cum plan (Aod)</th>
               <th>Cum Actual (Aod)</th>
               <th style={{ backgroundColor: "#fce4d6" }}>Cum pending (Aod)</th>
@@ -572,7 +628,8 @@ export default function TbmOverallStatus() {
         <div className="excel-sub-section">
           <div style={{ flex: "1 1 auto", maxWidth: "100%", overflowX: "auto" }}>
             <h3 className="excel-sub-title">
-              <i className="bi bi-card-checklist text-success"></i> Todays TBM STATUS
+              <i className="bi bi-card-checklist text-success"></i>{" "}
+              {isDateRange ? `TBM STATUS (${fromDate} to ${toDate})` : "Todays TBM STATUS"}
             </h3>
             <table className="excel-grid-table" style={{ marginBottom: 0, width: "auto", minWidth: "500px" }}>
               <thead>
@@ -591,7 +648,7 @@ export default function TbmOverallStatus() {
               <tbody>
                 <tr>
                   <td className="cell-line" style={{ fontWeight: 600 }}>
-                    Todays: No of TBMs completed
+                    {isDateRange ? "In-Period: No of TBMs completed" : "Todays: No of TBMs completed"}
                   </td>
                   {table2Columns.map((col) => (
                     <td key={col} className="cell-num">

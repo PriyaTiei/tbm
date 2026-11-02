@@ -1557,25 +1557,70 @@ exports.getVerifyItems = catchAsyncError(async (req, res, next) => {
 exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
   const pS = req.query.pS || "P";
   const dateStr = req.query.date;
+  const fromDateStr = req.query.fromDate;
+  const toDateStr = req.query.toDate;
 
-  let targetDate;
-  if (dateStr && dateStr.trim()) {
-    const parts = dateStr.trim().split(/[-/]/).map(Number);
+  const parseDateString = (str) => {
+    if (!str || typeof str !== "string") return null;
+    const trimmed = str.trim();
+    if (!trimmed) return null;
+    const parts = trimmed.split(/[-/]/).map(Number);
+    if (parts.length < 3 || parts.some(isNaN)) return null;
     if (parts[0] > 1000) {
-      targetDate = new Date(parts[0], parts[1] - 1, parts[2]);
-    } else {
-      targetDate = new Date(parts[2], parts[1] - 1, parts[0]);
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    } else if (parts[2] > 1000) {
+      return new Date(parts[2], parts[1] - 1, parts[0]);
     }
-  } else {
-    targetDate = new Date();
+    return null;
+  };
+
+  let startDate, endDate;
+  if (fromDateStr && toDateStr) {
+    startDate = parseDateString(fromDateStr);
+    endDate = parseDateString(toDateStr);
+  } else if (fromDateStr) {
+    startDate = parseDateString(fromDateStr);
+    endDate = startDate;
+  } else if (toDateStr) {
+    endDate = parseDateString(toDateStr);
+    startDate = endDate;
+  } else if (dateStr) {
+    startDate = parseDateString(dateStr);
+    endDate = startDate;
   }
 
-  const year = targetDate.getFullYear();
-  const month = targetDate.getMonth() + 1;
-  const day = targetDate.getDate();
-  const daysInMonth = new Date(year, month, 0).getDate();
+  if (!startDate || isNaN(startDate.getTime())) startDate = new Date();
+  if (!endDate || isNaN(endDate.getTime())) endDate = new Date(startDate);
 
-  const formattedSelectedDate = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  // If start date is after end date, swap
+  if (startDate > endDate) {
+    const tmp = startDate;
+    startDate = endDate;
+    endDate = tmp;
+  }
+
+  // Set boundary time stamps
+  const startDayTime = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0, 0, 0, 0);
+  const endDayTime = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59, 999);
+  const endDayMidnight = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 0, 0, 0, 0);
+
+  const formatDateToYYYYMMDD = (d) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  };
+
+  const formattedFromDate = formatDateToYYYYMMDD(startDate);
+  const formattedToDate = formatDateToYYYYMMDD(endDate);
+  const isDateRange = formattedFromDate !== formattedToDate;
+  const formattedSelectedDate = isDateRange ? `${formattedFromDate} to ${formattedToDate}` : formattedFromDate;
+
+  // Reference for Month & AOD metrics is endDate
+  const endYear = endDate.getFullYear();
+  const endMonth = endDate.getMonth() + 1;
+  const endDay = endDate.getDate();
+  const daysInEndMonth = new Date(endYear, endMonth, 0).getDate();
 
   const getNormalizedLine = (name) => {
     const s = String(name || "").toLowerCase().trim();
@@ -1586,7 +1631,7 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
     return String(name || "").toUpperCase().trim();
   };
 
-  // 1. Fetch checkitems for Maintenance (pS: "P")
+  // 1. Fetch checkitems for Maintenance (pS: "P") or Service/Prod
   const checkItems = await HeadModel.find({
     pS: { $regex: new RegExp(`^${pS}$`, "i") },
     $or: [{ isDeleted: { $exists: false } }, { isDeleted: false }]
@@ -1652,18 +1697,30 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
     return cardItems.some(it => isItemScheduledForDate(it, dateObj));
   };
 
-  // 2. Fetch DailyStatus records for this month
-  const monthRegex = new RegExp(`^${year}-0?${month}-`);
-  const ddmmyyyyRegex = new RegExp(`-0?${month}-${year}$`);
-  const slashRegex = new RegExp(`^${year}/0?${month}/`);
+  // 2. Fetch DailyStatus records for relevant months & range
+  const monthPairs = new Set();
+  const tempCur = new Date(startDayTime);
+  while (tempCur <= endDayMidnight) {
+    monthPairs.add(`${tempCur.getFullYear()}-${tempCur.getMonth() + 1}`);
+    tempCur.setMonth(tempCur.getMonth() + 1);
+  }
+  monthPairs.add(`${endYear}-${endMonth}`);
+
+  const orConditions = [];
+  monthPairs.forEach(pair => {
+    const [y, m] = pair.split("-").map(Number);
+    orConditions.push({ entryFor: { $regex: new RegExp(`^${y}-0?${m}-`) } });
+    orConditions.push({ entryFor: { $regex: new RegExp(`-0?${m}-${y}$`) } });
+    orConditions.push({ entryFor: { $regex: new RegExp(`^${y}/0?${m}/`) } });
+  });
+
+  orConditions.push({
+    checkedAt: { $gte: startDayTime, $lte: endDayTime }
+  });
 
   const monthDailyStatuses = await DailyStatus.find({
     pS: { $regex: new RegExp(`^${pS}$`, "i") },
-    $or: [
-      { entryFor: { $regex: monthRegex } },
-      { entryFor: { $regex: ddmmyyyyRegex } },
-      { entryFor: { $regex: slashRegex } }
-    ],
+    $or: orConditions,
     result: { $in: ["OK", "NG", "ok", "ng"] }
   }).select("checkItem entryFor result checkedAt pS");
 
@@ -1684,23 +1741,23 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
   };
 
   // Group actuals by line and date
-  const todaysCompletedItems = {};
+  const rangeCompletedItems = {};
   const aodCompletedItems = {};
   const monthCompletedItems = {};
-  const todaysOnTimeItems = {};
-  const todaysBacklogItems = {};
+  const rangeOnTimeItems = {};
+  const rangeBacklogItems = {};
 
   linesToProcess.forEach(l => {
-    todaysCompletedItems[l] = new Set();
+    rangeCompletedItems[l] = new Set();
     aodCompletedItems[l] = new Set();
     monthCompletedItems[l] = new Set();
-    todaysOnTimeItems[l] = new Set();
-    todaysBacklogItems[l] = new Set();
+    rangeOnTimeItems[l] = new Set();
+    rangeBacklogItems[l] = new Set();
   });
 
   monthDailyStatuses.forEach(st => {
     const parsed = parseEntry(st.entryFor);
-    if (!parsed || parsed.year !== year || parsed.month !== month) return;
+    if (!parsed) return;
 
     const ciInfo = checkItemMap.get(String(st.checkItem));
     if (!ciInfo) return;
@@ -1708,38 +1765,46 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
     const lineName = ciInfo.line;
     const itemId = String(st.checkItem);
 
-    if (!monthCompletedItems[lineName]) {
-      monthCompletedItems[lineName] = new Set();
+    if (!rangeCompletedItems[lineName]) {
+      rangeCompletedItems[lineName] = new Set();
       aodCompletedItems[lineName] = new Set();
-      todaysCompletedItems[lineName] = new Set();
-      todaysOnTimeItems[lineName] = new Set();
-      todaysBacklogItems[lineName] = new Set();
+      monthCompletedItems[lineName] = new Set();
+      rangeOnTimeItems[lineName] = new Set();
+      rangeBacklogItems[lineName] = new Set();
     }
 
-    // Month actuals: key = day_itemId
-    monthCompletedItems[lineName].add(`${parsed.day}_${itemId}`);
+    const entryDate = new Date(parsed.year, parsed.month - 1, parsed.day);
+    entryDate.setHours(0, 0, 0, 0);
 
-    // AOD actuals
-    if (parsed.day <= day) {
-      aodCompletedItems[lineName].add(`${parsed.day}_${itemId}`);
+    const isEntryInRange = entryDate >= startDayTime && entryDate <= endDayMidnight;
+
+    // Month & AOD metrics (in reference endMonth / endYear)
+    if (parsed.year === endYear && parsed.month === endMonth) {
+      monthCompletedItems[lineName].add(`${parsed.day}_${itemId}`);
+      if (parsed.day <= endDay) {
+        aodCompletedItems[lineName].add(`${parsed.day}_${itemId}`);
+      }
     }
 
-    // Today's actuals
-    if (parsed.day === day) {
-      todaysCompletedItems[lineName].add(itemId);
-      todaysOnTimeItems[lineName].add(itemId);
+    // Range actuals
+    if (isEntryInRange) {
+      rangeCompletedItems[lineName].add(`${parsed.year}_${parsed.month}_${parsed.day}_${itemId}`);
+      rangeOnTimeItems[lineName].add(itemId);
     } else if (st.checkedAt) {
-      // Check if checkedAt date is today's date
       const chkDate = new Date(st.checkedAt);
-      if (
-        chkDate.getFullYear() === year &&
-        chkDate.getMonth() + 1 === month &&
-        chkDate.getDate() === day
-      ) {
-        todaysBacklogItems[lineName].add(itemId);
+      if (chkDate >= startDayTime && chkDate <= endDayTime) {
+        rangeBacklogItems[lineName].add(itemId);
       }
     }
   });
+
+  // Generate range dates for plan calculation
+  const rangeDates = [];
+  const curDateObj = new Date(startDayTime);
+  while (curDateObj <= endDayMidnight) {
+    rangeDates.push(new Date(curDateObj));
+    curDateObj.setDate(curDateObj.getDate() + 1);
+  }
 
   // 3. Build matrix rows
   const linesData = [];
@@ -1762,43 +1827,45 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
   linesToProcess.forEach(lineName => {
     const cardMap = cardsByLine[lineName] || new Map();
     const cardList = Array.from(cardMap.entries()).map(([proc, items]) => ({ proc, items }));
-    const totalItemsOnLine = cardList.reduce((acc, c) => acc + c.items.length, 0);
 
-    let todaysPlan = 0;
-    let cumPlanAod = 0;
-    let cumPlanMonth = 0;
-
-    for (let d = 1; d <= daysInMonth; d++) {
-      const dObj = new Date(year, month - 1, d);
-      const isSunday = (dObj.getDay() === 0);
-
-      let dayPlan = cardList.reduce((acc, c) => {
-        return acc + c.items.filter(it => isItemScheduledForDate(it, dObj)).length;
+    // Plan for the selected range (From Date -> To Date)
+    let periodPlan = 0;
+    for (const rDate of rangeDates) {
+      periodPlan += cardList.reduce((acc, c) => {
+        return acc + c.items.filter(it => isItemScheduledForDate(it, rDate)).length;
       }, 0);
-
-
-
-      if (d === day) {
-        todaysPlan = dayPlan;
-      }
-      if (d <= day) {
-        cumPlanAod += dayPlan;
-      }
-      cumPlanMonth += dayPlan;
     }
 
-    const todaysActual = todaysCompletedItems[lineName]?.size || 0;
+    // Cumulative Plan As Of Date (AOD) in reference month
+    let cumPlanAod = 0;
+    for (let d = 1; d <= endDay; d++) {
+      const dObj = new Date(endYear, endMonth - 1, d);
+      cumPlanAod += cardList.reduce((acc, c) => {
+        return acc + c.items.filter(it => isItemScheduledForDate(it, dObj)).length;
+      }, 0);
+    }
+
+    // Cumulative Plan for Full Month
+    let cumPlanMonth = 0;
+    for (let d = 1; d <= daysInEndMonth; d++) {
+      const dObj = new Date(endYear, endMonth - 1, d);
+      cumPlanMonth += cardList.reduce((acc, c) => {
+        return acc + c.items.filter(it => isItemScheduledForDate(it, dObj)).length;
+      }, 0);
+    }
+
+    const periodActual = rangeCompletedItems[lineName]?.size || 0;
     const cumActualAod = aodCompletedItems[lineName]?.size || 0;
     const cumActualMonth = monthCompletedItems[lineName]?.size || 0;
 
     const cumPendingAod = Math.max(0, cumPlanAod - cumActualAod);
     const cumPendingMonth = Math.max(0, cumPlanMonth - cumActualMonth);
 
-    todaysTbmStatus.todaysCompleted[lineName] = todaysOnTimeItems[lineName]?.size || 0;
-    todaysTbmStatus.otherDaysCompleted[lineName] = todaysBacklogItems[lineName]?.size || 0;
+    todaysTbmStatus.todaysCompleted[lineName] = rangeOnTimeItems[lineName]?.size || 0;
+    todaysTbmStatus.otherDaysCompleted[lineName] = rangeBacklogItems[lineName]?.size || 0;
 
-    totals.todaysPlan += todaysPlan;
-    totals.todaysActual += todaysActual;
+    totals.todaysPlan += periodPlan;
+    totals.todaysActual += periodActual;
     totals.cumPlanAod += cumPlanAod;
     totals.cumActualAod += cumActualAod;
     totals.cumPendingAod += cumPendingAod;
@@ -1808,8 +1875,8 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
 
     linesData.push({
       line: lineName,
-      todaysPlan,
-      todaysActual,
+      todaysPlan: periodPlan,
+      todaysActual: periodActual,
       cumPlanAod,
       cumActualAod,
       cumPendingAod,
@@ -1825,6 +1892,9 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     date: formattedSelectedDate,
+    fromDate: formattedFromDate,
+    toDate: formattedToDate,
+    isRange: isDateRange,
     pS: pS,
     departmentName: pS === "P" ? "Maintenance (TBM)" : "Production (Smile Card)",
     lines: linesData,
@@ -1832,4 +1902,3 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
     todaysTbmStatus: todaysTbmStatus
   });
 });
-
