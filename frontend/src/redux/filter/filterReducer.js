@@ -15,7 +15,10 @@ const d = todayDate.getDay();
 const m = todayDate.getMonth() + 1;
 const y = todayDate.getFullYear();
 const w = Math.floor(dt / 7.1) + 1;
-const pS = "S";
+const plantNameUpper = (process.env.REACT_APP_PLANT || "").toUpperCase();
+const isUtilityOrFacility =
+  plantNameUpper.includes("UTIL") || plantNameUpper.includes("FACIL");
+const pS = isUtilityOrFacility ? "P" : "S";
 const line = null;
 const mainLine = null;
 const subLine = null;
