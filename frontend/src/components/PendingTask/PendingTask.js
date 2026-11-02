@@ -882,7 +882,7 @@ export default function PendingTask() {
       };
       
       const ageRange = ageRangeMap[ageFilter];
-      const ageQueryStr = queryStr + (ageRange ? `&ageRange=${ageRange}` : "");
+      const ageQueryStr = queryStr + (ageRange ? `&ageRange=${encodeURIComponent(ageRange)}` : "");
       
       const url = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/pendingTasks/by-age?${ageQueryStr}`;
       

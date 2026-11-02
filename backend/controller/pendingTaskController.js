@@ -933,7 +933,14 @@ exports.updateResult = async (req, res) => {
 
 
 exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
-  const { ageRange } = req.query; // Expected values: '1-10', '11-20', '20+'
+  let { ageRange } = req.query; // Expected values: '1-10', '11-20', '20+'
+  if (ageRange) {
+    ageRange = String(ageRange).trim();
+    // Handle URL decoding where '+' becomes a space ('20 ' -> '20+')
+    if (ageRange === '20' || ageRange === '20 ' || ageRange === '>20') {
+      ageRange = '20+';
+    }
+  }
   
   // Helper function to calculate days old from entryDates
   // Current data issue: entryDates array length is always 1 due to bug in generatePendingTaskList
@@ -950,12 +957,16 @@ exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
 
   // Helper function to check if task falls within age range
   const isInAgeRange = (daysOld, range) => {
-    switch (range) {
+    if (!range || range === 'ALL' || range === 'all') return true;
+    const cleanRange = String(range).trim();
+    switch (cleanRange) {
       case '1-10':
         return daysOld >= 0 && daysOld <= 10;
       case '11-20':
         return daysOld >= 11 && daysOld <= 20;
       case '20+':
+      case '>20':
+      case '20':
         return daysOld > 20;
       default:
         return true; // If no range specified, return all
