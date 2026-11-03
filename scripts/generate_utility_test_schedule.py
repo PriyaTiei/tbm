@@ -76,7 +76,7 @@ def main():
     print("=" * 75)
     print("  TBM UTILITY CARDS - SCHEDULE & CALENDAR ANALYZER")
     print(f"  Source File      : {DATA_FILE}")
-    print(f"  Live Server Ref  : http://10.82.126.73:5081")
+    print(f"  Live Server Ref  : http://10.82.126.73:5082")
     print(f"  Total DB Items   : {len(items)}")
     if TARGET_DATE:
         print(f"  Inspect Single Date: {TARGET_DATE}")

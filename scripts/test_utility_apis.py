@@ -16,7 +16,7 @@ Usage:
 
 Options:
   --host=<ip>         Server IP or hostname (default: 10.82.126.73)
-  --port=<port>       Backend port (default: 5081, auto-checks 5073, 5091)
+  --port=<port>       Backend port (default: 5082, auto-checks 5073, 5081, 5091)
   --month=<1-12>      Test only dates in this month (e.g. --month=11)
   --date=<YYYY-MM-DD> Test a single specific date (e.g. --date=2026-11-08)
   --sample            Test 10 representative benchmark dates across the year
@@ -51,7 +51,7 @@ def get_arg(name, default=None):
 
 HOST = get_arg("host", "10.82.126.73")
 EXPLICIT_PORT = get_arg("port")
-PORT = EXPLICIT_PORT if EXPLICIT_PORT else "5081"
+PORT = EXPLICIT_PORT if EXPLICIT_PORT else "5082"
 TARGET_MONTH = get_arg("month")
 TARGET_DATE = get_arg("date")
 REPORT_FILE = get_arg("output", "utility_test_report.json")
@@ -131,7 +131,7 @@ def check_server_and_diagnose():
     print(f"[!] Warning: Query to {BASE_URL} returned HTTP {unfiltered_code}: {unfiltered_data}")
     print("[*] Performing auto-diagnostic scan across common ports on this machine...\n")
 
-    candidate_ports = ["5081", "5073", "5091", "5071", "5051", "5050", "5070"]
+    candidate_ports = ["5082", "5073", "5081", "5091", "5071", "5051", "5050", "5070"]
     candidate_hosts = [HOST]
     if "localhost" not in candidate_hosts and "127.0.0.1" not in candidate_hosts:
         candidate_hosts.append("localhost")
@@ -185,7 +185,7 @@ def check_server_and_diagnose():
     print("   -----------------------------------------------------------------")
     print("   (Or if MongoDB requires host flag: node backend/scripts/seed_utility.js --host=localhost)\n")
     print("   Also verify backend/.env has:")
-    print("   PORT=5081")
+    print("   PORT=5082")
     print("   DB_NAME=utilityAutoMaint")
     print("=" * 75 + "\n")
     return False
