@@ -190,3 +190,4 @@ export const FACILITY_MASTER_MAP = {
   "TNGA ASSY, Old & New warehouse": ["TNGA Assy, TNGA Log, Utility, Old ware house inside area"],
   "TNGA Assy,Old & New warehouse": ["All Area"]
 };
+
