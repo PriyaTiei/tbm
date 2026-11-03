@@ -65,15 +65,32 @@ async function seedFacility() {
     }
   }
 
-  const connUri = `mongodb://${host}:27017/${DB_NAME}`;
-  console.log(`⏳ Connecting to ${connUri}...`);
+  let connection;
+  const hostsToTry = [host];
+  if (!hostsToTry.includes("localhost") && !hostsToTry.includes("127.0.0.1")) {
+    hostsToTry.push("localhost");
+  }
 
-  const connection = await mongoose.createConnection(connUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  for (const h of hostsToTry) {
+    const connUri = `mongodb://${h}:27017/${DB_NAME}`;
+    console.log(`⏳ Connecting to ${connUri}...`);
+    try {
+      connection = await mongoose.createConnection(connUri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 4000,
+      });
+      console.log(`✅ Connected to MongoDB database: ${DB_NAME} on ${h}`);
+      break;
+    } catch (err) {
+      console.log(`⚠️ Could not connect to ${connUri}: ${err.message}`);
+    }
+  }
 
-  console.log(`✅ Connected to MongoDB database: ${DB_NAME}`);
+  if (!connection) {
+    console.error(`❌ Could not connect to MongoDB on any candidate host.`);
+    process.exit(1);
+  }
 
   const checkItemCollection = connection.collection('checkitems');
   const existingCount = await checkItemCollection.countDocuments();
