@@ -1,24 +1,25 @@
 #!/usr/bin/env python3
 """
-Automated API Test Suite for Utility Cards
-==========================================
+Automated API Test Suite for Utility Cards (Live Server: 10.82.126.73)
+====================================================================
 Tests backend APIs (/head/headCheckList and /head/headMachineList) against
 the ground-truth schedule parsed from 'FACILITY UTILITY DATA.xlsx'.
 
-Outputs a detailed test summary to console and saves full results to
-'utility_test_report.json' so results can be reviewed and shared.
+Target Server:
+  Host: 10.82.126.73 (Live Server)
+  Port: 5081 (Utility Backend, fallback: 5073)
 
 Usage:
   python scripts/test_utility_apis.py [options]
 
 Options:
-  --host=<ip>       Server IP or hostname (default: 10.82.126.73)
-  --port=<port>     Backend port (default: 5073)
-  --month=<1-12>    Test only dates in this month (e.g. --month=11)
+  --host=<ip>         Server IP or hostname (default: 10.82.126.73)
+  --port=<port>       Backend port (default: 5081, with auto-fallback to 5073)
+  --month=<1-12>      Test only dates in this month (e.g. --month=11)
   --date=<YYYY-MM-DD> Test a single specific date (e.g. --date=2026-11-08)
-  --sample          Test only 10 representative benchmark dates
-  --dry-run         Run offline validation without connecting to server
-  --output=<file>   Output JSON report file (default: utility_test_report.json)
+  --sample            Test 10 representative benchmark dates across the year
+  --dry-run           Run offline validation without connecting to server
+  --output=<file>     Output JSON report file (default: utility_test_report.json)
 """
 
 import sys
@@ -35,6 +36,9 @@ if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(SCRIPT_DIR, "..", "backend", "data", "utility_checkitems.json")
+
 # Parse command line flags
 args = sys.argv[1:]
 def get_arg(name, default):
@@ -43,8 +47,30 @@ def get_arg(name, default):
             return a.split("=")[1]
     return default
 
-HOST = get_arg("host", os.environ.get("REACT_APP_HOST", "10.82.126.73"))
-PORT = get_arg("port", os.environ.get("PORT", "5073"))
+# Read defaults from .env.utility or environment
+def resolve_default_config():
+    host = "10.82.126.73"
+    port = "5081"
+    
+    env_util = os.path.join(SCRIPT_DIR, "..", "frontend", ".env.utility")
+    if os.path.exists(env_util):
+        try:
+            with open(env_util, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("REACT_APP_HOST="):
+                        host = line.split("=")[1].strip()
+                    elif line.startswith("REACT_APP_PORT="):
+                        port = line.split("=")[1].strip()
+        except Exception:
+            pass
+
+    return os.environ.get("REACT_APP_HOST", host), os.environ.get("REACT_APP_PORT", port)
+
+DEF_HOST, DEF_PORT = resolve_default_config()
+
+HOST = get_arg("host", DEF_HOST)
+PORT = get_arg("port", DEF_PORT)
 TARGET_MONTH = get_arg("month", None)
 TARGET_DATE = get_arg("date", None)
 REPORT_FILE = get_arg("output", "utility_test_report.json")
@@ -52,10 +78,6 @@ IS_SAMPLE = "--sample" in args or "-s" in args
 IS_DRY_RUN = "--dry-run" in args
 
 BASE_URL = f"http://{HOST}:{PORT}"
-
-# Locate ground-truth json
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_FILE = os.path.join(SCRIPT_DIR, "..", "backend", "data", "utility_checkitems.json")
 
 def load_ground_truth():
     if not os.path.exists(DATA_FILE):
@@ -85,9 +107,10 @@ def matches(it, yr, mo, dt, dw, wk, ps=None):
         return False
     return True
 
-def query_api(endpoint, params):
+def query_api(endpoint, params, base_url=None):
+    target_base = base_url or BASE_URL
     qs = urllib.parse.urlencode(params)
-    url = f"{BASE_URL}{endpoint}?{qs}"
+    url = f"{target_base}{endpoint}?{qs}"
     req = urllib.request.Request(url, headers={"User-Agent": "TBM-Tester/1.0"})
     try:
         with urllib.request.urlopen(req, timeout=8) as resp:
@@ -102,23 +125,60 @@ def query_api(endpoint, params):
     except Exception as e:
         return False, str(e), 0
 
+def check_server_connectivity():
+    """Verify server connection and auto-detect port if needed."""
+    global BASE_URL, PORT
+    if IS_DRY_RUN:
+        return True
+
+    print(f"[*] Testing connection to Live Server at {BASE_URL}...")
+    test_params = {"d": 0, "w": 2, "m": 11, "y": 2026, "pS": "P", "page": 1}
+    ok, data, code = query_api("/head/headCheckList", test_params)
+
+    if ok:
+        print(f"[+] Connected successfully to {BASE_URL} (HTTP {code})\n")
+        return True
+
+    # Try fallback port if 5081 failed, try 5073 or vice versa
+    fallback_ports = ["5081", "5073", "5091"]
+    for p in fallback_ports:
+        if p == PORT:
+            continue
+        alt_base = f"http://{HOST}:{p}"
+        ok_alt, _, code_alt = query_api("/head/headCheckList", test_params, base_url=alt_base)
+        if ok_alt:
+            print(f"[+] Found active backend on alternate port: {alt_base} (HTTP {code_alt})")
+            BASE_URL = alt_base
+            PORT = p
+            print(f"[*] Switched BASE_URL to {BASE_URL}\n")
+            return True
+
+    print(f"[!] Warning: Unable to connect to {BASE_URL} ({data})")
+    print("    If running from a laptop outside the office network, make sure you are on the company VPN or run this directly on the server console.")
+    print("    Proceeding with tests...\n")
+    return False
+
 def run_tests():
     items = load_ground_truth()
     print("=" * 75)
-    print("  TBM UTILITY CARDS - AUTOMATED API VERIFICATION TEST SUITE")
-    print(f"  Target Server: {BASE_URL}")
-    print(f"  Total Utility Ground-Truth Items: {len(items)}")
+    print("  TBM UTILITY CARDS - LIVE SERVER VERIFICATION TEST SUITE")
+    print(f"  Live Server Host : {HOST}")
+    print(f"  Backend Port     : {PORT}")
+    print(f"  Target URL       : {BASE_URL}")
+    print(f"  Ground-Truth Cards in Dataset: {len(items)}")
     if TARGET_DATE:
-        print(f"  Filter: Single Date ({TARGET_DATE})")
+        print(f"  Filter Mode      : Single Date ({TARGET_DATE})")
     elif TARGET_MONTH:
-        print(f"  Filter: Month {TARGET_MONTH} / 2026")
+        print(f"  Filter Mode      : Month {TARGET_MONTH} / 2026")
     elif IS_SAMPLE:
-        print("  Filter: 10 Representative Benchmark Dates")
+        print("  Filter Mode      : 10 Representative Benchmark Dates")
     else:
-        print("  Filter: Full Year 2026 (All 125 Active Maintenance Dates)")
+        print("  Filter Mode      : Full Year 2026 (All 125 Active Dates)")
     if IS_DRY_RUN:
-        print("  Mode: [DRY-RUN / OFFLINE] - Validating schedule data locally")
+        print("  Run Mode         : [DRY-RUN / OFFLINE] - Validating against local dataset")
     print("=" * 75 + "\n")
+
+    check_server_connectivity()
 
     # Generate dates to test in 2026
     start_date = datetime.date(2026, 1, 1)
@@ -172,7 +232,6 @@ def run_tests():
         d_str = t["date"]
         
         if IS_DRY_RUN:
-            # Offline test mode
             passed += 1
             print(f"[OFFLINE PASS] {d_str} ({t['day_name']}): Expected Cards = {t['exp_tot']} (P: {t['exp_p']}, S: {t['exp_s']}) | w={t['wk']}, d={t['dw']}")
             results_report.append({
@@ -190,18 +249,15 @@ def run_tests():
         p_params = {"d": t["dw"], "w": t["wk"], "m": t["mo"], "y": t["yr"], "pS": "P", "page": 1}
         ok_p, res_p, code_p = query_api("/head/headCheckList", p_params)
         act_p = res_p.get("totalCount", 0) if ok_p and isinstance(res_p, dict) else 0
-        returned_p_cards = res_p.get("headCheckList", []) if ok_p and isinstance(res_p, dict) else []
 
         # 2. Test Service Dept (pS = S) if expected > 0
         act_s = 0
-        returned_s_cards = []
         code_s = 200
         ok_s = True
         if t["exp_s"] > 0:
             s_params = {"d": t["dw"], "w": t["wk"], "m": t["mo"], "y": t["yr"], "pS": "S", "page": 1}
             ok_s, res_s, code_s = query_api("/head/headCheckList", s_params)
             act_s = res_s.get("totalCount", 0) if ok_s and isinstance(res_s, dict) else 0
-            returned_s_cards = res_s.get("headCheckList", []) if ok_s and isinstance(res_s, dict) else []
 
         p_match = (act_p == t["exp_p"])
         s_match = (act_s == t["exp_s"]) if t["exp_s"] > 0 else True
@@ -225,9 +281,9 @@ def run_tests():
             failed += 1
             print(f"[FAIL] {d_str} ({t['day_name']}): Expected P={t['exp_p']}, S={t['exp_s']} -> API P={act_p}, S={act_s}")
             if not ok_p:
-                print(f"       API Error (P): HTTP {code_p} - {res_p}")
+                print(f"       Note (P): HTTP {code_p} - {res_p}")
             if t["exp_s"] > 0 and not ok_s:
-                print(f"       API Error (S): HTTP {code_s} - {res_s}")
+                print(f"       Note (S): HTTP {code_s} - {res_s}")
 
         results_report.append(report_entry)
 
