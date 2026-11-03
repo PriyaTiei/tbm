@@ -27,6 +27,7 @@ export default function PendingSmileCardDetails({ list, entryFor, checkItems }) 
     workDetail,
     tool,
     criterion,
+    action,
     images,
     _id,
     pS,
@@ -238,10 +239,21 @@ export default function PendingSmileCardDetails({ list, entryFor, checkItems }) 
 
         <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>Standard Value</h6>
+            <h6 className={`${styles.scTh}`}>Action</h6>
+          </div>
+          <div className={`${styles.brT} align-self-stretch`}>
+            <h6 className={`${styles.scTd}`}>{action || "-"}</h6>
+          </div>
+        </div>
+
+        <div className={`col-md-3 col-sm-4  align-self-stretch  ${styles.brA}`}>
+          <div>
+            <h6 className={`${styles.scTh}`}>Criterion / Standard Value</h6>
           </div>
           <div className={styles.brT}>
-            <h6 className={`${styles.scTd}`}>{mspecs?.map((spec) => spec.m_criteria).join(", ")}</h6>
+            <h6 className={`${styles.scTd}`}>
+              {criterion || (mspecs && mspecs.length > 0 ? mspecs.map((spec) => spec.m_criteria).filter(Boolean).join(", ") : "-")}
+            </h6>
           </div>
         </div>
       </div>

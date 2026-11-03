@@ -454,12 +454,12 @@ exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
         daysOld: daysOld,
         workDetail: task.checkItem?.workDetail || "N/A",
         frequency: task.checkItem?.cycle || "N/A",
+        action: task.checkItem?.action || "N/A",
+        criterion: task.checkItem?.criterion || "N/A",
         measurement: task.checkItem?.m_spec?.map(spec => 
           `${spec.m_lable || ''}(${spec.m_unit || ''})`
         ).join(", ") || "N/A",
-        standardValue: task.checkItem?.m_spec?.map(spec => 
-          spec.m_criteria || ""
-        ).join(", ") || "N/A",
+        standardValue: task.checkItem?.criterion || (task.checkItem?.m_spec?.length ? task.checkItem.m_spec.map(spec => spec.m_criteria || "").filter(Boolean).join(", ") : "N/A"),
         latestActualValue: latestActualValue,
         lastCompletedDate: lastCompletedDate
       });
