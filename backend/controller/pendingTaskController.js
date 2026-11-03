@@ -178,11 +178,16 @@ exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
     w: week,
     y: year,
   }).match();
-  const dailyStatusObject = new ApiFeatureDailyStatus(DailyStatus, {
-    entryFor: `${year}-${month}-${dated}`,
-  }).match();
+  const dateVariations = [
+    `${year}-${month}-${dated}`,
+    `${year}-${String(month).padStart(2, "0")}-${String(dated).padStart(2, "0")}`,
+    `${dated}-${month}-${year}`,
+    `${String(dated).padStart(2, "0")}-${String(month).padStart(2, "0")}-${year}`
+  ];
   const machineTaskList = await pendingTaskObject.query;
-  const dailyStatusList = await dailyStatusObject.query;
+  const dailyStatusList = await DailyStatus.find({
+    entryFor: { $in: dateVariations }
+  });
   
   // GET EXISTING PENDING TASKS TO PRESERVE entryDates
   const existingPendingTasks = await PendingTask.find({});
