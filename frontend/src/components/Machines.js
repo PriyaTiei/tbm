@@ -4,11 +4,12 @@ import { getDailyStatus } from "../redux/dailyStatus/dailyStatusActions";
 import { getMachines } from "../redux/machine/machineActions";
 import Line from "./Line";
 import Loading from "./Loading";
-import MachineListTable from "./MachineListTable"; // ✅ New component
+import MachineListTable from "./MachineListTable";
 
 function Machines() {
   const dispatch = useDispatch();
-  const [viewMode, setViewMode] = useState("card"); // ✅ Toggle state
+  const [viewMode, setViewMode] = useState("card"); // "card" | "list"
+  const [scheduleMode, setScheduleMode] = useState("scheduled"); // "scheduled" | "all"
 
   const machines = useSelector((state) => state.machines);
   const filters = useSelector((state) => state.filters);
@@ -41,9 +42,6 @@ function Machines() {
     return "Other Lines";
   };
 
-  // Filters: do not pass category names or line filter directly to backend getMachines query
-  // so that machineData in Redux retains all lines, preventing the sub-line dropdown from collapsing.
-  // Frontend filteredMachines handles line/category filtering cleanly and instantly.
   const rSStr = filters.rS ? `&rS=${filters.rS}` : "";
   const groupStr = filters.group ? `&group=${filters.group}` : "";
   const processNoStr = filters.processNo
@@ -51,18 +49,15 @@ function Machines() {
     : "";
   const cardNoStr = filters.cardNo ? `&cardNo=${filters.cardNo}` : "";
 
-  const plantNameUpper = (process.env.REACT_APP_PLANT || "").toUpperCase();
-  const isUtilityOrFacility = plantNameUpper.includes("UTIL") || plantNameUpper.includes("FACIL");
-
+  // Schedule filtering:
+  // When scheduleMode is 'scheduled' (default), query by date (d, w, m, y)
+  // When scheduleMode is 'all', query by department only to browse the full master equipment catalog
   let queryStr, DailyStatusQueryStr;
-  if (isUtilityOrFacility) {
-    // For Utility and Facility, equipment cards are long-cycle (yearly/quarterly/monthly)
-    // Query by department (pS) so all equipment cards remain visible on the dashboard,
-    // exactly like GD and TNGA!
-    queryStr = `pS=${filters.pS}` + rSStr + groupStr + processNoStr + cardNoStr;
+  if (scheduleMode === "scheduled" && filters.processNo === "" && filters.cardNo === "") {
+    queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` + rSStr + groupStr + processNoStr + cardNoStr;
     DailyStatusQueryStr = `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}` + rSStr + groupStr + processNoStr + cardNoStr;
   } else if (filters.processNo === "" && filters.cardNo === "") {
-    queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` + rSStr + groupStr + processNoStr + cardNoStr;
+    queryStr = `pS=${filters.pS}` + rSStr + groupStr + processNoStr + cardNoStr;
     DailyStatusQueryStr = `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}` + rSStr + groupStr + processNoStr + cardNoStr;
   } else {
     queryStr = `pS=${filters.pS}` + processNoStr + cardNoStr;
@@ -87,8 +82,37 @@ function Machines() {
 
   return (
     <Fragment>
-      {/* View Mode Pill Switch */}
-      <div className="d-flex justify-content-end align-items-center px-3 py-1 mb-2">
+      {/* Mode Controls: Schedule View & Card/List View */}
+      <div className="d-flex justify-content-between align-items-center px-3 py-1 mb-2 flex-wrap gap-2">
+        {/* Schedule Mode: Today's Scheduled vs All Equipment */}
+        <div className="btn-group bg-white p-1 rounded-pill border shadow-sm" role="group">
+          <button
+            type="button"
+            className={`btn btn-sm rounded-pill px-3 py-1 fw-semibold ${
+              scheduleMode === "scheduled"
+                ? "btn-primary shadow-sm"
+                : "btn-light text-muted border-0 bg-transparent"
+            }`}
+            onClick={() => setScheduleMode("scheduled")}
+            title="Show only equipment scheduled for the selected date"
+          >
+            <i className="bi bi-calendar-check me-1"></i> Scheduled on Date ({filters.dt}/{filters.m}/{filters.y})
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm rounded-pill px-3 py-1 fw-semibold ${
+              scheduleMode === "all"
+                ? "btn-secondary shadow-sm text-white"
+                : "btn-light text-muted border-0 bg-transparent"
+            }`}
+            onClick={() => setScheduleMode("all")}
+            title="Show all equipment master catalog for this department"
+          >
+            <i className="bi bi-collection me-1"></i> All Equipment Catalog
+          </button>
+        </div>
+
+        {/* View Mode: Card View vs List View */}
         <div className="btn-group bg-white p-1 rounded-pill border shadow-sm" role="group">
           <button
             type="button"
@@ -132,8 +156,25 @@ function Machines() {
                   />
                 ))
               ) : (
-                <div className="p-3 text-center">No machine data available for {filters.line}.</div>
+                <div className="p-4 text-center text-muted">
+                  <h5>No machine data available for {filters.line || "this filter"}.</h5>
+                </div>
               )}
+            </div>
+          ) : viewMode === "card" && !machineData.success ? (
+            <div className="p-5 text-center text-muted bg-white rounded-3 mx-3 my-4 shadow-sm border">
+              <div style={{ fontSize: "2.5rem" }}>📅</div>
+              <h5 className="mt-2 fw-bold text-dark">No Maintenance Scheduled for this Date</h5>
+              <p className="small text-muted mb-3">
+                There are no maintenance cards scheduled for <strong>{filters.dt}/{filters.m}/{filters.y}</strong> under {filters.pS === "S" ? "Service Dept" : "Maintenance Dept"}.
+              </p>
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-primary rounded-pill px-3 py-1"
+                onClick={() => setScheduleMode("all")}
+              >
+                Browse All Equipment Catalog
+              </button>
             </div>
           ) : (
             <MachineListTable
