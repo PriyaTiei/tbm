@@ -151,14 +151,26 @@ const CheckItemModel = require("../mongoSchema/chekItemModel");
 
 
 exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
-  let date = new Date();
-  date.setUTCDate(date.getUTCDate() - 1);
+  let date;
+  if (req.query.date) {
+    const parts = String(req.query.date).split("-").map(Number);
+    if (parts.length === 3) {
+      date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+    } else {
+      date = new Date(req.query.date);
+    }
+  } else {
+    date = new Date();
+    date.setUTCDate(date.getUTCDate() - 1);
+  }
 
   const year = date.getUTCFullYear();
   const month = date.getUTCMonth() + 1;
-  const week = Math.ceil(date.getUTCDate() / 7);
-  const day = date.getUTCDay();
   const dated = date.getUTCDate();
+  const week = Math.floor(dated / 7.1) + 1;
+  const day = date.getUTCDay();
+
+  console.log(`[generatePendingTaskList] Checking date: ${year}-${month}-${dated} (d=${day}, w=${week})`);
 
   const pendingTaskObject = new ApiFeaturePendingTask(HeadModel, {
     d: day,
@@ -179,7 +191,12 @@ exports.generatePendingTaskList = catchAsyncError(async (req, res, next) => {
   console.log(machineTaskList);
 
   if (machineTaskList.length === 0) {
-    return next(new ErrorHandler("could not find check list", 404));
+    return res.status(200).json({
+      success: true,
+      message: `No scheduled tasks found for ${year}-${month}-${dated}`,
+      count: 0,
+      pendingTaskList: []
+    });
   }
 
   const pendingTaskList = [];
