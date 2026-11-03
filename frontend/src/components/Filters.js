@@ -1,3 +1,4 @@
+import { UTILITY_MASTER_MAP, FACILITY_MASTER_MAP } from "../config/plantEquipmentMaster";
 import React, { Fragment, useState, useEffect, useRef } from "react";
 import DatePicker from "react-date-picker";
 import { useDispatch, useSelector } from "react-redux";
@@ -182,6 +183,8 @@ function Filters() {
   const isFacility = plantNameUpper.includes("FACIL");
   const isUtilityOrFacility = isUtility || isFacility;
 
+  const masterMap = isUtility ? UTILITY_MASTER_MAP : isFacility ? FACILITY_MASTER_MAP : null;
+
   const getLineGroup = (line) => {
     if (!line) return "Other Lines";
     const lower = String(line).toLowerCase();
@@ -197,13 +200,20 @@ function Filters() {
     return "Other Lines";
   };
 
-  const allDiscoveredLinesRef = useRef(new Set());
+  const getInitialLines = () => {
+    if (masterMap) {
+      return new Set(Object.keys(masterMap));
+    }
+    return new Set();
+  };
+
+  const allDiscoveredLinesRef = useRef(getInitialLines());
   const prevDeptRef = useRef(filters.pS);
 
   // If department changes, reset discovered lines so new department lines are captured
   if (prevDeptRef.current !== filters.pS) {
     prevDeptRef.current = filters.pS;
-    allDiscoveredLinesRef.current.clear();
+    allDiscoveredLinesRef.current = getInitialLines();
   }
 
   if (machineData && machineData.machineData != undefined) {
@@ -263,29 +273,40 @@ function Filters() {
   const selectedMainLine = filters.mainLine ?? null;
   let subLineOptions = [];
 
-  if (isUtilityOrFacility) {
+  if (isUtilityOrFacility && masterMap) {
     const rawMachines = machineData?.machineData || [];
     if (selectedMainLine) {
       const matchLine = rawMachines.find((m) => m.line === selectedMainLine);
-      const equipmentList = matchLine?.processNos || [];
+      const equipmentSet = new Set(matchLine?.processNos || []);
+      if (masterMap[selectedMainLine]) {
+        masterMap[selectedMainLine].forEach((eq) => equipmentSet.add(eq));
+      }
       subLineOptions = [
         {
           value: null,
           label: `All ${selectedMainLine} ${isUtility ? "Equipment" : "Sub Areas"}`,
         },
-        ...[...equipmentList].sort().map((proc) => ({
+        ...Array.from(equipmentSet).sort().map((proc) => ({
           value: proc,
           label: proc,
         })),
       ];
     } else {
-      const groupedEquipment = rawMachines.map((m) => ({
-        label: m.line,
-        options: [...(m.processNos || [])].sort().map((proc) => ({
-          value: proc,
-          label: proc,
-        })),
-      })).filter((g) => g.options.length > 0);
+      const allLines = Array.from(allDiscoveredLinesRef.current).sort();
+      const groupedEquipment = allLines.map((lineName) => {
+        const matchLine = rawMachines.find((m) => m.line === lineName);
+        const eqSet = new Set(matchLine?.processNos || []);
+        if (masterMap[lineName]) {
+          masterMap[lineName].forEach((eq) => eqSet.add(eq));
+        }
+        return {
+          label: lineName,
+          options: Array.from(eqSet).sort().map((proc) => ({
+            value: proc,
+            label: proc,
+          })),
+        };
+      }).filter((g) => g.options.length > 0);
 
       subLineOptions = [
         {

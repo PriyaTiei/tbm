@@ -51,8 +51,17 @@ function Machines() {
     : "";
   const cardNoStr = filters.cardNo ? `&cardNo=${filters.cardNo}` : "";
 
+  const plantNameUpper = (process.env.REACT_APP_PLANT || "").toUpperCase();
+  const isUtilityOrFacility = plantNameUpper.includes("UTIL") || plantNameUpper.includes("FACIL");
+
   let queryStr, DailyStatusQueryStr;
-  if (filters.processNo === "" && filters.cardNo === "") {
+  if (isUtilityOrFacility) {
+    // For Utility and Facility, equipment cards are long-cycle (yearly/quarterly/monthly)
+    // Query by department (pS) so all equipment cards remain visible on the dashboard,
+    // exactly like GD and TNGA!
+    queryStr = `pS=${filters.pS}` + rSStr + groupStr + processNoStr + cardNoStr;
+    DailyStatusQueryStr = `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}` + rSStr + groupStr + processNoStr + cardNoStr;
+  } else if (filters.processNo === "" && filters.cardNo === "") {
     queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` + rSStr + groupStr + processNoStr + cardNoStr;
     DailyStatusQueryStr = `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}` + rSStr + groupStr + processNoStr + cardNoStr;
   } else {
