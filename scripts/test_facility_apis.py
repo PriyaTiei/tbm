@@ -6,7 +6,7 @@ Tests backend APIs (/head/headCheckList and /head/headMachineList) against
 the ground-truth schedule parsed from 'backend/data/facility_checkitems.json'.
 
 Facility Ports:
-  Backend  : 5091 (DB: facilityAutoMaint)
+  Backend  : 5083 (DB: facilityAutoMaint)
   Frontend : 3003
 
 Usage:
@@ -14,7 +14,7 @@ Usage:
 
 Options:
   --host=<ip>         Server IP or hostname (default: 10.82.126.73)
-  --port=<port>       Backend port (default: 5091)
+  --port=<port>       Backend port (default: 5083)
   --month=<1-12>      Test only dates in this month (e.g. --month=11)
   --date=<YYYY-MM-DD> Test a single specific date (e.g. --date=2026-11-15)
   --sample            Test 10 representative benchmark dates across the year
@@ -48,7 +48,7 @@ def get_arg(name, default=None):
 
 HOST = get_arg("host", "10.82.126.73")
 EXPLICIT_PORT = get_arg("port")
-PORT = EXPLICIT_PORT if EXPLICIT_PORT else "5091"
+PORT = EXPLICIT_PORT if EXPLICIT_PORT else "5083"
 TARGET_MONTH = get_arg("month")
 TARGET_DATE = get_arg("date")
 REPORT_FILE = get_arg("output", "facility_test_report.json")
@@ -222,7 +222,7 @@ def run_tests():
         connected, card_count = test_server_connection(BASE_URL)
         if not connected:
             print(f"[!] Warning: Unable to connect to {BASE_URL}")
-            print("    Make sure the Facility backend is running on port 5091:")
+            print("    Make sure the Facility backend is running on port 5083:")
             print("    Run on Ubuntu server:  cd ~/Yousuf/facilityAutoMaint_v2 && npm run facility-backend")
             print("    Proceeding with tests...")
             print()

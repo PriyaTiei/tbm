@@ -6,7 +6,7 @@ Simulates the day-by-day scheduling logic of the TBM app for Facility Cards
 derived from 'backend/data/facility_checkitems.json'.
 
 Target Server Reference: 10.82.126.73 (Live Server)
-Target Backend Port:     5091 (facilityAutoMaint DB)
+Target Backend Port:     5083 (facilityAutoMaint DB)
 Target Frontend Port:    3003
 
 Usage:
@@ -79,7 +79,7 @@ def analyze():
     print("=" * 75)
     print("  TBM FACILITY CARDS - SCHEDULE & CALENDAR ANALYZER")
     print(f"  Source File      : {DATA_FILE}")
-    print(f"  Live Server Ref  : http://10.82.126.73:5091 (DB: facilityAutoMaint)")
+    print(f"  Live Server Ref  : http://10.82.126.73:5083 (DB: facilityAutoMaint)")
     print(f"  Frontend Ref     : http://10.82.126.73:3003")
     print(f"  Total DB Items   : {total_db}")
     if TARGET_DATE:

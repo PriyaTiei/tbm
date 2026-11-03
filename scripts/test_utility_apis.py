@@ -131,7 +131,7 @@ def check_server_and_diagnose():
     print(f"[!] Warning: Query to {BASE_URL} returned HTTP {unfiltered_code}: {unfiltered_data}")
     print("[*] Performing auto-diagnostic scan across common ports on this machine...\n")
 
-    candidate_ports = ["5082", "5073", "5081", "5091", "5071", "5051", "5050", "5070"]
+    candidate_ports = ["5082", "5073", "5081", "5083", "5071", "5051", "5050", "5070"]
     candidate_hosts = [HOST]
     if "localhost" not in candidate_hosts and "127.0.0.1" not in candidate_hosts:
         candidate_hosts.append("localhost")
