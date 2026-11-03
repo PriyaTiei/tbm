@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import DatePicker from "react-date-picker";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { UTILITY_MASTER_MAP, FACILITY_MASTER_MAP } from "../config/plantEquipmentMaster";
+import { UTILITY_MASTER_MAP, FACILITY_MASTER_MAP, getActivePlantInfo } from "../config/plantEquipmentMaster";
 
 function SmileCardDetails({ list, image, setImage }) {
   const [selectedFile, setSelectedFile] = useState("");
@@ -16,11 +16,7 @@ function SmileCardDetails({ list, image, setImage }) {
   const auth = useSelector((state) => state.auth);
   const { machineData } = useSelector((state) => state.machines);
 
-  const plantNameUpper = (process.env.REACT_APP_PLANT || "").toUpperCase();
-  const isUtility = plantNameUpper.includes("UTIL");
-  const isFacility = plantNameUpper.includes("FACIL");
-  const isUtilityOrFacility = isUtility || isFacility;
-  const masterMap = isUtility ? UTILITY_MASTER_MAP : isFacility ? FACILITY_MASTER_MAP : null;
+  const { isUtility, isFacility, isUtilityOrFacility, masterMap } = getActivePlantInfo();
 
   let optionsLine = [];
   if (isUtility) {

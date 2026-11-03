@@ -191,3 +191,44 @@ export const FACILITY_MASTER_MAP = {
   "TNGA Assy,Old & New warehouse": ["All Area"]
 };
 
+export function getActivePlantInfo() {
+  const envPlant = (process.env.REACT_APP_PLANT || "").toUpperCase();
+  let plant = "TNGA";
+
+  if (envPlant.includes("UTIL")) {
+    plant = "UTILITY";
+  } else if (envPlant.includes("FACIL")) {
+    plant = "FACILITY";
+  } else if (envPlant.includes("GD")) {
+    plant = "GD";
+  } else if (envPlant.includes("TNGA")) {
+    plant = "TNGA";
+  } else {
+    // Port-based fallback
+    const backendPort = String(process.env.REACT_APP_PORT || "");
+    const frontendPort = typeof window !== "undefined" && window.location ? String(window.location.port || "") : "";
+
+    if (backendPort === "5082" || frontendPort === "5072") {
+      plant = "UTILITY";
+    } else if (backendPort === "5083" || backendPort === "5091" || frontendPort === "3003") {
+      plant = "FACILITY";
+    } else if (backendPort === "5051" || frontendPort === "3000") {
+      plant = "GD";
+    } else {
+      plant = "TNGA";
+    }
+  }
+
+  const isUtility = plant === "UTILITY";
+  const isFacility = plant === "FACILITY";
+  const isUtilityOrFacility = isUtility || isFacility;
+  const masterMap = isUtility ? UTILITY_MASTER_MAP : isFacility ? FACILITY_MASTER_MAP : null;
+
+  return {
+    plant,
+    isUtility,
+    isFacility,
+    isUtilityOrFacility,
+    masterMap,
+  };
+}

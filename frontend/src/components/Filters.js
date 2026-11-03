@@ -1,4 +1,4 @@
-import { UTILITY_MASTER_MAP, FACILITY_MASTER_MAP } from "../config/plantEquipmentMaster";
+import { UTILITY_MASTER_MAP, FACILITY_MASTER_MAP, getActivePlantInfo } from "../config/plantEquipmentMaster";
 import React, { Fragment, useState, useEffect, useRef } from "react";
 import DatePicker from "react-date-picker";
 import { useDispatch, useSelector } from "react-redux";
@@ -178,12 +178,7 @@ function Filters() {
   // const [pendingTasksData, setPendingTasksData] = useState([])
   const { machineData } = useSelector((state) => state.machines);
 
-  const plantNameUpper = (process.env.REACT_APP_PLANT || "").toUpperCase();
-  const isUtility = plantNameUpper.includes("UTIL");
-  const isFacility = plantNameUpper.includes("FACIL");
-  const isUtilityOrFacility = isUtility || isFacility;
-
-  const masterMap = isUtility ? UTILITY_MASTER_MAP : isFacility ? FACILITY_MASTER_MAP : null;
+  const { isUtility, isFacility, isUtilityOrFacility, masterMap } = getActivePlantInfo();
 
   const getLineGroup = (line) => {
     if (!line) return "Other Lines";
@@ -248,12 +243,19 @@ function Filters() {
 
   let lineOptions = [];
   if (isUtilityOrFacility) {
+    const linesSet = new Set(masterMap ? Object.keys(masterMap) : []);
+    allDiscoveredLinesRef.current.forEach((lineName) => linesSet.add(lineName));
+    if (machineData && machineData.machineData) {
+      machineData.machineData.forEach((element) => {
+        if (element && element.line) linesSet.add(element.line);
+      });
+    }
     lineOptions = [
       {
         value: null,
         label: isUtility ? "All Plants" : "All Areas",
       },
-      ...Array.from(allDiscoveredLinesRef.current)
+      ...Array.from(linesSet)
         .sort()
         .map((lineName) => ({
           value: lineName,
