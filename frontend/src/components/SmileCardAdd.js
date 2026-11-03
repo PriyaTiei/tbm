@@ -350,7 +350,7 @@ function SmileCardAdd() {
 
             <div className="col-12 col-md-6 col-lg-3">
               <label className="tbm-label">
-                {isUtility ? "Equipment" : isFacility ? "Sub Area / Equipment" : (pSNew === "S" ? "Station / Line" : "OP no.")}{" "}
+                {isUtility ? "Equipment" : isFacility ? "Sub Area" : (pSNew === "S" ? "Station / Line" : "OP no.")}{" "}
                 <span className="req">*</span>
               </label>
               {isUtilityOrFacility ? (
@@ -361,7 +361,7 @@ function SmileCardAdd() {
                     list="equipmentSuggestions"
                     value={processNoNew}
                     onChange={(e) => setProcessNoNew(e.target.value)}
-                    placeholder={isUtility ? "e.g. DG 2000 Kva, LT PANEL" : "e.g. All Area, Main Office"}
+                    placeholder={isUtility ? "e.g. DG 2000 Kva, LT PANEL, 11kV VCB" : "e.g. All Area, Main Office, Canteen"}
                   />
                   {masterMap?.[lineNew] && (
                     <datalist id="equipmentSuggestions">
@@ -442,7 +442,7 @@ function SmileCardAdd() {
 
             <div className="col-12 col-md-6 col-lg-3">
               <label className="tbm-label">
-                {pS === "S" ? "Matrix Card No." : "Control No."}
+                {isUtilityOrFacility ? "Card No. / Control No." : (pSNew === "S" ? "Matrix Card No." : "Control No.")}
               </label>
               <input
                 className="form-control tbm-input"
@@ -454,25 +454,13 @@ function SmileCardAdd() {
 
             <div className="col-12 col-md-6 col-lg-3">
               <label className="tbm-label">
-                {pS === "S" ? "Ledger No." : "WSS No."}
+                {isUtilityOrFacility ? "WSS / Ledger No." : (pSNew === "S" ? "Ledger No." : "WSS No.")}
               </label>
               <input
                 className="form-control tbm-input"
                 value={methodWssNoNew}
                 onChange={(e) => setMethodWssNoNew(e.target.value)}
                 placeholder="Enter Ledger / WSS No."
-              />
-            </div>
-
-            <div className="col-12 col-md-6 col-lg-3">
-              <label className="tbm-label">
-                {pS === "S" ? "Area to inspect" : "No. of members"}
-              </label>
-              <input
-                className="form-control tbm-input"
-                value={workManpowerNew}
-                onChange={(e) => setWorkManpowerNew(e.target.value)}
-                placeholder={pS === "S" ? "Inspection area details" : "e.g. 1, 2"}
               />
             </div>
           </div>
@@ -550,12 +538,26 @@ function SmileCardAdd() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="tbm-label">Total Time in Mins</label>
+              <label className="tbm-label">
+                {isUtilityOrFacility ? "Work Time (mins)" : (pSNew === "S" ? "Time" : "Total Manhours (mins)")}
+              </label>
               <input
                 className="form-control tbm-input"
                 value={workTimeNew}
                 onChange={(e) => setWorkTimeNew(e.target.value)}
                 placeholder="e.g. 5, 10, 15, 30"
+              />
+            </div>
+
+            <div className="col-12 col-md-6">
+              <label className="tbm-label">
+                {isUtilityOrFacility ? "Work Manpower (No. of members)" : (pSNew === "S" ? "Area to inspect" : "No. of members")}
+              </label>
+              <input
+                className="form-control tbm-input"
+                value={workManpowerNew}
+                onChange={(e) => setWorkManpowerNew(e.target.value)}
+                placeholder="e.g. 1, 2"
               />
             </div>
           </div>
@@ -864,12 +866,12 @@ function SmileCardAdd() {
         </div>
       </div>
 
-      {/* Card 6: Extended Maintenance Details (pS !== 'S') */}
-      {pS !== "S" && (
+      {/* Card 6: Extended Specifications & Details */}
+      {(!isUtilityOrFacility && pSNew === "S") ? null : (
         <div className="tbm-card">
           <div className="tbm-card-header">
             <h5 className="tbm-card-title">
-              <i className="bi bi-tools"></i> Maintenance Extended Details
+              <i className="bi bi-tools"></i> Additional Specifications & Operational Details
             </h5>
           </div>
           <div className="tbm-card-body">

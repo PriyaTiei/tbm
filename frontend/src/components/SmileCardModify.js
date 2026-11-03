@@ -412,7 +412,7 @@ function SmileCardDetails({ list, image, setImage }) {
         <li>
           <div className="d-flex">
             <div className="firstCol">
-              {isUtility ? "Equipment" : isFacility ? "Sub Area / Equipment" : (pS === "S" ? "Station / Line" : "OP no.")}
+              {isUtility ? "Equipment" : isFacility ? "Sub Area" : (pS === "S" ? "Station / Line" : "OP no.")}
               <span className="text-danger">* </span> :
             </div>
             <div className="secondCol">
@@ -779,7 +779,7 @@ function SmileCardDetails({ list, image, setImage }) {
         <li>
           <div className="d-flex">
             <div className="firstCol">
-              {pS === "S" ? "Area to inspect" : "No. of members"}
+              {isUtilityOrFacility ? "Work Manpower (No. of members)" : (pS === "S" ? "Area to inspect" : "No. of members")}
             </div>
             <div className="secondCol">
               <input
@@ -872,8 +872,8 @@ function SmileCardDetails({ list, image, setImage }) {
           </div>
         </li>
 
-        {/* below items not required to be displayed for production  */}
-        {pS === "S" ? null : (
+        {/* Extended items: always displayed for Utility and Facility */}
+        {(!isUtilityOrFacility && pS === "S") ? null : (
           <>
             <li>
               <div className="d-flex">
