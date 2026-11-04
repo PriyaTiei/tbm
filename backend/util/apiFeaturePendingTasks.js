@@ -12,18 +12,18 @@ class ApiFeaturePendingTask {
 
     if (newQueryStr.d !== undefined && newQueryStr.d !== null && newQueryStr.d !== "") {
       const dNum = Number(newQueryStr.d);
-      const dArr = [9999, dNum];
+      const dArr = [9999, 9, dNum];
       if (dNum === 0 && !dArr.includes(7)) dArr.push(7);
       if (dNum === 7 && !dArr.includes(0)) dArr.push(0);
       newQueryStr = { ...newQueryStr, d: { $in: dArr } };
     }
 
     newQueryStr = newQueryStr.w
-      ? { ...newQueryStr, w: { $in: [9999, Number(newQueryStr.w)] } }
+      ? { ...newQueryStr, w: { $in: [9999, 9, Number(newQueryStr.w)] } }
       : { ...newQueryStr };
 
     newQueryStr = newQueryStr.m
-      ? { ...newQueryStr, m: { $in: [9999, Number(newQueryStr.m)] } }
+      ? { ...newQueryStr, m: { $in: [9999, 99, 9, Number(newQueryStr.m)] } }
       : { ...newQueryStr };
 
     newQueryStr = newQueryStr.y

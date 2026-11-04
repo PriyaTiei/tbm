@@ -15,6 +15,7 @@ export default function AlldelMachineSmileCardDetails({ list }) {
     workDetail,
     tool,
     criterion,
+    action,
     images,
     _id,
     pS,
@@ -300,10 +301,19 @@ export default function AlldelMachineSmileCardDetails({ list }) {
 
       <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
         <div>
-          <h6 className={`${styles.scTh}`}>Standard Value</h6>
+          <h6 className={`${styles.scTh}`}>Action</h6>
+        </div>
+        <div className={`${styles.brT} align-self-stretch`}>
+          <h6 className={`${styles.scTd}`}>{action || "-"}</h6>
+        </div>
+      </div>
+
+      <div className={`col-md-3 col-sm-4  align-self-stretch  ${styles.brA}`}>
+        <div>
+          <h6 className={`${styles.scTh}`}>Criterion / Standard Value</h6>
         </div>
         <div className={styles.brT}>
-          <h6 className={`${styles.scTd}`}>{criterion}</h6>
+          <h6 className={`${styles.scTd}`}>{criterion || "-"}</h6>
         </div>
       </div>
     </div>

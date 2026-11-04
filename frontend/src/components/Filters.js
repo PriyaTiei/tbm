@@ -1,3 +1,4 @@
+import { UTILITY_MASTER_MAP, FACILITY_MASTER_MAP, getActivePlantInfo } from "../config/plantEquipmentMaster";
 import React, { Fragment, useState, useEffect, useRef } from "react";
 import DatePicker from "react-date-picker";
 import { useDispatch, useSelector } from "react-redux";
@@ -177,6 +178,8 @@ function Filters() {
   // const [pendingTasksData, setPendingTasksData] = useState([])
   const { machineData } = useSelector((state) => state.machines);
 
+  const { isUtility, isFacility, isUtilityOrFacility, masterMap } = getActivePlantInfo();
+
   const getLineGroup = (line) => {
     if (!line) return "Other Lines";
     const lower = String(line).toLowerCase();
@@ -192,13 +195,20 @@ function Filters() {
     return "Other Lines";
   };
 
-  const allDiscoveredLinesRef = useRef(new Set());
+  const getInitialLines = () => {
+    if (masterMap) {
+      return new Set(Object.keys(masterMap));
+    }
+    return new Set();
+  };
+
+  const allDiscoveredLinesRef = useRef(getInitialLines());
   const prevDeptRef = useRef(filters.pS);
 
   // If department changes, reset discovered lines so new department lines are captured
   if (prevDeptRef.current !== filters.pS) {
     prevDeptRef.current = filters.pS;
-    allDiscoveredLinesRef.current.clear();
+    allDiscoveredLinesRef.current = getInitialLines();
   }
 
   if (machineData && machineData.machineData != undefined) {
@@ -231,18 +241,84 @@ function Filters() {
     ...otherGroups,
   ];
 
-  const lineOptions = [{ value: null, label: "All Lines" }];
-  sortedGroupNames.forEach((groupName) => {
-    lineOptions.push({
-      value: groupName,
-      label: groupName,
+  let lineOptions = [];
+  if (isUtilityOrFacility) {
+    const linesSet = new Set(masterMap ? Object.keys(masterMap) : []);
+    allDiscoveredLinesRef.current.forEach((lineName) => linesSet.add(lineName));
+    if (machineData && machineData.machineData) {
+      machineData.machineData.forEach((element) => {
+        if (element && element.line) linesSet.add(element.line);
+      });
+    }
+    lineOptions = [
+      {
+        value: null,
+        label: isUtility ? "All Plants" : "All Areas",
+      },
+      ...Array.from(linesSet)
+        .sort()
+        .map((lineName) => ({
+          value: lineName,
+          label: lineName,
+        })),
+    ];
+  } else {
+    lineOptions = [{ value: null, label: "All Lines" }];
+    sortedGroupNames.forEach((groupName) => {
+      lineOptions.push({
+        value: groupName,
+        label: groupName,
+      });
     });
-  });
+  }
 
   const selectedMainLine = filters.mainLine ?? null;
   let subLineOptions = [];
 
-  if (selectedMainLine && groupedLines[selectedMainLine]) {
+  if (isUtilityOrFacility && masterMap) {
+    const rawMachines = machineData?.machineData || [];
+    if (selectedMainLine) {
+      const matchLine = rawMachines.find((m) => m.line === selectedMainLine);
+      const equipmentSet = new Set(matchLine?.processNos || []);
+      if (masterMap[selectedMainLine]) {
+        masterMap[selectedMainLine].forEach((eq) => equipmentSet.add(eq));
+      }
+      subLineOptions = [
+        {
+          value: null,
+          label: `All ${selectedMainLine} ${isUtility ? "Equipment" : "Sub Areas"}`,
+        },
+        ...Array.from(equipmentSet).sort().map((proc) => ({
+          value: proc,
+          label: proc,
+        })),
+      ];
+    } else {
+      const allLines = Array.from(allDiscoveredLinesRef.current).sort();
+      const groupedEquipment = allLines.map((lineName) => {
+        const matchLine = rawMachines.find((m) => m.line === lineName);
+        const eqSet = new Set(matchLine?.processNos || []);
+        if (masterMap[lineName]) {
+          masterMap[lineName].forEach((eq) => eqSet.add(eq));
+        }
+        return {
+          label: lineName,
+          options: Array.from(eqSet).sort().map((proc) => ({
+            value: proc,
+            label: proc,
+          })),
+        };
+      }).filter((g) => g.options.length > 0);
+
+      subLineOptions = [
+        {
+          value: null,
+          label: isUtility ? "All Equipment" : "All Sub Areas",
+        },
+        ...groupedEquipment,
+      ];
+    }
+  } else if (selectedMainLine && groupedLines[selectedMainLine]) {
     subLineOptions = [
       { value: null, label: `All ${selectedMainLine} Sub-lines` },
       ...Array.from(groupedLines[selectedMainLine]).sort().map((subLine) => ({
@@ -325,10 +401,15 @@ function Filters() {
   // }, [level])
   // const filters = useSelector((state) => state.filters);
   // let queryStr = `d=${filters.d}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}`;
-  const deptOptions = [
-    { value: "S", label: "Production Dept" },
-    { value: "P", label: "Maint Dept" },
-  ];
+  const deptOptions = isUtilityOrFacility
+    ? [
+        { value: "P", label: "Maint Dept" },
+        { value: "S", label: "Service Dept" },
+      ]
+    : [
+        { value: "S", label: "Production Dept" },
+        { value: "P", label: "Maint Dept" },
+      ];
 
   const checkOptions = [
     { value: null, label: "All Check" },
@@ -376,10 +457,18 @@ function Filters() {
 
   const selectLineHandler = (e) => {
     dispatch(filterMainLine(e ? e.value : null));
+    if (isUtilityOrFacility) {
+      dispatch(filterProcessNo(""));
+    }
   };
 
   const selectSubLineHandler = (e) => {
-    dispatch(filterSubLine(e ? e.value : null));
+    if (isUtilityOrFacility) {
+      dispatch(filterProcessNo(e ? (e.value || "") : ""));
+      dispatch(filterSubLine(e ? e.value : null));
+    } else {
+      dispatch(filterSubLine(e ? e.value : null));
+    }
   };
 
   const selectCheckHandler = (e) => {
@@ -414,7 +503,18 @@ function Filters() {
     lineOptions.find((opt) => opt.value === selectedMainLine) || lineOptions[0];
 
   let selectedSubLineOption = null;
-  if (filters.subLine) {
+  if (isUtilityOrFacility) {
+    if (filters.processNo) {
+      selectedSubLineOption = { value: filters.processNo, label: filters.processNo };
+    } else {
+      selectedSubLineOption = {
+        value: null,
+        label: selectedMainLine
+          ? `All ${selectedMainLine} ${isUtility ? "Equipment" : "Sub Areas"}`
+          : (isUtility ? "All Equipment" : "All Sub Areas"),
+      };
+    }
+  } else if (filters.subLine) {
     selectedSubLineOption = { value: filters.subLine, label: filters.subLine };
   } else {
     selectedSubLineOption = {
@@ -488,7 +588,7 @@ function Filters() {
               value={selectedMainLineOption}
               onChange={selectLineHandler}
               styles={customSelectStyles}
-              placeholder="Main Line"
+              placeholder={isUtility ? "Select Plant" : isFacility ? "Select Area" : "Main Line"}
               isSearchable={true}
             />
           </div>
@@ -500,7 +600,7 @@ function Filters() {
               value={selectedSubLineOption}
               onChange={selectSubLineHandler}
               styles={customSelectStyles}
-              placeholder="Sub Line"
+              placeholder={isUtility ? "Select Equipment" : isFacility ? "Select Sub Area" : "Sub Line"}
               isSearchable={true}
             />
           </div>

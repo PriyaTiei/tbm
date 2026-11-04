@@ -4,11 +4,11 @@ import { getDailyStatus } from "../redux/dailyStatus/dailyStatusActions";
 import { getMachines } from "../redux/machine/machineActions";
 import Line from "./Line";
 import Loading from "./Loading";
-import MachineListTable from "./MachineListTable"; // ✅ New component
+import MachineListTable from "./MachineListTable";
 
 function Machines() {
   const dispatch = useDispatch();
-  const [viewMode, setViewMode] = useState("card"); // ✅ Toggle state
+  const [viewMode, setViewMode] = useState("card"); // "card" | "list"
 
   const machines = useSelector((state) => state.machines);
   const filters = useSelector((state) => state.filters);
@@ -41,9 +41,6 @@ function Machines() {
     return "Other Lines";
   };
 
-  // Filters: do not pass category names or line filter directly to backend getMachines query
-  // so that machineData in Redux retains all lines, preventing the sub-line dropdown from collapsing.
-  // Frontend filteredMachines handles line/category filtering cleanly and instantly.
   const rSStr = filters.rS ? `&rS=${filters.rS}` : "";
   const groupStr = filters.group ? `&group=${filters.group}` : "";
   const processNoStr = filters.processNo
@@ -53,8 +50,18 @@ function Machines() {
 
   let queryStr, DailyStatusQueryStr;
   if (filters.processNo === "" && filters.cardNo === "") {
-    queryStr = `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` + rSStr + groupStr + processNoStr + cardNoStr;
-    DailyStatusQueryStr = `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}` + rSStr + groupStr + processNoStr + cardNoStr;
+    queryStr =
+      `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` +
+      rSStr +
+      groupStr +
+      processNoStr +
+      cardNoStr;
+    DailyStatusQueryStr =
+      `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}` +
+      rSStr +
+      groupStr +
+      processNoStr +
+      cardNoStr;
   } else {
     queryStr = `pS=${filters.pS}` + processNoStr + cardNoStr;
     DailyStatusQueryStr = `pS=${filters.pS}` + processNoStr + cardNoStr;
@@ -125,6 +132,10 @@ function Machines() {
               ) : (
                 <div className="p-3 text-center">No machine data available for {filters.line}.</div>
               )}
+            </div>
+          ) : viewMode === "card" ? (
+            <div className="p-4 text-center text-muted">
+              <h5>No maintenance scheduled for this date.</h5>
             </div>
           ) : (
             <MachineListTable

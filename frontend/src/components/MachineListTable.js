@@ -690,6 +690,7 @@ function MachineListTable({ machineData, dailyStatusActions }) {
       "Work Time",
       "Work Hours",
       "Method",
+      "Action",
       "Criterion",
     ]);
 
@@ -753,6 +754,7 @@ function MachineListTable({ machineData, dailyStatusActions }) {
                   detail?.workTime ?? "-",
                   detail?.wHr ?? "-",
                   detail?.methodWssNo ?? "-",
+                  detail?.action ?? "-",
                   detail?.criterion ?? "-",
                 ]);
               });
@@ -855,6 +857,7 @@ function MachineListTable({ machineData, dailyStatusActions }) {
                 <th>Work Time</th>
                 <th>Work Hours</th>
                 <th>Method</th>
+                <th>Action</th>
                 <th>Criterion</th>
               </tr>
             </thead>
@@ -905,7 +908,7 @@ function MachineListTable({ machineData, dailyStatusActions }) {
                             <td>{item.line}</td>
                             <td>{processNo}</td>
                             <td>{pageNum}</td>
-                            <td colSpan={13} className="text-muted">
+                            <td colSpan={14} className="text-muted">
                               No inspection data available
                             </td>
                           </tr>
@@ -937,6 +940,7 @@ function MachineListTable({ machineData, dailyStatusActions }) {
                               <td>{detail?.workTime ?? "-"}</td>
                               <td>{detail?.wHr ?? "-"}</td>
                               <td>{detail?.methodWssNo ?? "-"}</td>
+                              <td>{detail?.action ?? "-"}</td>
                               <td>{detail?.criterion ?? "-"}</td>
                             </tr>
                           );

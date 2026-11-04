@@ -3,12 +3,19 @@ const path = require('path');
 const { spawn } = require('child_process');
 
 const plant = (process.argv[2] || 'tnga').toLowerCase();
-const validPlants = ['tnga', 'gd'];
+const validPlants = ['tnga', 'gd', 'utility', 'facility'];
 
 if (!validPlants.includes(plant)) {
-  console.error(`Invalid plant "${plant}". Supported options: tnga, gd`);
+  console.error(`Invalid plant "${plant}". Supported options: tnga, gd, utility, facility`);
   process.exit(1);
 }
+
+const portMap = {
+  gd: '3000',
+  tnga: '3001',
+  utility: '5072',
+  facility: '3003',
+};
 
 const frontendDir = path.resolve(__dirname, '..');
 const envSrc = path.join(frontendDir, `.env.${plant}`);
@@ -22,7 +29,7 @@ if (!fs.existsSync(envSrc)) {
 console.log(`\n========================================`);
 console.log(` Starting Dev Server for Plant: ${plant.toUpperCase()}`);
 console.log(` Active Config: ${envSrc}`);
-console.log(` Port: ${plant === 'tnga' ? '3001' : '3000'}`);
+console.log(` Port: ${portMap[plant] || '5072'}`);
 console.log(`========================================\n`);
 
 fs.copyFileSync(envSrc, envDest);

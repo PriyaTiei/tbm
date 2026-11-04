@@ -839,17 +839,63 @@ export default function PendingTask() {
   const [ageFilterLoading, setAgeFilterLoading] = useState(false);
   const [ageSummary, setAgeSummary] = useState({ "1-10": 0, "11-20": 0, "20+": 0 });
   const [isExcelDataReady, setIsExcelDataReady] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [genMessage, setGenMessage] = useState("");
+
+  const handleGeneratePending = () => {
+    setGenerating(true);
+    setGenMessage("");
+
+    let dateParam = "";
+    if (filters.y && filters.m && filters.dt) {
+      const filterDate = new Date(Date.UTC(filters.y, filters.m - 1, filters.dt));
+      filterDate.setUTCDate(filterDate.getUTCDate() - 1);
+      const y = filterDate.getUTCFullYear();
+      const m = filterDate.getUTCMonth() + 1;
+      const d = filterDate.getUTCDate();
+      dateParam = `?date=${y}-${m}-${d}`;
+    }
+
+    const genUrl = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/pendingTasks/generate${dateParam}`;
+    axios
+      .get(genUrl)
+      .then((res) => {
+        setGenerating(false);
+        const count = res.data.count !== undefined ? res.data.count : (res.data.pendingTaskList?.length || 0);
+        setGenMessage(`Generated ${count} pending items!`);
+        setTimeout(() => setGenMessage(""), 4000);
+        dispatch(getPendingTasks(queryStr));
+        const summaryUrl = `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/pendingTasks/by-age?${queryStr}`;
+        axios.get(summaryUrl).then((sRes) => {
+          if (sRes.data?.ageSummary) setAgeSummary(sRes.data.ageSummary);
+        });
+      })
+      .catch((err) => {
+        setGenerating(false);
+        setGenMessage("Error: " + (err.response?.data?.message || err.message));
+        setTimeout(() => setGenMessage(""), 5000);
+      });
+  };
+
+  console.log("filters =", filters);
+
+  const dateStr =
+    filters.y && filters.m && filters.dt
+      ? `${filters.y}-${String(filters.m).padStart(2, "0")}-${String(filters.dt).padStart(2, "0")}`
+      : "";
 
   console.log("filters =", filters);
 
   const queryStr =
-  `pS=${filters.pS}` +
-  (filters.d ? `&d=${filters.d}` : "") +
-  (filters.w ? `&w=${filters.w}` : "") +
-  (filters.m ? `&m=${filters.m}` : "") +
-  (filters.y ? `&y=${filters.y}` : "") +
-  (filters.line ? `&line=${filters.line}` : "") +
-  (filters.rS ? `&rS=${filters.rS}` : "");
+    `pS=${filters.pS || ""}` +
+    (filters.line ? `&line=${encodeURIComponent(filters.line)}` : "") +
+    (filters.rS ? `&rS=${encodeURIComponent(filters.rS)}` : "") +
+    (dateStr ? `&date=${dateStr}` : "") +
+    (filters.dt !== undefined && filters.dt !== null ? `&dt=${filters.dt}` : "") +
+    (filters.d !== undefined && filters.d !== null ? `&d=${filters.d}` : "") +
+    (filters.w !== undefined && filters.w !== null ? `&w=${filters.w}` : "") +
+    (filters.m !== undefined && filters.m !== null ? `&m=${filters.m}` : "") +
+    (filters.y !== undefined && filters.y !== null ? `&y=${filters.y}` : "");
 
   // Fetch regular pending tasks data (for when ageFilter is "ALL")
   useEffect(() => {
@@ -1277,7 +1323,24 @@ function buildExcelRowsFromData(data) {
               )}
             </div>
 
-            <div>
+            <div className="d-flex align-items-center gap-2">
+              {genMessage && (
+                <span className="badge bg-info text-dark p-2">
+                  {genMessage}
+                </span>
+              )}
+              <Button
+                variant="outline-primary"
+                size="sm"
+                className="fw-semibold shadow-sm d-flex align-items-center gap-1.5"
+                onClick={handleGeneratePending}
+                disabled={generating}
+                title="Detect & generate overdue pending cards from yesterday"
+              >
+                <i className={`bi ${generating ? "bi-arrow-repeat spin" : "bi-lightning-charge-fill"}`}></i>
+                <span>{generating ? "Detecting..." : "Detect Overdue Tasks"}</span>
+              </Button>
+
               {isExcelDataReady && body.length > 0 ? (
                 <Button
                   variant="primary"

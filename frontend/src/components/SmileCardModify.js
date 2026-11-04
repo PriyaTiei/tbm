@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import DatePicker from "react-date-picker";
 import { Button, Col, Form, Row } from "react-bootstrap";
+import { UTILITY_MASTER_MAP, FACILITY_MASTER_MAP, getActivePlantInfo } from "../config/plantEquipmentMaster";
 
 function SmileCardDetails({ list, image, setImage }) {
   const [selectedFile, setSelectedFile] = useState("");
@@ -15,9 +16,23 @@ function SmileCardDetails({ list, image, setImage }) {
   const auth = useSelector((state) => state.auth);
   const { machineData } = useSelector((state) => state.machines);
 
-  const optionsLine = machineData?.machineData?.map((element) => {
-    return { value: element.line, label: element.line };
-  });
+  const { isUtility, isFacility, isUtilityOrFacility, masterMap } = getActivePlantInfo();
+
+  let optionsLine = [];
+  if (isUtility) {
+    optionsLine = Object.keys(UTILITY_MASTER_MAP).map((k) => ({ value: k, label: k }));
+  } else if (isFacility) {
+    optionsLine = Object.keys(FACILITY_MASTER_MAP).map((k) => ({ value: k, label: k }));
+  } else if (machineData?.machineData?.length > 0) {
+    optionsLine = machineData.machineData.map((element) => ({ value: element.line, label: element.line }));
+  } else {
+    optionsLine = [
+      { value: "Block", label: "Block Line" },
+      { value: "Head", label: "Head Line" },
+      { value: "Crank", label: "Crank Line" },
+      { value: "Assembly", label: "Assembly Line" },
+    ];
+  }
 
   const level = auth.user ? auth.user.level : 0;
 
@@ -162,10 +177,15 @@ function SmileCardDetails({ list, image, setImage }) {
   );
   const [yNew, setYNew] = useState(y === null ? "" : y);
 
-  const optionsPS = [
-    { value: "P", label: "Maintenace dept." },
-    { value: "S", label: "Production dept." },
-  ];
+  const optionsPS = isUtilityOrFacility
+    ? [
+        { value: "P", label: "Maintenance Dept" },
+        { value: "S", label: "Service Dept" },
+      ]
+    : [
+        { value: "P", label: "Maintenance Dept" },
+        { value: "S", label: "Production Dept" },
+      ];
   const optionsRS = [
     { value: "R", label: "Running Check" },
     { value: "S", label: "Stop Check" },
@@ -371,13 +391,13 @@ function SmileCardDetails({ list, image, setImage }) {
         <li>
           <div className="d-flex">
             <div className="firstCol">
-              Line
+              {isUtility ? "Plant" : isFacility ? "Area" : "Line"}
               <span className="text-danger">* </span>:
             </div>
             <div className="secondCol">
               <Select
                 options={optionsLine}
-                defaultValue={{ value: lineNew, label: `${lineNew} line` }}
+                value={optionsLine.find((o) => o.value === lineNew) || { value: lineNew, label: isUtilityOrFacility ? lineNew : `${lineNew} line` }}
                 onChange={(e) => setLineNew(e.value)}
                 isDisabled={level >= 100 ? false : true}
               />
@@ -388,15 +408,40 @@ function SmileCardDetails({ list, image, setImage }) {
         <li>
           <div className="d-flex">
             <div className="firstCol">
-              {pS === "S" ? "Station / Line" : "OP no."}
+              {isUtility ? "Equipment" : isFacility ? "Sub Area" : (pS === "S" ? "Station / Line" : "OP no.")}
               <span className="text-danger">* </span> :
             </div>
             <div className="secondCol">
               <input
                 className="form-control"
+                list="equipmentSuggestionsModify"
                 value={processNoNew}
                 onChange={(e) => setProcessNoNew(e.target.value)}
                 disabled={level >= 100 ? false : true}
+                required
+              />
+              {masterMap?.[lineNew] && (
+                <datalist id="equipmentSuggestionsModify">
+                  {masterMap[lineNew].map((eq) => (
+                    <option key={eq} value={eq} />
+                  ))}
+                </datalist>
+              )}
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <div className="d-flex">
+            <div className="firstCol">
+              {isUtilityOrFacility ? "Activity / Work Detail " : (pS === "S" ? "Inspection Item " : "Work Detail ")}
+              <span className="text-danger">* </span> :
+            </div>
+            <div className="secondCol">
+              <input
+                className="form-control"
+                value={workDetailNew}
+                onChange={(e) => setWorkDetailNew(e.target.value)}
                 required
               />
             </div>
@@ -406,15 +451,30 @@ function SmileCardDetails({ list, image, setImage }) {
         <li>
           <div className="d-flex">
             <div className="firstCol">
-              {pS === "S" ? "Inspection Item " : "Work Detail "}
-              <span className="text-danger">* </span> :
+              Action {isUtilityOrFacility && <span className="text-danger">* </span>} :
             </div>
             <div className="secondCol">
               <input
                 className="form-control"
-                value={workDetailNew}
-                onChange={(e) => setWorkDetailNew(e.target.value)}
-                required
+                value={actionNew}
+                onChange={(e) => setActionNew(e.target.value)}
+                placeholder="e.g. Inspect / Clean / Tighten, Inspect / Service"
+              />
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <div className="d-flex">
+            <div className="firstCol">
+              Criterion {isUtilityOrFacility && <span className="text-danger">* </span>} :
+            </div>
+            <div className="secondCol">
+              <input
+                className="form-control"
+                value={criterionNew}
+                onChange={(e) => setCriterionNew(e.target.value)}
+                placeholder="e.g. No loose connection, overheating or dust / No leakage"
               />
             </div>
           </div>
@@ -454,17 +514,18 @@ function SmileCardDetails({ list, image, setImage }) {
         <li>
           <div className="d-flex">
             <div className="firstCol">
-              Maintenance/Production Check
+              Department
               <span className="text-danger">* </span> :
             </div>
             <div className="secondCol">
               <Select
                 options={optionsPS}
-                defaultValue={{
-                  value: pSNew,
-                  label:
-                    pSNew === "P" ? "Maintenance dept." : "Production dept.",
-                }}
+                value={
+                  optionsPS.find((o) => o.value === pSNew) || {
+                    value: pSNew,
+                    label: pSNew === "P" ? "Maintenance Dept" : (isUtilityOrFacility ? "Service Dept" : "Production Dept"),
+                  }
+                }
                 isDisabled={level >= 100 ? false : true}
                 onChange={(e) => setPSNew(e.value)}
               />
@@ -653,12 +714,13 @@ function SmileCardDetails({ list, image, setImage }) {
 
         <li>
           <div className="d-flex">
-            <div className="firstCol">Model :</div>
+            <div className="firstCol">{isUtility ? "Make :" : isFacility ? "Equipment / Asset :" : "Model :"}</div>
             <div className="secondCol">
               <input
                 className="form-control"
                 value={modelNew}
                 onChange={(e) => setModelNew(e.target.value)}
+                placeholder={isUtility ? "e.g. Kirloskar, ABB" : isFacility ? "e.g. post and pump" : "e.g. TNGA"}
               />
             </div>
           </div>
@@ -713,7 +775,7 @@ function SmileCardDetails({ list, image, setImage }) {
         <li>
           <div className="d-flex">
             <div className="firstCol">
-              {pS === "S" ? "Area to inspect" : "No. of members"}
+              {isUtilityOrFacility ? "Work Manpower (No. of members)" : (pS === "S" ? "Area to inspect" : "No. of members")}
             </div>
             <div className="secondCol">
               <input
@@ -806,8 +868,8 @@ function SmileCardDetails({ list, image, setImage }) {
           </div>
         </li>
 
-        {/* below items not required to be displayed for production  */}
-        {pS === "S" ? null : (
+        {/* Extended items: always displayed for Utility and Facility */}
+        {(!isUtilityOrFacility && pS === "S") ? null : (
           <>
             <li>
               <div className="d-flex">
@@ -858,19 +920,7 @@ function SmileCardDetails({ list, image, setImage }) {
                 </div>
               </div>
             </li>
-            <li>
-              <div className="d-flex">
-                <div className="firstCol">criterion :</div>
-                <div className="secondCol">
-                  <input
-                    className="form-control"
-                    value={criterionNew}
-                    onChange={(e) => setCriterionNew(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-            </li>
+
             <li>
               <div className="d-flex">
                 <div className="firstCol">Reason :</div>
@@ -935,18 +985,7 @@ function SmileCardDetails({ list, image, setImage }) {
               </div>
             </li>
 
-            <li>
-              <div className="d-flex">
-                <div className="firstCol">Action :</div>
-                <div className="secondCol">
-                  <input
-                    className="form-control"
-                    value={actionNew}
-                    onChange={(e) => setActionNew(e.target.value)}
-                  />
-                </div>
-              </div>
-            </li>
+
 
             <li>
               <div className="d-flex">

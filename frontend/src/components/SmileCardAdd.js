@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 // import FlavorForm from "./MultipleOptions";
 import { Button, Form, Row, Col } from "react-bootstrap";
+import { UTILITY_MASTER_MAP, FACILITY_MASTER_MAP, getActivePlantInfo } from "../config/plantEquipmentMaster";
 
 function SmileCardAdd() {
   const { pS } = useSelector((state) => state.filters);
@@ -49,7 +50,7 @@ function SmileCardAdd() {
   const [mNew, setMNew] = useState([9999]);
   const [methodWssNoNew, setMethodWssNoNew] = useState("");
   const [modelNew, setModelNew] = useState("");
-  const [pSNew, setPSNew] = useState("S");
+  const [pSNew, setPSNew] = useState((process.env.REACT_APP_PLANT || "").toUpperCase().includes("UTIL") || (process.env.REACT_APP_PLANT || "").toUpperCase().includes("FACIL") ? "P" : (pS || "S"));
   const [prepManHrNew, setPrepManHrNew] = useState("");
   const [processNoNew, setProcessNoNew] = useState("");
   const [qualityOnePointNew, setQualityOnePointNew] = useState("");
@@ -69,16 +70,31 @@ function SmileCardAdd() {
   const [yNew, setYNew] = useState([9999]);
   const [groupNew, setGroupNew] = useState("");
 
-  const optionsLine = [
-    { value: "Block", label: "Block Line" },
-    { value: "Head", label: "Head Line" },
-    { value: "Crank", label: "Crank Line" },
-    { value: "Assembly", label: "Assembly Line" },
-  ];
-  // const optionsPS = [
-  //   { value: "P", label: "Maintenace dept." },
-  //   { value: "S", label: "Production dept." },
-  // ];
+  const { isUtility, isFacility, isUtilityOrFacility, masterMap } = getActivePlantInfo();
+
+  let optionsLine = [];
+  if (isUtility) {
+    optionsLine = Object.keys(UTILITY_MASTER_MAP).map((k) => ({ value: k, label: k }));
+  } else if (isFacility) {
+    optionsLine = Object.keys(FACILITY_MASTER_MAP).map((k) => ({ value: k, label: k }));
+  } else {
+    optionsLine = [
+      { value: "Block", label: "Block Line" },
+      { value: "Head", label: "Head Line" },
+      { value: "Crank", label: "Crank Line" },
+      { value: "Assembly", label: "Assembly Line" },
+    ];
+  }
+
+  const optionsPS = isUtilityOrFacility
+    ? [
+        { value: "P", label: "Maintenance Dept" },
+        { value: "S", label: "Service Dept" },
+      ]
+    : [
+        { value: "P", label: "Maintenance Dept" },
+        { value: "S", label: "Production Dept" },
+      ];
   const optionsRS = [
     { value: "R", label: "Running Check" },
     { value: "S", label: "Stop Check" },
@@ -236,8 +252,7 @@ function SmileCardAdd() {
       formData.append("m_spec", JSON.stringify(labelUnitss));
 
 
-      //formData.append("pS", pSNew);
-      formData.append("pS", pS);
+      formData.append("pS", pSNew);
 
       formData.append("prepManHr", prepManHrNew);
       formData.append("qualityOnePoint", qualityOnePointNew);
@@ -318,12 +333,12 @@ function SmileCardAdd() {
           <div className="row g-3">
             <div className="col-12 col-md-6 col-lg-3">
               <label className="tbm-label">
-                Line <span className="req">*</span>
+                {isUtility ? "Plant" : isFacility ? "Area" : "Line"} <span className="req">*</span>
               </label>
               <Select
                 options={optionsLine}
                 styles={customSelectStyles}
-                placeholder="Select Line..."
+                placeholder={isUtility ? "Select Plant..." : isFacility ? "Select Area..." : "Select Line..."}
                 value={optionsLine.find((o) => o.value === lineNew) || null}
                 onChange={(e) => setLineNew(e ? e.value : "")}
               />
@@ -331,32 +346,53 @@ function SmileCardAdd() {
 
             <div className="col-12 col-md-6 col-lg-3">
               <label className="tbm-label">
-                {pS === "S" ? "Station / Line" : "OP no."}{" "}
+                {isUtility ? "Equipment" : isFacility ? "Sub Area" : (pSNew === "S" ? "Station / Line" : "OP no.")}{" "}
                 <span className="req">*</span>
               </label>
-              <div className="input-group tbm-op-group">
-                <span className="input-group-text">OP</span>
-                <input
-                  className="form-control tbm-input"
-                  type="text"
-                  value={processNoNew.replace(/^OP/, "")}
-                  onChange={(e) => {
-                    const alphanumericValue = e.target.value.toUpperCase();
-                    setProcessNoNew("OP" + alphanumericValue);
-                  }}
-                  placeholder="10A, 100, etc."
-                />
-              </div>
+              {isUtilityOrFacility ? (
+                <>
+                  <input
+                    className="form-control tbm-input"
+                    type="text"
+                    list="equipmentSuggestions"
+                    value={processNoNew}
+                    onChange={(e) => setProcessNoNew(e.target.value)}
+                    placeholder={isUtility ? "e.g. DG 2000 Kva, LT PANEL, 11kV VCB" : "e.g. All Area, Main Office, Canteen"}
+                  />
+                  {masterMap?.[lineNew] && (
+                    <datalist id="equipmentSuggestions">
+                      {masterMap[lineNew].map((eq) => (
+                        <option key={eq} value={eq} />
+                      ))}
+                    </datalist>
+                  )}
+                </>
+              ) : (
+                <div className="input-group tbm-op-group">
+                  <span className="input-group-text">OP</span>
+                  <input
+                    className="form-control tbm-input"
+                    type="text"
+                    value={processNoNew.replace(/^OP/, "")}
+                    onChange={(e) => {
+                      const alphanumericValue = e.target.value.toUpperCase();
+                      setProcessNoNew("OP" + alphanumericValue);
+                    }}
+                    placeholder="10A, 100, etc."
+                  />
+                </div>
+              )}
             </div>
 
             <div className="col-12 col-md-6 col-lg-3">
-              <label className="tbm-label">Group</label>
+              <label className="tbm-label">
+                Department <span className="req">*</span>
+              </label>
               <Select
-                options={optionsGroup}
+                options={optionsPS}
                 styles={customSelectStyles}
-                placeholder="Select Group..."
-                value={optionsGroup.find((o) => o.value === groupNew) || null}
-                onChange={(e) => setGroupNew(e ? e.value : "")}
+                value={optionsPS.find((o) => o.value === pSNew) || optionsPS[0]}
+                onChange={(e) => setPSNew(e ? e.value : "P")}
               />
             </div>
 
@@ -378,18 +414,31 @@ function SmileCardAdd() {
             </div>
 
             <div className="col-12 col-md-6 col-lg-3">
-              <label className="tbm-label">Model</label>
+              <label className="tbm-label">
+                {isUtility ? "Make" : isFacility ? "Equipment / Asset" : "Model"}
+              </label>
               <input
                 className="form-control tbm-input"
                 value={modelNew}
                 onChange={(e) => setModelNew(e.target.value)}
-                placeholder="e.g. TNGA, etc."
+                placeholder={isUtility ? "e.g. Kirloskar, Schneider, ABB" : isFacility ? "e.g. post and pump, boom barrier" : "e.g. TNGA, etc."}
+              />
+            </div>
+
+            <div className="col-12 col-md-6 col-lg-3">
+              <label className="tbm-label">Group</label>
+              <Select
+                options={optionsGroup}
+                styles={customSelectStyles}
+                placeholder="Select Group..."
+                value={optionsGroup.find((o) => o.value === groupNew) || null}
+                onChange={(e) => setGroupNew(e ? e.value : "")}
               />
             </div>
 
             <div className="col-12 col-md-6 col-lg-3">
               <label className="tbm-label">
-                {pS === "S" ? "Matrix Card No." : "Control No."}
+                {isUtilityOrFacility ? "Card No. / Control No." : (pSNew === "S" ? "Matrix Card No." : "Control No.")}
               </label>
               <input
                 className="form-control tbm-input"
@@ -401,25 +450,13 @@ function SmileCardAdd() {
 
             <div className="col-12 col-md-6 col-lg-3">
               <label className="tbm-label">
-                {pS === "S" ? "Ledger No." : "WSS No."}
+                {isUtilityOrFacility ? "WSS / Ledger No." : (pSNew === "S" ? "Ledger No." : "WSS No.")}
               </label>
               <input
                 className="form-control tbm-input"
                 value={methodWssNoNew}
                 onChange={(e) => setMethodWssNoNew(e.target.value)}
                 placeholder="Enter Ledger / WSS No."
-              />
-            </div>
-
-            <div className="col-12 col-md-6 col-lg-3">
-              <label className="tbm-label">
-                {pS === "S" ? "Area to inspect" : "No. of members"}
-              </label>
-              <input
-                className="form-control tbm-input"
-                value={workManpowerNew}
-                onChange={(e) => setWorkManpowerNew(e.target.value)}
-                placeholder={pS === "S" ? "Inspection area details" : "e.g. 1, 2"}
               />
             </div>
           </div>
@@ -437,7 +474,7 @@ function SmileCardAdd() {
           <div className="row g-3">
             <div className="col-12 col-md-6">
               <label className="tbm-label">
-                {pS === "S" ? "Inspection Item" : "Work Detail"}{" "}
+                {isUtilityOrFacility ? "Activity / Work Detail" : (pSNew === "S" ? "Inspection Item" : "Work Detail")}{" "}
                 <span className="req">*</span>
               </label>
               <input
@@ -450,7 +487,31 @@ function SmileCardAdd() {
 
             <div className="col-12 col-md-6">
               <label className="tbm-label">
-                {pS === "S" ? "Inspection Method" : "Tools"}
+                Action {isUtilityOrFacility && <span className="req">*</span>}
+              </label>
+              <input
+                className="form-control tbm-input"
+                value={actionNew}
+                onChange={(e) => setActionNew(e.target.value)}
+                placeholder="e.g. Inspect / Clean / Tighten, Inspect / Service"
+              />
+            </div>
+
+            <div className="col-12 col-md-6">
+              <label className="tbm-label">
+                Criterion {isUtilityOrFacility && <span className="req">*</span>}
+              </label>
+              <input
+                className="form-control tbm-input"
+                value={criterionNew}
+                onChange={(e) => setCriterionNew(e.target.value)}
+                placeholder="e.g. No loose connection, overheating or dust / No leakage"
+              />
+            </div>
+
+            <div className="col-12 col-md-6">
+              <label className="tbm-label">
+                {isUtilityOrFacility ? "Tools / Equipment Needed" : (pSNew === "S" ? "Inspection Method" : "Tools")}
               </label>
               <input
                 className="form-control tbm-input"
@@ -468,17 +529,31 @@ function SmileCardAdd() {
                 className="form-control tbm-input"
                 value={cycleNew}
                 onChange={(e) => setCycleNew(e.target.value)}
-                placeholder="e.g. Daily, 1W, 1M, 3M"
+                placeholder="e.g. Daily, 1/1W, 1/1M, 1/3M, 1/1Y"
               />
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="tbm-label">Total Time in Mins</label>
+              <label className="tbm-label">
+                {isUtilityOrFacility ? "Work Time (mins)" : (pSNew === "S" ? "Time" : "Total Manhours (mins)")}
+              </label>
               <input
                 className="form-control tbm-input"
                 value={workTimeNew}
                 onChange={(e) => setWorkTimeNew(e.target.value)}
-                placeholder="e.g. 5, 10, 15"
+                placeholder="e.g. 5, 10, 15, 30"
+              />
+            </div>
+
+            <div className="col-12 col-md-6">
+              <label className="tbm-label">
+                {isUtilityOrFacility ? "Work Manpower (No. of members)" : (pSNew === "S" ? "Area to inspect" : "No. of members")}
+              </label>
+              <input
+                className="form-control tbm-input"
+                value={workManpowerNew}
+                onChange={(e) => setWorkManpowerNew(e.target.value)}
+                placeholder="e.g. 1, 2"
               />
             </div>
           </div>
@@ -787,12 +862,12 @@ function SmileCardAdd() {
         </div>
       </div>
 
-      {/* Card 6: Extended Maintenance Details (pS !== 'S') */}
-      {pS !== "S" && (
+      {/* Card 6: Extended Specifications & Details */}
+      {(!isUtilityOrFacility && pSNew === "S") ? null : (
         <div className="tbm-card">
           <div className="tbm-card-header">
             <h5 className="tbm-card-title">
-              <i className="bi bi-tools"></i> Maintenance Extended Details
+              <i className="bi bi-tools"></i> Additional Specifications & Operational Details
             </h5>
           </div>
           <div className="tbm-card-body">
@@ -821,14 +896,7 @@ function SmileCardAdd() {
                   onChange={(e) => setRemarkNew(e.target.value)}
                 />
               </div>
-              <div className="col-12 col-md-6 col-lg-4">
-                <label className="tbm-label">Action</label>
-                <input
-                  className="form-control tbm-input"
-                  value={actionNew}
-                  onChange={(e) => setActionNew(e.target.value)}
-                />
-              </div>
+
               <div className="col-12 col-md-6 col-lg-4">
                 <label className="tbm-label">Preparation Time (mins)</label>
                 <input
@@ -885,14 +953,7 @@ function SmileCardAdd() {
                   onChange={(e) => setCommonItemNew(e.target.value)}
                 />
               </div>
-              <div className="col-12 col-md-6 col-lg-4">
-                <label className="tbm-label">Criterion</label>
-                <input
-                  className="form-control tbm-input"
-                  value={criterionNew}
-                  onChange={(e) => setCriterionNew(e.target.value)}
-                />
-              </div>
+
             </div>
           </div>
         </div>
