@@ -840,10 +840,16 @@ export default function PendingTask() {
   const [ageSummary, setAgeSummary] = useState({ "1-10": 0, "11-20": 0, "20+": 0 });
   const [isExcelDataReady, setIsExcelDataReady] = useState(false);
 
+  console.log("filters =", filters);
+
   const queryStr =
-    `pS=${filters.pS}` +
-    (filters.line ? `&line=${filters.line}` : "") +
-    (filters.rS ? `&rS=${filters.rS}` : "");
+  `pS=${filters.pS}` +
+  (filters.d ? `&d=${filters.d}` : "") +
+  (filters.w ? `&w=${filters.w}` : "") +
+  (filters.m ? `&m=${filters.m}` : "") +
+  (filters.y ? `&y=${filters.y}` : "") +
+  (filters.line ? `&line=${filters.line}` : "") +
+  (filters.rS ? `&rS=${filters.rS}` : "");
 
   // Fetch regular pending tasks data (for when ageFilter is "ALL")
   useEffect(() => {
