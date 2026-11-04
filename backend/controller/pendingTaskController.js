@@ -334,16 +334,138 @@ async function deletePendingTasks(pendingTaskList) {
 
 
 
+// Helper to parse target date from query
+const parseTargetDate = (query) => {
+  if (query.date) {
+    const parts = String(query.date).split("-").map(Number);
+    if (parts.length === 3) {
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+    const parsed = new Date(query.date);
+    if (!isNaN(parsed.getTime())) return parsed;
+  }
+  if (query.y && query.m && query.dt) {
+    return new Date(Number(query.y), Number(query.m) - 1, Number(query.dt));
+  }
+  return new Date();
+};
+
+// Helper function to calculate days old relative to target date
+const calculateDaysOld = (entryDates, targetDate) => {
+  if (!entryDates || entryDates.length === 0) return 0;
+  
+  const earliestTime = Math.min(...entryDates.map(date => new Date(date).getTime()));
+  const ref = targetDate || new Date();
+  const timeDiff = ref.getTime() - earliestTime;
+  return Math.max(1, Math.ceil(timeDiff / (1000 * 3600 * 24)));
+};
+
+// Helper to determine if a task matches date/schedule query parameters
+const matchesDateFilter = (task, query) => {
+  const { date, d, w, m, y, dt } = query;
+  
+  const hasDateFilter = 
+    date || 
+    (d !== undefined && d !== null && d !== "") ||
+    (w !== undefined && w !== null && w !== "") ||
+    (m !== undefined && m !== null && m !== "") ||
+    (y !== undefined && y !== null && y !== "") ||
+    (dt !== undefined && dt !== null && dt !== "");
+
+  if (!hasDateFilter) return true;
+
+  const checkItem = task.checkItem;
+  if (!checkItem) return false;
+
+  let targetDate = null;
+  if (date) {
+    const parts = String(date).split("-").map(Number);
+    if (parts.length === 3) {
+      targetDate = new Date(parts[0], parts[1] - 1, parts[2]);
+    } else {
+      const parsed = new Date(date);
+      if (!isNaN(parsed.getTime())) targetDate = parsed;
+    }
+  } else if (y && m && dt) {
+    targetDate = new Date(Number(y), Number(m) - 1, Number(dt));
+  }
+
+  // If task was generated in the future relative to targetDate, exclude it
+  if (targetDate && task.entryDates && task.entryDates.length > 0) {
+    const earliestTime = Math.min(...task.entryDates.map(ed => new Date(ed).getTime()));
+    const endOfTargetDay = new Date(targetDate);
+    endOfTargetDay.setHours(23, 59, 59, 999);
+    if (earliestTime > endOfTargetDay.getTime()) {
+      return false;
+    }
+  }
+
+  // Check if entryDates contains targetDate
+  let matchesEntryDate = false;
+  if (targetDate && task.entryDates && task.entryDates.length > 0) {
+    const tY = targetDate.getFullYear();
+    const tM = targetDate.getMonth() + 1;
+    const tD = targetDate.getDate();
+
+    matchesEntryDate = task.entryDates.some((ed) => {
+      const itemDate = new Date(ed);
+      return (
+        (itemDate.getFullYear() === tY && itemDate.getMonth() + 1 === tM && itemDate.getDate() === tD) ||
+        (itemDate.getUTCFullYear() === tY && itemDate.getUTCMonth() + 1 === tM && itemDate.getUTCDate() === tD)
+      );
+    });
+  }
+
+  // Check if checkItem schedule matches d, w, m, y
+  let matchesSchedule = true;
+
+  if (d !== undefined && d !== null && d !== "") {
+    const dNum = Number(d);
+    const itemD = Number(checkItem.d);
+    const validD = [9999, 9, dNum];
+    if (dNum === 0 && !validD.includes(7)) validD.push(7);
+    if (dNum === 7 && !validD.includes(0)) validD.push(0);
+    if (dNum === 0 || dNum === 7) {
+      const idx = validD.indexOf(9);
+      if (idx !== -1) validD.splice(idx, 1);
+    }
+    if (!validD.includes(itemD)) {
+      matchesSchedule = false;
+    }
+  }
+
+  if (matchesSchedule && w !== undefined && w !== null && w !== "") {
+    const wNum = Number(w);
+    const itemW = Number(checkItem.w);
+    const validW = [9999, 9, wNum];
+    if (!validW.includes(itemW)) {
+      matchesSchedule = false;
+    }
+  }
+
+  if (matchesSchedule && m !== undefined && m !== null && m !== "") {
+    const mNum = Number(m);
+    const itemM = Number(checkItem.m);
+    const validM = [9999, 99, 9, mNum];
+    if (!validM.includes(itemM)) {
+      matchesSchedule = false;
+    }
+  }
+
+  if (matchesSchedule && y !== undefined && y !== null && y !== "") {
+    const yNum = Number(y);
+    const itemY = Number(checkItem.y);
+    const validY = [9999, yNum];
+    if (!validY.includes(itemY)) {
+      matchesSchedule = false;
+    }
+  }
+
+  return matchesSchedule || matchesEntryDate;
+};
+
 exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
-  // Helper function to calculate days old from entryDates
-  const calculateDaysOld = (entryDates) => {
-    if (!entryDates || entryDates.length === 0) return 0;
-    
-    const earliestDate = new Date(Math.min(...entryDates.map(date => new Date(date))));
-    const currentDate = new Date();
-    const timeDiff = currentDate.getTime() - earliestDate.getTime();
-    return Math.ceil(timeDiff / (1000 * 3600 * 24));
-  };
+  const targetDate = parseTargetDate(req.query);
 
   try {
     // Build basic match criteria
@@ -374,14 +496,16 @@ exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
 
     console.log('Found pending tasks:', allPendingTasks.length);
 
-    // Filter out tasks with null checkItem
+    // Filter out tasks with null checkItem and apply date/schedule filtering
     let filteredTasks = allPendingTasks.filter(task => {
       if (!task.checkItem) {
         console.log('Warning: Task with null checkItem found:', task._id);
         return false;
       }
-      return true;
+      return matchesDateFilter(task, req.query);
     });
+
+    console.log('Date filtered tasks count:', filteredTasks.length);
 
     // Get all checkItem IDs for batch lookup of daily status
     const checkItemIds = filteredTasks.map(task => task.checkItem._id);
@@ -414,7 +538,7 @@ exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
     filteredTasks.forEach(task => {
       if (!task.checkItem) return;
       
-      const daysOld = calculateDaysOld(task.entryDates);
+      const daysOld = calculateDaysOld(task.entryDates, targetDate);
       const checkItemId = task.checkItem._id.toString();
       const latestStatus = latestStatuses[checkItemId] || null;
 
@@ -635,71 +759,8 @@ exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
 // });
 
 exports.getPendingTaskReport = catchAsyncError(async (req, res, next) => {
-  const pendingTaskObject = new ApiFeaturePendingTask(PendingTask, {
-    ...req.query,
-    result: "PENDING"
-  });
-  const pendingTaskObjectWithLine = pendingTaskObject.lineReport();
-  const pendingTaskList = await pendingTaskObjectWithLine.query;
-console.log(pendingTaskList);
-
-  const totalCountBlock = await PendingTask.countDocuments({
-    line: "Block",
-  });
-
-  const totalCountCrank = await PendingTask.countDocuments({
-    line: "Crank",
-  });
-
-  const totalCountHead = await PendingTask.countDocuments({
-    line: "Head",
-  });
-
-  let pendingData = [];
-
-  pendingTaskList.forEach((item) => {
-    let line = item._id;
-
-    const counts = {};
-    item.processList.forEach((el) => {
-      counts[el.processNo] = el.processData.length;
-    });
-
-    let processList = item.processList;
-
-    processList.sort((a, b) => {
-      let x = a.processNo;
-      let y = b.processNo;
-      if (x < y) {
-        return -1;
-      }
-      if (x > y) {
-        return 1;
-      }
-      return 0;
-    });
-
-    pendingData = [...pendingData, { line, processList, counts }];
-  });
-
-  pendingData.sort((a, b) => {
-    let x = a.line;
-    let y = b.line;
-    if (x < y) {
-      return -1;
-    }
-    if (x > y) {
-      return 1;
-    }
-    return 0;
-  });
-
-  return res.status(200).json({
-    success: true,
-    pendingData,
-    totalCount: { totalCountBlock, totalCountCrank, totalCountHead },
-  });
-
+  // Use the same robust query and date filtering as getPendingTaskList
+  return exports.getPendingTaskList(req, res, next);
 });
 
 exports.updateResult = async (req, res) => {
@@ -956,19 +1017,7 @@ exports.updateResult = async (req, res) => {
 
 exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
   const { ageRange } = req.query; // Expected values: '1-10', '11-20', '20+'
-  
-  // Helper function to calculate days old from entryDates
-  // Current data issue: entryDates array length is always 1 due to bug in generatePendingTaskList
-  // Temporary fix: calculate from earliest date in array until generation logic is fixed
-  const calculateDaysOld = (entryDates) => {
-    if (!entryDates || entryDates.length === 0) return 0;
-    
-    // TODO: Once generatePendingTaskList is fixed, change this back to: return entryDates.length;
-    const earliestDate = new Date(Math.min(...entryDates.map(date => new Date(date))));
-    const currentDate = new Date();
-    const timeDiff = currentDate.getTime() - earliestDate.getTime();
-    return Math.ceil(timeDiff / (1000 * 3600 * 24));
-  };
+  const targetDate = parseTargetDate(req.query);
 
   // Helper function to check if task falls within age range
   const isInAgeRange = (daysOld, range) => {
@@ -1013,19 +1062,38 @@ exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
 
     console.log('Found pending tasks:', allPendingTasks.length);
 
-    // Filter out tasks with null checkItem and filter by age range if specified
-    let filteredTasks = allPendingTasks.filter(task => {
-      // Skip tasks with null checkItem
+    // Filter out tasks with null checkItem and apply date/schedule filtering
+    let dateFilteredTasks = allPendingTasks.filter(task => {
       if (!task.checkItem) {
-        console.log('Warning: Task with null checkItem found:', task._id);
         return false;
       }
-      
-      // If no age range specified, include all tasks with valid checkItem
+      return matchesDateFilter(task, req.query);
+    });
+
+    console.log('Date filtered tasks in getPendingTasksByAge:', dateFilteredTasks.length);
+
+    // Calculate age summary from date-matching tasks relative to targetDate
+    const ageSummary = {
+      '1-10': 0,
+      '11-20': 0,
+      '20+': 0
+    };
+
+    dateFilteredTasks.forEach(task => {
+      const daysOld = calculateDaysOld(task.entryDates, targetDate);
+      if (daysOld >= 1 && daysOld <= 10) {
+        ageSummary['1-10']++;
+      } else if (daysOld >= 11 && daysOld <= 20) {
+        ageSummary['11-20']++;
+      } else if (daysOld > 20) {
+        ageSummary['20+']++;
+      }
+    });
+
+    // Filter by age range if specified
+    let filteredTasks = dateFilteredTasks.filter(task => {
       if (!ageRange) return true;
-      
-      // Filter by age range
-      const daysOld = calculateDaysOld(task.entryDates);
+      const daysOld = calculateDaysOld(task.entryDates, targetDate);
       return isInAgeRange(daysOld, ageRange);
     });
 
@@ -1063,7 +1131,7 @@ exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
       // Skip if checkItem is null (already filtered above, but double-check)
       if (!task.checkItem) return;
       
-      const daysOld = calculateDaysOld(task.entryDates);
+      const daysOld = calculateDaysOld(task.entryDates, targetDate);
       const checkItemId = task.checkItem._id.toString();
       const latestStatus = latestStatuses[checkItemId] || null;
 
@@ -1158,23 +1226,7 @@ exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
       return 0;
     });
 
-    // Calculate age summary from all pending tasks
-    const ageSummary = {
-      '1-10': 0,
-      '11-20': 0,
-      '20+': 0
-    };
-
-    allPendingTasks.forEach(task => {
-      const daysOld = calculateDaysOld(task.entryDates);
-      if (daysOld >= 1 && daysOld <= 10) {
-        ageSummary['1-10']++;
-      } else if (daysOld >= 11 && daysOld <= 20) {
-        ageSummary['11-20']++;
-      } else if (daysOld > 20) {
-        ageSummary['20+']++;
-      }
-    });
+    // ageSummary already calculated from date-filtered tasks above
 
     // Calculate total filtered
     const totalFiltered = pendingData.reduce((total, line) => {

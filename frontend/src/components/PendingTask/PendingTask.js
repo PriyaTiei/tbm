@@ -879,14 +879,21 @@ export default function PendingTask() {
 
   console.log("filters =", filters);
 
+  const dateStr =
+    filters.y && filters.m && filters.dt
+      ? `${filters.y}-${String(filters.m).padStart(2, "0")}-${String(filters.dt).padStart(2, "0")}`
+      : "";
+
   const queryStr =
-  `pS=${filters.pS}` +
-  (filters.d ? `&d=${filters.d}` : "") +
-  (filters.w ? `&w=${filters.w}` : "") +
-  (filters.m ? `&m=${filters.m}` : "") +
-  (filters.y ? `&y=${filters.y}` : "") +
-  (filters.line ? `&line=${filters.line}` : "") +
-  (filters.rS ? `&rS=${filters.rS}` : "");
+    `pS=${filters.pS || ""}` +
+    (filters.line ? `&line=${encodeURIComponent(filters.line)}` : "") +
+    (filters.rS ? `&rS=${encodeURIComponent(filters.rS)}` : "") +
+    (dateStr ? `&date=${dateStr}` : "") +
+    (filters.dt !== undefined && filters.dt !== null ? `&dt=${filters.dt}` : "") +
+    (filters.d !== undefined && filters.d !== null ? `&d=${filters.d}` : "") +
+    (filters.w !== undefined && filters.w !== null ? `&w=${filters.w}` : "") +
+    (filters.m !== undefined && filters.m !== null ? `&m=${filters.m}` : "") +
+    (filters.y !== undefined && filters.y !== null ? `&y=${filters.y}` : "");
 
   // Fetch regular pending tasks data (for when ageFilter is "ALL")
   useEffect(() => {
