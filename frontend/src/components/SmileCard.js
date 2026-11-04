@@ -90,15 +90,17 @@ function SmileCard() {
   }
 
   let queryStr = queryParams.join("&");
-  let entryForQueryStr = `${filters.y}-${filters.m}-${filters.dt}`;
+  let entryForQueryStr = searchParams.get("date") || `${filters.y}-${filters.m}-${filters.dt}`;
   for (const [f, v] of searchParams.entries()) {
-    if (!queryParams.some((item) => item.startsWith(`${f}=`))) {
+    if (f !== "page" && f !== "date" && !queryParams.some((item) => item.startsWith(`${f}=`))) {
       queryStr = queryStr + (queryStr ? "&" : "") + f + "=" + encodeURIComponent(v);
     }
   }
 
-  //use hooks
-  const [page, setPage] = useState(1);
+  // URL & Browser History page synchronization
+  const urlPage = parseInt(searchParams.get("page"), 10);
+  const initialPage = (!isNaN(urlPage) && urlPage > 0) ? urlPage : 1;
+  const [page, setPage] = useState(initialPage);
 
   let disabledPrevious = page < 2 ? "disabled" : null;
 
@@ -106,12 +108,35 @@ function SmileCard() {
   const checkItems = useSelector((state) => state.checkItems);
   const [relativeUrl, setRelativeUrl] = useState('');
 
+  // Sync state with URL search parameters (for back / forward navigation)
   useEffect(() => {
-    if ("changedPage" in localStorage) {
-      setPage(localStorage.getItem("changedPage"))
-      localStorage.removeItem("changedPage")
+    const p = parseInt(searchParams.get("page"), 10);
+    if (!isNaN(p) && p > 0 && p !== page) {
+      setPage(p);
     }
+  }, [searchParams]);
+
+  // Listen to standard browser popstate events (< back button)
+  useEffect(() => {
+    const handlePopState = (e) => {
+      const statePage = e.state?.page;
+      const params = new URLSearchParams(window.location.search);
+      const paramPage = parseInt(params.get("page"), 10);
+      const target = statePage || (!isNaN(paramPage) && paramPage > 0 ? paramPage : 1);
+      setPage(target);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
   }, []);
+
+  // Ensure current history entry records page
+  useEffect(() => {
+    const currentState = window.history.state || {};
+    if (currentState.page !== page) {
+      window.history.replaceState({ ...currentState, page }, "", window.location.href);
+    }
+  }, [page]);
   // const {checkedBy} = checkItems.checkItem.headCheckList[0] ? checkItems.checkItem.headCheckList[0] :""
 
   // console.log("checkItems", checkItems)
@@ -152,11 +177,31 @@ function SmileCard() {
       : 0;
   let disabledNext = page < totalCount ? null : "disabled";
   const changePage = () => {
-    setPage(page + 1);
+    const nextPage = page + 1;
+    setPage(nextPage);
+    const newParams = new URLSearchParams(location.search);
+    newParams.set("page", String(nextPage));
+    window.history.pushState(
+      { ...(window.history.state || {}), page: nextPage },
+      "",
+      `${location.pathname}?${newParams.toString()}${location.hash || ""}`
+    );
   };
   const changePageMinus = () => {
     if (page > 1) {
-      setPage(page - 1);
+      if (window.history.state && window.history.state.page === page) {
+        window.history.back();
+      } else {
+        const prevPage = page - 1;
+        setPage(prevPage);
+        const newParams = new URLSearchParams(location.search);
+        newParams.set("page", String(prevPage));
+        window.history.pushState(
+          { ...(window.history.state || {}), page: prevPage },
+          "",
+          `${location.pathname}?${newParams.toString()}${location.hash || ""}`
+        );
+      }
     }
   };
 
@@ -173,7 +218,11 @@ function SmileCard() {
       .then((result) => {
         toast.success("deleted check item ");
         setTimeout(() => {
-          window.location.href = "/";
+          if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = "/";
+          }
         }, 1000);
       })
       .catch((err) => {

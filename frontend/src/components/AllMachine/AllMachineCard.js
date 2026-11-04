@@ -12,10 +12,24 @@ export default function AllMachineCard(props) {
     ? "linear-gradient(145deg, #10b981 0%, #059669 100%)"
     : "linear-gradient(145deg, #1e40af 0%, #2563eb 100%)";
 
+  const handleClick = (e) => {
+    if (onClick) onClick(e);
+    if (processData) {
+      try {
+        sessionStorage.setItem("tbm_allMachine_processData", JSON.stringify(processData));
+        sessionStorage.setItem("tbm_allMachine_processNo", processNo || "");
+      } catch (err) {}
+    }
+  };
+
+  const toUrl = `/allMachine/cardDetails?processNo=${encodeURIComponent(processNo || "")}&page=1`;
+
   return (
     <Fragment>
       <Link
-        to={`/allMachine/cardDetails/`}
+        to={toUrl}
+        state={{ processData, processNo, page: 1 }}
+        onClick={handleClick}
         style={{ textDecoration: "none", color: "inherit" }}
       >
         <div

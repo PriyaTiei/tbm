@@ -107,22 +107,44 @@ function Filters() {
   const location = useLocation();
   const selectLineRef = useRef(null);
   const [cookies] = useCookies(['token', 'userId']);
-  const [date, setDate] = useState(todayDate);
+  const getInitialDate = () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlDate = params.get("date");
+      const stateDate = window.history.state?.filterDate;
+      const targetStr = urlDate || stateDate;
+      if (targetStr) {
+        const parts = targetStr.split("-");
+        if (parts.length === 3) {
+          const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+          if (!isNaN(d.getTime())) return d;
+        }
+      }
+    } catch (e) {}
+    return todayDate;
+  };
+
+  const formatDateToYMD = (d) => {
+    if (!d || isNaN(d.getTime())) return "";
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  };
+
+  const [date, setDate] = useState(getInitialDate);
   const [showSearch, setShowSearch] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showModals, setShowModals] = useState(false);
 
-  const [relativeUrl, setRelativeUrl] = useState('');
+  const [relativeUrl, setRelativeUrl] = useState("");
 
-  const isPendingActive = location.pathname.startsWith('/pending');
+  const isPendingActive = location.pathname.startsWith("/pending");
   const isHomeActive =
-    location.pathname === '/' ||
-    location.pathname === '/checkList' ||
-    location.pathname === '/card';
-  const isVerificationActive = location.pathname.startsWith('/verification');
-  const isHolidaysActive = location.pathname.startsWith('/holidays');
-  const isJudgementActive = location.pathname.startsWith('/judgementHistory');
-  const isDashboardActive = location.pathname.startsWith('/overallStatus');
+    location.pathname === "/" ||
+    location.pathname === "/checkList" ||
+    location.pathname === "/card";
+  const isVerificationActive = location.pathname.startsWith("/verification");
+  const isHolidaysActive = location.pathname.startsWith("/holidays");
+  const isJudgementActive = location.pathname.startsWith("/judgementHistory");
+  const isDashboardActive = location.pathname.startsWith("/overallStatus");
 
   useEffect(() => {
     // Construct the URL without the host
@@ -130,41 +152,151 @@ function Filters() {
     setRelativeUrl(urlWithoutHost);
   }, [location]);
 
+  // Keep window.history.state and URL search params synchronized with active filters
   useEffect(() => {
-    if ("changedDate" in localStorage) {
-      const dateString = localStorage.getItem("changedDate");
-      const dateObj = new Date(dateString);
+    const isMainRoute =
+      location.pathname === "/" ||
+      location.pathname.startsWith("/pending") ||
+      location.pathname.startsWith("/allMachine");
 
-      // Set a specific time if needed
-      dateObj.setHours(12, 22, 49);
-
-      // Store the Date object, not a string
-      setDate(dateObj);
-      localStorage.removeItem("changedDate");
-    }
-  }, [relativeUrl, location.search]);
-
-  useEffect(() => {
-    if (location.search) {
+    if (isMainRoute) {
+      const dateFormatted = formatDateToYMD(date);
       const params = new URLSearchParams(location.search);
-      const urlPs = params.get("pS");
-      if (urlPs && urlPs !== filters.pS) {
-        dispatch(filterDept(urlPs));
+      let changed = false;
+
+      if (dateFormatted && params.get("date") !== dateFormatted) {
+        params.set("date", dateFormatted);
+        changed = true;
       }
-      const urlLine = params.get("line");
-      if (urlLine && urlLine !== filters.line) {
-        dispatch(filterMainLine(urlLine));
+      if (filters.pS && params.get("pS") !== filters.pS) {
+        params.set("pS", filters.pS);
+        changed = true;
       }
-      const urlProcess = params.get("processNo");
-      if (urlProcess && urlProcess !== filters.processNo) {
-        dispatch(filterProcessNo(urlProcess));
+      if (filters.line) {
+        if (params.get("line") !== filters.line) {
+          params.set("line", filters.line);
+          changed = true;
+        }
+      } else if (params.has("line")) {
+        params.delete("line");
+        changed = true;
+      }
+      if (!filters.processNo && params.has("processNo")) {
+        params.delete("processNo");
+        changed = true;
+      }
+      if (!filters.cardNo && params.has("cardNo")) {
+        params.delete("cardNo");
+        changed = true;
+      }
+
+      const currentState = window.history.state || {};
+      if (
+        changed ||
+        currentState.filterDate !== dateFormatted ||
+        currentState.filterLine !== filters.line ||
+        currentState.filterPs !== filters.pS
+      ) {
+        const newUrl = `${location.pathname}?${params.toString()}`;
+        window.history.replaceState(
+          {
+            ...currentState,
+            filterDate: dateFormatted,
+            filterLine: filters.line,
+            filterPs: filters.pS,
+          },
+          "",
+          newUrl
+        );
       }
     }
-  }, [location.search, filters.pS, filters.line, filters.processNo, dispatch]);
+  }, [date, filters.line, filters.pS, filters.processNo, filters.cardNo, location.pathname, location.search]);
 
+  // Handle browser popstate events (device / browser back button "<" and forward button)
   useEffect(() => {
-    console.log(date)
-  }, [date])
+    const handlePopState = (e) => {
+      const params = new URLSearchParams(window.location.search);
+      const state = e.state || {};
+
+      // 1. Restore Date from URL search params or history state
+      const dateStr = params.get("date") || state.filterDate;
+      if (dateStr) {
+        const parts = dateStr.split("-");
+        if (parts.length === 3) {
+          const newDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+          if (!isNaN(newDate.getTime()) && formatDateToYMD(newDate) !== formatDateToYMD(date)) {
+            setDate(newDate);
+          }
+        }
+      }
+
+      // 2. Restore Line
+      const lineVal = params.has("line") ? params.get("line") : state.filterLine;
+      if (lineVal !== undefined && lineVal !== filters.line) {
+        dispatch(filterMainLine(lineVal || null));
+      }
+
+      // 3. Restore Department
+      const psVal = params.has("pS") ? params.get("pS") : state.filterPs;
+      if (psVal && psVal !== filters.pS) {
+        dispatch(filterDept(psVal));
+      }
+
+      // 4. Restore or clear Process / Card
+      const procVal = params.get("processNo") || "";
+      if (procVal !== filters.processNo) {
+        dispatch(filterProcessNo(procVal));
+      }
+      const cardVal = params.get("cardNo") || "";
+      if (cardVal !== filters.cardNo) {
+        dispatch(filterCardNo(cardVal));
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [date, filters.line, filters.pS, filters.processNo, filters.cardNo, dispatch]);
+
+  // Synchronize on route / searchParam transitions
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const state = window.history.state || {};
+
+    const dateStr = params.get("date") || (location.pathname === "/" || location.pathname.startsWith("/pending") ? state.filterDate : null);
+    if (dateStr) {
+      const parts = dateStr.split("-");
+      if (parts.length === 3) {
+        const newDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        if (!isNaN(newDate.getTime()) && formatDateToYMD(newDate) !== formatDateToYMD(date)) {
+          setDate(newDate);
+        }
+      }
+    }
+
+    const urlPs = params.get("pS");
+    if (urlPs && urlPs !== filters.pS) {
+      dispatch(filterDept(urlPs));
+    }
+    const urlLine = params.get("line");
+    if (urlLine !== null && urlLine !== filters.line) {
+      dispatch(filterMainLine(urlLine));
+    }
+
+    const urlProcess = params.get("processNo");
+    if (urlProcess !== null && urlProcess !== filters.processNo) {
+      dispatch(filterProcessNo(urlProcess));
+    } else if (location.pathname === "/" && !params.has("processNo") && filters.processNo !== "") {
+      // Clear processNo when returning to home without processNo
+      dispatch(filterProcessNo(""));
+    }
+
+    const urlCard = params.get("cardNo");
+    if (urlCard !== null && urlCard !== filters.cardNo) {
+      dispatch(filterCardNo(urlCard));
+    } else if (location.pathname === "/" && !params.has("cardNo") && filters.cardNo !== "") {
+      dispatch(filterCardNo(""));
+    }
+  }, [location.pathname, location.search, dispatch]);
 
 
   const auth = useSelector((state) => state.auth);

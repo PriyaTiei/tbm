@@ -1,10 +1,26 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function MachineCard(props) {
   const { processNo, line, count = 0, OK = 0, NG = 0 } = props;
   const plantNameUpper = (process.env.REACT_APP_PLANT || "").toUpperCase();
   const isUtilityOrFacility = plantNameUpper.includes("UTIL") || plantNameUpper.includes("FACIL");
+  const filters = useSelector((state) => state.filters);
+
+  const dateStr =
+    filters.y && filters.m && filters.dt
+      ? `${filters.y}-${String(filters.m).padStart(2, "0")}-${String(filters.dt).padStart(2, "0")}`
+      : "";
+
+  const queryParts = [
+    `line=${encodeURIComponent(line || "")}`,
+    `processNo=${encodeURIComponent(processNo || "")}`,
+    `page=1`
+  ];
+  if (filters.pS) queryParts.push(`pS=${encodeURIComponent(filters.pS)}`);
+  if (dateStr) queryParts.push(`date=${encodeURIComponent(dateStr)}`);
+  const checkListUrl = `/checkList?${queryParts.join("&")}`;
 
   // Determine dynamic gradient based on check completion status
   let cardGradient = "linear-gradient(145deg, #4338ca 0%, #3730a3 100%)"; // default indigo
@@ -19,7 +35,7 @@ function MachineCard(props) {
   return (
     <Fragment>
       <Link
-        to={`/checkList?line=${encodeURIComponent(line || "")}&processNo=${encodeURIComponent(processNo || "")}`}
+        to={checkListUrl}
         className="text-decoration-none"
       >
         <div

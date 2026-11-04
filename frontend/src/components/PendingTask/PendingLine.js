@@ -47,6 +47,7 @@ function PendingLine({ line, processList, counts }) {
           processList.map((process) => (
             <PendingCard
               key={process.processNo}
+              line={line}
               onClick={() => handleClick(process.processData)}
               processNo={process.processNo}
               processData={process.processData}

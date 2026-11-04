@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function PendingCard({
   processNo,
+  line,
   result,
   processData,
   onClick,
@@ -13,10 +14,23 @@ export default function PendingCard({
   const isCompleted = result === "COMPLETED";
   const [isHovered, setIsHovered] = useState(false);
 
+  const handleClick = (e) => {
+    if (onClick) onClick(processData);
+    if (processData) {
+      try {
+        sessionStorage.setItem("tbm_pending_processData", JSON.stringify(processData));
+        sessionStorage.setItem("tbm_pending_processNo", processNo || "");
+      } catch (err) {}
+    }
+  };
+
+  const toUrl = `/pendingTasks/cardDetails?processNo=${encodeURIComponent(processNo || "")}&line=${encodeURIComponent(line || "")}&page=1`;
+
   return (
     <Link
-      to={`/pendingTasks/cardDetails/`}
-      onClick={onClick}
+      to={toUrl}
+      state={{ processData, processNo, line, page: 1 }}
+      onClick={handleClick}
       style={{ textDecoration: "none", color: "inherit" }}
     >
       <div
