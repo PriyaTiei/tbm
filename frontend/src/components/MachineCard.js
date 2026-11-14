@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 
 function MachineCard(props) {
   const { processNo, line, count = 0, OK = 0, NG = 0 } = props;
+  const plantNameUpper = (process.env.REACT_APP_PLANT || "").toUpperCase();
+  const isUtilityOrFacility = plantNameUpper.includes("UTIL") || plantNameUpper.includes("FACIL");
 
   // Determine dynamic gradient based on check completion status
   let cardGradient = "linear-gradient(145deg, #4338ca 0%, #3730a3 100%)"; // default indigo
@@ -23,7 +25,7 @@ function MachineCard(props) {
         <div
           className="card border-0 text-white shadow-sm machine-home-card"
           style={{
-            width: "148px",
+            width: isUtilityOrFacility ? "165px" : "148px",
             minHeight: "170px",
             background: cardGradient,
             borderRadius: "12px",
@@ -50,8 +52,17 @@ function MachineCard(props) {
             }}
           >
             <span
-              className="fw-bold d-block text-truncate"
-              style={{ fontSize: "0.86rem", letterSpacing: "0.2px" }}
+              className="fw-bold d-block"
+              style={{
+                fontSize: "0.82rem",
+                letterSpacing: "0.2px",
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                lineHeight: "1.25",
+                minHeight: "2.5em",
+              }}
               title={processNo}
             >
               {processNo}

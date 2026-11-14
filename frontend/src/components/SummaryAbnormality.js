@@ -53,6 +53,10 @@ const compactFilterSelect = {
 };
 
 function SummaryAbnormality() {
+  const plantNameUpper = (process.env.REACT_APP_PLANT || "").toUpperCase();
+  const isUtility = plantNameUpper.includes("UTIL");
+  const isFacility = plantNameUpper.includes("FACIL");
+  const isUtilityOrFacility = isUtility || isFacility;
   const [showGraph, setShowGraph] = useState(false);
 
   // Beginning of Month (30 days ago)
@@ -827,7 +831,7 @@ function SummaryAbnormality() {
                     padding: "8px 4px",
                   }}
                 >
-                  Line
+                  {isUtility ? "Plant" : isFacility ? "Area" : "Line"}
                 </th>
                 <th
                   style={{
@@ -838,7 +842,7 @@ function SummaryAbnormality() {
                     padding: "8px 4px",
                   }}
                 >
-                  Station
+                  {isUtility ? "Equipment" : isFacility ? "Sub Area" : "Station"}
                 </th>
                 <th
                   style={{
@@ -849,7 +853,7 @@ function SummaryAbnormality() {
                     padding: "8px 4px",
                   }}
                 >
-                  Inspection Item
+                  {isUtilityOrFacility ? "Activity" : "Inspection Item"}
                 </th>
                 <th
                   style={{

@@ -82,8 +82,8 @@ const customSelectStyles = {
     backgroundColor: state.isSelected
       ? "#0d6efd"
       : state.isFocused
-      ? "#eff6ff"
-      : "#ffffff",
+        ? "#eff6ff"
+        : "#ffffff",
     color: state.isSelected ? "#ffffff" : "#1e293b",
     cursor: "pointer",
   }),
@@ -151,9 +151,6 @@ function Filters() {
         dispatch(filterDept(urlPs));
       }
       const urlLine = params.get("line");
-      if (urlLine && urlLine !== filters.line) {
-        dispatch(filterMainLine(urlLine));
-      }
       const urlProcess = params.get("processNo");
       if (urlProcess && urlProcess !== filters.processNo) {
         dispatch(filterProcessNo(urlProcess));
@@ -176,6 +173,11 @@ function Filters() {
   // const { loading, pendingTasksData } = pendingTasks;
   // const [pendingTasksData, setPendingTasksData] = useState([])
   const { machineData } = useSelector((state) => state.machines);
+
+  const plantNameUpper = (process.env.REACT_APP_PLANT || "").toUpperCase();
+  const isUtility = plantNameUpper.includes("UTIL");
+  const isFacility = plantNameUpper.includes("FACIL");
+  const isUtilityOrFacility = isUtility || isFacility;
 
   const getLineGroup = (line) => {
     if (!line) return "Other Lines";
@@ -231,18 +233,66 @@ function Filters() {
     ...otherGroups,
   ];
 
-  const lineOptions = [{ value: null, label: "All Lines" }];
-  sortedGroupNames.forEach((groupName) => {
-    lineOptions.push({
-      value: groupName,
-      label: groupName,
+  let lineOptions = [];
+  if (isUtilityOrFacility) {
+    lineOptions = [
+      {
+        value: null,
+        label: isUtility ? "All Plants" : "All Areas",
+      },
+      ...Array.from(allDiscoveredLinesRef.current)
+        .sort()
+        .map((lineName) => ({
+          value: lineName,
+          label: lineName,
+        })),
+    ];
+  } else {
+    lineOptions = [{ value: null, label: "All Lines" }];
+    sortedGroupNames.forEach((groupName) => {
+      lineOptions.push({
+        value: groupName,
+        label: groupName,
+      });
     });
-  });
+  }
 
   const selectedMainLine = filters.mainLine ?? null;
   let subLineOptions = [];
 
-  if (selectedMainLine && groupedLines[selectedMainLine]) {
+  if (isUtilityOrFacility) {
+    const rawMachines = machineData?.machineData || [];
+    if (selectedMainLine) {
+      const matchLine = rawMachines.find((m) => m.line === selectedMainLine);
+      const equipmentList = matchLine?.processNos || [];
+      subLineOptions = [
+        {
+          value: null,
+          label: `All ${selectedMainLine} ${isUtility ? "Equipment" : "Sub Areas"}`,
+        },
+        ...[...equipmentList].sort().map((proc) => ({
+          value: proc,
+          label: proc,
+        })),
+      ];
+    } else {
+      const groupedEquipment = rawMachines.map((m) => ({
+        label: m.line,
+        options: [...(m.processNos || [])].sort().map((proc) => ({
+          value: proc,
+          label: proc,
+        })),
+      })).filter((g) => g.options.length > 0);
+
+      subLineOptions = [
+        {
+          value: null,
+          label: isUtility ? "All Equipment" : "All Sub Areas",
+        },
+        ...groupedEquipment,
+      ];
+    }
+  } else if (selectedMainLine && groupedLines[selectedMainLine]) {
     subLineOptions = [
       { value: null, label: `All ${selectedMainLine} Sub-lines` },
       ...Array.from(groupedLines[selectedMainLine]).sort().map((subLine) => ({
@@ -325,10 +375,15 @@ function Filters() {
   // }, [level])
   // const filters = useSelector((state) => state.filters);
   // let queryStr = `d=${filters.d}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}`;
-  const deptOptions = [
-    { value: "S", label: "Production Dept" },
-    { value: "P", label: "Maint Dept" },
-  ];
+  const deptOptions = isUtilityOrFacility
+    ? [
+      { value: "P", label: "Maint Dept" },
+      { value: "S", label: "Service Dept" },
+    ]
+    : [
+      { value: "S", label: "Production Dept" },
+      { value: "P", label: "Maint Dept" },
+    ];
 
   const checkOptions = [
     { value: null, label: "All Check" },
@@ -376,10 +431,18 @@ function Filters() {
 
   const selectLineHandler = (e) => {
     dispatch(filterMainLine(e ? e.value : null));
+    if (isUtilityOrFacility) {
+      dispatch(filterProcessNo(""));
+    }
   };
 
   const selectSubLineHandler = (e) => {
-    dispatch(filterSubLine(e ? e.value : null));
+    if (isUtilityOrFacility) {
+      dispatch(filterProcessNo(e ? (e.value || "") : ""));
+      dispatch(filterSubLine(e ? e.value : null));
+    } else {
+      dispatch(filterSubLine(e ? e.value : null));
+    }
   };
 
   const selectCheckHandler = (e) => {
@@ -414,7 +477,18 @@ function Filters() {
     lineOptions.find((opt) => opt.value === selectedMainLine) || lineOptions[0];
 
   let selectedSubLineOption = null;
-  if (filters.subLine) {
+  if (isUtilityOrFacility) {
+    if (filters.processNo) {
+      selectedSubLineOption = { value: filters.processNo, label: filters.processNo };
+    } else {
+      selectedSubLineOption = {
+        value: null,
+        label: selectedMainLine
+          ? `All ${selectedMainLine} ${isUtility ? "Equipment" : "Sub Areas"}`
+          : (isUtility ? "All Equipment" : "All Sub Areas"),
+      };
+    }
+  } else if (filters.subLine) {
     selectedSubLineOption = { value: filters.subLine, label: filters.subLine };
   } else {
     selectedSubLineOption = {
@@ -430,12 +504,17 @@ function Filters() {
         {/* Row 1: Primary Navigation, Date & Line Selection Filters */}
         <div className="d-flex align-items-center flex-wrap gap-2">
           {/* Home Button */}
-          <Link to="/" style={{ textDecoration: "none" }}>
+          <Link
+            to="/"
+            onClick={() => {
+              dispatch(filterProcessNo(""));
+            }}
+            style={{ textDecoration: "none" }}
+          >
             <Button
               variant={isHomeActive ? "primary" : "outline-primary"}
-              className={`d-flex align-items-center gap-1.5 px-3 shadow-sm ${
-                isHomeActive ? "bg-blue text-white" : ""
-              }`}
+              className={`d-flex align-items-center gap-1.5 px-3 shadow-sm ${isHomeActive ? "bg-blue text-white" : ""
+                }`}
               style={{
                 height: "38px",
                 borderRadius: "6px",
@@ -488,7 +567,7 @@ function Filters() {
               value={selectedMainLineOption}
               onChange={selectLineHandler}
               styles={customSelectStyles}
-              placeholder="Main Line"
+              placeholder={isUtility ? "Select Plant" : isFacility ? "Select Area" : "Main Line"}
               isSearchable={true}
             />
           </div>
@@ -500,7 +579,7 @@ function Filters() {
               value={selectedSubLineOption}
               onChange={selectSubLineHandler}
               styles={customSelectStyles}
-              placeholder="Sub Line"
+              placeholder={isUtility ? "Select Equipment" : isFacility ? "Select Sub Area" : "Sub Line"}
               isSearchable={true}
             />
           </div>
@@ -566,9 +645,8 @@ function Filters() {
               title="TBM Overall Status Dashboard"
             >
               <i
-                className={`bi bi-speedometer2 fs-6 ${
-                  isDashboardActive ? "text-white" : "text-primary"
-                }`}
+                className={`bi bi-speedometer2 fs-6 ${isDashboardActive ? "text-white" : "text-primary"
+                  }`}
               ></i>
               <span>TBM Dashboard</span>
             </Button>
@@ -661,9 +739,8 @@ function Filters() {
                   title="TL/GL Verification"
                 >
                   <i
-                    className={`bi bi-calendar-check ${
-                      isVerificationActive ? "text-white" : "text-success"
-                    }`}
+                    className={`bi bi-calendar-check ${isVerificationActive ? "text-white" : "text-success"
+                      }`}
                   ></i>
                   <span>TL/GL Verification</span>
                   <span
@@ -705,9 +782,8 @@ function Filters() {
                   title="Holiday List"
                 >
                   <i
-                    className={`bi bi-sunset ${
-                      isHolidaysActive ? "text-white" : "text-danger"
-                    }`}
+                    className={`bi bi-sunset ${isHolidaysActive ? "text-white" : "text-danger"
+                      }`}
                   ></i>
                   <span>Holiday List</span>
                 </button>
@@ -740,9 +816,8 @@ function Filters() {
                 title="Judgement History"
               >
                 <i
-                  className={`bi bi-card-list ${
-                    isJudgementActive ? "text-white" : "text-primary"
-                  }`}
+                  className={`bi bi-card-list ${isJudgementActive ? "text-white" : "text-primary"
+                    }`}
                 ></i>
                 <span>Judgement History</span>
               </button>

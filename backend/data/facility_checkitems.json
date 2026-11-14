@@ -1,0 +1,1360 @@
+[
+  {
+    "line": "Hydrant System -old line",
+    "processNo": "All Area",
+    "model": "post and pump",
+    "workDetail": "Hydrant post and pump room AMC",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      4,
+      7,
+      10
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "Hydrant System -old line",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No leakage, pump working properly",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Hydrant System -New line",
+    "processNo": "All Area",
+    "model": "post and pump",
+    "workDetail": "Hydrant post and pump room AMC",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      5,
+      8,
+      11
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "Hydrant System -New line",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No leakage, pump working properly",
+    "action": "Inspect / Service"
+  },
+  {
+    "line": "Fire Alarm System (Safety devices)",
+    "processNo": "All Area",
+    "model": "MCP, PA,Detectors,Panels",
+    "workDetail": "AMC activities of safety devices(MCP, PA,Detectors,Panels etcs)",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "Fire Alarm System (Safety devices)",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "All devices operate correctly",
+    "action": "Test / Rectify"
+  },
+  {
+    "line": "General Facility",
+    "processNo": "All Area",
+    "model": "Roofs",
+    "workDetail": "AMC of roofings",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "General Facility",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No damage or water leakage",
+    "action": "Repair / Replace"
+  },
+  {
+    "line": "General Facility",
+    "processNo": "All Area",
+    "model": "Boom barrier",
+    "workDetail": "AMC of Boom barrier",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      6,
+      8,
+      11
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "General Facility",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Smooth opening and closing",
+    "action": "Adjust / Repair"
+  },
+  {
+    "line": "General Facility",
+    "processNo": "All Area",
+    "model": "Rapid doors",
+    "workDetail": "AMC of Rapid doors",
+    "cycle": "1/3M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      6,
+      8,
+      11
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "General Facility",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Door operates smoothly",
+    "action": "Adjust / Repair"
+  },
+  {
+    "line": "General Facility",
+    "processNo": "All Area",
+    "model": "Rolling shutters",
+    "workDetail": "AMC of Shutters",
+    "cycle": "1/1Y",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "General Facility",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Smooth movement, no damage",
+    "action": "Repair / Lubricate"
+  },
+  {
+    "line": "General Facility",
+    "processNo": "All Area",
+    "model": "sewage drain",
+    "workDetail": "AMC of sewage drain",
+    "cycle": "1/3M",
+    "pS": "S",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "General Facility",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No blockage",
+    "action": "Clean"
+  },
+  {
+    "line": "General Facility",
+    "processNo": "All Area",
+    "model": "Street light",
+    "workDetail": "Street light management",
+    "cycle": "1/1D",
+    "pS": "S",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      9999
+    ],
+    "area": "General Facility",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "All lights working",
+    "action": "Replace / Repair"
+  },
+  {
+    "line": "General Facility",
+    "processNo": "All Area",
+    "model": "Wash room",
+    "workDetail": "Wash room management",
+    "cycle": "1/1D",
+    "pS": "S",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      9999
+    ],
+    "area": "General Facility",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Clean condition, all fittings working",
+    "action": "Clean / Repair"
+  },
+  {
+    "line": "General Facility",
+    "processNo": "All Area",
+    "model": "Digital clock",
+    "workDetail": "Digital clock management",
+    "cycle": "1/1D",
+    "pS": "S",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      9999
+    ],
+    "area": "General Facility",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Correct time display",
+    "action": "Adjust / Replace"
+  },
+  {
+    "line": "General Facility",
+    "processNo": "All Area",
+    "model": "Water dispensor",
+    "workDetail": "Water dispensor management",
+    "cycle": "1/1D",
+    "pS": "S",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      9999
+    ],
+    "area": "General Facility",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Water dispensing properly",
+    "action": "Clean / Repair"
+  },
+  {
+    "line": "General Facility",
+    "processNo": "All Area",
+    "model": "Epoxy coating",
+    "workDetail": "Epoxy coating management",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "General Facility",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No peeling or damage",
+    "action": "Repair"
+  },
+  {
+    "line": "General Facility",
+    "processNo": "All Area",
+    "model": "Sewage chamber",
+    "workDetail": "Sewage chamber management",
+    "cycle": "1/1W",
+    "pS": "P",
+    "rS": "R",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      9999
+    ],
+    "d": [
+      7
+    ],
+    "area": "General Facility",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No blockage or overflow",
+    "action": "Clean"
+  },
+  {
+    "line": "New ware house",
+    "processNo": "Inspection area, Packing area, Forklift Maintenance, Area, All group room area, Loading & Unloading area,",
+    "model": "Inspection area, Packing area, Forklift Maintenance, Area, All group room area, Loading & Unloading area,",
+    "workDetail": "COBWEB CLEANING",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      4,
+      9
+    ],
+    "w": [
+      1,
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "New ware house",
+    "subArea": "Inspection area, Packing area, Forklift Maintenance, Area, All group room area, Loading & Unloading area,",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Area free from cobwebs",
+    "action": "Clean"
+  },
+  {
+    "line": "TNGA M/c & Mnt",
+    "processNo": "QC, MNT, & DC office, Oil storage area, Machining area",
+    "model": "QC, MNT, & DC office, Oil storage area, Machining area",
+    "workDetail": "COBWEB CLEANING",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      4,
+      10
+    ],
+    "w": [
+      1,
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "TNGA M/c & Mnt",
+    "subArea": "QC, MNT, & DC office, Oil storage area, Machining area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Area free from cobwebs",
+    "action": "Clean"
+  },
+  {
+    "line": "TNGA Assy",
+    "processNo": "Assy group room area, All windows, MNT group room area, Test bench area",
+    "model": "Assy group room area, All windows, MNT group room area, Test bench area",
+    "workDetail": "COBWEB CLEANING",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      5,
+      10
+    ],
+    "w": [
+      1,
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "TNGA Assy",
+    "subArea": "Assy group room area, All windows, MNT group room area, Test bench area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Area free from cobwebs",
+    "action": "Clean"
+  },
+  {
+    "line": "GD M/c, QC, GD Assy, Outside window",
+    "processNo": "GD Head, Crank, Block, 4C area,QC Area, Groop rooms, GD Assy, Compressor room, Test bench.",
+    "model": "GD Head, Crank, Block, 4C area,QC Area, Groop rooms, GD Assy, Compressor room, Test bench.",
+    "workDetail": "COBWEB CLEANING",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      5,
+      11
+    ],
+    "w": [
+      1,
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "GD M/c, QC, GD Assy, Outside window",
+    "subArea": "GD Head, Crank, Block, 4C area,QC Area, Groop rooms, GD Assy, Compressor room, Test bench.",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Area free from cobwebs",
+    "action": "Clean"
+  },
+  {
+    "line": "66KV,Utility, Vikasana Kendra, value yard",
+    "processNo": "66Kv panel board, Battery & Groop room, Dry transformer area, Vikasana Kendra inside, Group room, OHC, Value yard inside, Hazardous room outside, Utility DG & Pannel board area",
+    "model": "66Kv panel board, Battery & Groop room, Dry transformer area, Vikasana Kendra inside, Group room, OHC, Value yard inside, Hazardous room outside, Utility DG & Pannel board area",
+    "workDetail": "COBWEB CLEANING",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      6,
+      11
+    ],
+    "w": [
+      1,
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "66KV,Utility, Vikasana Kendra, value yard",
+    "subArea": "66Kv panel board, Battery & Groop room, Dry transformer area, Vikasana Kendra inside, Group room, OHC, Value yard inside, Hazardous room outside, Utility DG & Pannel board area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Area free from cobwebs",
+    "action": "Clean"
+  },
+  {
+    "line": "Old ware house",
+    "processNo": "Material storage area, QC RI area, Vendor parts check area, Groop room area",
+    "model": "Material storage area, QC RI area, Vendor parts check area, Groop room area",
+    "workDetail": "COBWEB CLEANING",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      6,
+      12
+    ],
+    "w": [
+      1,
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "Old ware house",
+    "subArea": "Material storage area, QC RI area, Vendor parts check area, Groop room area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Area free from cobwebs",
+    "action": "Clean"
+  },
+  {
+    "line": "GD LOG, GPS, GD Mnt, Compressor",
+    "processNo": "Dry Transformer area, GPS inside & group room area, MNT area, oil storage area, Log material storage area, FG Engine storage area, MES area",
+    "model": "Dry Transformer area, GPS inside & group room area, MNT area, oil storage area, Log material storage area, FG Engine storage area, MES area",
+    "workDetail": "COBWEB CLEANING",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      7,
+      12
+    ],
+    "w": [
+      1,
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "GD LOG, GPS, GD Mnt, Compressor",
+    "subArea": "Dry Transformer area, GPS inside & group room area, MNT area, oil storage area, Log material storage area, FG Engine storage area, MES area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Area free from cobwebs",
+    "action": "Clean"
+  },
+  {
+    "line": "ZLD, ETP, STP, UG sump",
+    "processNo": "ZLD inside & Group room area, STP, ETP inside, Chemical storage & Lab area, ETP bed area, UG Sump inside",
+    "model": "ZLD inside & Group room area, STP, ETP inside, Chemical storage & Lab area, ETP bed area, UG Sump inside",
+    "workDetail": "COBWEB CLEANING",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      7
+    ],
+    "w": [
+      1,
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "ZLD, ETP, STP, UG sump",
+    "subArea": "ZLD inside & Group room area, STP, ETP inside, Chemical storage & Lab area, ETP bed area, UG Sump inside",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Area free from cobwebs",
+    "action": "Clean"
+  },
+  {
+    "line": "TNGA (M) Log",
+    "processNo": "Log material storage area, Bin washing area, Group room area",
+    "model": "Log material storage area, Bin washing area, Group room area",
+    "workDetail": "COBWEB CLEANING",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      8
+    ],
+    "w": [
+      1,
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "TNGA (M) Log",
+    "subArea": "Log material storage area, Bin washing area, Group room area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Area free from cobwebs",
+    "action": "Clean"
+  },
+  {
+    "line": "TNGA Assy log",
+    "processNo": "Truck loading & Unloading area, FG engine storage area, Pallet repair area, Dock 1 inside",
+    "model": "Truck loading & Unloading area, FG engine storage area, Pallet repair area, Dock 1 inside",
+    "workDetail": "COBWEB CLEANING",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      8
+    ],
+    "w": [
+      1,
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "TNGA Assy log",
+    "subArea": "Truck loading & Unloading area, FG engine storage area, Pallet repair area, Dock 1 inside",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Area free from cobwebs",
+    "action": "Clean"
+  },
+  {
+    "line": "DC Prod, Block line, Kaizen",
+    "processNo": "DMNT, Ingot room, Pannel board area, All windows, Bird net dust cleaning",
+    "model": "DMNT, Ingot room, Pannel board area, All windows, Bird net dust cleaning",
+    "workDetail": "COBWEB CLEANING",
+    "cycle": "1/6M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      9
+    ],
+    "w": [
+      1,
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "DC Prod, Block line, Kaizen",
+    "subArea": "DMNT, Ingot room, Pannel board area, All windows, Bird net dust cleaning",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Area free from cobwebs",
+    "action": "Clean"
+  },
+  {
+    "line": "Admin &  TNGA Assy",
+    "processNo": "From Dock - 03  to Vakasana kendra",
+    "model": "From Dock - 03  to Vakasana kendra",
+    "workDetail": "SEWAGE CHAMBERS CLEANING ACTIVITY",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      4,
+      6,
+      8,
+      10,
+      12
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "Admin &  TNGA Assy",
+    "subArea": "From Dock - 03  to Vakasana kendra",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Chamber free from sludge and blockage",
+    "action": "Clean"
+  },
+  {
+    "line": "TNGA M/C",
+    "processNo": "From UG sump to STP",
+    "model": "From UG sump to STP",
+    "workDetail": "SEWAGE CHAMBERS CLEANING ACTIVITY",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      2,
+      4,
+      6,
+      8,
+      10,
+      12
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "TNGA M/C",
+    "subArea": "From UG sump to STP",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Chamber free from sludge and blockage",
+    "action": "Clean"
+  },
+  {
+    "line": "DC Production",
+    "processNo": "From 66KV to STP",
+    "model": "From 66KV to STP",
+    "workDetail": "SEWAGE CHAMBERS CLEANING ACTIVITY",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      11
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "DC Production",
+    "subArea": "From 66KV to STP",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Chamber free from sludge and blockage",
+    "action": "Clean"
+  },
+  {
+    "line": "Car Parking",
+    "processNo": "From Dock - 02  to  STP",
+    "model": "From Dock - 02  to  STP",
+    "workDetail": "SEWAGE CHAMBERS CLEANING ACTIVITY",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      11
+    ],
+    "w": [
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "Car Parking",
+    "subArea": "From Dock - 02  to  STP",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Chamber free from sludge and blockage",
+    "action": "Clean"
+  },
+  {
+    "line": "RECEPTION",
+    "processNo": "Room number EC4, Reception passage (AFC),Reception passage meeting room,Seminar hall,Seminar hall (AFC),Board room,Reception,",
+    "model": "Room number EC4, Reception passage (AFC),Reception passage meeting room,Seminar hall,Seminar hall (AFC),Board room,Reception,",
+    "workDetail": "FIRE, SMOKE DETECTOR & MCP  AMC ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "RECEPTION",
+    "subArea": "Room number EC4, Reception passage (AFC),Reception passage meeting room,Seminar hall,Seminar hall (AFC),Board room,Reception,",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "All devices functioning properly",
+    "action": "Test / Repair"
+  },
+  {
+    "line": "CANTEEN & KITCHEN",
+    "processNo": "ALL AREA",
+    "model": "ALL AREA",
+    "workDetail": "FIRE, SMOKE DETECTOR & MCP  AMC ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "CANTEEN & KITCHEN",
+    "subArea": "ALL AREA",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "All devices functioning properly",
+    "action": "Test / Repair"
+  },
+  {
+    "line": "COMPRESSOR ROOM",
+    "processNo": "GROUP ROOM, BATTERY ROOM, PANNEL ROOM",
+    "model": "GROUP ROOM, BATTERY ROOM, PANNEL ROOM",
+    "workDetail": "FIRE, SMOKE DETECTOR & MCP  AMC ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "COMPRESSOR ROOM",
+    "subArea": "GROUP ROOM, BATTERY ROOM, PANNEL ROOM",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "All devices functioning properly",
+    "action": "Test / Repair"
+  },
+  {
+    "line": "UTILITY",
+    "processNo": "BATTERY ROOM, PANNEL ROOM,DG AREA, VALUE YARD, HAZARDOUS",
+    "model": "BATTERY ROOM, PANNEL ROOM,DG AREA, VALUE YARD, HAZARDOUS",
+    "workDetail": "FIRE, SMOKE DETECTOR & MCP  AMC ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "UTILITY",
+    "subArea": "BATTERY ROOM, PANNEL ROOM,DG AREA, VALUE YARD, HAZARDOUS",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "All devices functioning properly",
+    "action": "Test / Repair"
+  },
+  {
+    "line": "DEVELOPMENT CENTER",
+    "processNo": "DEVELOPMENT CENTER, MEDICAL CENTER",
+    "model": "DEVELOPMENT CENTER, MEDICAL CENTER",
+    "workDetail": "FIRE, SMOKE DETECTOR & MCP  AMC ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "DEVELOPMENT CENTER",
+    "subArea": "DEVELOPMENT CENTER, MEDICAL CENTER",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "All devices functioning properly",
+    "action": "Test / Repair"
+  },
+  {
+    "line": "CORPORATE OFFICE",
+    "processNo": "AC ROOM, BOARD ROOM, MD CABIN, DOCUMENT ROOM",
+    "model": "AC ROOM, BOARD ROOM, MD CABIN, DOCUMENT ROOM",
+    "workDetail": "FIRE, SMOKE DETECTOR & MCP  AMC ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "CORPORATE OFFICE",
+    "subArea": "AC ROOM, BOARD ROOM, MD CABIN, DOCUMENT ROOM",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "All devices functioning properly",
+    "action": "Test / Repair"
+  },
+  {
+    "line": "PRODUCTION OFFICE",
+    "processNo": "WASHROOM PASSAGE, DMD CABIN, MEETING ROOMS.",
+    "model": "WASHROOM PASSAGE, DMD CABIN, MEETING ROOMS.",
+    "workDetail": "FIRE, SMOKE DETECTOR & MCP  AMC ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "PRODUCTION OFFICE",
+    "subArea": "WASHROOM PASSAGE, DMD CABIN, MEETING ROOMS.",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "All devices functioning properly",
+    "action": "Test / Repair"
+  },
+  {
+    "line": "RECEPTION",
+    "processNo": "RECEPTION OFFICE, ALL MEETING ROOMS.",
+    "model": "RECEPTION OFFICE, ALL MEETING ROOMS.",
+    "workDetail": "FIRE, SMOKE DETECTOR & MCP  AMC ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "RECEPTION",
+    "subArea": "RECEPTION OFFICE, ALL MEETING ROOMS.",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "All devices functioning properly",
+    "action": "Test / Repair"
+  },
+  {
+    "line": "GD ASSY & MACHINING",
+    "processNo": "QC, 4C AREA GPS, MNT, MACHINING AREA, GD ASSY, GROUP ROOMS.",
+    "model": "QC, 4C AREA GPS, MNT, MACHINING AREA, GD ASSY, GROUP ROOMS.",
+    "workDetail": "FIRE, SMOKE DETECTOR & MCP  AMC ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "GD ASSY & MACHINING",
+    "subArea": "QC, 4C AREA GPS, MNT, MACHINING AREA, GD ASSY, GROUP ROOMS.",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "All devices functioning properly",
+    "action": "Test / Repair"
+  },
+  {
+    "line": "TNGA Assy & log",
+    "processNo": "TNGA ASSY, LOG, MNT, LOADING & UNLOADING",
+    "model": "TNGA ASSY, LOG, MNT, LOADING & UNLOADING",
+    "workDetail": "FIRE, SMOKE DETECTOR & MCP  AMC ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "TNGA Assy & log",
+    "subArea": "TNGA ASSY, LOG, MNT, LOADING & UNLOADING",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "All devices functioning properly",
+    "action": "Test / Repair"
+  },
+  {
+    "line": "OLD WARE HOUSE",
+    "processNo": "SHOPFLOOR & CANTEEN",
+    "model": "SHOPFLOOR & CANTEEN",
+    "workDetail": "FIRE, SMOKE DETECTOR & MCP  AMC ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "OLD WARE HOUSE",
+    "subArea": "SHOPFLOOR & CANTEEN",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "All devices functioning properly",
+    "action": "Test / Repair"
+  },
+  {
+    "line": "TNGA Machining & Dc area",
+    "processNo": "All Machining area, log area, DC prod, Kaizen, Oil storage area, Ingot storage area,",
+    "model": "All Machining area, log area, DC prod, Kaizen, Oil storage area, Ingot storage area,",
+    "workDetail": "PIGEON EVACUATION ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1,
+      3
+    ],
+    "d": [
+      7
+    ],
+    "area": "TNGA Machining & Dc area",
+    "subArea": "All Machining area, log area, DC prod, Kaizen, Oil storage area, Ingot storage area,",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No pigeon presence in area",
+    "action": "Remove / Monitor"
+  },
+  {
+    "line": "GD Assy, GD Machining area",
+    "processNo": "GD machining area, QC area, MNT area, GPS, GD log, GD Assy,",
+    "model": "GD machining area, QC area, MNT area, GPS, GD log, GD Assy,",
+    "workDetail": "PIGEON EVACUATION ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1,
+      4
+    ],
+    "d": [
+      7
+    ],
+    "area": "GD Assy, GD Machining area",
+    "subArea": "GD machining area, QC area, MNT area, GPS, GD log, GD Assy,",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No pigeon presence in area",
+    "action": "Remove / Monitor"
+  },
+  {
+    "line": "TNGA ASSY, Old & New warehouse",
+    "processNo": "TNGA Assy, TNGA Log, Utility, Old ware house inside area",
+    "model": "TNGA Assy, TNGA Log, Utility, Old ware house inside area",
+    "workDetail": "PIGEON EVACUATION ACTIVITY",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1,
+      5
+    ],
+    "d": [
+      7
+    ],
+    "area": "TNGA ASSY, Old & New warehouse",
+    "subArea": "TNGA Assy, TNGA Log, Utility, Old ware house inside area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "No pigeon presence in area",
+    "action": "Remove / Monitor"
+  },
+  {
+    "line": "TNGA Machining & Dc area",
+    "processNo": "All Area",
+    "model": "All Area",
+    "workDetail": "Strom line cleaning activity",
+    "cycle": "1/1M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      9999
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "TNGA Machining & Dc area",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Free water flow, no blockage",
+    "action": "Clean"
+  },
+  {
+    "line": "GD Assy, GD Machining area",
+    "processNo": "All Area",
+    "model": "All Area",
+    "workDetail": "Strom line cleaning activity",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      11
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "GD Assy, GD Machining area",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Free water flow, no blockage",
+    "action": "Clean"
+  },
+  {
+    "line": "TNGA Assy,Old & New warehouse",
+    "processNo": "All Area",
+    "model": "All Area",
+    "workDetail": "Strom line cleaning activity",
+    "cycle": "1/2M",
+    "pS": "P",
+    "rS": "S",
+    "y": [
+      9999
+    ],
+    "m": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      11
+    ],
+    "w": [
+      1
+    ],
+    "d": [
+      7
+    ],
+    "area": "TNGA Assy,Old & New warehouse",
+    "subArea": "All Area",
+    "tool": "-",
+    "workManpower": "1",
+    "workTime": "30",
+    "criterion": "Free water flow, no blockage",
+    "action": "Clean"
+  }
+]

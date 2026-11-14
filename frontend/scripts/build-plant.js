@@ -3,10 +3,10 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const plant = (process.argv[2] || 'tnga').toLowerCase();
-const validPlants = ['tnga', 'gd'];
+const validPlants = ['tnga', 'gd', 'utility', 'facility'];
 
 if (!validPlants.includes(plant)) {
-  console.error(`Invalid plant "${plant}". Supported options: tnga, gd`);
+  console.error(`Invalid plant "${plant}". Supported options: tnga, gd, utility, facility`);
   process.exit(1);
 }
 

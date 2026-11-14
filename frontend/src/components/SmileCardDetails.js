@@ -50,6 +50,11 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
   const [remarks, setRemarks] = useState(judgementRemarks);
   const [mspecs, setMspecs] = useState([])
 
+  const plantNameUpper = (process.env.REACT_APP_PLANT || "").toUpperCase();
+  const isUtility = plantNameUpper.includes("UTIL");
+  const isFacility = plantNameUpper.includes("FACIL");
+  const isUtilityOrFacility = isUtility || isFacility;
+
   var bgColor = rS == "R" ? "red" : "green";
 
   useEffect(() => {
@@ -250,7 +255,7 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
         <div className={`col-md-2 col-sm-2  align-self-stretch  ${styles.brA}`}>
           <div>
             <h6 className={`${styles.scTh}`}>
-              {pS == "S" ? "Line/Group" : "Line"}
+              {isUtility ? "Plant" : isFacility ? "Area" : (pS == "S" ? "Line/Group" : "Line")}
             </h6>
           </div>
           <div className={styles.brT}>
@@ -260,7 +265,9 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
 
         <div className={`col-md-2 col-sm-3  align-self-stretch  ${styles.brA}`}>
           <div>
-            <h6 className={`${styles.scTh}`}>Machine no</h6>
+            <h6 className={`${styles.scTh}`}>
+              {isUtility ? "Make" : isFacility ? "Equipment" : "Machine no"}
+            </h6>
           </div>
           <div className={styles.brT}>
             <h6 className={`${styles.scTd}`}>{model}</h6>
@@ -271,7 +278,7 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
           <div>
             <h6 className={`${styles.scTh}`}>
               {" "}
-              {pS == "S" ? "Station / Line" : "OP no"}{" "}
+              {isUtility ? "Equipment" : isFacility ? "Sub Area" : (pS == "S" ? "Station / Line" : "OP no")}{" "}
             </h6>
           </div>
           <div className={styles.brT}>
@@ -282,7 +289,7 @@ function SmileCardDetails({ list, image, setImage, setRecordAbnormalityShowModal
         <div className={`col-md-3 col-sm-4  align-self-stretch  ${styles.brA}`}>
           <div>
             <h6 className={`${styles.scTh}`}>
-              {pS == "S" ? "Inspection Item" : "Work Detail"}{" "}
+              {isUtilityOrFacility ? "Activity / Work Detail" : (pS == "S" ? "Inspection Item" : "Work Detail")}{" "}
             </h6>
           </div>
           <div className={styles.brT}>
