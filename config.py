@@ -15,4 +15,3 @@ production_to_email =  "yousuf@tiei.toyota-industries.com, benjamindavid.s@tiei.
 maintainance_to_email =  "yousuf@tiei.toyota-industries.com, benjamindavid.s@tiei.toyota-industries.com"
 # production_to_email =  "yousuf@tiei.toyota-industries.com"
 # maintainance_to_email =  "yousuf@tiei.toyota-industries.com"
-

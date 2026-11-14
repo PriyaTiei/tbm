@@ -818,6 +818,7 @@ const ApiFeatureHead = require("../util/apiFeatureHead");
 const ErrorHandler = require("../util/errorHandling");
 const mongoose = require('mongoose');
 const PendingTask = require("../mongoSchema/pendingTaskModel");
+const CardRaisedModel = require("../mongoSchema/cardRaisedModel");
 
 async function addMeassurementFieldSpec(headCheckList) {
   /*
@@ -987,7 +988,7 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   // console.log( req.query, "group query 2")
 
 
- req.query = {
+  req.query = {
     ...req.query,
     $or: [
       { isDeleted: { $exists: false } },
@@ -996,7 +997,7 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   };
 
   // Use the updated query to filter documents
- 
+
   const headObject = new ApiFeatureHead(HeadModel, req.query).match();
 
 
@@ -1246,7 +1247,7 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
     m_spec,
     tlVerify,
     glVerify,
-    
+
   } = req.body;
 
   console.log("group is: ", group)
@@ -1309,7 +1310,7 @@ exports.saveData = catchAsyncError(async (req, res, next) => {
       m_spec: jsonMSpec,
       tlVerify,
       glVerify,
-      updatedAt: new Date() 
+      updatedAt: new Date()
 
       // images: [req.file.filename],
     },
@@ -1613,6 +1614,7 @@ exports.deleteCheckItem = catchAsyncError(async (req, res, next) => {
 
     // Remove any existing pending task for this check item
     await PendingTask.deleteMany({ checkItem: id });
+    await CardRaisedModel.deleteMany({ checkItem: id });
 
     res.status(200).json({ success: true, message: "Check item soft deleted successfully" });
   } catch (error) {
