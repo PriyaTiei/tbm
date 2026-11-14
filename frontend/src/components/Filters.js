@@ -83,8 +83,8 @@ const customSelectStyles = {
     backgroundColor: state.isSelected
       ? "#0d6efd"
       : state.isFocused
-      ? "#eff6ff"
-      : "#ffffff",
+        ? "#eff6ff"
+        : "#ffffff",
     color: state.isSelected ? "#ffffff" : "#1e293b",
     cursor: "pointer",
   }),
@@ -214,7 +214,27 @@ function Filters() {
 
   // Handle browser popstate events (device / browser back button "<" and forward button)
   useEffect(() => {
-    const handlePopState = (e) => {
+    if (location.search) {
+      const params = new URLSearchParams(location.search);
+      const urlPs = params.get("pS");
+      if (urlPs && urlPs !== filters.pS) {
+        dispatch(filterDept(urlPs));
+      }
+      const urlLine = params.get("line");
+      const urlProcess = params.get("processNo");
+      if (urlProcess && urlProcess !== filters.processNo) {
+        dispatch(filterProcessNo(urlProcess));
+      }
+    }
+  }, [location.search, filters.pS, filters.line, filters.processNo, dispatch]);
+
+  useEffect(() => {
+  console.log(date);
+}, [date]);
+
+useEffect(() => {
+  const handlePopState = (e) => {
+
       const params = new URLSearchParams(window.location.search);
       const state = e.state || {};
 
@@ -535,13 +555,13 @@ function Filters() {
   // let queryStr = `d=${filters.d}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}`;
   const deptOptions = isUtilityOrFacility
     ? [
-        { value: "P", label: "Maint Dept" },
-        { value: "S", label: "Service Dept" },
-      ]
+      { value: "P", label: "Maint Dept" },
+      { value: "S", label: "Service Dept" },
+    ]
     : [
-        { value: "S", label: "Production Dept" },
-        { value: "P", label: "Maint Dept" },
-      ];
+      { value: "S", label: "Production Dept" },
+      { value: "P", label: "Maint Dept" },
+    ];
 
   const checkOptions = [
     { value: null, label: "All Check" },
@@ -662,12 +682,17 @@ function Filters() {
         {/* Row 1: Primary Navigation, Date & Line Selection Filters */}
         <div className="d-flex align-items-center flex-wrap gap-2">
           {/* Home Button */}
-          <Link to="/" style={{ textDecoration: "none" }}>
+          <Link
+            to="/"
+            onClick={() => {
+              dispatch(filterProcessNo(""));
+            }}
+            style={{ textDecoration: "none" }}
+          >
             <Button
               variant={isHomeActive ? "primary" : "outline-primary"}
-              className={`d-flex align-items-center gap-1.5 px-3 shadow-sm ${
-                isHomeActive ? "bg-blue text-white" : ""
-              }`}
+              className={`d-flex align-items-center gap-1.5 px-3 shadow-sm ${isHomeActive ? "bg-blue text-white" : ""
+                }`}
               style={{
                 height: "38px",
                 borderRadius: "6px",
@@ -798,9 +823,8 @@ function Filters() {
               title="TBM Overall Status Dashboard"
             >
               <i
-                className={`bi bi-speedometer2 fs-6 ${
-                  isDashboardActive ? "text-white" : "text-primary"
-                }`}
+                className={`bi bi-speedometer2 fs-6 ${isDashboardActive ? "text-white" : "text-primary"
+                  }`}
               ></i>
               <span>TBM Dashboard</span>
             </Button>
@@ -893,9 +917,8 @@ function Filters() {
                   title="TL/GL Verification"
                 >
                   <i
-                    className={`bi bi-calendar-check ${
-                      isVerificationActive ? "text-white" : "text-success"
-                    }`}
+                    className={`bi bi-calendar-check ${isVerificationActive ? "text-white" : "text-success"
+                      }`}
                   ></i>
                   <span>TL/GL Verification</span>
                   <span
@@ -937,9 +960,8 @@ function Filters() {
                   title="Holiday List"
                 >
                   <i
-                    className={`bi bi-sunset ${
-                      isHolidaysActive ? "text-white" : "text-danger"
-                    }`}
+                    className={`bi bi-sunset ${isHolidaysActive ? "text-white" : "text-danger"
+                      }`}
                   ></i>
                   <span>Holiday List</span>
                 </button>
@@ -972,9 +994,8 @@ function Filters() {
                 title="Judgement History"
               >
                 <i
-                  className={`bi bi-card-list ${
-                    isJudgementActive ? "text-white" : "text-primary"
-                  }`}
+                  className={`bi bi-card-list ${isJudgementActive ? "text-white" : "text-primary"
+                    }`}
                 ></i>
                 <span>Judgement History</span>
               </button>
