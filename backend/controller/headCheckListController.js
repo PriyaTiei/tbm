@@ -908,6 +908,7 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
     .filter()
     .pagination(1);
   var headCheckList = await headObject.query;
+  let activeHeadObject = headObject;
 
   // Auto-relax schedule filters if no cards found for specific machine/line
   if (
@@ -925,6 +926,9 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
       .filter()
       .pagination(1);
     headCheckList = await fallbackObject.query;
+    if (headCheckList.length > 0) {
+      activeHeadObject = fallbackObject;
+    }
   }
 
   // Auto-relax department if still 0
@@ -945,13 +949,16 @@ exports.getHeadCheckList = catchAsyncError(async (req, res, next) => {
       .filter()
       .pagination(1);
     headCheckList = await fallbackObject2.query;
+    if (headCheckList.length > 0) {
+      activeHeadObject = fallbackObject2;
+    }
   }
 
   if (headCheckList.length === 0) {
     return next(new ErrorHandler("could not find check list", 404));
   }
 
-  const totalCount = await HeadModel.countDocuments(headObject.newQueryStr);
+  const totalCount = await HeadModel.countDocuments(activeHeadObject.newQueryStr);
 
   // headCheckList = await addMeassurementFieldSpec(headCheckList)
 

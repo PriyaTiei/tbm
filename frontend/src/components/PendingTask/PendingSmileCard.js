@@ -85,32 +85,30 @@ export default function PendingSmileCard() {
   }, [page, processData]);
 
   const changePage = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    const newParams = new URLSearchParams(location.search);
-    newParams.set("page", String(nextPage));
-    window.history.pushState(
-      { ...(window.history.state || {}), page: nextPage, processData },
-      "",
-      `${location.pathname}?${newParams.toString()}`
-    );
+    if (page < counts) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      const newParams = new URLSearchParams(location.search);
+      newParams.set("page", String(nextPage));
+      window.history.replaceState(
+        { ...(window.history.state || {}), page: nextPage, processData },
+        "",
+        `${location.pathname}?${newParams.toString()}`
+      );
+    }
   };
 
   const changePageMinus = () => {
     if (page > 1) {
-      if (window.history.state && window.history.state.page === page) {
-        window.history.back();
-      } else {
-        const prevPage = page - 1;
-        setPage(prevPage);
-        const newParams = new URLSearchParams(location.search);
-        newParams.set("page", String(prevPage));
-        window.history.pushState(
-          { ...(window.history.state || {}), page: prevPage, processData },
-          "",
-          `${location.pathname}?${newParams.toString()}`
-        );
-      }
+      const prevPage = page - 1;
+      setPage(prevPage);
+      const newParams = new URLSearchParams(location.search);
+      newParams.set("page", String(prevPage));
+      window.history.replaceState(
+        { ...(window.history.state || {}), page: prevPage, processData },
+        "",
+        `${location.pathname}?${newParams.toString()}`
+      );
     }
   };
 

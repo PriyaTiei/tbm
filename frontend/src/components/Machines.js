@@ -48,24 +48,20 @@ function Machines() {
     : "";
   const cardNoStr = filters.cardNo ? `&cardNo=${filters.cardNo}` : "";
 
-  let queryStr, DailyStatusQueryStr;
-  if (filters.processNo === "" && filters.cardNo === "") {
-    queryStr =
-      `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` +
-      rSStr +
-      groupStr +
-      processNoStr +
-      cardNoStr;
-    DailyStatusQueryStr =
-      `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}` +
-      rSStr +
-      groupStr +
-      processNoStr +
-      cardNoStr;
-  } else {
-    queryStr = `pS=${filters.pS}` + processNoStr + cardNoStr;
-    DailyStatusQueryStr = `pS=${filters.pS}` + processNoStr + cardNoStr;
-  }
+  // Always include schedule (d, w, m, y) and entryFor date parameters to ensure
+  // machine check item counts and daily status results strictly match the selected date
+  const queryStr =
+    `d=${filters.d}&w=${filters.w}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}` +
+    rSStr +
+    groupStr +
+    processNoStr +
+    cardNoStr;
+  const DailyStatusQueryStr =
+    `entryFor=${filters.y}-${filters.m}-${filters.dt}&pS=${filters.pS}` +
+    rSStr +
+    groupStr +
+    processNoStr +
+    cardNoStr;
 
   useEffect(() => {
     dispatch(getMachines(queryStr));
