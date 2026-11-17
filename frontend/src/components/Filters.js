@@ -363,19 +363,33 @@ function Filters() {
   };
 
   const allDiscoveredLinesRef = useRef(getInitialLines());
+  const currentDateKey = `${filters.y}-${filters.m}-${filters.d}-${filters.dt}-${filters.pS}`;
+  const prevDateKeyRef = useRef(currentDateKey);
   const prevDeptRef = useRef(filters.pS);
 
-  // If department changes, reset discovered lines so new department lines are captured
-  if (prevDeptRef.current !== filters.pS) {
+  // If date or department changes, reset discovered lines so lines from other dates/departments do not leak
+  if (prevDateKeyRef.current !== currentDateKey) {
+    prevDateKeyRef.current = currentDateKey;
     prevDeptRef.current = filters.pS;
     allDiscoveredLinesRef.current = getInitialLines();
   }
 
-  if (machineData && machineData.machineData != undefined) {
-    machineData.machineData.forEach((element) => {
-      if (!element || !element.line) return;
-      allDiscoveredLinesRef.current.add(element.line);
-    });
+  const isProduction = filters.pS === "S";
+
+  if (machineData && machineData.machineData != undefined && Array.isArray(machineData.machineData)) {
+    if (isProduction) {
+      // For Production, sublines must strictly match what is dynamically scheduled for that day
+      allDiscoveredLinesRef.current = new Set(
+        machineData.machineData
+          .map((element) => element && element.line)
+          .filter(Boolean)
+      );
+    } else {
+      machineData.machineData.forEach((element) => {
+        if (!element || !element.line) return;
+        allDiscoveredLinesRef.current.add(element.line);
+      });
+    }
   }
 
   const groupedLines = {};
