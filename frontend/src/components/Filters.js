@@ -374,22 +374,21 @@ function Filters() {
     allDiscoveredLinesRef.current = getInitialLines();
   }
 
-  const isProduction = filters.pS === "S";
+  // Populate strictly the lines scheduled for the current day and current department
+  // Check that machineData actually matches the current department to prevent cross-department data leaks
+  const isDataForCurrentDept = machineData && (machineData.pS === undefined || machineData.pS === filters.pS);
 
-  if (machineData && machineData.machineData != undefined && Array.isArray(machineData.machineData)) {
-    if (isProduction) {
-      // For Production, sublines must strictly match what is dynamically scheduled for that day
-      allDiscoveredLinesRef.current = new Set(
-        machineData.machineData
-          .map((element) => element && element.line)
-          .filter(Boolean)
-      );
-    } else {
-      machineData.machineData.forEach((element) => {
-        if (!element || !element.line) return;
-        allDiscoveredLinesRef.current.add(element.line);
-      });
+  if (machineData && machineData.machineData != undefined && Array.isArray(machineData.machineData) && isDataForCurrentDept) {
+    // Dynamically show ONLY sublines scheduled for that day in both Production and Maintenance
+    const scheduledLines = new Set(
+      machineData.machineData
+        .map((element) => element && element.line)
+        .filter(Boolean)
+    );
+    if (isUtilityOrFacility && masterMap) {
+      Object.keys(masterMap).forEach((line) => scheduledLines.add(line));
     }
+    allDiscoveredLinesRef.current = scheduledLines;
   }
 
   const groupedLines = {};
@@ -627,6 +626,10 @@ function Filters() {
 
   const selectDeptHandler = (e) => {
     dispatch(filterDept(e.value));
+    dispatch(filterMainLine(null));
+    dispatch(filterSubLine(null));
+    dispatch(filterProcessNo(""));
+    dispatch(filterCardNo(""));
   };
 
   const selectLineHandler = (e) => {
