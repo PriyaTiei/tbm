@@ -1917,7 +1917,9 @@ exports.getTbmOverallStatus = catchAsyncError(async (req, res, next) => {
     toDate: formattedToDate,
     isRange: isDateRange,
     pS: pS,
-    departmentName: pS === "P" ? "Maintenance (TBM)" : "Production (Smile Card)",
+    departmentName: pS === "P"
+      ? (((process.env.PLANT || process.env.REACT_APP_PLANT || "").toUpperCase().includes("UTIL") || (process.env.PLANT || process.env.REACT_APP_PLANT || "").toUpperCase().includes("FACIL")) ? "Inhouse" : "Maintenance (TBM)")
+      : (((process.env.PLANT || process.env.REACT_APP_PLANT || "").toUpperCase().includes("UTIL") || (process.env.PLANT || process.env.REACT_APP_PLANT || "").toUpperCase().includes("FACIL")) ? "Vendor" : "Production (Smile Card)"),
     lines: linesData,
     total: totals,
     todaysTbmStatus: todaysTbmStatus

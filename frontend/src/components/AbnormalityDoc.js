@@ -12,6 +12,7 @@ import {
 import AbnormalityRecordUpdate from "./AbnormalityRecordUpdate";
 import RaiseCardModal from "./RaiseCardModal";
 import AbnormalityImageModal from "./AbnormalityImageModal";
+import { getActivePlantInfo } from "../config/plantEquipmentMaster";
 
 function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
   const [showModalRaiseCard, setShowModalRaiseCard] = useState(false);
   const [showModalImage, setShowModalImage] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const { isUtilityOrFacility } = getActivePlantInfo();
 
   const auth = useSelector((state) => state.auth);
   const level = auth.user ? auth.user.level : 0;
@@ -292,9 +294,9 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
               fontSize: "0.68rem",
               padding: "2px 6px",
             }}
-            title="Production"
+            title={isUtilityOrFacility ? "Vendor" : "Production"}
           >
-            Prod
+            {isUtilityOrFacility ? "Vendor" : "Prod"}
           </span>
         ) : pS === "P" ? (
           <span
@@ -306,9 +308,9 @@ function AbnormilityDoc({ item, index, fromDateSt, toDateSt }) {
               fontSize: "0.68rem",
               padding: "2px 6px",
             }}
-            title="Maintenance"
+            title={isUtilityOrFacility ? "Inhouse" : "Maintenance"}
           >
-            Maint
+            {isUtilityOrFacility ? "Inhouse" : "Maint"}
           </span>
         ) : (
           <span className="text-muted">—</span>

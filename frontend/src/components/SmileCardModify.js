@@ -179,8 +179,8 @@ function SmileCardDetails({ list, image, setImage }) {
 
   const optionsPS = isUtilityOrFacility
     ? [
-        { value: "P", label: "Maintenance Dept" },
-        { value: "S", label: "Service Dept" },
+        { value: "P", label: "Inhouse" },
+        { value: "S", label: "Vendor" },
       ]
     : [
         { value: "P", label: "Maintenance Dept" },
@@ -523,7 +523,9 @@ function SmileCardDetails({ list, image, setImage }) {
                 value={
                   optionsPS.find((o) => o.value === pSNew) || {
                     value: pSNew,
-                    label: pSNew === "P" ? "Maintenance Dept" : (isUtilityOrFacility ? "Service Dept" : "Production Dept"),
+                    label: pSNew === "P"
+                      ? (isUtilityOrFacility ? "Inhouse" : "Maintenance Dept")
+                      : (isUtilityOrFacility ? "Vendor" : "Production Dept"),
                   }
                 }
                 isDisabled={level >= 100 ? false : true}

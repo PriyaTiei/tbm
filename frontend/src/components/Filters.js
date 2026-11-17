@@ -563,8 +563,8 @@ function Filters() {
   // let queryStr = `d=${filters.d}&m=${filters.m}&y=${filters.y}&pS=${filters.pS}`;
   const deptOptions = isUtilityOrFacility
     ? [
-      { value: "P", label: "Maint Dept" },
-      { value: "S", label: "Service Dept" },
+      { value: "P", label: "Inhouse" },
+      { value: "S", label: "Vendor" },
     ]
     : [
       { value: "S", label: "Production Dept" },
