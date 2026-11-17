@@ -217,6 +217,10 @@ function Filters() {
     const handlePopState = (e) => {
       const params = new URLSearchParams(window.location.search);
       const state = e.state || {};
+      const isMainRoute =
+        window.location.pathname === "/" ||
+        window.location.pathname.startsWith("/pending") ||
+        window.location.pathname.startsWith("/allMachine");
 
       // 1. Restore Date from URL search params or history state
       const dateStr = params.get("date") || state.filterDate;
@@ -229,34 +233,33 @@ function Filters() {
           }
         }
       }
-<<<<<<< HEAD
 
       // 2. Restore Line
-      const lineVal = params.has("line") ? params.get("line") : state.filterLine;
-      if (lineVal !== undefined && lineVal !== filters.line) {
-        dispatch(filterMainLine(lineVal || null));
+      if (isMainRoute) {
+        const lineVal = params.has("line") ? params.get("line") : state.filterLine;
+        if (lineVal !== undefined && lineVal !== filters.line) {
+          dispatch(filterMainLine(lineVal || null));
+        } else if (window.location.pathname === "/" && !params.has("line") && filters.line !== null) {
+          dispatch(filterMainLine(null));
+        }
       }
 
       // 3. Restore Department
       const psVal = params.has("pS") ? params.get("pS") : state.filterPs;
       if (psVal && psVal !== filters.pS) {
         dispatch(filterDept(psVal));
-=======
-      const urlLine = params.get("line");
-      const urlProcess = params.get("processNo");
-      if (urlProcess && urlProcess !== filters.processNo) {
-        dispatch(filterProcessNo(urlProcess));
->>>>>>> 875f170 (Fix home navigation preserve line filter and clear process filter)
       }
 
       // 4. Restore or clear Process / Card
-      const procVal = params.get("processNo") || "";
-      if (procVal !== filters.processNo) {
-        dispatch(filterProcessNo(procVal));
-      }
-      const cardVal = params.get("cardNo") || "";
-      if (cardVal !== filters.cardNo) {
-        dispatch(filterCardNo(cardVal));
+      if (isMainRoute) {
+        const procVal = params.get("processNo") || "";
+        if (procVal !== filters.processNo) {
+          dispatch(filterProcessNo(procVal));
+        }
+        const cardVal = params.get("cardNo") || "";
+        if (cardVal !== filters.cardNo) {
+          dispatch(filterCardNo(cardVal));
+        }
       }
     };
 
@@ -266,10 +269,15 @@ function Filters() {
 
   // Synchronize on route / searchParam transitions
   useEffect(() => {
+    const isMainRoute =
+      location.pathname === "/" ||
+      location.pathname.startsWith("/pending") ||
+      location.pathname.startsWith("/allMachine");
+
     const params = new URLSearchParams(location.search);
     const state = window.history.state || {};
 
-    const dateStr = params.get("date") || (location.pathname === "/" || location.pathname.startsWith("/pending") ? state.filterDate : null);
+    const dateStr = params.get("date") || (isMainRoute ? state.filterDate : null);
     if (dateStr) {
       const parts = dateStr.split("-");
       if (parts.length === 3) {
@@ -284,24 +292,37 @@ function Filters() {
     if (urlPs && urlPs !== filters.pS) {
       dispatch(filterDept(urlPs));
     }
-    const urlLine = params.get("line");
-    if (urlLine !== null && urlLine !== filters.line) {
-      dispatch(filterMainLine(urlLine));
-    }
 
-    const urlProcess = params.get("processNo");
-    if (urlProcess !== null && urlProcess !== filters.processNo) {
-      dispatch(filterProcessNo(urlProcess));
-    } else if (location.pathname === "/" && !params.has("processNo") && filters.processNo !== "") {
-      // Clear processNo when returning to home without processNo
-      dispatch(filterProcessNo(""));
-    }
+    // Only synchronize line, processNo, and cardNo on main dashboard routes
+    // to prevent single-card routes (like /checkList) from corrupting global home filters
+    if (isMainRoute) {
+      const urlLine = params.get("line");
+      if (urlLine !== null) {
+        if (urlLine !== filters.line) {
+          dispatch(filterMainLine(urlLine));
+        }
+      } else if (filters.line !== null) {
+        // If on main route and no line param in URL, line should be cleared (All Lines)
+        dispatch(filterMainLine(null));
+      }
 
-    const urlCard = params.get("cardNo");
-    if (urlCard !== null && urlCard !== filters.cardNo) {
-      dispatch(filterCardNo(urlCard));
-    } else if (location.pathname === "/" && !params.has("cardNo") && filters.cardNo !== "") {
-      dispatch(filterCardNo(""));
+      const urlProcess = params.get("processNo");
+      if (urlProcess !== null) {
+        if (urlProcess !== filters.processNo) {
+          dispatch(filterProcessNo(urlProcess));
+        }
+      } else if (filters.processNo !== "") {
+        dispatch(filterProcessNo(""));
+      }
+
+      const urlCard = params.get("cardNo");
+      if (urlCard !== null) {
+        if (urlCard !== filters.cardNo) {
+          dispatch(filterCardNo(urlCard));
+        }
+      } else if (filters.cardNo !== "") {
+        dispatch(filterCardNo(""));
+      }
     }
   }, [location.pathname, location.search, dispatch]);
 
@@ -662,6 +683,13 @@ function Filters() {
     };
   }
 
+  const homeParams = new URLSearchParams();
+  const dateFormattedStr = formatDateToYMD(date);
+  if (dateFormattedStr) homeParams.set("date", dateFormattedStr);
+  if (filters.pS) homeParams.set("pS", filters.pS);
+  if (filters.line) homeParams.set("line", filters.line);
+  const homeUrl = `/?${homeParams.toString()}`;
+
   return (
     <Fragment>
       {/* Structured Modern Filter Toolbar */}
@@ -670,9 +698,10 @@ function Filters() {
         <div className="d-flex align-items-center flex-wrap gap-2">
           {/* Home Button */}
           <Link
-            to="/"
+            to={homeUrl}
             onClick={() => {
               dispatch(filterProcessNo(""));
+              dispatch(filterCardNo(""));
             }}
             style={{ textDecoration: "none" }}
           >

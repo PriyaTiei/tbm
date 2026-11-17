@@ -53,49 +53,65 @@ function SmileCard() {
     }
   }
 
+  const dateFromUrl = searchParams.get("date");
+  let dVal = filters.d;
+  let wVal = filters.w;
+  let mVal = filters.m;
+  let yVal = filters.y;
+  let entryForQueryStr = dateFromUrl || `${filters.y}-${filters.m}-${filters.dt}`;
+
+  if (dateFromUrl) {
+    const parts = dateFromUrl.split("-");
+    if (parts.length === 3) {
+      const parsedDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+      if (!isNaN(parsedDate.getTime())) {
+        dVal = parsedDate.getDay();
+        wVal = Math.floor(parsedDate.getDate() / 7.1) + 1;
+        mVal = parsedDate.getMonth() + 1;
+        yVal = parsedDate.getFullYear();
+      }
+    }
+  }
+
   const queryParams = [];
-  if (filters.d !== undefined && filters.d !== null && filters.d !== "") queryParams.push(`d=${filters.d}`);
-  if (filters.w !== undefined && filters.w !== null && filters.w !== "") queryParams.push(`w=${filters.w}`);
-  if (filters.m !== undefined && filters.m !== null && filters.m !== "") queryParams.push(`m=${filters.m}`);
-  if (filters.y !== undefined && filters.y !== null && filters.y !== "") queryParams.push(`y=${filters.y}`);
-  
+  if (dVal !== undefined && dVal !== null && dVal !== "") queryParams.push(`d=${dVal}`);
+  if (wVal !== undefined && wVal !== null && wVal !== "") queryParams.push(`w=${wVal}`);
+  if (mVal !== undefined && mVal !== null && mVal !== "") queryParams.push(`m=${mVal}`);
+  if (yVal !== undefined && yVal !== null && yVal !== "") queryParams.push(`y=${yVal}`);
+
   const urlPs = searchParams.get("pS");
   const effectivePs = urlPs || filters.pS;
   if (effectivePs !== undefined && effectivePs !== null && effectivePs !== "") queryParams.push(`pS=${effectivePs}`);
   if (filters.rS !== undefined && filters.rS !== null && filters.rS !== "") queryParams.push(`rS=${filters.rS}`);
+
+  if (processNoParam) {
+    queryParams.push(`processNo=${encodeURIComponent(processNoParam)}`);
+  }
 
   const checkItemIdParam = searchParams.get("checkItemId");
   if (checkItemIdParam) {
     queryParams.push(`checkItemId=${encodeURIComponent(checkItemIdParam)}`);
   }
 
-  let processNoAdded = false;
+  const lineParam = searchParams.get("line");
+  if (lineParam) {
+    queryParams.push(`line=${encodeURIComponent(lineParam)}`);
+  }
+
   for (const [key, val] of searchParams.entries()) {
-    if (key === "processNo") {
-      const pVal = processNoParam || val;
-      if (pVal !== "" && pVal !== undefined && pVal !== null) {
-        queryParams.push(`processNo=${encodeURIComponent(pVal)}`);
-        processNoAdded = true;
-      }
-    } else if (val !== "" && val !== undefined && val !== null) {
-      // Avoid pushing leftover fragment keys caused by unencoded '&' in processNo
+    if (
+      !["d", "w", "m", "y", "pS", "rS", "processNo", "checkItemId", "line", "page", "date"].includes(key) &&
+      val !== "" &&
+      val !== undefined &&
+      val !== null
+    ) {
       if (!processNoParam || !processNoParam.includes(key)) {
         queryParams.push(`${key}=${encodeURIComponent(val)}`);
       }
     }
   }
 
-  if (!processNoAdded && processNoParam) {
-    queryParams.push(`processNo=${encodeURIComponent(processNoParam)}`);
-  }
-
   let queryStr = queryParams.join("&");
-  let entryForQueryStr = searchParams.get("date") || `${filters.y}-${filters.m}-${filters.dt}`;
-  for (const [f, v] of searchParams.entries()) {
-    if (f !== "page" && f !== "date" && !queryParams.some((item) => item.startsWith(`${f}=`))) {
-      queryStr = queryStr + (queryStr ? "&" : "") + f + "=" + encodeURIComponent(v);
-    }
-  }
 
   // URL & Browser History page synchronization
   const urlPage = parseInt(searchParams.get("page"), 10);
@@ -116,25 +132,17 @@ function SmileCard() {
     }
   }, [searchParams]);
 
-  // Listen to standard browser popstate events (< back button)
+  // Keep URL search params updated with current page using replaceState (does not clutter back history)
   useEffect(() => {
-    const handlePopState = (e) => {
-      const statePage = e.state?.page;
-      const params = new URLSearchParams(window.location.search);
-      const paramPage = parseInt(params.get("page"), 10);
-      const target = statePage || (!isNaN(paramPage) && paramPage > 0 ? paramPage : 1);
-      setPage(target);
-    };
-
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
-
-  // Ensure current history entry records page
-  useEffect(() => {
-    const currentState = window.history.state || {};
-    if (currentState.page !== page) {
-      window.history.replaceState({ ...currentState, page }, "", window.location.href);
+    const params = new URLSearchParams(window.location.search);
+    const p = parseInt(params.get("page"), 10);
+    if (p !== page) {
+      params.set("page", String(page));
+      window.history.replaceState(
+        { ...(window.history.state || {}), page },
+        "",
+        `${window.location.pathname}?${params.toString()}${window.location.hash || ""}`
+      );
     }
   }, [page]);
   // const {checkedBy} = checkItems.checkItem.headCheckList[0] ? checkItems.checkItem.headCheckList[0] :""
@@ -177,31 +185,29 @@ function SmileCard() {
       : 0;
   let disabledNext = page < totalCount ? null : "disabled";
   const changePage = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    const newParams = new URLSearchParams(location.search);
-    newParams.set("page", String(nextPage));
-    window.history.pushState(
-      { ...(window.history.state || {}), page: nextPage },
-      "",
-      `${location.pathname}?${newParams.toString()}${location.hash || ""}`
-    );
+    if (page < totalCount) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      const newParams = new URLSearchParams(location.search);
+      newParams.set("page", String(nextPage));
+      window.history.replaceState(
+        { ...(window.history.state || {}), page: nextPage },
+        "",
+        `${location.pathname}?${newParams.toString()}${location.hash || ""}`
+      );
+    }
   };
   const changePageMinus = () => {
     if (page > 1) {
-      if (window.history.state && window.history.state.page === page) {
-        window.history.back();
-      } else {
-        const prevPage = page - 1;
-        setPage(prevPage);
-        const newParams = new URLSearchParams(location.search);
-        newParams.set("page", String(prevPage));
-        window.history.pushState(
-          { ...(window.history.state || {}), page: prevPage },
-          "",
-          `${location.pathname}?${newParams.toString()}${location.hash || ""}`
-        );
-      }
+      const prevPage = page - 1;
+      setPage(prevPage);
+      const newParams = new URLSearchParams(location.search);
+      newParams.set("page", String(prevPage));
+      window.history.replaceState(
+        { ...(window.history.state || {}), page: prevPage },
+        "",
+        `${location.pathname}?${newParams.toString()}${location.hash || ""}`
+      );
     }
   };
 
