@@ -146,11 +146,17 @@ function SummaryAbnormality() {
     }));
   };
 
-  const deptOptions = [
-    { value: "", label: "All Dept" },
-    { value: "S", label: "Production" },
-    { value: "P", label: "Maintenance" },
-  ];
+  const deptOptions = isUtilityOrFacility
+    ? [
+        { value: "", label: "All Dept" },
+        { value: "P", label: "Inhouse" },
+        { value: "S", label: "Vendor" },
+      ]
+    : [
+        { value: "", label: "All Dept" },
+        { value: "S", label: "Production" },
+        { value: "P", label: "Maintenance" },
+      ];
 
   const deptHandler = (e) => {
     setFilterObject((prev) => ({
@@ -215,9 +221,9 @@ function SummaryAbnormality() {
           : "",
       Department:
         item.pS === "S"
-          ? "Production"
+          ? (isUtilityOrFacility ? "Vendor" : "Production")
           : item.pS === "P"
-            ? "Maintenance"
+            ? (isUtilityOrFacility ? "Inhouse" : "Maintenance")
             : item.pS || "",
       Line: item.line || "",
       "Process No": item.processNo || "",

@@ -88,8 +88,8 @@ function SmileCardAdd() {
 
   const optionsPS = isUtilityOrFacility
     ? [
-        { value: "P", label: "Maintenance Dept" },
-        { value: "S", label: "Service Dept" },
+        { value: "P", label: "Inhouse" },
+        { value: "S", label: "Vendor" },
       ]
     : [
         { value: "P", label: "Maintenance Dept" },
@@ -307,7 +307,9 @@ function SmileCardAdd() {
         <div className="tbm-header-actions">
           <span className="badge bg-light text-dark border px-3 py-2 fw-semibold">
             <i className="bi bi-building me-1 text-secondary"></i>
-            {pS === "S" ? "Production Dept" : "Maintenance Dept"}
+            {isUtilityOrFacility
+              ? (pS === "S" ? "Vendor" : "Inhouse")
+              : (pS === "S" ? "Production Dept" : "Maintenance Dept")}
           </span>
           <span className="tbm-required-pill">
             <i className="bi bi-asterisk"></i> Required Fields

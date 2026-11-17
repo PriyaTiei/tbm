@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import "./TbmOverallStatus.css";
+import { getActivePlantInfo } from "../../config/plantEquipmentMaster";
 
 export default function TbmOverallStatus() {
+  const { isUtilityOrFacility } = getActivePlantInfo();
   // Format today as YYYY-MM-DD
   const getTodayStr = () => {
     const now = new Date();
@@ -175,7 +177,9 @@ export default function TbmOverallStatus() {
         toDate: toDate,
         isRange: fromDate !== toDate,
         pS: department,
-        departmentName: department === "P" ? "Maintenance (TBM)" : "Production (Smile Card)",
+        departmentName: department === "P"
+          ? (isUtilityOrFacility ? "Inhouse" : "Maintenance (TBM)")
+          : (isUtilityOrFacility ? "Vendor" : "Production (Smile Card)"),
         lines: linesData,
         total: totals,
         todaysTbmStatus: {
@@ -295,7 +299,9 @@ export default function TbmOverallStatus() {
       [],
       ["FROM DATE", fromDate],
       ["TO DATE", toDate],
-      ["DEPARTMENT", department === "P" ? "Maintenance (TBM)" : "Production (Smile Card)"],
+      ["DEPARTMENT", department === "P"
+        ? (isUtilityOrFacility ? "Inhouse" : "Maintenance (TBM)")
+        : (isUtilityOrFacility ? "Vendor" : "Production (Smile Card)")],
       ["FILTER VIEW", lineFilter],
       [],
       [
@@ -396,16 +402,16 @@ export default function TbmOverallStatus() {
             <button
               className={`segmented-btn ${department === "P" ? "active" : ""}`}
               onClick={() => setDepartment("P")}
-              title="Maintenance TBM"
+              title={isUtilityOrFacility ? "Inhouse" : "Maintenance TBM"}
             >
-              <i className="bi bi-tools"></i> Mnt (TBM)
+              <i className="bi bi-tools"></i> {isUtilityOrFacility ? "Inhouse" : "Mnt (TBM)"}
             </button>
             <button
               className={`segmented-btn ${department === "S" ? "active-blue" : ""}`}
               onClick={() => setDepartment("S")}
-              title="Production Smile Card"
+              title={isUtilityOrFacility ? "Vendor" : "Production Smile Card"}
             >
-              <i className="bi bi-person-check"></i> Prod (Smile Card)
+              <i className="bi bi-person-check"></i> {isUtilityOrFacility ? "Vendor" : "Prod (Smile Card)"}
             </button>
           </div>
 

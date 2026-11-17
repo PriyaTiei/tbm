@@ -460,8 +460,10 @@ import "./summaryCard.css";
 
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { getActivePlantInfo } from "../config/plantEquipmentMaster";
 
 function SummaryCard() {
+  const { isUtilityOrFacility } = getActivePlantInfo();
   const [showGraph, setShowGraph] = useState(true);
 
   const customFilterSelectStyles = {
@@ -608,11 +610,17 @@ function SummaryCard() {
     }));
   };
 
-  const deptOptions = [
-    { value: "", label: "All Departments" },
-    { value: "S", label: "Production." },
-    { value: "P", label: "Maintenance" },
-  ];
+  const deptOptions = isUtilityOrFacility
+    ? [
+        { value: "", label: "All Departments" },
+        { value: "P", label: "Inhouse" },
+        { value: "S", label: "Vendor" },
+      ]
+    : [
+        { value: "", label: "All Departments" },
+        { value: "S", label: "Production." },
+        { value: "P", label: "Maintenance" },
+      ];
 
   const deptHandler = (e) => {
     setFilterObject((prevFilterObject) => ({

@@ -4,8 +4,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { getCards } from "../redux/card/cardActions";
 import CardRecordUpdate from "./CardRecordUpdate";
 import AbnormalityImageModal from "./AbnormalityImageModal";
+import { getActivePlantInfo } from "../config/plantEquipmentMaster";
 
 function CardDoc({ item, fromDateSt, toDateSt }) {
+  const { isUtilityOrFacility } = getActivePlantInfo();
   const {
     createdAt,
     line,
@@ -75,7 +77,7 @@ function CardDoc({ item, fromDateSt, toDateSt }) {
       }
     >
       <td>{createdAt ? createdAt.slice(0, 10) : ""}</td>
-      <td>{pS === "P" ? "Maint." : (pS === "S" ? "Prod." : "")}</td>
+      <td>{pS === "P" ? (isUtilityOrFacility ? "Inhouse" : "Maint.") : (pS === "S" ? (isUtilityOrFacility ? "Vendor" : "Prod.") : "")}</td>
       <td>{line}</td>
       <td>{processNo}</td>
       <td>{workDetail}</td>
