@@ -35,7 +35,9 @@ export const getMachines = (queryStr) => {
           console.log("getMachines API data:", result.data);  // <-- check structure here
           console.log("One machine entry:", result.data.machineData[0]);
 
-        dispatch(machineFetchSuccess(result.data));
+        const queryParams = new URLSearchParams(queryStr);
+        const queryPs = queryParams.get("pS");
+        dispatch(machineFetchSuccess({ ...result.data, pS: result.data.pS || queryPs, queryStr }));
       })
       .catch((err) => {
         dispatch(machineFetchFail(err.message));
@@ -50,7 +52,9 @@ export const getAllMachines = (queryStr) => {
     axios
       .get(url)
       .then((result) => {
-        dispatch(machineFetchSuccess(result.data));
+        const queryParams = new URLSearchParams(queryStr);
+        const queryPs = queryParams.get("pS");
+        dispatch(machineFetchSuccess({ ...result.data, pS: result.data.pS || queryPs, queryStr }));
       })
       .catch((err) => {
         dispatch(machineFetchFail(err.message));
@@ -65,7 +69,9 @@ export const getDeletedCheckItems = (queryStr) => {
     axios
       .get(url)
       .then((result) => {
-        dispatch(machineFetchSuccess(result.data));
+        const queryParams = new URLSearchParams(queryStr);
+        const queryPs = queryParams.get("pS");
+        dispatch(machineFetchSuccess({ ...result.data, pS: result.data.pS || queryPs, queryStr }));
       })
       .catch((err) => {
         dispatch(machineFetchFail(err.message));

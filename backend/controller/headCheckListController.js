@@ -1078,6 +1078,7 @@ exports.getHeadMachineList = catchAsyncError(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     machineData,
+    pS: req.query.pS,
     totalCount: { totalCountBlock, totalCountCrank, totalCountHead },
   });
 });
