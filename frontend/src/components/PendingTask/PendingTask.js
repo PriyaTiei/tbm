@@ -826,6 +826,14 @@ import PendingLine from "./PendingLine";
 import Loading from "../Loading";
 import { Button } from "react-bootstrap";
 import axios from "axios";
+import DatePicker from "react-date-picker";
+
+const formatLocalYMD = (d) => {
+  if (!d) return "";
+  const dt = d instanceof Date ? d : new Date(d);
+  if (isNaN(dt.getTime())) return "";
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+};
 
 export default function PendingTask() {
   const dispatch = useDispatch();
@@ -843,6 +851,27 @@ export default function PendingTask() {
   const [isExcelDataReady, setIsExcelDataReady] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [genMessage, setGenMessage] = useState("");
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
+
+  const handleFromDateChange = (val) => {
+    setFromDate(val || null);
+    if (val && toDate && formatLocalYMD(val) > formatLocalYMD(toDate)) {
+      setToDate(val);
+    }
+  };
+
+  const handleToDateChange = (val) => {
+    setToDate(val || null);
+    if (val && fromDate && formatLocalYMD(val) < formatLocalYMD(fromDate)) {
+      setFromDate(val);
+    }
+  };
+
+  const handleClearDates = () => {
+    setFromDate(null);
+    setToDate(null);
+  };
 
   const handleGeneratePending = () => {
     setGenerating(true);
@@ -886,13 +915,16 @@ export default function PendingTask() {
       ? `${filters.y}-${String(filters.m).padStart(2, "0")}-${String(filters.dt).padStart(2, "0")}`
       : "";
 
-  console.log("filters =", filters);
+  const fromDateStr = formatLocalYMD(fromDate);
+  const toDateStr = formatLocalYMD(toDate);
 
   const queryStr =
     `pS=${filters.pS || ""}` +
     (filters.line ? `&line=${encodeURIComponent(filters.line)}` : "") +
     (filters.rS ? `&rS=${encodeURIComponent(filters.rS)}` : "") +
     (dateStr ? `&date=${dateStr}` : "") +
+    (fromDateStr ? `&fromDate=${fromDateStr}` : "") +
+    (toDateStr ? `&toDate=${toDateStr}` : "") +
     (filters.dt !== undefined && filters.dt !== null ? `&dt=${filters.dt}` : "") +
     (filters.d !== undefined && filters.d !== null ? `&d=${filters.d}` : "") +
     (filters.w !== undefined && filters.w !== null ? `&w=${filters.w}` : "") +
@@ -1004,8 +1036,18 @@ export default function PendingTask() {
       let days = item.daysOld;
       if (days === undefined || days === null || isNaN(days)) {
         if (item.entryDates && item.entryDates.length > 0) {
-          const earliestDate = new Date(Math.min(...item.entryDates.map((d) => new Date(d))));
-          days = Math.ceil((new Date().getTime() - earliestDate.getTime()) / (1000 * 3600 * 24));
+          const ymds = item.entryDates.map(formatLocalYMD).filter(Boolean);
+          if (ymds.length > 0) {
+            const earliestYMD = ymds.reduce((min, ymd) => (ymd < min ? ymd : min), ymds[0]);
+            const refYMD = toDateStr || (!fromDateStr ? dateStr : "") || formatLocalYMD(new Date());
+            const [ey, em, ed] = earliestYMD.split("-").map(Number);
+            const [ry, rm, rd] = refYMD.split("-").map(Number);
+            const earliestUtc = Date.UTC(ey, em - 1, ed);
+            const refUtc = Date.UTC(ry, rm - 1, rd);
+            days = Math.max(1, Math.round((refUtc - earliestUtc) / (1000 * 3600 * 24)));
+          } else {
+            days = 0;
+          }
         } else {
           days = 0;
         }
@@ -1041,7 +1083,7 @@ export default function PendingTask() {
         };
       })
       .filter((lineItem) => lineItem.processList.length > 0);
-  }, [ageFilter, pendingTasksData, ageFilteredData]);
+  }, [ageFilter, pendingTasksData, ageFilteredData, fromDateStr, toDateStr, dateStr]);
 
   // Determine loading state
   const isLoading = ageFilter === "ALL" ? loading : ageFilterLoading;
@@ -1223,14 +1265,18 @@ function buildExcelRowsFromData(data) {
       return;
     }
 
-    const currentDate = new Date().toISOString().slice(0, 10);
+    const currentDate = formatLocalYMD(new Date());
+    const dateRangeSuffix =
+      fromDateStr || toDateStr
+        ? `-${fromDateStr || "start"}-to-${toDateStr || "latest"}`
+        : "";
     const filterSuffix = ageFilter !== "ALL" ? `-${ageFilter}-days` : "";
     
     let filterInfo = "";
     if (filters.line) filterInfo += `-line-${filters.line}`;
     if (filters.rS) filterInfo += `-rS-${filters.rS}`;
     
-    const filename = `${currentDate}-pending-cards${filterInfo}${filterSuffix}.xlsx`;
+    const filename = `${currentDate}-pending-cards${dateRangeSuffix}${filterInfo}${filterSuffix}.xlsx`;
     
     const worksheet = XLSX.utils.aoa_to_sheet([header, ...body]);
     const workbook = XLSX.utils.book_new();
@@ -1258,11 +1304,57 @@ function buildExcelRowsFromData(data) {
                   value={ageFilter}
                   onChange={(e) => setAgeFilter(e.target.value)}
                 >
-                  <option value="ALL">All Overdue (Start to Date)</option>
+                  <option value="ALL">
+                    {fromDateStr || toDateStr ? "All Overdue (Selected Dates)" : "All Overdue (Start to Date)"}
+                  </option>
                   <option value="1-10">Overdue 1–10 days</option>
                   <option value="11-20">Overdue 11–20 days</option>
                   <option value=">20">Overdue &gt;20 days</option>
                 </select>
+              </div>
+
+              {/* Date Range Filter (From Date to To Date) */}
+              <div className="d-flex align-items-center flex-wrap gap-2">
+                <label className="mb-0 fw-semibold text-secondary" style={{ fontSize: "0.88rem" }}>
+                  <i className="bi bi-calendar-range me-1" style={{ color: "#0d9488" }}></i> Dates:
+                </label>
+                <div className="d-flex align-items-center gap-1">
+                  <span className="text-muted small">From</span>
+                  <div
+                    className="d-flex align-items-center bg-white border rounded px-2 position-relative"
+                    style={{ height: "31px", borderColor: "#dee2e6" }}
+                  >
+                    <DatePicker
+                      onChange={handleFromDateChange}
+                      value={fromDate}
+                      format="dd/MM/yyyy"
+                    />
+                  </div>
+                </div>
+                <div className="d-flex align-items-center gap-1">
+                  <span className="text-muted small">To</span>
+                  <div
+                    className="d-flex align-items-center bg-white border rounded px-2 position-relative"
+                    style={{ height: "31px", borderColor: "#dee2e6" }}
+                  >
+                    <DatePicker
+                      onChange={handleToDateChange}
+                      value={toDate}
+                      format="dd/MM/yyyy"
+                    />
+                  </div>
+                </div>
+                {(fromDate || toDate) && (
+                  <button
+                    type="button"
+                    onClick={handleClearDates}
+                    className="btn btn-sm btn-outline-secondary py-0 px-2"
+                    style={{ fontSize: "0.78rem", height: "31px" }}
+                    title="Clear date range filter"
+                  >
+                    Clear
+                  </button>
+                )}
               </div>
 
               {/* Clickable Overdue Summary Badges (items since first missed date) */}
@@ -1312,11 +1404,20 @@ function buildExcelRowsFromData(data) {
               </div>
 
               {/* Clarify Station Cards vs Individual Pending Items */}
-              {displayData && displayData.length > 0 && (
+              {displayData && (
                 <div className="d-none d-md-flex align-items-center text-muted small border-start ps-3 ms-1" style={{ fontSize: "0.82rem" }}>
                   <i className="bi bi-info-circle me-1 text-primary"></i>
                   <span>
-                    Up to <strong>{dateStr || "Today"}</strong> · Showing{" "}
+                    {fromDateStr && toDateStr ? (
+                      <>From <strong>{fromDateStr}</strong> to <strong>{toDateStr}</strong></>
+                    ) : fromDateStr ? (
+                      <>From <strong>{fromDateStr}</strong> onwards</>
+                    ) : toDateStr ? (
+                      <>Up to <strong>{toDateStr}</strong></>
+                    ) : (
+                      <>Up to <strong>{dateStr || "Today"}</strong></>
+                    )}{" "}
+                    · Showing{" "}
                     <strong>{displayData.reduce((acc, l) => acc + (l.processList || []).length, 0)}</strong> Cards&nbsp;
                     (<strong>{displayData.reduce((acc, l) => acc + (l.processList || []).reduce((pAcc, p) => pAcc + (p.processData || []).length, 0), 0)}</strong> Pending Items)
                   </span>
@@ -1385,10 +1486,11 @@ function buildExcelRowsFromData(data) {
               ))
             ) : (
               <div className="text-center w-100 py-4">
-                {ageFilter !== "ALL" ? 
-                  `No pending tasks found for Overdue ${ageFilter} days range.` : 
-                  "No pending tasks available."
-                }
+                {ageFilter !== "ALL"
+                  ? `No pending tasks found for Overdue ${ageFilter} days range.`
+                  : fromDateStr || toDateStr
+                  ? `No pending tasks found between ${fromDateStr || "start"} and ${toDateStr || "latest"}.`
+                  : "No pending tasks available."}
               </div>
             )}
           </div>
