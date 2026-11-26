@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import "./TbmOverallStatus.css";
 import { getActivePlantInfo } from "../../config/plantEquipmentMaster";
 
 export default function TbmOverallStatus() {
+  const location = useLocation();
   const { isUtilityOrFacility } = getActivePlantInfo();
   // Format today as YYYY-MM-DD
   const getTodayStr = () => {
@@ -201,7 +202,7 @@ export default function TbmOverallStatus() {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, [fetchData, location.key]);
 
   // Group lines into Machining (3C) vs Assembly
   const {

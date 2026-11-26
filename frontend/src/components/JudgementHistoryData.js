@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import * as XLSX from "xlsx";
 import "./trend.css";
 
 const JudgementHistoryData = ({ checkItem, byData = "no" }) => {
+  const location = useLocation();
   const auth = useSelector((state) => state.auth);
   const role = auth.user ? auth.user.role : 0;
 
@@ -54,7 +56,7 @@ const JudgementHistoryData = ({ checkItem, byData = "no" }) => {
     return () => {
       isMounted = false;
     };
-  }, [checkItem, byData]);
+  }, [checkItem, byData, location.key]);
 
   // Toggle Verification (TL/GL)
   const verifyToggle = (targetRole, currentStatus, id) => {

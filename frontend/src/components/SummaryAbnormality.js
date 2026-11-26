@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { getAbnormality } from "../redux/abnormality/abnormalityActions";
 import { useDispatch, useSelector } from "react-redux";
 import AbnormilityDoc from "./AbnormalityDoc";
@@ -53,6 +54,7 @@ const compactFilterSelect = {
 };
 
 function SummaryAbnormality() {
+  const location = useLocation();
   const plantNameUpper = (process.env.REACT_APP_PLANT || "").toUpperCase();
   const isUtility = plantNameUpper.includes("UTIL");
   const isFacility = plantNameUpper.includes("FACIL");
@@ -108,7 +110,7 @@ function SummaryAbnormality() {
 
   useEffect(() => {
     dispatch(getAbnormality(fromDateSt, toDateSt, queryStr));
-  }, [dispatch, fromDate, toDate, filterObject]);
+  }, [dispatch, fromDate, toDate, filterObject, location.key]);
 
   const abnormalities = useSelector((state) => state.abnormalities);
   const abnormalityList = abnormalities.loading
