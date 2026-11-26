@@ -828,11 +828,62 @@ import { Button } from "react-bootstrap";
 import axios from "axios";
 import DatePicker from "react-date-picker";
 
+const IST_OFFSET_MS = 330 * 60 * 1000;
+
 const formatLocalYMD = (d) => {
   if (!d) return "";
   const dt = d instanceof Date ? d : new Date(d);
   if (isNaN(dt.getTime())) return "";
   return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+};
+
+// Normalize API ISO/Date timestamps into IST calendar "YYYY-MM-DD" to match backend filter dates
+const normalizeISTYMD = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    const match = trimmed.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (match) {
+      return `${match[1]}-${match[2].padStart(2, "0")}-${match[3].padStart(2, "0")}`;
+    }
+  }
+  const dt = value instanceof Date ? value : new Date(value);
+  if (isNaN(dt.getTime())) return "";
+  const ist = new Date(dt.getTime() + IST_OFFSET_MS);
+  const y = ist.getUTCFullYear();
+  const m = String(ist.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(ist.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+};
+
+const formatDDMMYY = (ymd) => {
+  if (!ymd) return "N/A";
+  const parts = String(ymd).split("-");
+  if (parts.length !== 3) return "N/A";
+  const [yyyy, mm, dd] = parts;
+  return `${dd.padStart(2, "0")}/${mm.padStart(2, "0")}/${yyyy.slice(-2)}`;
+};
+
+// Pick latest pending date matching the active date range (or up to header date), formatted DD/MM/YY
+const getLatestPendingDateFormatted = (dataItem, { fromDateStr = "", toDateStr = "", dateStr = "" } = {}) => {
+  const rawDates =
+    Array.isArray(dataItem?.entryDates) && dataItem.entryDates.length > 0
+      ? dataItem.entryDates
+      : dataItem?.createdAt
+      ? [dataItem.createdAt]
+      : [];
+  const ymds = rawDates.map(normalizeISTYMD).filter(Boolean).sort();
+  if (ymds.length === 0) return "N/A";
+
+  const hasRange = Boolean(fromDateStr || toDateStr);
+  const matching = hasRange
+    ? ymds.filter((ymd) => (!fromDateStr || ymd >= fromDateStr) && (!toDateStr || ymd <= toDateStr))
+    : dateStr
+    ? ymds.filter((ymd) => ymd <= dateStr)
+    : ymds;
+
+  const chosenYMD = matching.length > 0 ? matching[matching.length - 1] : ymds[ymds.length - 1];
+  return formatDDMMYY(chosenYMD);
 };
 
 export default function PendingTask() {
@@ -1036,7 +1087,7 @@ export default function PendingTask() {
       let days = item.daysOld;
       if (days === undefined || days === null || isNaN(days)) {
         if (item.entryDates && item.entryDates.length > 0) {
-          const ymds = item.entryDates.map(formatLocalYMD).filter(Boolean);
+          const ymds = item.entryDates.map(normalizeISTYMD).filter(Boolean);
           if (ymds.length > 0) {
             const earliestYMD = ymds.reduce((min, ymd) => (ymd < min ? ymd : min), ymds[0]);
             const refYMD = toDateStr || (!fromDateStr ? dateStr : "") || formatLocalYMD(new Date());
@@ -1100,6 +1151,7 @@ export default function PendingTask() {
 
     const columns = [
       "SL NO",
+      "PENDING DATE",
       "LINE",
       "OP NO",
       "WORK DETAIL",
@@ -1113,7 +1165,7 @@ export default function PendingTask() {
 
     const buildExcelData = () => {
       try {
-        const rows = buildExcelRowsFromData(displayData);
+        const rows = buildExcelRowsFromData(displayData, { fromDateStr, toDateStr, dateStr });
         setBody(rows);
         setIsExcelDataReady(true);
       } catch (error) {
@@ -1124,7 +1176,7 @@ export default function PendingTask() {
 
     const timeoutId = setTimeout(buildExcelData, 300);
     return () => clearTimeout(timeoutId);
-  }, [displayData]);
+  }, [displayData, fromDateStr, toDateStr, dateStr]);
 
   // Helper function to safely extract string value
   function extractStringValue(value, fallback = "") {
@@ -1205,7 +1257,7 @@ export default function PendingTask() {
   //   return rows;
   // }
 
-function buildExcelRowsFromData(data) {
+function buildExcelRowsFromData(data, dateContext = {}) {
   let index = 1;
   const rows = [];
 
@@ -1216,6 +1268,7 @@ function buildExcelRowsFromData(data) {
       if (!process.processData || process.processData.length === 0) {
         rows.push([
           index++,
+          "",
           pending.line || "",
           process.processNo || "N/A",
           "No process data available",
@@ -1230,6 +1283,7 @@ function buildExcelRowsFromData(data) {
 
       process.processData.forEach((dataItem) => {
         // Now both APIs return the same flattened structure
+        const pendingDate = getLatestPendingDateFormatted(dataItem, dateContext);
         const workDetail = dataItem.workDetail || "N/A";
         const frequency = dataItem.frequency || "N/A";
         const measurement = dataItem.measurement || "N/A";
@@ -1243,6 +1297,7 @@ function buildExcelRowsFromData(data) {
         
         rows.push([
           index++,
+          pendingDate,
           pending.line || "",
           opNo,
           workDetail,
