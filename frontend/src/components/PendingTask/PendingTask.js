@@ -1058,8 +1058,6 @@ export default function PendingTask() {
 
     const columns = [
       "SL NO",
-      "FIRST MISSED DATE",
-      "LATEST PLAN DATE", 
       "LINE",
       "OP NO",
       "WORK DETAIL",
@@ -1067,8 +1065,7 @@ export default function PendingTask() {
       "MEASUREMENT",
       "STANDARD VALUE",
       "LATEST ACTUAL VALUE",
-      "LAST COMPLETED DATE",
-      "DAYS OLD" // Add days old column
+      "DAYS OLD"
     ];
     setHeader(columns);
 
@@ -1175,15 +1172,11 @@ function buildExcelRowsFromData(data) {
 
     pending.processList.forEach((process) => {
       if (!process.processData || process.processData.length === 0) {
-        const fallbackDate = process.createdAt?.split("T")[0] || "";
         rows.push([
           index++,
-          fallbackDate,
-          fallbackDate,
           pending.line || "",
           process.processNo || "N/A",
           "No process data available",
-          "",
           "",
           "",
           "",
@@ -1201,31 +1194,6 @@ function buildExcelRowsFromData(data) {
         const standardValue = dataItem.standardValue || "N/A";
         const latestActualValue = dataItem.latestActualValue || "N/A";
         const daysOld = dataItem.daysOld !== undefined ? dataItem.daysOld : "N/A";
-        
-        // Handle lastCompletedDate
-        let lastCompletedDate = "N/A";
-        if (dataItem.lastCompletedDate && dataItem.lastCompletedDate !== "N/A") {
-          try {
-            lastCompletedDate = new Date(dataItem.lastCompletedDate).toISOString().split("T")[0];
-          } catch (error) {
-            console.warn("Invalid date format for lastCompletedDate:", dataItem.lastCompletedDate);
-            lastCompletedDate = "N/A";
-          }
-        }
-        
-        // Extract and sort all plan dates from entryDates to accurately find first missed date and latest plan date
-        const sortedDates = (dataItem.entryDates || [])
-          .map((d) => (d ? new Date(d) : null))
-          .filter((d) => d && !isNaN(d.getTime()))
-          .sort((a, b) => a.getTime() - b.getTime());
-
-        const firstMissedDate = sortedDates.length > 0
-          ? sortedDates[0].toISOString().split("T")[0]
-          : (dataItem.createdAt ? new Date(dataItem.createdAt).toISOString().split("T")[0] : "");
-
-        const latestPlanDate = sortedDates.length > 0
-          ? sortedDates[sortedDates.length - 1].toISOString().split("T")[0]
-          : firstMissedDate;
 
         const opNo = (process.processNo && process.processNo !== "#N/A" && process.processNo !== "N/A")
           ? process.processNo
@@ -1233,8 +1201,6 @@ function buildExcelRowsFromData(data) {
         
         rows.push([
           index++,
-          firstMissedDate,
-          latestPlanDate,
           pending.line || "",
           opNo,
           workDetail,
@@ -1242,7 +1208,6 @@ function buildExcelRowsFromData(data) {
           measurement,
           standardValue,
           latestActualValue,
-          lastCompletedDate,
           daysOld
         ]);
       });
