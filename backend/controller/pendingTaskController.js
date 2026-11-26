@@ -334,78 +334,129 @@ async function deletePendingTasks(pendingTaskList) {
 
 
 
-// Helper to parse target date from query
-const parseTargetDate = (query) => {
-  if (query.date) {
-    const parts = String(query.date).split("-").map(Number);
-    if (parts.length === 3) {
-      return new Date(parts[0], parts[1] - 1, parts[2]);
+const IST_OFFSET_MS = 330 * 60 * 1000;
+
+// Normalize query "YYYY-MM-DD" strings or Date/ISO timestamps into IST calendar "YYYY-MM-DD"
+const normalizeYMD = (value) => {
+  if (!value) return null;
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    const match = trimmed.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (match) {
+      const y = Number(match[1]);
+      const m = Number(match[2]);
+      const d = Number(match[3]);
+      if (m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+        return `${String(y).padStart(4, "0")}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      }
     }
-    const parsed = new Date(query.date);
-    if (!isNaN(parsed.getTime())) return parsed;
   }
+  const dt = value instanceof Date ? value : new Date(value);
+  if (isNaN(dt.getTime())) return null;
+  const ist = new Date(dt.getTime() + IST_OFFSET_MS);
+  const y = ist.getUTCFullYear();
+  const m = String(ist.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(ist.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+};
+
+const ymdToUtcMs = (ymd) => {
+  if (!ymd) return null;
+  const [y, m, d] = ymd.split("-").map(Number);
+  return Date.UTC(y, m - 1, d);
+};
+
+// Normalize explicit From/To pending list range query params
+const normalizeDateRange = (query = {}) => {
+  let fromYMD = normalizeYMD(query.fromDate);
+  let toYMD = normalizeYMD(query.toDate);
+  if (fromYMD && toYMD && fromYMD > toYMD) {
+    [fromYMD, toYMD] = [toYMD, fromYMD];
+  }
+  return {
+    fromYMD,
+    toYMD,
+    hasRange: Boolean(fromYMD || toYMD),
+  };
+};
+
+// Resolve effective reference calendar date ("YYYY-MM-DD") for overdue age calculation
+const resolveTargetYMD = (query = {}) => {
+  const { toYMD, hasRange } = normalizeDateRange(query);
+  if (toYMD) return toYMD;
+  if (hasRange) {
+    // From-date set without To-date: calculate age up to today instead of header date
+    return normalizeYMD(new Date());
+  }
+  const fromQueryDate = normalizeYMD(query.date);
+  if (fromQueryDate) return fromQueryDate;
   if (query.y && query.m && query.dt) {
-    return new Date(Number(query.y), Number(query.m) - 1, Number(query.dt));
+    const fromParts = normalizeYMD(`${query.y}-${query.m}-${query.dt}`);
+    if (fromParts) return fromParts;
   }
-  return new Date();
+  return normalizeYMD(new Date());
 };
 
-// Helper function to calculate days old relative to target date
-const calculateDaysOld = (entryDates, targetDate) => {
-  if (!entryDates || entryDates.length === 0) return 0;
-  
-  const earliestTime = Math.min(...entryDates.map(date => new Date(date).getTime()));
-  const ref = targetDate || new Date();
-  const timeDiff = ref.getTime() - earliestTime;
-  return Math.max(1, Math.ceil(timeDiff / (1000 * 3600 * 24)));
+// Helper function to calculate overdue calendar days relative to target date
+const calculateDaysOld = (entryDates, targetDateOrYMD, fallbackCreatedAt = null) => {
+  const rawDates =
+    Array.isArray(entryDates) && entryDates.length > 0
+      ? entryDates
+      : fallbackCreatedAt
+      ? [fallbackCreatedAt]
+      : [];
+  const ymds = rawDates.map(normalizeYMD).filter(Boolean);
+  if (ymds.length === 0) return 0;
+
+  const earliestYMD = ymds.reduce((min, ymd) => (ymd < min ? ymd : min), ymds[0]);
+  const refYMD =
+    typeof targetDateOrYMD === "string"
+      ? normalizeYMD(targetDateOrYMD)
+      : normalizeYMD(targetDateOrYMD || new Date());
+
+  const earliestMs = ymdToUtcMs(earliestYMD);
+  const refMs = ymdToUtcMs(refYMD || normalizeYMD(new Date()));
+  const diffDays = Math.round((refMs - earliestMs) / (1000 * 3600 * 24));
+  return Math.max(1, diffDays);
 };
 
-// Helper to determine if a task should be visible up to the selected target date
-// Shows all overdue pending tasks from the earliest missed date up to targetDate (regardless of weekday schedule)
-const matchesDateFilter = (task, query) => {
-  const { date, y, m, dt } = query;
+const getTaskEntryYMDs = (task) => {
+  if (Array.isArray(task.entryDates) && task.entryDates.length > 0) {
+    const ymds = task.entryDates.map(normalizeYMD).filter(Boolean);
+    if (ymds.length > 0) return ymds;
+  }
+  if (task.createdAt) {
+    const createdYMD = normalizeYMD(task.createdAt);
+    if (createdYMD) return [createdYMD];
+  }
+  return [];
+};
 
-  const checkItem = task.checkItem;
-  if (!checkItem) return false;
+// Match tasks by explicit [fromDate, toDate] range when provided, otherwise all overdue up to targetDate
+const matchesDateFilter = (task, query = {}) => {
+  if (!task || !task.checkItem) return false;
 
-  let targetDate = null;
-  if (date) {
-    const parts = String(date).split("-").map(Number);
-    if (parts.length === 3) {
-      targetDate = new Date(parts[0], parts[1] - 1, parts[2]);
-    } else {
-      const parsed = new Date(date);
-      if (!isNaN(parsed.getTime())) targetDate = parsed;
-    }
-  } else if (y && m && dt) {
-    targetDate = new Date(Number(y), Number(m) - 1, Number(dt));
+  const taskYMDs = getTaskEntryYMDs(task);
+  if (taskYMDs.length === 0) return false;
+
+  const { fromYMD, toYMD, hasRange } = normalizeDateRange(query);
+  if (hasRange) {
+    return taskYMDs.some((ymd) => {
+      if (fromYMD && ymd < fromYMD) return false;
+      if (toYMD && ymd > toYMD) return false;
+      return true;
+    });
   }
 
-  if (!targetDate || isNaN(targetDate.getTime())) {
-    return true;
-  }
+  const targetYMD = resolveTargetYMD(query);
+  if (!targetYMD) return true;
 
-  const endOfTargetDay = new Date(targetDate);
-  endOfTargetDay.setHours(23, 59, 59, 999);
-
-  // Exclude tasks first created/missed in the future relative to targetDate
-  if (task.entryDates && task.entryDates.length > 0) {
-    const earliestTime = Math.min(...task.entryDates.map((ed) => new Date(ed).getTime()));
-    if (!isNaN(earliestTime) && earliestTime > endOfTargetDay.getTime()) {
-      return false;
-    }
-  } else if (task.createdAt) {
-    const createdTime = new Date(task.createdAt).getTime();
-    if (!isNaN(createdTime) && createdTime > endOfTargetDay.getTime()) {
-      return false;
-    }
-  }
-
-  return true;
+  const earliestYMD = taskYMDs.reduce((min, ymd) => (ymd < min ? ymd : min), taskYMDs[0]);
+  return earliestYMD <= targetYMD;
 };
 
 exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
-  const targetDate = parseTargetDate(req.query);
+  const targetDate = resolveTargetYMD(req.query);
 
   try {
     // Build basic match criteria
@@ -478,7 +529,7 @@ exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
     filteredTasks.forEach(task => {
       if (!task.checkItem) return;
       
-      const daysOld = calculateDaysOld(task.entryDates, targetDate);
+      const daysOld = calculateDaysOld(task.entryDates, targetDate, task.createdAt);
       const checkItemId = task.checkItem._id.toString();
       const latestStatus = latestStatuses[checkItemId] || null;
 
@@ -964,7 +1015,7 @@ exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
       ageRange = '20+';
     }
   }
-  const targetDate = parseTargetDate(req.query);
+  const targetDate = resolveTargetYMD(req.query);
 
   // Helper function to check if task falls within age range
   const isInAgeRange = (daysOld, range) => {
@@ -1031,7 +1082,7 @@ exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
     };
 
     dateFilteredTasks.forEach(task => {
-      const daysOld = calculateDaysOld(task.entryDates, targetDate);
+      const daysOld = calculateDaysOld(task.entryDates, targetDate, task.createdAt);
       if (daysOld >= 0 && daysOld <= 10) {
         ageSummary['1-10']++;
       } else if (daysOld >= 11 && daysOld <= 20) {
@@ -1044,7 +1095,7 @@ exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
     // Filter by age range if specified
     let filteredTasks = dateFilteredTasks.filter(task => {
       if (!ageRange) return true;
-      const daysOld = calculateDaysOld(task.entryDates, targetDate);
+      const daysOld = calculateDaysOld(task.entryDates, targetDate, task.createdAt);
       return isInAgeRange(daysOld, ageRange);
     });
 
@@ -1082,7 +1133,7 @@ exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
       // Skip if checkItem is null (already filtered above, but double-check)
       if (!task.checkItem) return;
       
-      const daysOld = calculateDaysOld(task.entryDates, targetDate);
+      const daysOld = calculateDaysOld(task.entryDates, targetDate, task.createdAt);
       const checkItemId = task.checkItem._id.toString();
       const latestStatus = latestStatuses[checkItemId] || null;
 
