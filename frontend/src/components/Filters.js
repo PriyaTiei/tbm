@@ -121,7 +121,7 @@ function Filters() {
         }
       }
     } catch (e) {}
-    return todayDate;
+    return new Date();
   };
 
   const formatDateToYMD = (d) => {

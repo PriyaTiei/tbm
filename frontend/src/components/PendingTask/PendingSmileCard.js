@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState, useMemo, Fragment } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";  
 import PendingSmileCardDetails from "./PendingSmileCardDetails";  
@@ -9,22 +9,38 @@ export default function PendingSmileCard() {
   const reduxProcessData = useSelector((state) => state.processData.processData);
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const urlProcessNo = searchParams.get("processNo");
 
-  // Recover processData from location.state, history.state, or sessionStorage if Redux is empty
-  let processData = reduxProcessData;
-  if (!processData || processData.length === 0) {
-    if (location.state?.processData) {
-      processData = location.state.processData;
-    } else if (window.history.state?.processData) {
-      processData = window.history.state.processData;
-    } else {
-      try {
-        const stored = sessionStorage.getItem("tbm_pending_processData");
-        if (stored) processData = JSON.parse(stored);
-      } catch (e) {}
+  // Recover processData safely, preferring route-bound state over stale Redux/sessionStorage
+  const processData = useMemo(() => {
+    if (
+      location.state?.processData &&
+      Array.isArray(location.state.processData) &&
+      location.state.processData.length > 0 &&
+      (!urlProcessNo || !location.state.processNo || location.state.processNo === urlProcessNo)
+    ) {
+      return location.state.processData;
     }
-  }
-  processData = processData || [];
+    if (
+      window.history.state?.processData &&
+      Array.isArray(window.history.state.processData) &&
+      window.history.state.processData.length > 0 &&
+      (!urlProcessNo || !window.history.state.processNo || window.history.state.processNo === urlProcessNo)
+    ) {
+      return window.history.state.processData;
+    }
+    if (Array.isArray(reduxProcessData) && reduxProcessData.length > 0) {
+      return reduxProcessData;
+    }
+    try {
+      const storedProcessNo = sessionStorage.getItem("tbm_pending_processNo");
+      const stored = sessionStorage.getItem("tbm_pending_processData");
+      if (stored && (!urlProcessNo || !storedProcessNo || storedProcessNo === urlProcessNo)) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {}
+    return [];
+  }, [location.state, reduxProcessData, urlProcessNo]);
 
   const urlPage = parseInt(searchParams.get("page"), 10);
   const initialPage = (!isNaN(urlPage) && urlPage > 0) ? urlPage : 1;
@@ -59,19 +75,27 @@ export default function PendingSmileCard() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
-  // Ensure current history entry has page state and processData
+  // Ensure current history entry has page state, processNo and processData
   useEffect(() => {
     const currentState = window.history.state || {};
     if (currentState.page !== page || !currentState.processData) {
-      window.history.replaceState({ ...currentState, page, processData }, "", window.location.href);
+      window.history.replaceState(
+        { ...currentState, page, processData, processNo: urlProcessNo || currentState.processNo },
+        "",
+        window.location.href
+      );
     }
-  }, [page, processData]);
+  }, [page, processData, urlProcessNo]);
 
   const idIndex = page - 1;
 
   const getMachineById = async () => {
-    if (!processData[idIndex] || !processData[idIndex].checkItem) return;
+    if (!processData[idIndex] || !processData[idIndex].checkItem) {
+      setList(undefined);
+      return;
+    }
     try {
+      setList(undefined);
       const response = await axios.get(`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/machine/${processData[idIndex].checkItem}`); 
       let data = response.data;
       setList(data.data);
@@ -82,7 +106,7 @@ export default function PendingSmileCard() {
 
   useEffect(() => {
     getMachineById();
-  }, [page, processData]);
+  }, [page, processData, location.key]);
 
   const changePage = () => {
     if (page < counts) {
@@ -164,7 +188,7 @@ export default function PendingSmileCard() {
 
       </div>
       {list ? (
-        <PendingSmileCardDetails list={list}  entryFor={processData[idIndex]?.entryDates?.[0]}  />
+        <PendingSmileCardDetails key={list._id} list={list} entryFor={processData[idIndex]?.entryDates?.[0]} />
       ) : (
         <div>No data found</div>
       )}

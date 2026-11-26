@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import { getDailyStatus } from "../redux/dailyStatus/dailyStatusActions";
 import { getMachines } from "../redux/machine/machineActions";
 import Line from "./Line";
@@ -8,6 +9,7 @@ import MachineListTable from "./MachineListTable";
 
 function Machines() {
   const dispatch = useDispatch();
+  const location = useLocation();
   const [viewMode, setViewMode] = useState("card"); // "card" | "list"
 
   const machines = useSelector((state) => state.machines);
@@ -66,7 +68,7 @@ function Machines() {
   useEffect(() => {
     dispatch(getMachines(queryStr));
     dispatch(getDailyStatus(DailyStatusQueryStr));
-  }, [dispatch, queryStr, DailyStatusQueryStr]);
+  }, [dispatch, queryStr, DailyStatusQueryStr, location.key]);
 
   const { loading, machineData } = machines;
 

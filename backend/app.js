@@ -53,10 +53,29 @@ const reportsRouter = require("./Router/reportsRouter");
 
 const app = express();
 
+app.set("etag", false);
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
+
+// Prevent browser and proxy caching on all API routes and strip cache-buster params
+app.use((req, res, next) => {
+  if (req.query && "_t" in req.query) {
+    delete req.query._t;
+  }
+  if (!req.path.startsWith("/assets")) {
+    res.setHeader(
+      "Cache-Control",
+      "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
+    );
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    res.setHeader("Surrogate-Control", "no-store");
+  }
+  next();
+});
 
 // ✅ Serve static files from "public" folder
 app.use("/assets", express.static(path.join(__dirname, "public")));

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState, useMemo, Fragment } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import AllMachineSmileCardDetails from "./AllMachineCardDetails";
@@ -12,21 +12,37 @@ export default function AllMachineSmileCard() {
   const reduxProcessData = useSelector((state) => state.processData.processData);
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const urlProcessNo = searchParams.get("processNo");
 
-  let processData = reduxProcessData;
-  if (!processData || processData.length === 0) {
-    if (location.state?.processData) {
-      processData = location.state.processData;
-    } else if (window.history.state?.processData) {
-      processData = window.history.state.processData;
-    } else {
-      try {
-        const stored = sessionStorage.getItem("tbm_allMachine_processData");
-        if (stored) processData = JSON.parse(stored);
-      } catch (e) {}
+  const processData = useMemo(() => {
+    if (
+      location.state?.processData &&
+      Array.isArray(location.state.processData) &&
+      location.state.processData.length > 0 &&
+      (!urlProcessNo || !location.state.processNo || location.state.processNo === urlProcessNo)
+    ) {
+      return location.state.processData;
     }
-  }
-  processData = processData || [];
+    if (
+      window.history.state?.processData &&
+      Array.isArray(window.history.state.processData) &&
+      window.history.state.processData.length > 0 &&
+      (!urlProcessNo || !window.history.state.processNo || window.history.state.processNo === urlProcessNo)
+    ) {
+      return window.history.state.processData;
+    }
+    if (Array.isArray(reduxProcessData) && reduxProcessData.length > 0) {
+      return reduxProcessData;
+    }
+    try {
+      const storedProcessNo = sessionStorage.getItem("tbm_allMachine_processNo");
+      const stored = sessionStorage.getItem("tbm_allMachine_processData");
+      if (stored && (!urlProcessNo || !storedProcessNo || storedProcessNo === urlProcessNo)) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {}
+    return [];
+  }, [location.state, reduxProcessData, urlProcessNo]);
 
   const urlPage = parseInt(searchParams.get("page"), 10);
   const initialPage = (!isNaN(urlPage) && urlPage > 0) ? urlPage : 1;
@@ -59,15 +75,23 @@ export default function AllMachineSmileCard() {
   useEffect(() => {
     const currentState = window.history.state || {};
     if (currentState.page !== page || !currentState.processData) {
-      window.history.replaceState({ ...currentState, page, processData }, "", window.location.href);
+      window.history.replaceState(
+        { ...currentState, page, processData, processNo: urlProcessNo || currentState.processNo },
+        "",
+        window.location.href
+      );
     }
-  }, [page, processData]);
+  }, [page, processData, urlProcessNo]);
 
   const idIndex = page - 1;
 
   const getMachineById = async () => {
-    if (!processData[idIndex] || !processData[idIndex].id) return;
+    if (!processData[idIndex] || !processData[idIndex].id) {
+      setList(undefined);
+      return;
+    }
     try {
+      setList(undefined);
       const response = await axios.get(
         `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/head/machine/${processData[idIndex].id}`
       );
@@ -80,7 +104,7 @@ export default function AllMachineSmileCard() {
 
   useEffect(() => {
     getMachineById();
-  }, [page, modify, processData]);
+  }, [page, modify, processData, location.key]);
 
   const changePage = () => {
     if (page < counts) {
@@ -209,7 +233,7 @@ export default function AllMachineSmileCard() {
       {modify ? (
         <SmileCardModify list={list} image={image} setImage={setImage} />
       ) : list ? (
-        <AllMachineSmileCardDetails list={list} />
+        <AllMachineSmileCardDetails key={list._id} list={list} />
       ) : (
         <div>No data found</div>
       )}
