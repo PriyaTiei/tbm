@@ -1250,32 +1250,65 @@ function buildExcelRowsFromData(data) {
             <div className="d-flex align-items-center flex-wrap gap-3">
               <div className="d-flex align-items-center">
                 <label className="me-2 mb-0 fw-semibold text-secondary" style={{ fontSize: "0.88rem" }}>
-                  <i className="bi bi-funnel-fill me-1" style={{ color: "#0d9488" }}></i> Filter by Age:
+                  <i className="bi bi-funnel-fill me-1" style={{ color: "#0d9488" }}></i> Overdue Filter:
                 </label>
                 <select
                   className="form-select form-select-sm"
-                  style={{ width: "160px", borderRadius: "6px" }}
+                  style={{ width: "215px", borderRadius: "6px" }}
                   value={ageFilter}
                   onChange={(e) => setAgeFilter(e.target.value)}
                 >
-                  <option value="ALL">All Days</option>
-                  <option value="1-10">1–10 days</option>
-                  <option value="11-20">11–20 days</option>
-                  <option value=">20">More than 20 days</option>
+                  <option value="ALL">All Overdue (Start to Date)</option>
+                  <option value="1-10">Overdue 1–10 days</option>
+                  <option value="11-20">Overdue 11–20 days</option>
+                  <option value=">20">Overdue &gt;20 days</option>
                 </select>
               </div>
 
-              {/* Age Summary Display */}
-              <div className="d-flex align-items-center gap-2 small">
-                <span className="badge bg-light text-dark border shadow-sm px-2 py-1" title="Items pending 1-10 days">
-                  1–10d: <strong className="text-primary">{ageSummary["1-10"]}</strong> items
-                </span>
-                <span className="badge bg-light text-dark border shadow-sm px-2 py-1" title="Items pending 11-20 days">
-                  11–20d: <strong className="text-warning">{ageSummary["11-20"]}</strong> items
-                </span>
-                <span className="badge bg-light text-dark border shadow-sm px-2 py-1" title="Items pending more than 20 days">
-                  20+d: <strong className="text-danger">{ageSummary["20+"]}</strong> items
-                </span>
+              {/* Clickable Overdue Summary Badges (items since first missed date) */}
+              <div className="d-flex align-items-center flex-wrap gap-2 small">
+                <button
+                  type="button"
+                  onClick={() => setAgeFilter((prev) => (prev === "1-10" ? "ALL" : "1-10"))}
+                  className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold border shadow-sm ${
+                    ageFilter === "1-10" ? "btn-primary text-white" : "btn-light text-dark"
+                  }`}
+                  style={{ fontSize: "0.78rem", cursor: "pointer" }}
+                  title="Items first missed 1–10 days ago (click to filter)"
+                >
+                  Overdue 1–10d:{" "}
+                  <strong className={ageFilter === "1-10" ? "text-white" : "text-primary"}>
+                    {ageSummary["1-10"]}
+                  </strong>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAgeFilter((prev) => (prev === "11-20" ? "ALL" : "11-20"))}
+                  className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold border shadow-sm ${
+                    ageFilter === "11-20" ? "btn-warning text-dark" : "btn-light text-dark"
+                  }`}
+                  style={{ fontSize: "0.78rem", cursor: "pointer" }}
+                  title="Items first missed 11–20 days ago (click to filter)"
+                >
+                  Overdue 11–20d:{" "}
+                  <strong className={ageFilter === "11-20" ? "text-dark" : "text-warning"}>
+                    {ageSummary["11-20"]}
+                  </strong>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAgeFilter((prev) => (prev === ">20" ? "ALL" : ">20"))}
+                  className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold border shadow-sm ${
+                    ageFilter === ">20" ? "btn-danger text-white" : "btn-light text-dark"
+                  }`}
+                  style={{ fontSize: "0.78rem", cursor: "pointer" }}
+                  title="Items first missed more than 20 days ago (click to filter)"
+                >
+                  Overdue &gt;20d:{" "}
+                  <strong className={ageFilter === ">20" ? "text-white" : "text-danger"}>
+                    {ageSummary["20+"]}
+                  </strong>
+                </button>
               </div>
 
               {/* Clarify Station Cards vs Individual Pending Items */}
@@ -1283,7 +1316,8 @@ function buildExcelRowsFromData(data) {
                 <div className="d-none d-md-flex align-items-center text-muted small border-start ps-3 ms-1" style={{ fontSize: "0.82rem" }}>
                   <i className="bi bi-info-circle me-1 text-primary"></i>
                   <span>
-                    Showing <strong>{displayData.reduce((acc, l) => acc + (l.processList || []).length, 0)}</strong> Cards&nbsp;
+                    Up to <strong>{dateStr || "Today"}</strong> · Showing{" "}
+                    <strong>{displayData.reduce((acc, l) => acc + (l.processList || []).length, 0)}</strong> Cards&nbsp;
                     (<strong>{displayData.reduce((acc, l) => acc + (l.processList || []).reduce((pAcc, p) => pAcc + (p.processData || []).length, 0), 0)}</strong> Pending Items)
                   </span>
                 </div>
@@ -1352,7 +1386,7 @@ function buildExcelRowsFromData(data) {
             ) : (
               <div className="text-center w-100 py-4">
                 {ageFilter !== "ALL" ? 
-                  `No pending tasks found for ${ageFilter} days range.` : 
+                  `No pending tasks found for Overdue ${ageFilter} days range.` : 
                   "No pending tasks available."
                 }
               </div>
