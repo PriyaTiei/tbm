@@ -360,19 +360,10 @@ const calculateDaysOld = (entryDates, targetDate) => {
   return Math.max(1, Math.ceil(timeDiff / (1000 * 3600 * 24)));
 };
 
-// Helper to determine if a task matches date/schedule query parameters
+// Helper to determine if a task should be visible up to the selected target date
+// Shows all overdue pending tasks from the earliest missed date up to targetDate (regardless of weekday schedule)
 const matchesDateFilter = (task, query) => {
-  const { date, d, w, m, y, dt } = query;
-  
-  const hasDateFilter = 
-    date || 
-    (d !== undefined && d !== null && d !== "") ||
-    (w !== undefined && w !== null && w !== "") ||
-    (m !== undefined && m !== null && m !== "") ||
-    (y !== undefined && y !== null && y !== "") ||
-    (dt !== undefined && dt !== null && dt !== "");
-
-  if (!hasDateFilter) return true;
+  const { date, y, m, dt } = query;
 
   const checkItem = task.checkItem;
   if (!checkItem) return false;
@@ -390,78 +381,27 @@ const matchesDateFilter = (task, query) => {
     targetDate = new Date(Number(y), Number(m) - 1, Number(dt));
   }
 
-  // If task was generated in the future relative to targetDate, exclude it
-  if (targetDate && task.entryDates && task.entryDates.length > 0) {
-    const earliestTime = Math.min(...task.entryDates.map(ed => new Date(ed).getTime()));
-    const endOfTargetDay = new Date(targetDate);
-    endOfTargetDay.setHours(23, 59, 59, 999);
-    if (earliestTime > endOfTargetDay.getTime()) {
+  if (!targetDate || isNaN(targetDate.getTime())) {
+    return true;
+  }
+
+  const endOfTargetDay = new Date(targetDate);
+  endOfTargetDay.setHours(23, 59, 59, 999);
+
+  // Exclude tasks first created/missed in the future relative to targetDate
+  if (task.entryDates && task.entryDates.length > 0) {
+    const earliestTime = Math.min(...task.entryDates.map((ed) => new Date(ed).getTime()));
+    if (!isNaN(earliestTime) && earliestTime > endOfTargetDay.getTime()) {
+      return false;
+    }
+  } else if (task.createdAt) {
+    const createdTime = new Date(task.createdAt).getTime();
+    if (!isNaN(createdTime) && createdTime > endOfTargetDay.getTime()) {
       return false;
     }
   }
 
-  // Check if entryDates contains targetDate
-  let matchesEntryDate = false;
-  if (targetDate && task.entryDates && task.entryDates.length > 0) {
-    const tY = targetDate.getFullYear();
-    const tM = targetDate.getMonth() + 1;
-    const tD = targetDate.getDate();
-
-    matchesEntryDate = task.entryDates.some((ed) => {
-      const itemDate = new Date(ed);
-      return (
-        (itemDate.getFullYear() === tY && itemDate.getMonth() + 1 === tM && itemDate.getDate() === tD) ||
-        (itemDate.getUTCFullYear() === tY && itemDate.getUTCMonth() + 1 === tM && itemDate.getUTCDate() === tD)
-      );
-    });
-  }
-
-  // Check if checkItem schedule matches d, w, m, y
-  let matchesSchedule = true;
-
-  if (d !== undefined && d !== null && d !== "") {
-    const dNum = Number(d);
-    const itemD = Number(checkItem.d);
-    const validD = [9999, 9, dNum];
-    if (dNum === 0 && !validD.includes(7)) validD.push(7);
-    if (dNum === 7 && !validD.includes(0)) validD.push(0);
-    if (dNum === 0 || dNum === 7) {
-      const idx = validD.indexOf(9);
-      if (idx !== -1) validD.splice(idx, 1);
-    }
-    if (!validD.includes(itemD)) {
-      matchesSchedule = false;
-    }
-  }
-
-  if (matchesSchedule && w !== undefined && w !== null && w !== "") {
-    const wNum = Number(w);
-    const itemW = Number(checkItem.w);
-    const validW = [9999, 9, wNum];
-    if (!validW.includes(itemW)) {
-      matchesSchedule = false;
-    }
-  }
-
-  if (matchesSchedule && m !== undefined && m !== null && m !== "") {
-    const mNum = Number(m);
-    const itemM = Number(checkItem.m);
-    const validM = [9999, 99, 9, mNum];
-    if (!validM.includes(itemM)) {
-      matchesSchedule = false;
-    }
-  }
-
-  if (matchesSchedule && y !== undefined && y !== null && y !== "") {
-    const yNum = Number(y);
-    const itemY = Number(checkItem.y);
-    const validY = [9999, yNum];
-    if (!validY.includes(itemY)) {
-      matchesSchedule = false;
-    }
-  }
-
-  return matchesSchedule || matchesEntryDate;
+  return true;
 };
 
 exports.getPendingTaskList = catchAsyncError(async (req, res, next) => {
@@ -1092,7 +1032,7 @@ exports.getPendingTasksByAge = catchAsyncError(async (req, res, next) => {
 
     dateFilteredTasks.forEach(task => {
       const daysOld = calculateDaysOld(task.entryDates, targetDate);
-      if (daysOld >= 1 && daysOld <= 10) {
+      if (daysOld >= 0 && daysOld <= 10) {
         ageSummary['1-10']++;
       } else if (daysOld >= 11 && daysOld <= 20) {
         ageSummary['11-20']++;
