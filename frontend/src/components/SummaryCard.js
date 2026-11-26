@@ -450,6 +450,7 @@
 
 
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { getCards } from "../redux/card/cardActions";
 import { useDispatch, useSelector } from "react-redux";
 import CardDoc from "./CardDoc";
@@ -463,6 +464,7 @@ import { saveAs } from "file-saver";
 import { getActivePlantInfo } from "../config/plantEquipmentMaster";
 
 function SummaryCard() {
+  const location = useLocation();
   const { isUtilityOrFacility } = getActivePlantInfo();
   const [showGraph, setShowGraph] = useState(true);
 
@@ -557,7 +559,7 @@ function SummaryCard() {
   useEffect(() => {
     console.log("Dispatching getCards with:", { fromDateSt, toDateSt, queryStr });
     dispatch(getCards(fromDateSt, toDateSt, queryStr));
-  }, [fromDate, toDate, filterObject, dispatch, fromDateSt, toDateSt, queryStr]);
+  }, [fromDate, toDate, filterObject, dispatch, fromDateSt, toDateSt, queryStr, location.key]);
 
   const cards = useSelector((state) => state.cards);
   console.log("Cards from Redux:", cards); // Debug log

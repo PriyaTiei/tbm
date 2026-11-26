@@ -156,6 +156,7 @@ function SmileCard() {
     page,
     searchParams,
     location.hash,
+    location.key,
     filters,
     modify,
     entryForQueryStr,
@@ -393,6 +394,7 @@ function SmileCard() {
               ) : (
                 <div >
                   <SmileCardDetails
+                    key={list._id}
                     list={list}
                     image={image}
                     setImage={setImage}

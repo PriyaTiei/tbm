@@ -62,7 +62,7 @@
 // import { useDispatch, useSelector } from "react-redux";
 // import { getAllMachines } from "../../redux/machine/machineActions";
 // import { setProcessData } from '../../redux/processData/processActions';
-// import { Link } from "react-router-dom";
+// import { Link, useLocation } from "react-router-dom";
 // import ExcelJS from "exceljs";
 // import { saveAs } from "file-saver";
 // import axios from "axios";
@@ -811,7 +811,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllMachines } from "../../redux/machine/machineActions";
 import { setProcessData } from '../../redux/processData/processActions';
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import axios from "axios";
@@ -914,6 +914,7 @@ const filterProcessDataByDateRange = (processData, startDate, endDate) => {
 
 export default function AllMachine() {
   const dispatch = useDispatch();
+  const location = useLocation();
   const machines = useSelector((state) => state.machines);
   const filters = useSelector((state) => state.filters);
   
@@ -954,7 +955,7 @@ export default function AllMachine() {
 
   useEffect(() => {
     dispatch(getAllMachines(queryStr));
-  }, [dispatch, queryStr]);
+  }, [dispatch, queryStr, location.key]);
 
   const { loading, machineData } = machines;
 

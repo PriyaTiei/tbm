@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
 const Verification = ({ showModals, setShowModals }) => {
+    const location = useLocation();
     const [show, setShow] = useState(false);
     const [comment, setComment] = useState('');
     const [selectAll, setSelectAll] = useState(false);
@@ -98,11 +99,11 @@ const Verification = ({ showModals, setShowModals }) => {
 
     useEffect(() => {
         fetchCommonData();
-    }, [filters.rS, filters.pS]);
+    }, [filters.rS, filters.pS, location.key]);
 
     useEffect(() => {
         fetchVerificationData();
-    }, [level, filters]);
+    }, [level, filters, location.key]);
 
     const handleSelectAll = () => {
         setSelectAll(!selectAll);

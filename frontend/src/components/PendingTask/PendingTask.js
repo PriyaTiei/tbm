@@ -819,6 +819,7 @@
 
 import React, { Fragment, useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import { getPendingTasks } from "../../redux/pendingTasks/pendingActions";
 import * as XLSX from "xlsx";
 import PendingLine from "./PendingLine";
@@ -828,6 +829,7 @@ import axios from "axios";
 
 export default function PendingTask() {
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const pendingTasks = useSelector((state) => state.pendingTasks);
   const filters = useSelector((state) => state.filters);
@@ -902,7 +904,7 @@ export default function PendingTask() {
     if (ageFilter === "ALL") {
       dispatch(getPendingTasks(queryStr));
     }
-  }, [dispatch, queryStr, ageFilter]);
+  }, [dispatch, queryStr, ageFilter, location.key]);
 
   // Fetch age summary whenever filters change (including pS, line, rS)
   useEffect(() => {
@@ -918,7 +920,7 @@ export default function PendingTask() {
         console.error("Age summary fetch error:", err);
         setAgeSummary({ "1-10": 0, "11-20": 0, "20+": 0 });
       });
-  }, [queryStr]); // This will update whenever any filter changes
+  }, [queryStr, location.key]); // This will update whenever any filter changes
 
   // Fetch age-filtered data from the new API
   useEffect(() => {
@@ -954,7 +956,7 @@ export default function PendingTask() {
           setAgeFilterLoading(false);
         });
     }
-  }, [ageFilter, queryStr]);
+  }, [ageFilter, queryStr, location.key]);
 
   const { loading, pendingTasksData, error } = pendingTasks;
 
